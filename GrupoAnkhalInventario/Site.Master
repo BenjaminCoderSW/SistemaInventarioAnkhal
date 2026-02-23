@@ -1,0 +1,289 @@
+﻿<%@ Master Language="C#" AutoEventWireup="true" CodeBehind="Site.Master.cs" Inherits="GrupoAnkhalInventario.Site" %>
+
+<!DOCTYPE html>
+<html lang="es">
+<head runat="server">
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+
+    <title>GRUPO ANKHAL - Sistema de Inventario</title>
+
+    <!-- Font Awesome -->
+    <link rel="stylesheet" href="plugins/fontawesome-free/css/all.min.css" />
+    <!-- Ionicons -->
+    <link rel="stylesheet" href="https://code.ionicframework.com/ionicons/2.0.1/css/ionicons.min.css" />
+    <!-- Theme style -->
+    <link rel="stylesheet" href="dist/css/adminlte.min.css" />
+    <!-- overlayScrollbars -->
+    <link rel="stylesheet" href="plugins/overlayScrollbars/css/OverlayScrollbars.min.css" />
+    <!-- Google Font: Source Sans Pro -->
+    <link href="https://fonts.googleapis.com/css?family=Source+Sans+Pro:300,400,400i,700" rel="stylesheet" />
+    <link href="css/estilosMenu.css" rel="stylesheet" />
+
+    <asp:ContentPlaceHolder ID="head" runat="server" />
+
+    <style>
+        /* SOLUCIÓN DEFINITIVA - Forzar scroll en sidebar */
+        aside.main-sidebar {
+            position: fixed !important;
+            top: 0 !important;
+            bottom: 0 !important;
+            left: 0 !important;
+            height: 100vh !important;
+            overflow: hidden !important;
+            display: flex !important;
+            flex-direction: column !important;
+        }
+        
+        aside.main-sidebar .brand-link {
+            flex-shrink: 0 !important;
+        }
+        
+        aside.main-sidebar .user-panel {
+            flex-shrink: 0 !important;
+        }
+        
+        /* Este es el elemento clave que necesita scroll */
+        aside.main-sidebar .sidebar {
+            flex: 1 1 auto !important;
+            overflow-y: scroll !important;
+            overflow-x: hidden !important;
+            height: 100% !important;
+            max-height: none !important;
+            position: relative !important;
+        }
+        
+        /* Forzar que el nav interno permita scroll */
+        aside.main-sidebar .sidebar > nav {
+            display: block !important;
+            overflow: visible !important;
+        }
+        
+        /* Estilos del scrollbar */
+        aside.main-sidebar .sidebar::-webkit-scrollbar {
+            width: 8px;
+            background: #1f2c3e;
+        }
+        
+        aside.main-sidebar .sidebar::-webkit-scrollbar-track {
+            background: #1a252f;
+        }
+        
+        aside.main-sidebar .sidebar::-webkit-scrollbar-thumb {
+            background: #4a5568;
+            border-radius: 4px;
+        }
+        
+        aside.main-sidebar .sidebar::-webkit-scrollbar-thumb:hover {
+            background: #5a6578;
+        }
+        
+        /* Asegurar espacio al final del menú */
+        aside.main-sidebar .sidebar .nav {
+            padding-bottom: 20px !important;
+        }
+    </style>
+</head>
+<body class="hold-transition sidebar-mini layout-fixed">
+    <form id="form1" runat="server">
+
+        <!-- ScriptManager necesario para AJAX y SweetAlert -->
+        <asp:ScriptManager ID="ScriptManager1" runat="server" />
+
+        <div class="wrapper">
+
+            <!-- Navbar -->
+            <nav class="main-header navbar navbar-expand navbar-custom">
+                <!-- Left navbar links -->
+                <ul class="navbar-nav">
+                    <li class="nav-item">
+                        <a class="nav-link" data-widget="pushmenu" href="#"><i class="fas fa-bars"></i></a>
+                    </li>
+                    <li class="nav-item d-none d-sm-inline-block">
+                       <a id="lnkInicio" href="Default.aspx" runat="server" class="nav-link">Dashboard</a>
+                    </li>
+                </ul>
+
+                <!-- Right navbar links -->
+                <ul class="navbar-nav ml-auto">
+                    <!-- Navbar Search -->
+                    <li class="nav-item">
+                        <div class="navbar-search-block">
+                            <form class="form-inline">
+                                <div class="input-group input-group-sm">
+                                    <input class="form-control form-control-navbar" type="search" placeholder="Buscar" aria-label="Search">
+                                    <div class="input-group-append">
+                                        <button class="btn btn-navbar" type="submit">
+                                            <i class="fas fa-search"></i>
+                                        </button>
+                                        <button class="btn btn-navbar" type="button" data-widget="navbar-search">
+                                            <i class="fas fa-times"></i>
+                                        </button>
+                                    </div>
+                                </div>
+                            </form>
+                        </div>
+                    </li>
+
+                    <li class="nav-item">
+                        <a class="nav-link" data-widget="fullscreen" href="#" role="button">
+                            <i class="fas fa-expand-arrows-alt"></i>
+                        </a>
+                    </li>
+                    
+                    <li class="nav-item">
+                        <!-- Botón de salir -->
+                        <a class="nav-link text-danger" runat="server" OnServerClick="CerrarSesion_Click">
+                            <i class="fas fa-sign-out-alt"></i>
+                        </a>
+                    </li>
+                </ul>
+            </nav>
+            <!-- /.navbar -->
+
+            <!-- Main Sidebar Container -->
+            <aside class="main-sidebar sidebar-custom elevation-4">
+                <!-- Brand Logo -->
+                <asp:LinkButton ID="btnHome" runat="server" CssClass="brand-link" OnClick="btnHome_Click">
+                    <img src="img/ankhal.png" width="230px" alt="Grupo Ankhal" />
+                    <h3 style="font-family:'Arial Rounded MT'; color:white">GRUPO ANKHAL</h3>
+                    <p style="color:#ff6600; font-size:0.8rem; margin:0;">Sistema de Inventario</p>
+                </asp:LinkButton>
+
+                <div class="user-panel mt-3 pb-3 mb-3 d-flex">
+                    <div class="image">
+                        <img id="imgUsuario" runat="server" class="img-circle elevation-2" alt="User Image" src="dist/img/user2-160x160.jpg" />
+                    </div>
+                    <div class="info">
+                        <asp:Label ID="lblUsuario" runat="server" CssClass="d-block text-white" Text="Usuario"></asp:Label>
+                        <asp:Label ID="lblRol" runat="server" CssClass="d-block text-white-50 small" Text="Rol"></asp:Label>
+                    </div>
+                </div>
+
+                <!-- Sidebar -->
+                <div class="sidebar">
+                    <!-- Sidebar Menu -->
+                    <nav class="mt-2">
+                        <ul class="nav nav-pills nav-sidebar flex-column" data-widget="treeview" role="menu" data-accordion="false">
+                            
+                            <!-- DASHBOARD -->
+                            <li class="nav-item">
+                                <a href="Default.aspx" class="nav-link">
+                                    <i class="nav-icon fas fa-tachometer-alt"></i>
+                                    <p>Dashboard</p>
+                                </a>
+                            </li>
+
+                            <!-- CONFIGURACIÓN -->
+                            <li id="headerConfiguracion" runat="server" class="nav-header">CONFIGURACIÓN</li>
+                            <li class="nav-item" id="menuCatalogos" runat="server">
+                                <a href="#" class="nav-link">
+                                    <i class="nav-icon fas fa-cogs"></i>
+                                    <p>
+                                        Catálogos
+                                        <i class="fas fa-angle-left right"></i>
+                                    </p>
+                                </a>
+                                <ul class="nav nav-treeview">
+                                    <li class="nav-item">
+                                        <a href="Catalogos/Bases.aspx" class="nav-link">
+                                            <i class="far fa-circle nav-icon"></i>
+                                            <p>Bases/Plantas</p>
+                                        </a>
+                                    </li>
+                                    <li class="nav-item">
+                                        <a href="Catalogos/Materiales.aspx" class="nav-link">
+                                            <i class="far fa-circle nav-icon"></i>
+                                            <p>Materiales</p>
+                                        </a>
+                                    </li>
+                                    <li class="nav-item">
+                                        <a href="Catalogos/Productos.aspx" class="nav-link">
+                                            <i class="far fa-circle nav-icon"></i>
+                                            <p>Productos</p>
+                                        </a>
+                                    </li>
+                                    <li class="nav-item">
+                                        <a href="Catalogos/Paquetes.aspx" class="nav-link">
+                                            <i class="far fa-circle nav-icon"></i>
+                                            <p>Paquetes</p>
+                                        </a>
+                                    </li>
+                                </ul>
+                            </li>
+
+                            <!-- OPERACIONES -->
+                            <li id="headerOperaciones" runat="server" class="nav-header">OPERACIONES</li>
+                            <li class="nav-item" id="menuProduccion" runat="server">
+                                <a href="Operaciones/Produccion.aspx" class="nav-link">
+                                    <i class="nav-icon fas fa-industry"></i>
+                                    <p>Producción</p>
+                                </a>
+                            </li>
+                            <li class="nav-item" id="menuEntregas" runat="server">
+                                <a href="Operaciones/Entregas.aspx" class="nav-link">
+                                    <i class="nav-icon fas fa-truck"></i>
+                                    <p>Entregas</p>
+                                </a>
+                            </li>
+                            <li class="nav-item" id="menuMovimientos" runat="server">
+                                <a href="Operaciones/Movimientos.aspx" class="nav-link">
+                                    <i class="nav-icon fas fa-exchange-alt"></i>
+                                    <p>Movimientos</p>
+                                </a>
+                            </li>
+
+                            <!-- INVENTARIO -->
+                            <li id="headerInventario" runat="server" class="nav-header">INVENTARIO</li>
+                            <li class="nav-item" id="menuInventario" runat="server">
+                                <a href="Reportes/Inventario.aspx" class="nav-link">
+                                    <i class="nav-icon fas fa-clipboard-list"></i>
+                                    <p>Consulta de Inventario</p>
+                                </a>
+                            </li>
+
+                            <!-- ADMINISTRACIÓN -->
+                            <li id="headerAdministracion" runat="server" class="nav-header">ADMINISTRACIÓN</li>
+                            <li class="nav-item" id="menuUsuarios" runat="server">
+                                <a href="Admin/Usuarios.aspx" class="nav-link">
+                                    <i class="nav-icon fas fa-users"></i>
+                                    <p>Usuarios</p>
+                                </a>
+                            </li>
+
+                        </ul>
+                    </nav>
+                    <!-- /.sidebar-menu -->
+                </div>
+                <!-- /.sidebar -->
+            </aside>
+
+            <!-- Content Wrapper. Contains page content -->
+            <div class="content-wrapper">
+                <section class="content">
+                    <div class="container-fluid pt-3">
+                        <asp:ContentPlaceHolder ID="ContentPlaceHolder1" runat="server" />
+                    </div>
+                </section>
+            </div>
+            <!-- /.content-wrapper -->
+
+            <!-- Main Footer -->
+            <footer class="main-footer">
+                <strong>&copy; 2026 <a href="#">Sistema de Inventario - Grupo ANKHAL</a>.</strong>
+                Todos los derechos reservados.
+                <div class="float-right d-none d-sm-inline-block">
+                    <b>Versión</b> 1.0
+                </div>
+            </footer>
+
+        </div>
+    </form>
+
+    <!-- Scripts de AdminLTE -->
+    <script src="plugins/jquery/jquery.min.js"></script>
+    <script src="plugins/bootstrap/js/bootstrap.bundle.min.js"></script>
+    <script src="dist/js/adminlte.min.js"></script>
+    <script src="scriptsPropios/sweetalert2@11.js"></script>
+</body>
+</html>

@@ -1,0 +1,26 @@
+﻿.navbar-custom {
+    background-color: #1f2c3e !important; /* Azul personalizado */
+    color: #fff !important;
+}
+
+    .navbar-custom .nav-link {
+        color: #fff !important;
+    }
+
+
+.sidebar-custom {
+    background-color: #1f2c3e !important;
+    color: #fff !important;
+}
+
+    .sidebar-custom .nav-link {
+        color: #fff !important;
+    }
+
+        .sidebar-custom .nav-link.active {
+            background-color: #003d80 !important; /* tono más oscuro al seleccionar */
+        }
+
+    .sidebar-custom .nav-header {
+        color: #e0e0e0 !important; /* los títulos de secciones */
+    }
