@@ -295,6 +295,7 @@
       <Column Name="FechaAlta" Type="System.DateTime" DbType="DateTime2 NOT NULL" CanBeNull="false" />
       <Column Name="FechaModif" Type="System.DateTime" DbType="DateTime2" CanBeNull="true" />
       <Column Name="UsuarioAltaID" Type="System.Int32" DbType="Int" CanBeNull="true" />
+      <Column Name="Foto" Type="System.Data.Linq.Binary" DbType="VarBinary(MAX)" CanBeNull="true" UpdateCheck="Never" />
       <Association Name="Usuarios_Bases" Member="Bases" ThisKey="UsuarioID" OtherKey="UsuarioAltaID" Type="Bases" />
       <Association Name="Usuarios_Entregas" Member="Entregas" ThisKey="UsuarioID" OtherKey="RegistradoPorID" Type="Entregas" />
       <Association Name="Usuarios_Materiales" Member="Materiales" ThisKey="UsuarioID" OtherKey="UsuarioAltaID" Type="Materiales" />

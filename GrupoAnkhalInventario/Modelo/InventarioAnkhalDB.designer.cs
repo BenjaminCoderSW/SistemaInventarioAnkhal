@@ -6608,6 +6608,8 @@ namespace GrupoAnkhalInventario.Modelo
 		
 		private System.Nullable<int> _UsuarioAltaID;
 		
+		private System.Data.Linq.Binary _Foto;
+		
 		private EntitySet<Bases> _Bases;
 		
 		private EntitySet<Entregas> _Entregas;
@@ -6670,6 +6672,8 @@ namespace GrupoAnkhalInventario.Modelo
     partial void OnFechaModifChanged();
     partial void OnUsuarioAltaIDChanging(System.Nullable<int> value);
     partial void OnUsuarioAltaIDChanged();
+    partial void OnFotoChanging(System.Data.Linq.Binary value);
+    partial void OnFotoChanged();
     #endregion
 		
 		public Usuarios()
@@ -7048,6 +7052,26 @@ namespace GrupoAnkhalInventario.Modelo
 					this._UsuarioAltaID = value;
 					this.SendPropertyChanged("UsuarioAltaID");
 					this.OnUsuarioAltaIDChanged();
+				}
+			}
+		}
+		
+		[global::System.Data.Linq.Mapping.ColumnAttribute(Storage="_Foto", DbType="VarBinary(MAX)", UpdateCheck=UpdateCheck.Never)]
+		public System.Data.Linq.Binary Foto
+		{
+			get
+			{
+				return this._Foto;
+			}
+			set
+			{
+				if ((this._Foto != value))
+				{
+					this.OnFotoChanging(value);
+					this.SendPropertyChanging();
+					this._Foto = value;
+					this.SendPropertyChanged("Foto");
+					this.OnFotoChanged();
 				}
 			}
 		}

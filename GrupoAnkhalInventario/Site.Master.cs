@@ -48,23 +48,23 @@ namespace GrupoAnkhalInventario
                 int usuarioID = Convert.ToInt32(Session["UsuarioID"]);
                 var usuario = db.Usuarios.FirstOrDefault(u => u.UsuarioID == usuarioID);
 
-                //if (usuario != null && usuario.Foto != null)
-                //{
-                //    byte[] fotoBytes = usuario.Foto.ToArray();
-                //    if (fotoBytes != null && fotoBytes.Length > 0)
-                //    {
-                //        string base64 = Convert.ToBase64String(fotoBytes);
-                //        imgUsuario.Src = "data:image/png;base64," + base64;
-                //    }
-                //    else
-                //    {
-                //        imgUsuario.Src = "dist/img/user2-160x160.jpg";
-                //    }
-                //}
-                //else
-                //{
-                //    imgUsuario.Src = "dist/img/user2-160x160.jpg";
-                //}
+                if (usuario != null && usuario.Foto != null)
+                {
+                    byte[] fotoBytes = usuario.Foto.ToArray();
+                    if (fotoBytes != null && fotoBytes.Length > 0)
+                    {
+                        string base64 = Convert.ToBase64String(fotoBytes);
+                        imgUsuario.Src = "data:image/png;base64," + base64;
+                    }
+                    else
+                    {
+                        imgUsuario.Src = "dist/img/user2-160x160.jpg";
+                    }
+                }
+                else
+                {
+                    imgUsuario.Src = "dist/img/user2-160x160.jpg";
+                }
             }
             catch (Exception ex)
             {
