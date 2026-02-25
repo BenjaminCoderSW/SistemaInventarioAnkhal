@@ -130,6 +130,7 @@
     <Content Include="img\GrupoAnkhalPapeleta.jpeg" />
     <Content Include="img\mapa.png" />
     <Content Include="Login.aspx" />
+    <Content Include="Materiales.aspx" />
     <Content Include="plugins\bootstrap-colorpicker\css\bootstrap-colorpicker.css" />
     <Content Include="plugins\bootstrap-colorpicker\css\bootstrap-colorpicker.min.css" />
     <Content Include="plugins\bootstrap-colorpicker\js\bootstrap-colorpicker.js" />
@@ -2026,6 +2027,13 @@
     </Compile>
     <Compile Include="Login.aspx.designer.cs">
       <DependentUpon>Login.aspx</DependentUpon>
+    </Compile>
+    <Compile Include="Materiales.aspx.cs">
+      <DependentUpon>Materiales.aspx</DependentUpon>
+      <SubType>ASPXCodeBehind</SubType>
+    </Compile>
+    <Compile Include="Materiales.aspx.designer.cs">
+      <DependentUpon>Materiales.aspx</DependentUpon>
     </Compile>
     <Compile Include="Modelo\InventarioAnkhalDB.designer.cs">
       <AutoGen>True</AutoGen>
