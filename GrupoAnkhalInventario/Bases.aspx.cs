@@ -198,6 +198,7 @@ namespace GrupoAnkhalInventario
                 base_.MetaCajas = ParseMeta(txtMetaCajasEdit.Text);
                 base_.MetaAccesorios = ParseMeta(txtMetaAccesoriosEdit.Text);
                 base_.FechaModif = DateTime.Now;
+                base_.UsuarioModifID = Convert.ToInt32(Session["UsuarioID"]);
 
                 db.SubmitChanges();
                 CargarBases();
@@ -228,6 +229,7 @@ namespace GrupoAnkhalInventario
 
                 b.Activo = !b.Activo;
                 b.FechaModif = DateTime.Now;
+                b.UsuarioModifID = Convert.ToInt32(Session["UsuarioID"]);
                 db.SubmitChanges();
 
                 string estado = b.Activo ? "activada" : "desactivada";

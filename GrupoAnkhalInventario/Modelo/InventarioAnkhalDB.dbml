@@ -284,6 +284,7 @@
       <Association Name="Usuarios_UsuarioRoles1" Member="UsuarioRoles1" ThisKey="UsuarioID" OtherKey="UsuarioID" Type="UsuarioRoles" />
       <Association Name="Usuarios_Usuarios" Member="Usuarios2" ThisKey="UsuarioID" OtherKey="UsuarioAltaID" Type="Usuarios" />
       <Association Name="Usuarios_Bases" Member="Bases" ThisKey="UsuarioID" OtherKey="UsuarioAltaID" Type="Bases" />
+      <Association Name="Usuarios_Bases1" Member="Bases1" ThisKey="UsuarioID" OtherKey="UsuarioModifID" Type="Bases" />
       <Association Name="Usuarios_Usuarios" Member="Usuarios1" ThisKey="UsuarioAltaID" OtherKey="UsuarioID" Type="Usuarios" IsForeignKey="true" />
     </Type>
   </Table>
@@ -303,6 +304,7 @@
       <Column Name="Telefono" Type="System.String" DbType="NVarChar(20)" CanBeNull="true" />
       <Column Name="Responsable" Type="System.String" DbType="NVarChar(100)" CanBeNull="true" />
       <Column Name="FechaCreacion" Type="System.DateTime" DbType="DateTime" CanBeNull="true" />
+      <Column Name="UsuarioModifID" Type="System.Int32" DbType="Int" CanBeNull="true" />
       <Association Name="Bases_Entregas" Member="Entregas" ThisKey="BaseID" OtherKey="BaseOrigenID" Type="Entregas" />
       <Association Name="Bases_Movimientos" Member="Movimientos" ThisKey="BaseID" OtherKey="BaseDestinoID" Type="Movimientos" />
       <Association Name="Bases_Movimientos1" Member="Movimientos1" ThisKey="BaseID" OtherKey="BaseOrigenID" Type="Movimientos" />
@@ -310,6 +312,7 @@
       <Association Name="Bases_StockMateriales" Member="StockMateriales" ThisKey="BaseID" OtherKey="BaseID" Type="StockMateriales" />
       <Association Name="Bases_StockProductos" Member="StockProductos" ThisKey="BaseID" OtherKey="BaseID" Type="StockProductos" />
       <Association Name="Usuarios_Bases" Member="Usuarios" ThisKey="UsuarioAltaID" OtherKey="UsuarioID" Type="Usuarios" IsForeignKey="true" />
+      <Association Name="Usuarios_Bases1" Member="Usuarios1" ThisKey="UsuarioModifID" OtherKey="UsuarioID" Type="Usuarios" IsForeignKey="true" />
     </Type>
   </Table>
 </Database>
