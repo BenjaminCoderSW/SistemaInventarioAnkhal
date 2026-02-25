@@ -68,6 +68,7 @@
     </Reference>
   </ItemGroup>
   <ItemGroup>
+    <Content Include="Bases.aspx" />
     <Content Include="css\estilosMenu.css" />
     <Content Include="css\gridviewPantalla.css" />
     <Content Include="Default.aspx" />
@@ -2002,6 +2003,13 @@
     <Content Include="Web.config" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="Bases.aspx.cs">
+      <DependentUpon>Bases.aspx</DependentUpon>
+      <SubType>ASPXCodeBehind</SubType>
+    </Compile>
+    <Compile Include="Bases.aspx.designer.cs">
+      <DependentUpon>Bases.aspx</DependentUpon>
+    </Compile>
     <Compile Include="Default.aspx.cs">
       <DependentUpon>Default.aspx</DependentUpon>
       <SubType>ASPXCodeBehind</SubType>

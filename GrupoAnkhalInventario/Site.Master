@@ -186,25 +186,25 @@
                                 </a>
                                 <ul class="nav nav-treeview">
                                     <li class="nav-item">
-                                        <a href="Catalogos/Bases.aspx" class="nav-link">
+                                        <a href="Bases.aspx" class="nav-link">
                                             <i class="far fa-circle nav-icon"></i>
                                             <p>Bases/Plantas</p>
                                         </a>
                                     </li>
                                     <li class="nav-item">
-                                        <a href="Catalogos/Materiales.aspx" class="nav-link">
+                                        <a href="Materiales.aspx" class="nav-link">
                                             <i class="far fa-circle nav-icon"></i>
                                             <p>Materiales</p>
                                         </a>
                                     </li>
                                     <li class="nav-item">
-                                        <a href="Catalogos/Productos.aspx" class="nav-link">
+                                        <a href="Productos.aspx" class="nav-link">
                                             <i class="far fa-circle nav-icon"></i>
                                             <p>Productos</p>
                                         </a>
                                     </li>
                                     <li class="nav-item">
-                                        <a href="Catalogos/Paquetes.aspx" class="nav-link">
+                                        <a href="Paquetes.aspx" class="nav-link">
                                             <i class="far fa-circle nav-icon"></i>
                                             <p>Paquetes</p>
                                         </a>
@@ -215,19 +215,19 @@
                             <!-- OPERACIONES -->
                             <li id="headerOperaciones" runat="server" class="nav-header">OPERACIONES</li>
                             <li class="nav-item" id="menuProduccion" runat="server">
-                                <a href="Operaciones/Produccion.aspx" class="nav-link">
+                                <a href="Produccion.aspx" class="nav-link">
                                     <i class="nav-icon fas fa-industry"></i>
                                     <p>Producción</p>
                                 </a>
                             </li>
                             <li class="nav-item" id="menuEntregas" runat="server">
-                                <a href="Operaciones/Entregas.aspx" class="nav-link">
+                                <a href="Entregas.aspx" class="nav-link">
                                     <i class="nav-icon fas fa-truck"></i>
                                     <p>Entregas</p>
                                 </a>
                             </li>
                             <li class="nav-item" id="menuMovimientos" runat="server">
-                                <a href="Operaciones/Movimientos.aspx" class="nav-link">
+                                <a href="Movimientos.aspx" class="nav-link">
                                     <i class="nav-icon fas fa-exchange-alt"></i>
                                     <p>Movimientos</p>
                                 </a>
@@ -236,7 +236,7 @@
                             <!-- INVENTARIO -->
                             <li id="headerInventario" runat="server" class="nav-header">INVENTARIO</li>
                             <li class="nav-item" id="menuInventario" runat="server">
-                                <a href="Reportes/Inventario.aspx" class="nav-link">
+                                <a href="Inventario.aspx" class="nav-link">
                                     <i class="nav-icon fas fa-clipboard-list"></i>
                                     <p>Consulta de Inventario</p>
                                 </a>
@@ -245,7 +245,7 @@
                             <!-- ADMINISTRACIÓN -->
                             <li id="headerAdministracion" runat="server" class="nav-header">ADMINISTRACIÓN</li>
                             <li class="nav-item" id="menuUsuarios" runat="server">
-                                <a href="Admin/Usuarios.aspx" class="nav-link">
+                                <a href="Usuarios.aspx" class="nav-link">
                                     <i class="nav-icon fas fa-users"></i>
                                     <p>Usuarios</p>
                                 </a>
@@ -285,5 +285,9 @@
     <script src="plugins/bootstrap/js/bootstrap.bundle.min.js"></script>
     <script src="dist/js/adminlte.min.js"></script>
     <script src="scriptsPropios/sweetalert2@11.js"></script>
+    <script src="plugins/datatables/jquery.dataTables.min.js"></script>
+    <script src="plugins/datatables-bs4/js/dataTables.bootstrap4.min.js"></script>
+    <script src="plugins/datatables-responsive/js/dataTables.responsive.min.js"></script>
+    <script src="plugins/datatables-responsive/js/responsive.bootstrap4.min.js"></script>
 </body>
 </html>
