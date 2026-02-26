@@ -54,9 +54,6 @@ namespace GrupoAnkhalInventario.Modelo
     partial void InsertProductoMateriales(ProductoMateriales instance);
     partial void UpdateProductoMateriales(ProductoMateriales instance);
     partial void DeleteProductoMateriales(ProductoMateriales instance);
-    partial void InsertProductos(Productos instance);
-    partial void UpdateProductos(Productos instance);
-    partial void DeleteProductos(Productos instance);
     partial void InsertRoles(Roles instance);
     partial void UpdateRoles(Roles instance);
     partial void DeleteRoles(Roles instance);
@@ -72,21 +69,24 @@ namespace GrupoAnkhalInventario.Modelo
     partial void InsertTiposMovimiento(TiposMovimiento instance);
     partial void UpdateTiposMovimiento(TiposMovimiento instance);
     partial void DeleteTiposMovimiento(TiposMovimiento instance);
-    partial void InsertTiposProducto(TiposProducto instance);
-    partial void UpdateTiposProducto(TiposProducto instance);
-    partial void DeleteTiposProducto(TiposProducto instance);
     partial void InsertUsuarioRoles(UsuarioRoles instance);
     partial void UpdateUsuarioRoles(UsuarioRoles instance);
     partial void DeleteUsuarioRoles(UsuarioRoles instance);
-    partial void InsertUsuarios(Usuarios instance);
-    partial void UpdateUsuarios(Usuarios instance);
-    partial void DeleteUsuarios(Usuarios instance);
     partial void InsertBases(Bases instance);
     partial void UpdateBases(Bases instance);
     partial void DeleteBases(Bases instance);
     partial void InsertMateriales(Materiales instance);
     partial void UpdateMateriales(Materiales instance);
     partial void DeleteMateriales(Materiales instance);
+    partial void InsertProductos(Productos instance);
+    partial void UpdateProductos(Productos instance);
+    partial void DeleteProductos(Productos instance);
+    partial void InsertUsuarios(Usuarios instance);
+    partial void UpdateUsuarios(Usuarios instance);
+    partial void DeleteUsuarios(Usuarios instance);
+    partial void InsertTiposProducto(TiposProducto instance);
+    partial void UpdateTiposProducto(TiposProducto instance);
+    partial void DeleteTiposProducto(TiposProducto instance);
     #endregion
 		
 		public InventarioAnkhalDBDataContext(string connection) : 
@@ -177,14 +177,6 @@ namespace GrupoAnkhalInventario.Modelo
 			}
 		}
 		
-		public System.Data.Linq.Table<Productos> Productos
-		{
-			get
-			{
-				return this.GetTable<Productos>();
-			}
-		}
-		
 		public System.Data.Linq.Table<Roles> Roles
 		{
 			get
@@ -225,27 +217,11 @@ namespace GrupoAnkhalInventario.Modelo
 			}
 		}
 		
-		public System.Data.Linq.Table<TiposProducto> TiposProducto
-		{
-			get
-			{
-				return this.GetTable<TiposProducto>();
-			}
-		}
-		
 		public System.Data.Linq.Table<UsuarioRoles> UsuarioRoles
 		{
 			get
 			{
 				return this.GetTable<UsuarioRoles>();
-			}
-		}
-		
-		public System.Data.Linq.Table<Usuarios> Usuarios
-		{
-			get
-			{
-				return this.GetTable<Usuarios>();
 			}
 		}
 		
@@ -262,6 +238,30 @@ namespace GrupoAnkhalInventario.Modelo
 			get
 			{
 				return this.GetTable<Materiales>();
+			}
+		}
+		
+		public System.Data.Linq.Table<Productos> Productos
+		{
+			get
+			{
+				return this.GetTable<Productos>();
+			}
+		}
+		
+		public System.Data.Linq.Table<Usuarios> Usuarios
+		{
+			get
+			{
+				return this.GetTable<Usuarios>();
+			}
+		}
+		
+		public System.Data.Linq.Table<TiposProducto> TiposProducto
+		{
+			get
+			{
+				return this.GetTable<TiposProducto>();
 			}
 		}
 	}
@@ -961,9 +961,9 @@ namespace GrupoAnkhalInventario.Modelo
 		
 		private EntitySet<Movimientos> _Movimientos;
 		
-		private EntityRef<Usuarios> _Usuarios;
-		
 		private EntityRef<Bases> _Bases;
+		
+		private EntityRef<Usuarios> _Usuarios;
 		
     #region Definiciones de métodos de extensibilidad
     partial void OnLoaded();
@@ -995,8 +995,8 @@ namespace GrupoAnkhalInventario.Modelo
 		{
 			this._DetalleEntregas = new EntitySet<DetalleEntregas>(new Action<DetalleEntregas>(this.attach_DetalleEntregas), new Action<DetalleEntregas>(this.detach_DetalleEntregas));
 			this._Movimientos = new EntitySet<Movimientos>(new Action<Movimientos>(this.attach_Movimientos), new Action<Movimientos>(this.detach_Movimientos));
-			this._Usuarios = default(EntityRef<Usuarios>);
 			this._Bases = default(EntityRef<Bases>);
+			this._Usuarios = default(EntityRef<Usuarios>);
 			OnCreated();
 		}
 		
@@ -1234,40 +1234,6 @@ namespace GrupoAnkhalInventario.Modelo
 			}
 		}
 		
-		[global::System.Data.Linq.Mapping.AssociationAttribute(Name="Usuarios_Entregas", Storage="_Usuarios", ThisKey="RegistradoPorID", OtherKey="UsuarioID", IsForeignKey=true)]
-		public Usuarios Usuarios
-		{
-			get
-			{
-				return this._Usuarios.Entity;
-			}
-			set
-			{
-				Usuarios previousValue = this._Usuarios.Entity;
-				if (((previousValue != value) 
-							|| (this._Usuarios.HasLoadedOrAssignedValue == false)))
-				{
-					this.SendPropertyChanging();
-					if ((previousValue != null))
-					{
-						this._Usuarios.Entity = null;
-						previousValue.Entregas.Remove(this);
-					}
-					this._Usuarios.Entity = value;
-					if ((value != null))
-					{
-						value.Entregas.Add(this);
-						this._RegistradoPorID = value.UsuarioID;
-					}
-					else
-					{
-						this._RegistradoPorID = default(int);
-					}
-					this.SendPropertyChanged("Usuarios");
-				}
-			}
-		}
-		
 		[global::System.Data.Linq.Mapping.AssociationAttribute(Name="Bases_Entregas", Storage="_Bases", ThisKey="BaseOrigenID", OtherKey="BaseID", IsForeignKey=true)]
 		public Bases Bases
 		{
@@ -1298,6 +1264,40 @@ namespace GrupoAnkhalInventario.Modelo
 						this._BaseOrigenID = default(int);
 					}
 					this.SendPropertyChanged("Bases");
+				}
+			}
+		}
+		
+		[global::System.Data.Linq.Mapping.AssociationAttribute(Name="Usuarios_Entregas", Storage="_Usuarios", ThisKey="RegistradoPorID", OtherKey="UsuarioID", IsForeignKey=true)]
+		public Usuarios Usuarios
+		{
+			get
+			{
+				return this._Usuarios.Entity;
+			}
+			set
+			{
+				Usuarios previousValue = this._Usuarios.Entity;
+				if (((previousValue != value) 
+							|| (this._Usuarios.HasLoadedOrAssignedValue == false)))
+				{
+					this.SendPropertyChanging();
+					if ((previousValue != null))
+					{
+						this._Usuarios.Entity = null;
+						previousValue.Entregas.Remove(this);
+					}
+					this._Usuarios.Entity = value;
+					if ((value != null))
+					{
+						value.Entregas.Add(this);
+						this._RegistradoPorID = value.UsuarioID;
+					}
+					else
+					{
+						this._RegistradoPorID = default(int);
+					}
+					this.SendPropertyChanged("Usuarios");
 				}
 			}
 		}
@@ -1385,17 +1385,17 @@ namespace GrupoAnkhalInventario.Modelo
 		
 		private EntityRef<Produccion> _Produccion;
 		
-		private EntityRef<Productos> _Productos;
-		
 		private EntityRef<TiposMovimiento> _TiposMovimiento;
-		
-		private EntityRef<Usuarios> _Usuarios;
 		
 		private EntityRef<Bases> _Bases;
 		
 		private EntityRef<Bases> _Bases1;
 		
 		private EntityRef<Materiales> _Materiales;
+		
+		private EntityRef<Productos> _Productos;
+		
+		private EntityRef<Usuarios> _Usuarios;
 		
     #region Definiciones de métodos de extensibilidad
     partial void OnLoaded();
@@ -1435,12 +1435,12 @@ namespace GrupoAnkhalInventario.Modelo
 		{
 			this._Entregas = default(EntityRef<Entregas>);
 			this._Produccion = default(EntityRef<Produccion>);
-			this._Productos = default(EntityRef<Productos>);
 			this._TiposMovimiento = default(EntityRef<TiposMovimiento>);
-			this._Usuarios = default(EntityRef<Usuarios>);
 			this._Bases = default(EntityRef<Bases>);
 			this._Bases1 = default(EntityRef<Bases>);
 			this._Materiales = default(EntityRef<Materiales>);
+			this._Productos = default(EntityRef<Productos>);
+			this._Usuarios = default(EntityRef<Usuarios>);
 			OnCreated();
 		}
 		
@@ -1824,40 +1824,6 @@ namespace GrupoAnkhalInventario.Modelo
 			}
 		}
 		
-		[global::System.Data.Linq.Mapping.AssociationAttribute(Name="Productos_Movimientos", Storage="_Productos", ThisKey="ProductoID", OtherKey="ProductoID", IsForeignKey=true)]
-		public Productos Productos
-		{
-			get
-			{
-				return this._Productos.Entity;
-			}
-			set
-			{
-				Productos previousValue = this._Productos.Entity;
-				if (((previousValue != value) 
-							|| (this._Productos.HasLoadedOrAssignedValue == false)))
-				{
-					this.SendPropertyChanging();
-					if ((previousValue != null))
-					{
-						this._Productos.Entity = null;
-						previousValue.Movimientos.Remove(this);
-					}
-					this._Productos.Entity = value;
-					if ((value != null))
-					{
-						value.Movimientos.Add(this);
-						this._ProductoID = value.ProductoID;
-					}
-					else
-					{
-						this._ProductoID = default(Nullable<int>);
-					}
-					this.SendPropertyChanged("Productos");
-				}
-			}
-		}
-		
 		[global::System.Data.Linq.Mapping.AssociationAttribute(Name="TiposMovimiento_Movimientos", Storage="_TiposMovimiento", ThisKey="TipoMovimientoID", OtherKey="TipoMovimientoID", IsForeignKey=true)]
 		public TiposMovimiento TiposMovimiento
 		{
@@ -1888,40 +1854,6 @@ namespace GrupoAnkhalInventario.Modelo
 						this._TipoMovimientoID = default(int);
 					}
 					this.SendPropertyChanged("TiposMovimiento");
-				}
-			}
-		}
-		
-		[global::System.Data.Linq.Mapping.AssociationAttribute(Name="Usuarios_Movimientos", Storage="_Usuarios", ThisKey="RegistradoPorID", OtherKey="UsuarioID", IsForeignKey=true)]
-		public Usuarios Usuarios
-		{
-			get
-			{
-				return this._Usuarios.Entity;
-			}
-			set
-			{
-				Usuarios previousValue = this._Usuarios.Entity;
-				if (((previousValue != value) 
-							|| (this._Usuarios.HasLoadedOrAssignedValue == false)))
-				{
-					this.SendPropertyChanging();
-					if ((previousValue != null))
-					{
-						this._Usuarios.Entity = null;
-						previousValue.Movimientos.Remove(this);
-					}
-					this._Usuarios.Entity = value;
-					if ((value != null))
-					{
-						value.Movimientos.Add(this);
-						this._RegistradoPorID = value.UsuarioID;
-					}
-					else
-					{
-						this._RegistradoPorID = default(int);
-					}
-					this.SendPropertyChanged("Usuarios");
 				}
 			}
 		}
@@ -2028,6 +1960,74 @@ namespace GrupoAnkhalInventario.Modelo
 			}
 		}
 		
+		[global::System.Data.Linq.Mapping.AssociationAttribute(Name="Productos_Movimientos", Storage="_Productos", ThisKey="ProductoID", OtherKey="ProductoID", IsForeignKey=true)]
+		public Productos Productos
+		{
+			get
+			{
+				return this._Productos.Entity;
+			}
+			set
+			{
+				Productos previousValue = this._Productos.Entity;
+				if (((previousValue != value) 
+							|| (this._Productos.HasLoadedOrAssignedValue == false)))
+				{
+					this.SendPropertyChanging();
+					if ((previousValue != null))
+					{
+						this._Productos.Entity = null;
+						previousValue.Movimientos.Remove(this);
+					}
+					this._Productos.Entity = value;
+					if ((value != null))
+					{
+						value.Movimientos.Add(this);
+						this._ProductoID = value.ProductoID;
+					}
+					else
+					{
+						this._ProductoID = default(Nullable<int>);
+					}
+					this.SendPropertyChanged("Productos");
+				}
+			}
+		}
+		
+		[global::System.Data.Linq.Mapping.AssociationAttribute(Name="Usuarios_Movimientos", Storage="_Usuarios", ThisKey="RegistradoPorID", OtherKey="UsuarioID", IsForeignKey=true)]
+		public Usuarios Usuarios
+		{
+			get
+			{
+				return this._Usuarios.Entity;
+			}
+			set
+			{
+				Usuarios previousValue = this._Usuarios.Entity;
+				if (((previousValue != value) 
+							|| (this._Usuarios.HasLoadedOrAssignedValue == false)))
+				{
+					this.SendPropertyChanging();
+					if ((previousValue != null))
+					{
+						this._Usuarios.Entity = null;
+						previousValue.Movimientos.Remove(this);
+					}
+					this._Usuarios.Entity = value;
+					if ((value != null))
+					{
+						value.Movimientos.Add(this);
+						this._RegistradoPorID = value.UsuarioID;
+					}
+					else
+					{
+						this._RegistradoPorID = default(int);
+					}
+					this.SendPropertyChanged("Usuarios");
+				}
+			}
+		}
+		
 		public event PropertyChangingEventHandler PropertyChanging;
 		
 		public event PropertyChangedEventHandler PropertyChanged;
@@ -2071,9 +2071,9 @@ namespace GrupoAnkhalInventario.Modelo
 		
 		private EntityRef<Paquetes> _Paquetes;
 		
-		private EntityRef<Productos> _Productos;
-		
 		private EntityRef<Materiales> _Materiales;
+		
+		private EntityRef<Productos> _Productos;
 		
     #region Definiciones de métodos de extensibilidad
     partial void OnLoaded();
@@ -2098,8 +2098,8 @@ namespace GrupoAnkhalInventario.Modelo
 		public PaqueteComponentes()
 		{
 			this._Paquetes = default(EntityRef<Paquetes>);
-			this._Productos = default(EntityRef<Productos>);
 			this._Materiales = default(EntityRef<Materiales>);
+			this._Productos = default(EntityRef<Productos>);
 			OnCreated();
 		}
 		
@@ -2289,40 +2289,6 @@ namespace GrupoAnkhalInventario.Modelo
 			}
 		}
 		
-		[global::System.Data.Linq.Mapping.AssociationAttribute(Name="Productos_PaqueteComponentes", Storage="_Productos", ThisKey="ProductoID", OtherKey="ProductoID", IsForeignKey=true)]
-		public Productos Productos
-		{
-			get
-			{
-				return this._Productos.Entity;
-			}
-			set
-			{
-				Productos previousValue = this._Productos.Entity;
-				if (((previousValue != value) 
-							|| (this._Productos.HasLoadedOrAssignedValue == false)))
-				{
-					this.SendPropertyChanging();
-					if ((previousValue != null))
-					{
-						this._Productos.Entity = null;
-						previousValue.PaqueteComponentes.Remove(this);
-					}
-					this._Productos.Entity = value;
-					if ((value != null))
-					{
-						value.PaqueteComponentes.Add(this);
-						this._ProductoID = value.ProductoID;
-					}
-					else
-					{
-						this._ProductoID = default(Nullable<int>);
-					}
-					this.SendPropertyChanged("Productos");
-				}
-			}
-		}
-		
 		[global::System.Data.Linq.Mapping.AssociationAttribute(Name="Materiales_PaqueteComponentes", Storage="_Materiales", ThisKey="MaterialID", OtherKey="MaterialID", IsForeignKey=true)]
 		public Materiales Materiales
 		{
@@ -2353,6 +2319,40 @@ namespace GrupoAnkhalInventario.Modelo
 						this._MaterialID = default(Nullable<int>);
 					}
 					this.SendPropertyChanged("Materiales");
+				}
+			}
+		}
+		
+		[global::System.Data.Linq.Mapping.AssociationAttribute(Name="Productos_PaqueteComponentes", Storage="_Productos", ThisKey="ProductoID", OtherKey="ProductoID", IsForeignKey=true)]
+		public Productos Productos
+		{
+			get
+			{
+				return this._Productos.Entity;
+			}
+			set
+			{
+				Productos previousValue = this._Productos.Entity;
+				if (((previousValue != value) 
+							|| (this._Productos.HasLoadedOrAssignedValue == false)))
+				{
+					this.SendPropertyChanging();
+					if ((previousValue != null))
+					{
+						this._Productos.Entity = null;
+						previousValue.PaqueteComponentes.Remove(this);
+					}
+					this._Productos.Entity = value;
+					if ((value != null))
+					{
+						value.PaqueteComponentes.Add(this);
+						this._ProductoID = value.ProductoID;
+					}
+					else
+					{
+						this._ProductoID = default(Nullable<int>);
+					}
+					this.SendPropertyChanged("Productos");
 				}
 			}
 		}
@@ -2737,11 +2737,11 @@ namespace GrupoAnkhalInventario.Modelo
 		
 		private EntitySet<Movimientos> _Movimientos;
 		
+		private EntityRef<Bases> _Bases;
+		
 		private EntityRef<Productos> _Productos;
 		
 		private EntityRef<Usuarios> _Usuarios;
-		
-		private EntityRef<Bases> _Bases;
 		
     #region Definiciones de métodos de extensibilidad
     partial void OnLoaded();
@@ -2775,9 +2775,9 @@ namespace GrupoAnkhalInventario.Modelo
 		{
 			this._ConsumosProduccion = new EntitySet<ConsumosProduccion>(new Action<ConsumosProduccion>(this.attach_ConsumosProduccion), new Action<ConsumosProduccion>(this.detach_ConsumosProduccion));
 			this._Movimientos = new EntitySet<Movimientos>(new Action<Movimientos>(this.attach_Movimientos), new Action<Movimientos>(this.detach_Movimientos));
+			this._Bases = default(EntityRef<Bases>);
 			this._Productos = default(EntityRef<Productos>);
 			this._Usuarios = default(EntityRef<Usuarios>);
-			this._Bases = default(EntityRef<Bases>);
 			OnCreated();
 		}
 		
@@ -3039,6 +3039,40 @@ namespace GrupoAnkhalInventario.Modelo
 			}
 		}
 		
+		[global::System.Data.Linq.Mapping.AssociationAttribute(Name="Bases_Produccion", Storage="_Bases", ThisKey="BaseID", OtherKey="BaseID", IsForeignKey=true)]
+		public Bases Bases
+		{
+			get
+			{
+				return this._Bases.Entity;
+			}
+			set
+			{
+				Bases previousValue = this._Bases.Entity;
+				if (((previousValue != value) 
+							|| (this._Bases.HasLoadedOrAssignedValue == false)))
+				{
+					this.SendPropertyChanging();
+					if ((previousValue != null))
+					{
+						this._Bases.Entity = null;
+						previousValue.Produccion.Remove(this);
+					}
+					this._Bases.Entity = value;
+					if ((value != null))
+					{
+						value.Produccion.Add(this);
+						this._BaseID = value.BaseID;
+					}
+					else
+					{
+						this._BaseID = default(int);
+					}
+					this.SendPropertyChanged("Bases");
+				}
+			}
+		}
+		
 		[global::System.Data.Linq.Mapping.AssociationAttribute(Name="Productos_Produccion", Storage="_Productos", ThisKey="ProductoID", OtherKey="ProductoID", IsForeignKey=true)]
 		public Productos Productos
 		{
@@ -3107,40 +3141,6 @@ namespace GrupoAnkhalInventario.Modelo
 			}
 		}
 		
-		[global::System.Data.Linq.Mapping.AssociationAttribute(Name="Bases_Produccion", Storage="_Bases", ThisKey="BaseID", OtherKey="BaseID", IsForeignKey=true)]
-		public Bases Bases
-		{
-			get
-			{
-				return this._Bases.Entity;
-			}
-			set
-			{
-				Bases previousValue = this._Bases.Entity;
-				if (((previousValue != value) 
-							|| (this._Bases.HasLoadedOrAssignedValue == false)))
-				{
-					this.SendPropertyChanging();
-					if ((previousValue != null))
-					{
-						this._Bases.Entity = null;
-						previousValue.Produccion.Remove(this);
-					}
-					this._Bases.Entity = value;
-					if ((value != null))
-					{
-						value.Produccion.Add(this);
-						this._BaseID = value.BaseID;
-					}
-					else
-					{
-						this._BaseID = default(int);
-					}
-					this.SendPropertyChanged("Bases");
-				}
-			}
-		}
-		
 		public event PropertyChangingEventHandler PropertyChanging;
 		
 		public event PropertyChangedEventHandler PropertyChanged;
@@ -3204,9 +3204,9 @@ namespace GrupoAnkhalInventario.Modelo
 		
 		private string _Notas;
 		
-		private EntityRef<Productos> _Productos;
-		
 		private EntityRef<Materiales> _Materiales;
+		
+		private EntityRef<Productos> _Productos;
 		
     #region Definiciones de métodos de extensibilidad
     partial void OnLoaded();
@@ -3228,8 +3228,8 @@ namespace GrupoAnkhalInventario.Modelo
 		
 		public ProductoMateriales()
 		{
-			this._Productos = default(EntityRef<Productos>);
 			this._Materiales = default(EntityRef<Materiales>);
+			this._Productos = default(EntityRef<Productos>);
 			OnCreated();
 		}
 		
@@ -3361,40 +3361,6 @@ namespace GrupoAnkhalInventario.Modelo
 			}
 		}
 		
-		[global::System.Data.Linq.Mapping.AssociationAttribute(Name="Productos_ProductoMateriales", Storage="_Productos", ThisKey="ProductoID", OtherKey="ProductoID", IsForeignKey=true)]
-		public Productos Productos
-		{
-			get
-			{
-				return this._Productos.Entity;
-			}
-			set
-			{
-				Productos previousValue = this._Productos.Entity;
-				if (((previousValue != value) 
-							|| (this._Productos.HasLoadedOrAssignedValue == false)))
-				{
-					this.SendPropertyChanging();
-					if ((previousValue != null))
-					{
-						this._Productos.Entity = null;
-						previousValue.ProductoMateriales.Remove(this);
-					}
-					this._Productos.Entity = value;
-					if ((value != null))
-					{
-						value.ProductoMateriales.Add(this);
-						this._ProductoID = value.ProductoID;
-					}
-					else
-					{
-						this._ProductoID = default(int);
-					}
-					this.SendPropertyChanged("Productos");
-				}
-			}
-		}
-		
 		[global::System.Data.Linq.Mapping.AssociationAttribute(Name="Materiales_ProductoMateriales", Storage="_Materiales", ThisKey="MaterialID", OtherKey="MaterialID", IsForeignKey=true)]
 		public Materiales Materiales
 		{
@@ -3429,458 +3395,36 @@ namespace GrupoAnkhalInventario.Modelo
 			}
 		}
 		
-		public event PropertyChangingEventHandler PropertyChanging;
-		
-		public event PropertyChangedEventHandler PropertyChanged;
-		
-		protected virtual void SendPropertyChanging()
-		{
-			if ((this.PropertyChanging != null))
-			{
-				this.PropertyChanging(this, emptyChangingEventArgs);
-			}
-		}
-		
-		protected virtual void SendPropertyChanged(String propertyName)
-		{
-			if ((this.PropertyChanged != null))
-			{
-				this.PropertyChanged(this, new PropertyChangedEventArgs(propertyName));
-			}
-		}
-	}
-	
-	[global::System.Data.Linq.Mapping.TableAttribute(Name="dbo.Productos")]
-	public partial class Productos : INotifyPropertyChanging, INotifyPropertyChanged
-	{
-		
-		private static PropertyChangingEventArgs emptyChangingEventArgs = new PropertyChangingEventArgs(String.Empty);
-		
-		private int _ProductoID;
-		
-		private string _Codigo;
-		
-		private int _TipoProductoID;
-		
-		private string _Nombre;
-		
-		private string _Descripcion;
-		
-		private decimal _PrecioVenta;
-		
-		private bool _Activo;
-		
-		private System.DateTime _FechaAlta;
-		
-		private System.Nullable<System.DateTime> _FechaModif;
-		
-		private System.Nullable<int> _UsuarioAltaID;
-		
-		private EntitySet<DetalleEntregas> _DetalleEntregas;
-		
-		private EntitySet<Movimientos> _Movimientos;
-		
-		private EntitySet<PaqueteComponentes> _PaqueteComponentes;
-		
-		private EntitySet<Produccion> _Produccion;
-		
-		private EntitySet<ProductoMateriales> _ProductoMateriales;
-		
-		private EntitySet<StockProductos> _StockProductos;
-		
-		private EntityRef<TiposProducto> _TiposProducto;
-		
-		private EntityRef<Usuarios> _Usuarios;
-		
-    #region Definiciones de métodos de extensibilidad
-    partial void OnLoaded();
-    partial void OnValidate(System.Data.Linq.ChangeAction action);
-    partial void OnCreated();
-    partial void OnProductoIDChanging(int value);
-    partial void OnProductoIDChanged();
-    partial void OnCodigoChanging(string value);
-    partial void OnCodigoChanged();
-    partial void OnTipoProductoIDChanging(int value);
-    partial void OnTipoProductoIDChanged();
-    partial void OnNombreChanging(string value);
-    partial void OnNombreChanged();
-    partial void OnDescripcionChanging(string value);
-    partial void OnDescripcionChanged();
-    partial void OnPrecioVentaChanging(decimal value);
-    partial void OnPrecioVentaChanged();
-    partial void OnActivoChanging(bool value);
-    partial void OnActivoChanged();
-    partial void OnFechaAltaChanging(System.DateTime value);
-    partial void OnFechaAltaChanged();
-    partial void OnFechaModifChanging(System.Nullable<System.DateTime> value);
-    partial void OnFechaModifChanged();
-    partial void OnUsuarioAltaIDChanging(System.Nullable<int> value);
-    partial void OnUsuarioAltaIDChanged();
-    #endregion
-		
-		public Productos()
-		{
-			this._DetalleEntregas = new EntitySet<DetalleEntregas>(new Action<DetalleEntregas>(this.attach_DetalleEntregas), new Action<DetalleEntregas>(this.detach_DetalleEntregas));
-			this._Movimientos = new EntitySet<Movimientos>(new Action<Movimientos>(this.attach_Movimientos), new Action<Movimientos>(this.detach_Movimientos));
-			this._PaqueteComponentes = new EntitySet<PaqueteComponentes>(new Action<PaqueteComponentes>(this.attach_PaqueteComponentes), new Action<PaqueteComponentes>(this.detach_PaqueteComponentes));
-			this._Produccion = new EntitySet<Produccion>(new Action<Produccion>(this.attach_Produccion), new Action<Produccion>(this.detach_Produccion));
-			this._ProductoMateriales = new EntitySet<ProductoMateriales>(new Action<ProductoMateriales>(this.attach_ProductoMateriales), new Action<ProductoMateriales>(this.detach_ProductoMateriales));
-			this._StockProductos = new EntitySet<StockProductos>(new Action<StockProductos>(this.attach_StockProductos), new Action<StockProductos>(this.detach_StockProductos));
-			this._TiposProducto = default(EntityRef<TiposProducto>);
-			this._Usuarios = default(EntityRef<Usuarios>);
-			OnCreated();
-		}
-		
-		[global::System.Data.Linq.Mapping.ColumnAttribute(Storage="_ProductoID", AutoSync=AutoSync.OnInsert, DbType="Int NOT NULL IDENTITY", IsPrimaryKey=true, IsDbGenerated=true)]
-		public int ProductoID
+		[global::System.Data.Linq.Mapping.AssociationAttribute(Name="Productos_ProductoMateriales", Storage="_Productos", ThisKey="ProductoID", OtherKey="ProductoID", IsForeignKey=true)]
+		public Productos Productos
 		{
 			get
 			{
-				return this._ProductoID;
+				return this._Productos.Entity;
 			}
 			set
 			{
-				if ((this._ProductoID != value))
-				{
-					this.OnProductoIDChanging(value);
-					this.SendPropertyChanging();
-					this._ProductoID = value;
-					this.SendPropertyChanged("ProductoID");
-					this.OnProductoIDChanged();
-				}
-			}
-		}
-		
-		[global::System.Data.Linq.Mapping.ColumnAttribute(Storage="_Codigo", DbType="VarChar(30) NOT NULL", CanBeNull=false)]
-		public string Codigo
-		{
-			get
-			{
-				return this._Codigo;
-			}
-			set
-			{
-				if ((this._Codigo != value))
-				{
-					this.OnCodigoChanging(value);
-					this.SendPropertyChanging();
-					this._Codigo = value;
-					this.SendPropertyChanged("Codigo");
-					this.OnCodigoChanged();
-				}
-			}
-		}
-		
-		[global::System.Data.Linq.Mapping.ColumnAttribute(Storage="_TipoProductoID", DbType="Int NOT NULL")]
-		public int TipoProductoID
-		{
-			get
-			{
-				return this._TipoProductoID;
-			}
-			set
-			{
-				if ((this._TipoProductoID != value))
-				{
-					if (this._TiposProducto.HasLoadedOrAssignedValue)
-					{
-						throw new System.Data.Linq.ForeignKeyReferenceAlreadyHasValueException();
-					}
-					this.OnTipoProductoIDChanging(value);
-					this.SendPropertyChanging();
-					this._TipoProductoID = value;
-					this.SendPropertyChanged("TipoProductoID");
-					this.OnTipoProductoIDChanged();
-				}
-			}
-		}
-		
-		[global::System.Data.Linq.Mapping.ColumnAttribute(Storage="_Nombre", DbType="VarChar(200) NOT NULL", CanBeNull=false)]
-		public string Nombre
-		{
-			get
-			{
-				return this._Nombre;
-			}
-			set
-			{
-				if ((this._Nombre != value))
-				{
-					this.OnNombreChanging(value);
-					this.SendPropertyChanging();
-					this._Nombre = value;
-					this.SendPropertyChanged("Nombre");
-					this.OnNombreChanged();
-				}
-			}
-		}
-		
-		[global::System.Data.Linq.Mapping.ColumnAttribute(Storage="_Descripcion", DbType="VarChar(500)")]
-		public string Descripcion
-		{
-			get
-			{
-				return this._Descripcion;
-			}
-			set
-			{
-				if ((this._Descripcion != value))
-				{
-					this.OnDescripcionChanging(value);
-					this.SendPropertyChanging();
-					this._Descripcion = value;
-					this.SendPropertyChanged("Descripcion");
-					this.OnDescripcionChanged();
-				}
-			}
-		}
-		
-		[global::System.Data.Linq.Mapping.ColumnAttribute(Storage="_PrecioVenta", DbType="Decimal(12,4) NOT NULL")]
-		public decimal PrecioVenta
-		{
-			get
-			{
-				return this._PrecioVenta;
-			}
-			set
-			{
-				if ((this._PrecioVenta != value))
-				{
-					this.OnPrecioVentaChanging(value);
-					this.SendPropertyChanging();
-					this._PrecioVenta = value;
-					this.SendPropertyChanged("PrecioVenta");
-					this.OnPrecioVentaChanged();
-				}
-			}
-		}
-		
-		[global::System.Data.Linq.Mapping.ColumnAttribute(Storage="_Activo", DbType="Bit NOT NULL")]
-		public bool Activo
-		{
-			get
-			{
-				return this._Activo;
-			}
-			set
-			{
-				if ((this._Activo != value))
-				{
-					this.OnActivoChanging(value);
-					this.SendPropertyChanging();
-					this._Activo = value;
-					this.SendPropertyChanged("Activo");
-					this.OnActivoChanged();
-				}
-			}
-		}
-		
-		[global::System.Data.Linq.Mapping.ColumnAttribute(Storage="_FechaAlta", DbType="DateTime2 NOT NULL")]
-		public System.DateTime FechaAlta
-		{
-			get
-			{
-				return this._FechaAlta;
-			}
-			set
-			{
-				if ((this._FechaAlta != value))
-				{
-					this.OnFechaAltaChanging(value);
-					this.SendPropertyChanging();
-					this._FechaAlta = value;
-					this.SendPropertyChanged("FechaAlta");
-					this.OnFechaAltaChanged();
-				}
-			}
-		}
-		
-		[global::System.Data.Linq.Mapping.ColumnAttribute(Storage="_FechaModif", DbType="DateTime2")]
-		public System.Nullable<System.DateTime> FechaModif
-		{
-			get
-			{
-				return this._FechaModif;
-			}
-			set
-			{
-				if ((this._FechaModif != value))
-				{
-					this.OnFechaModifChanging(value);
-					this.SendPropertyChanging();
-					this._FechaModif = value;
-					this.SendPropertyChanged("FechaModif");
-					this.OnFechaModifChanged();
-				}
-			}
-		}
-		
-		[global::System.Data.Linq.Mapping.ColumnAttribute(Storage="_UsuarioAltaID", DbType="Int")]
-		public System.Nullable<int> UsuarioAltaID
-		{
-			get
-			{
-				return this._UsuarioAltaID;
-			}
-			set
-			{
-				if ((this._UsuarioAltaID != value))
-				{
-					if (this._Usuarios.HasLoadedOrAssignedValue)
-					{
-						throw new System.Data.Linq.ForeignKeyReferenceAlreadyHasValueException();
-					}
-					this.OnUsuarioAltaIDChanging(value);
-					this.SendPropertyChanging();
-					this._UsuarioAltaID = value;
-					this.SendPropertyChanged("UsuarioAltaID");
-					this.OnUsuarioAltaIDChanged();
-				}
-			}
-		}
-		
-		[global::System.Data.Linq.Mapping.AssociationAttribute(Name="Productos_DetalleEntregas", Storage="_DetalleEntregas", ThisKey="ProductoID", OtherKey="ProductoID")]
-		public EntitySet<DetalleEntregas> DetalleEntregas
-		{
-			get
-			{
-				return this._DetalleEntregas;
-			}
-			set
-			{
-				this._DetalleEntregas.Assign(value);
-			}
-		}
-		
-		[global::System.Data.Linq.Mapping.AssociationAttribute(Name="Productos_Movimientos", Storage="_Movimientos", ThisKey="ProductoID", OtherKey="ProductoID")]
-		public EntitySet<Movimientos> Movimientos
-		{
-			get
-			{
-				return this._Movimientos;
-			}
-			set
-			{
-				this._Movimientos.Assign(value);
-			}
-		}
-		
-		[global::System.Data.Linq.Mapping.AssociationAttribute(Name="Productos_PaqueteComponentes", Storage="_PaqueteComponentes", ThisKey="ProductoID", OtherKey="ProductoID")]
-		public EntitySet<PaqueteComponentes> PaqueteComponentes
-		{
-			get
-			{
-				return this._PaqueteComponentes;
-			}
-			set
-			{
-				this._PaqueteComponentes.Assign(value);
-			}
-		}
-		
-		[global::System.Data.Linq.Mapping.AssociationAttribute(Name="Productos_Produccion", Storage="_Produccion", ThisKey="ProductoID", OtherKey="ProductoID")]
-		public EntitySet<Produccion> Produccion
-		{
-			get
-			{
-				return this._Produccion;
-			}
-			set
-			{
-				this._Produccion.Assign(value);
-			}
-		}
-		
-		[global::System.Data.Linq.Mapping.AssociationAttribute(Name="Productos_ProductoMateriales", Storage="_ProductoMateriales", ThisKey="ProductoID", OtherKey="ProductoID")]
-		public EntitySet<ProductoMateriales> ProductoMateriales
-		{
-			get
-			{
-				return this._ProductoMateriales;
-			}
-			set
-			{
-				this._ProductoMateriales.Assign(value);
-			}
-		}
-		
-		[global::System.Data.Linq.Mapping.AssociationAttribute(Name="Productos_StockProductos", Storage="_StockProductos", ThisKey="ProductoID", OtherKey="ProductoID")]
-		public EntitySet<StockProductos> StockProductos
-		{
-			get
-			{
-				return this._StockProductos;
-			}
-			set
-			{
-				this._StockProductos.Assign(value);
-			}
-		}
-		
-		[global::System.Data.Linq.Mapping.AssociationAttribute(Name="TiposProducto_Productos", Storage="_TiposProducto", ThisKey="TipoProductoID", OtherKey="TipoProductoID", IsForeignKey=true)]
-		public TiposProducto TiposProducto
-		{
-			get
-			{
-				return this._TiposProducto.Entity;
-			}
-			set
-			{
-				TiposProducto previousValue = this._TiposProducto.Entity;
+				Productos previousValue = this._Productos.Entity;
 				if (((previousValue != value) 
-							|| (this._TiposProducto.HasLoadedOrAssignedValue == false)))
+							|| (this._Productos.HasLoadedOrAssignedValue == false)))
 				{
 					this.SendPropertyChanging();
 					if ((previousValue != null))
 					{
-						this._TiposProducto.Entity = null;
-						previousValue.Productos.Remove(this);
+						this._Productos.Entity = null;
+						previousValue.ProductoMateriales.Remove(this);
 					}
-					this._TiposProducto.Entity = value;
+					this._Productos.Entity = value;
 					if ((value != null))
 					{
-						value.Productos.Add(this);
-						this._TipoProductoID = value.TipoProductoID;
+						value.ProductoMateriales.Add(this);
+						this._ProductoID = value.ProductoID;
 					}
 					else
 					{
-						this._TipoProductoID = default(int);
+						this._ProductoID = default(int);
 					}
-					this.SendPropertyChanged("TiposProducto");
-				}
-			}
-		}
-		
-		[global::System.Data.Linq.Mapping.AssociationAttribute(Name="Usuarios_Productos", Storage="_Usuarios", ThisKey="UsuarioAltaID", OtherKey="UsuarioID", IsForeignKey=true)]
-		public Usuarios Usuarios
-		{
-			get
-			{
-				return this._Usuarios.Entity;
-			}
-			set
-			{
-				Usuarios previousValue = this._Usuarios.Entity;
-				if (((previousValue != value) 
-							|| (this._Usuarios.HasLoadedOrAssignedValue == false)))
-				{
-					this.SendPropertyChanging();
-					if ((previousValue != null))
-					{
-						this._Usuarios.Entity = null;
-						previousValue.Productos.Remove(this);
-					}
-					this._Usuarios.Entity = value;
-					if ((value != null))
-					{
-						value.Productos.Add(this);
-						this._UsuarioAltaID = value.UsuarioID;
-					}
-					else
-					{
-						this._UsuarioAltaID = default(Nullable<int>);
-					}
-					this.SendPropertyChanged("Usuarios");
+					this.SendPropertyChanged("Productos");
 				}
 			}
 		}
@@ -3903,78 +3447,6 @@ namespace GrupoAnkhalInventario.Modelo
 			{
 				this.PropertyChanged(this, new PropertyChangedEventArgs(propertyName));
 			}
-		}
-		
-		private void attach_DetalleEntregas(DetalleEntregas entity)
-		{
-			this.SendPropertyChanging();
-			entity.Productos = this;
-		}
-		
-		private void detach_DetalleEntregas(DetalleEntregas entity)
-		{
-			this.SendPropertyChanging();
-			entity.Productos = null;
-		}
-		
-		private void attach_Movimientos(Movimientos entity)
-		{
-			this.SendPropertyChanging();
-			entity.Productos = this;
-		}
-		
-		private void detach_Movimientos(Movimientos entity)
-		{
-			this.SendPropertyChanging();
-			entity.Productos = null;
-		}
-		
-		private void attach_PaqueteComponentes(PaqueteComponentes entity)
-		{
-			this.SendPropertyChanging();
-			entity.Productos = this;
-		}
-		
-		private void detach_PaqueteComponentes(PaqueteComponentes entity)
-		{
-			this.SendPropertyChanging();
-			entity.Productos = null;
-		}
-		
-		private void attach_Produccion(Produccion entity)
-		{
-			this.SendPropertyChanging();
-			entity.Productos = this;
-		}
-		
-		private void detach_Produccion(Produccion entity)
-		{
-			this.SendPropertyChanging();
-			entity.Productos = null;
-		}
-		
-		private void attach_ProductoMateriales(ProductoMateriales entity)
-		{
-			this.SendPropertyChanging();
-			entity.Productos = this;
-		}
-		
-		private void detach_ProductoMateriales(ProductoMateriales entity)
-		{
-			this.SendPropertyChanging();
-			entity.Productos = null;
-		}
-		
-		private void attach_StockProductos(StockProductos entity)
-		{
-			this.SendPropertyChanging();
-			entity.Productos = this;
-		}
-		
-		private void detach_StockProductos(StockProductos entity)
-		{
-			this.SendPropertyChanging();
-			entity.Productos = null;
 		}
 	}
 	
@@ -4422,9 +3894,9 @@ namespace GrupoAnkhalInventario.Modelo
 		
 		private System.DateTime _FechaUltimaModif;
 		
-		private EntityRef<Productos> _Productos;
-		
 		private EntityRef<Bases> _Bases;
+		
+		private EntityRef<Productos> _Productos;
 		
     #region Definiciones de métodos de extensibilidad
     partial void OnLoaded();
@@ -4446,8 +3918,8 @@ namespace GrupoAnkhalInventario.Modelo
 		
 		public StockProductos()
 		{
-			this._Productos = default(EntityRef<Productos>);
 			this._Bases = default(EntityRef<Bases>);
+			this._Productos = default(EntityRef<Productos>);
 			OnCreated();
 		}
 		
@@ -4579,40 +4051,6 @@ namespace GrupoAnkhalInventario.Modelo
 			}
 		}
 		
-		[global::System.Data.Linq.Mapping.AssociationAttribute(Name="Productos_StockProductos", Storage="_Productos", ThisKey="ProductoID", OtherKey="ProductoID", IsForeignKey=true)]
-		public Productos Productos
-		{
-			get
-			{
-				return this._Productos.Entity;
-			}
-			set
-			{
-				Productos previousValue = this._Productos.Entity;
-				if (((previousValue != value) 
-							|| (this._Productos.HasLoadedOrAssignedValue == false)))
-				{
-					this.SendPropertyChanging();
-					if ((previousValue != null))
-					{
-						this._Productos.Entity = null;
-						previousValue.StockProductos.Remove(this);
-					}
-					this._Productos.Entity = value;
-					if ((value != null))
-					{
-						value.StockProductos.Add(this);
-						this._ProductoID = value.ProductoID;
-					}
-					else
-					{
-						this._ProductoID = default(int);
-					}
-					this.SendPropertyChanged("Productos");
-				}
-			}
-		}
-		
 		[global::System.Data.Linq.Mapping.AssociationAttribute(Name="Bases_StockProductos", Storage="_Bases", ThisKey="BaseID", OtherKey="BaseID", IsForeignKey=true)]
 		public Bases Bases
 		{
@@ -4643,6 +4081,40 @@ namespace GrupoAnkhalInventario.Modelo
 						this._BaseID = default(int);
 					}
 					this.SendPropertyChanged("Bases");
+				}
+			}
+		}
+		
+		[global::System.Data.Linq.Mapping.AssociationAttribute(Name="Productos_StockProductos", Storage="_Productos", ThisKey="ProductoID", OtherKey="ProductoID", IsForeignKey=true)]
+		public Productos Productos
+		{
+			get
+			{
+				return this._Productos.Entity;
+			}
+			set
+			{
+				Productos previousValue = this._Productos.Entity;
+				if (((previousValue != value) 
+							|| (this._Productos.HasLoadedOrAssignedValue == false)))
+				{
+					this.SendPropertyChanging();
+					if ((previousValue != null))
+					{
+						this._Productos.Entity = null;
+						previousValue.StockProductos.Remove(this);
+					}
+					this._Productos.Entity = value;
+					if ((value != null))
+					{
+						value.StockProductos.Add(this);
+						this._ProductoID = value.ProductoID;
+					}
+					else
+					{
+						this._ProductoID = default(int);
+					}
+					this.SendPropertyChanged("Productos");
 				}
 			}
 		}
@@ -5016,168 +4488,6 @@ namespace GrupoAnkhalInventario.Modelo
 		}
 	}
 	
-	[global::System.Data.Linq.Mapping.TableAttribute(Name="dbo.TiposProducto")]
-	public partial class TiposProducto : INotifyPropertyChanging, INotifyPropertyChanged
-	{
-		
-		private static PropertyChangingEventArgs emptyChangingEventArgs = new PropertyChangingEventArgs(String.Empty);
-		
-		private int _TipoProductoID;
-		
-		private string _Clave;
-		
-		private string _Nombre;
-		
-		private bool _Activo;
-		
-		private EntitySet<Productos> _Productos;
-		
-    #region Definiciones de métodos de extensibilidad
-    partial void OnLoaded();
-    partial void OnValidate(System.Data.Linq.ChangeAction action);
-    partial void OnCreated();
-    partial void OnTipoProductoIDChanging(int value);
-    partial void OnTipoProductoIDChanged();
-    partial void OnClaveChanging(string value);
-    partial void OnClaveChanged();
-    partial void OnNombreChanging(string value);
-    partial void OnNombreChanged();
-    partial void OnActivoChanging(bool value);
-    partial void OnActivoChanged();
-    #endregion
-		
-		public TiposProducto()
-		{
-			this._Productos = new EntitySet<Productos>(new Action<Productos>(this.attach_Productos), new Action<Productos>(this.detach_Productos));
-			OnCreated();
-		}
-		
-		[global::System.Data.Linq.Mapping.ColumnAttribute(Storage="_TipoProductoID", AutoSync=AutoSync.OnInsert, DbType="Int NOT NULL IDENTITY", IsPrimaryKey=true, IsDbGenerated=true)]
-		public int TipoProductoID
-		{
-			get
-			{
-				return this._TipoProductoID;
-			}
-			set
-			{
-				if ((this._TipoProductoID != value))
-				{
-					this.OnTipoProductoIDChanging(value);
-					this.SendPropertyChanging();
-					this._TipoProductoID = value;
-					this.SendPropertyChanged("TipoProductoID");
-					this.OnTipoProductoIDChanged();
-				}
-			}
-		}
-		
-		[global::System.Data.Linq.Mapping.ColumnAttribute(Storage="_Clave", DbType="VarChar(20) NOT NULL", CanBeNull=false)]
-		public string Clave
-		{
-			get
-			{
-				return this._Clave;
-			}
-			set
-			{
-				if ((this._Clave != value))
-				{
-					this.OnClaveChanging(value);
-					this.SendPropertyChanging();
-					this._Clave = value;
-					this.SendPropertyChanged("Clave");
-					this.OnClaveChanged();
-				}
-			}
-		}
-		
-		[global::System.Data.Linq.Mapping.ColumnAttribute(Storage="_Nombre", DbType="VarChar(100) NOT NULL", CanBeNull=false)]
-		public string Nombre
-		{
-			get
-			{
-				return this._Nombre;
-			}
-			set
-			{
-				if ((this._Nombre != value))
-				{
-					this.OnNombreChanging(value);
-					this.SendPropertyChanging();
-					this._Nombre = value;
-					this.SendPropertyChanged("Nombre");
-					this.OnNombreChanged();
-				}
-			}
-		}
-		
-		[global::System.Data.Linq.Mapping.ColumnAttribute(Storage="_Activo", DbType="Bit NOT NULL")]
-		public bool Activo
-		{
-			get
-			{
-				return this._Activo;
-			}
-			set
-			{
-				if ((this._Activo != value))
-				{
-					this.OnActivoChanging(value);
-					this.SendPropertyChanging();
-					this._Activo = value;
-					this.SendPropertyChanged("Activo");
-					this.OnActivoChanged();
-				}
-			}
-		}
-		
-		[global::System.Data.Linq.Mapping.AssociationAttribute(Name="TiposProducto_Productos", Storage="_Productos", ThisKey="TipoProductoID", OtherKey="TipoProductoID")]
-		public EntitySet<Productos> Productos
-		{
-			get
-			{
-				return this._Productos;
-			}
-			set
-			{
-				this._Productos.Assign(value);
-			}
-		}
-		
-		public event PropertyChangingEventHandler PropertyChanging;
-		
-		public event PropertyChangedEventHandler PropertyChanged;
-		
-		protected virtual void SendPropertyChanging()
-		{
-			if ((this.PropertyChanging != null))
-			{
-				this.PropertyChanging(this, emptyChangingEventArgs);
-			}
-		}
-		
-		protected virtual void SendPropertyChanged(String propertyName)
-		{
-			if ((this.PropertyChanged != null))
-			{
-				this.PropertyChanged(this, new PropertyChangedEventArgs(propertyName));
-			}
-		}
-		
-		private void attach_Productos(Productos entity)
-		{
-			this.SendPropertyChanging();
-			entity.TiposProducto = this;
-		}
-		
-		private void detach_Productos(Productos entity)
-		{
-			this.SendPropertyChanging();
-			entity.TiposProducto = null;
-		}
-	}
-	
 	[global::System.Data.Linq.Mapping.TableAttribute(Name="dbo.UsuarioRoles")]
 	public partial class UsuarioRoles : INotifyPropertyChanging, INotifyPropertyChanged
 	{
@@ -5480,877 +4790,6 @@ namespace GrupoAnkhalInventario.Modelo
 			{
 				this.PropertyChanged(this, new PropertyChangedEventArgs(propertyName));
 			}
-		}
-	}
-	
-	[global::System.Data.Linq.Mapping.TableAttribute(Name="dbo.Usuarios")]
-	public partial class Usuarios : INotifyPropertyChanging, INotifyPropertyChanged
-	{
-		
-		private static PropertyChangingEventArgs emptyChangingEventArgs = new PropertyChangingEventArgs(String.Empty);
-		
-		private int _UsuarioID;
-		
-		private string _Nombre;
-		
-		private string _ApellidoPaterno;
-		
-		private string _ApellidoMaterno;
-		
-		private System.Nullable<System.DateTime> _FechaNacimiento;
-		
-		private System.Nullable<System.DateTime> _FechaIngreso;
-		
-		private string _Genero;
-		
-		private string _Telefono;
-		
-		private string _Email;
-		
-		private string _NombreFamiliar;
-		
-		private string _TelefonoFamiliar;
-		
-		private string _NombreUsuario;
-		
-		private string _Clave;
-		
-		private bool _Activo;
-		
-		private System.Nullable<System.DateTime> _UltimoAcceso;
-		
-		private System.DateTime _FechaAlta;
-		
-		private System.Nullable<System.DateTime> _FechaModif;
-		
-		private System.Nullable<int> _UsuarioAltaID;
-		
-		private System.Data.Linq.Binary _Foto;
-		
-		private EntitySet<Entregas> _Entregas;
-		
-		private EntitySet<Movimientos> _Movimientos;
-		
-		private EntitySet<Paquetes> _Paquetes;
-		
-		private EntitySet<Produccion> _Produccion;
-		
-		private EntitySet<Productos> _Productos;
-		
-		private EntitySet<UsuarioRoles> _UsuarioRoles;
-		
-		private EntitySet<UsuarioRoles> _UsuarioRoles1;
-		
-		private EntitySet<Usuarios> _Usuarios2;
-		
-		private EntitySet<Bases> _Bases;
-		
-		private EntitySet<Bases> _Bases1;
-		
-		private EntitySet<Materiales> _Materiales;
-		
-		private EntitySet<Materiales> _Materiales1;
-		
-		private EntityRef<Usuarios> _Usuarios1;
-		
-    #region Definiciones de métodos de extensibilidad
-    partial void OnLoaded();
-    partial void OnValidate(System.Data.Linq.ChangeAction action);
-    partial void OnCreated();
-    partial void OnUsuarioIDChanging(int value);
-    partial void OnUsuarioIDChanged();
-    partial void OnNombreChanging(string value);
-    partial void OnNombreChanged();
-    partial void OnApellidoPaternoChanging(string value);
-    partial void OnApellidoPaternoChanged();
-    partial void OnApellidoMaternoChanging(string value);
-    partial void OnApellidoMaternoChanged();
-    partial void OnFechaNacimientoChanging(System.Nullable<System.DateTime> value);
-    partial void OnFechaNacimientoChanged();
-    partial void OnFechaIngresoChanging(System.Nullable<System.DateTime> value);
-    partial void OnFechaIngresoChanged();
-    partial void OnGeneroChanging(string value);
-    partial void OnGeneroChanged();
-    partial void OnTelefonoChanging(string value);
-    partial void OnTelefonoChanged();
-    partial void OnEmailChanging(string value);
-    partial void OnEmailChanged();
-    partial void OnNombreFamiliarChanging(string value);
-    partial void OnNombreFamiliarChanged();
-    partial void OnTelefonoFamiliarChanging(string value);
-    partial void OnTelefonoFamiliarChanged();
-    partial void OnNombreUsuarioChanging(string value);
-    partial void OnNombreUsuarioChanged();
-    partial void OnClaveChanging(string value);
-    partial void OnClaveChanged();
-    partial void OnActivoChanging(bool value);
-    partial void OnActivoChanged();
-    partial void OnUltimoAccesoChanging(System.Nullable<System.DateTime> value);
-    partial void OnUltimoAccesoChanged();
-    partial void OnFechaAltaChanging(System.DateTime value);
-    partial void OnFechaAltaChanged();
-    partial void OnFechaModifChanging(System.Nullable<System.DateTime> value);
-    partial void OnFechaModifChanged();
-    partial void OnUsuarioAltaIDChanging(System.Nullable<int> value);
-    partial void OnUsuarioAltaIDChanged();
-    partial void OnFotoChanging(System.Data.Linq.Binary value);
-    partial void OnFotoChanged();
-    #endregion
-		
-		public Usuarios()
-		{
-			this._Entregas = new EntitySet<Entregas>(new Action<Entregas>(this.attach_Entregas), new Action<Entregas>(this.detach_Entregas));
-			this._Movimientos = new EntitySet<Movimientos>(new Action<Movimientos>(this.attach_Movimientos), new Action<Movimientos>(this.detach_Movimientos));
-			this._Paquetes = new EntitySet<Paquetes>(new Action<Paquetes>(this.attach_Paquetes), new Action<Paquetes>(this.detach_Paquetes));
-			this._Produccion = new EntitySet<Produccion>(new Action<Produccion>(this.attach_Produccion), new Action<Produccion>(this.detach_Produccion));
-			this._Productos = new EntitySet<Productos>(new Action<Productos>(this.attach_Productos), new Action<Productos>(this.detach_Productos));
-			this._UsuarioRoles = new EntitySet<UsuarioRoles>(new Action<UsuarioRoles>(this.attach_UsuarioRoles), new Action<UsuarioRoles>(this.detach_UsuarioRoles));
-			this._UsuarioRoles1 = new EntitySet<UsuarioRoles>(new Action<UsuarioRoles>(this.attach_UsuarioRoles1), new Action<UsuarioRoles>(this.detach_UsuarioRoles1));
-			this._Usuarios2 = new EntitySet<Usuarios>(new Action<Usuarios>(this.attach_Usuarios2), new Action<Usuarios>(this.detach_Usuarios2));
-			this._Bases = new EntitySet<Bases>(new Action<Bases>(this.attach_Bases), new Action<Bases>(this.detach_Bases));
-			this._Bases1 = new EntitySet<Bases>(new Action<Bases>(this.attach_Bases1), new Action<Bases>(this.detach_Bases1));
-			this._Materiales = new EntitySet<Materiales>(new Action<Materiales>(this.attach_Materiales), new Action<Materiales>(this.detach_Materiales));
-			this._Materiales1 = new EntitySet<Materiales>(new Action<Materiales>(this.attach_Materiales1), new Action<Materiales>(this.detach_Materiales1));
-			this._Usuarios1 = default(EntityRef<Usuarios>);
-			OnCreated();
-		}
-		
-		[global::System.Data.Linq.Mapping.ColumnAttribute(Storage="_UsuarioID", AutoSync=AutoSync.OnInsert, DbType="Int NOT NULL IDENTITY", IsPrimaryKey=true, IsDbGenerated=true)]
-		public int UsuarioID
-		{
-			get
-			{
-				return this._UsuarioID;
-			}
-			set
-			{
-				if ((this._UsuarioID != value))
-				{
-					this.OnUsuarioIDChanging(value);
-					this.SendPropertyChanging();
-					this._UsuarioID = value;
-					this.SendPropertyChanged("UsuarioID");
-					this.OnUsuarioIDChanged();
-				}
-			}
-		}
-		
-		[global::System.Data.Linq.Mapping.ColumnAttribute(Storage="_Nombre", DbType="VarChar(500) NOT NULL", CanBeNull=false)]
-		public string Nombre
-		{
-			get
-			{
-				return this._Nombre;
-			}
-			set
-			{
-				if ((this._Nombre != value))
-				{
-					this.OnNombreChanging(value);
-					this.SendPropertyChanging();
-					this._Nombre = value;
-					this.SendPropertyChanged("Nombre");
-					this.OnNombreChanged();
-				}
-			}
-		}
-		
-		[global::System.Data.Linq.Mapping.ColumnAttribute(Storage="_ApellidoPaterno", DbType="VarChar(500)")]
-		public string ApellidoPaterno
-		{
-			get
-			{
-				return this._ApellidoPaterno;
-			}
-			set
-			{
-				if ((this._ApellidoPaterno != value))
-				{
-					this.OnApellidoPaternoChanging(value);
-					this.SendPropertyChanging();
-					this._ApellidoPaterno = value;
-					this.SendPropertyChanged("ApellidoPaterno");
-					this.OnApellidoPaternoChanged();
-				}
-			}
-		}
-		
-		[global::System.Data.Linq.Mapping.ColumnAttribute(Storage="_ApellidoMaterno", DbType="VarChar(500)")]
-		public string ApellidoMaterno
-		{
-			get
-			{
-				return this._ApellidoMaterno;
-			}
-			set
-			{
-				if ((this._ApellidoMaterno != value))
-				{
-					this.OnApellidoMaternoChanging(value);
-					this.SendPropertyChanging();
-					this._ApellidoMaterno = value;
-					this.SendPropertyChanged("ApellidoMaterno");
-					this.OnApellidoMaternoChanged();
-				}
-			}
-		}
-		
-		[global::System.Data.Linq.Mapping.ColumnAttribute(Storage="_FechaNacimiento", DbType="Date")]
-		public System.Nullable<System.DateTime> FechaNacimiento
-		{
-			get
-			{
-				return this._FechaNacimiento;
-			}
-			set
-			{
-				if ((this._FechaNacimiento != value))
-				{
-					this.OnFechaNacimientoChanging(value);
-					this.SendPropertyChanging();
-					this._FechaNacimiento = value;
-					this.SendPropertyChanged("FechaNacimiento");
-					this.OnFechaNacimientoChanged();
-				}
-			}
-		}
-		
-		[global::System.Data.Linq.Mapping.ColumnAttribute(Storage="_FechaIngreso", DbType="Date")]
-		public System.Nullable<System.DateTime> FechaIngreso
-		{
-			get
-			{
-				return this._FechaIngreso;
-			}
-			set
-			{
-				if ((this._FechaIngreso != value))
-				{
-					this.OnFechaIngresoChanging(value);
-					this.SendPropertyChanging();
-					this._FechaIngreso = value;
-					this.SendPropertyChanged("FechaIngreso");
-					this.OnFechaIngresoChanged();
-				}
-			}
-		}
-		
-		[global::System.Data.Linq.Mapping.ColumnAttribute(Storage="_Genero", DbType="VarChar(20)")]
-		public string Genero
-		{
-			get
-			{
-				return this._Genero;
-			}
-			set
-			{
-				if ((this._Genero != value))
-				{
-					this.OnGeneroChanging(value);
-					this.SendPropertyChanging();
-					this._Genero = value;
-					this.SendPropertyChanged("Genero");
-					this.OnGeneroChanged();
-				}
-			}
-		}
-		
-		[global::System.Data.Linq.Mapping.ColumnAttribute(Storage="_Telefono", DbType="VarChar(50)")]
-		public string Telefono
-		{
-			get
-			{
-				return this._Telefono;
-			}
-			set
-			{
-				if ((this._Telefono != value))
-				{
-					this.OnTelefonoChanging(value);
-					this.SendPropertyChanging();
-					this._Telefono = value;
-					this.SendPropertyChanged("Telefono");
-					this.OnTelefonoChanged();
-				}
-			}
-		}
-		
-		[global::System.Data.Linq.Mapping.ColumnAttribute(Storage="_Email", DbType="VarChar(500)")]
-		public string Email
-		{
-			get
-			{
-				return this._Email;
-			}
-			set
-			{
-				if ((this._Email != value))
-				{
-					this.OnEmailChanging(value);
-					this.SendPropertyChanging();
-					this._Email = value;
-					this.SendPropertyChanged("Email");
-					this.OnEmailChanged();
-				}
-			}
-		}
-		
-		[global::System.Data.Linq.Mapping.ColumnAttribute(Storage="_NombreFamiliar", DbType="VarChar(200)")]
-		public string NombreFamiliar
-		{
-			get
-			{
-				return this._NombreFamiliar;
-			}
-			set
-			{
-				if ((this._NombreFamiliar != value))
-				{
-					this.OnNombreFamiliarChanging(value);
-					this.SendPropertyChanging();
-					this._NombreFamiliar = value;
-					this.SendPropertyChanged("NombreFamiliar");
-					this.OnNombreFamiliarChanged();
-				}
-			}
-		}
-		
-		[global::System.Data.Linq.Mapping.ColumnAttribute(Storage="_TelefonoFamiliar", DbType="VarChar(50)")]
-		public string TelefonoFamiliar
-		{
-			get
-			{
-				return this._TelefonoFamiliar;
-			}
-			set
-			{
-				if ((this._TelefonoFamiliar != value))
-				{
-					this.OnTelefonoFamiliarChanging(value);
-					this.SendPropertyChanging();
-					this._TelefonoFamiliar = value;
-					this.SendPropertyChanged("TelefonoFamiliar");
-					this.OnTelefonoFamiliarChanged();
-				}
-			}
-		}
-		
-		[global::System.Data.Linq.Mapping.ColumnAttribute(Storage="_NombreUsuario", DbType="VarChar(50) NOT NULL", CanBeNull=false)]
-		public string NombreUsuario
-		{
-			get
-			{
-				return this._NombreUsuario;
-			}
-			set
-			{
-				if ((this._NombreUsuario != value))
-				{
-					this.OnNombreUsuarioChanging(value);
-					this.SendPropertyChanging();
-					this._NombreUsuario = value;
-					this.SendPropertyChanged("NombreUsuario");
-					this.OnNombreUsuarioChanged();
-				}
-			}
-		}
-		
-		[global::System.Data.Linq.Mapping.ColumnAttribute(Storage="_Clave", DbType="VarChar(50) NOT NULL", CanBeNull=false)]
-		public string Clave
-		{
-			get
-			{
-				return this._Clave;
-			}
-			set
-			{
-				if ((this._Clave != value))
-				{
-					this.OnClaveChanging(value);
-					this.SendPropertyChanging();
-					this._Clave = value;
-					this.SendPropertyChanged("Clave");
-					this.OnClaveChanged();
-				}
-			}
-		}
-		
-		[global::System.Data.Linq.Mapping.ColumnAttribute(Storage="_Activo", DbType="Bit NOT NULL")]
-		public bool Activo
-		{
-			get
-			{
-				return this._Activo;
-			}
-			set
-			{
-				if ((this._Activo != value))
-				{
-					this.OnActivoChanging(value);
-					this.SendPropertyChanging();
-					this._Activo = value;
-					this.SendPropertyChanged("Activo");
-					this.OnActivoChanged();
-				}
-			}
-		}
-		
-		[global::System.Data.Linq.Mapping.ColumnAttribute(Storage="_UltimoAcceso", DbType="DateTime2")]
-		public System.Nullable<System.DateTime> UltimoAcceso
-		{
-			get
-			{
-				return this._UltimoAcceso;
-			}
-			set
-			{
-				if ((this._UltimoAcceso != value))
-				{
-					this.OnUltimoAccesoChanging(value);
-					this.SendPropertyChanging();
-					this._UltimoAcceso = value;
-					this.SendPropertyChanged("UltimoAcceso");
-					this.OnUltimoAccesoChanged();
-				}
-			}
-		}
-		
-		[global::System.Data.Linq.Mapping.ColumnAttribute(Storage="_FechaAlta", DbType="DateTime2 NOT NULL")]
-		public System.DateTime FechaAlta
-		{
-			get
-			{
-				return this._FechaAlta;
-			}
-			set
-			{
-				if ((this._FechaAlta != value))
-				{
-					this.OnFechaAltaChanging(value);
-					this.SendPropertyChanging();
-					this._FechaAlta = value;
-					this.SendPropertyChanged("FechaAlta");
-					this.OnFechaAltaChanged();
-				}
-			}
-		}
-		
-		[global::System.Data.Linq.Mapping.ColumnAttribute(Storage="_FechaModif", DbType="DateTime2")]
-		public System.Nullable<System.DateTime> FechaModif
-		{
-			get
-			{
-				return this._FechaModif;
-			}
-			set
-			{
-				if ((this._FechaModif != value))
-				{
-					this.OnFechaModifChanging(value);
-					this.SendPropertyChanging();
-					this._FechaModif = value;
-					this.SendPropertyChanged("FechaModif");
-					this.OnFechaModifChanged();
-				}
-			}
-		}
-		
-		[global::System.Data.Linq.Mapping.ColumnAttribute(Storage="_UsuarioAltaID", DbType="Int")]
-		public System.Nullable<int> UsuarioAltaID
-		{
-			get
-			{
-				return this._UsuarioAltaID;
-			}
-			set
-			{
-				if ((this._UsuarioAltaID != value))
-				{
-					if (this._Usuarios1.HasLoadedOrAssignedValue)
-					{
-						throw new System.Data.Linq.ForeignKeyReferenceAlreadyHasValueException();
-					}
-					this.OnUsuarioAltaIDChanging(value);
-					this.SendPropertyChanging();
-					this._UsuarioAltaID = value;
-					this.SendPropertyChanged("UsuarioAltaID");
-					this.OnUsuarioAltaIDChanged();
-				}
-			}
-		}
-		
-		[global::System.Data.Linq.Mapping.ColumnAttribute(Storage="_Foto", DbType="VarBinary(MAX)", UpdateCheck=UpdateCheck.Never)]
-		public System.Data.Linq.Binary Foto
-		{
-			get
-			{
-				return this._Foto;
-			}
-			set
-			{
-				if ((this._Foto != value))
-				{
-					this.OnFotoChanging(value);
-					this.SendPropertyChanging();
-					this._Foto = value;
-					this.SendPropertyChanged("Foto");
-					this.OnFotoChanged();
-				}
-			}
-		}
-		
-		[global::System.Data.Linq.Mapping.AssociationAttribute(Name="Usuarios_Entregas", Storage="_Entregas", ThisKey="UsuarioID", OtherKey="RegistradoPorID")]
-		public EntitySet<Entregas> Entregas
-		{
-			get
-			{
-				return this._Entregas;
-			}
-			set
-			{
-				this._Entregas.Assign(value);
-			}
-		}
-		
-		[global::System.Data.Linq.Mapping.AssociationAttribute(Name="Usuarios_Movimientos", Storage="_Movimientos", ThisKey="UsuarioID", OtherKey="RegistradoPorID")]
-		public EntitySet<Movimientos> Movimientos
-		{
-			get
-			{
-				return this._Movimientos;
-			}
-			set
-			{
-				this._Movimientos.Assign(value);
-			}
-		}
-		
-		[global::System.Data.Linq.Mapping.AssociationAttribute(Name="Usuarios_Paquetes", Storage="_Paquetes", ThisKey="UsuarioID", OtherKey="UsuarioAltaID")]
-		public EntitySet<Paquetes> Paquetes
-		{
-			get
-			{
-				return this._Paquetes;
-			}
-			set
-			{
-				this._Paquetes.Assign(value);
-			}
-		}
-		
-		[global::System.Data.Linq.Mapping.AssociationAttribute(Name="Usuarios_Produccion", Storage="_Produccion", ThisKey="UsuarioID", OtherKey="RegistradoPorID")]
-		public EntitySet<Produccion> Produccion
-		{
-			get
-			{
-				return this._Produccion;
-			}
-			set
-			{
-				this._Produccion.Assign(value);
-			}
-		}
-		
-		[global::System.Data.Linq.Mapping.AssociationAttribute(Name="Usuarios_Productos", Storage="_Productos", ThisKey="UsuarioID", OtherKey="UsuarioAltaID")]
-		public EntitySet<Productos> Productos
-		{
-			get
-			{
-				return this._Productos;
-			}
-			set
-			{
-				this._Productos.Assign(value);
-			}
-		}
-		
-		[global::System.Data.Linq.Mapping.AssociationAttribute(Name="Usuarios_UsuarioRoles", Storage="_UsuarioRoles", ThisKey="UsuarioID", OtherKey="AsignadoPorID")]
-		public EntitySet<UsuarioRoles> UsuarioRoles
-		{
-			get
-			{
-				return this._UsuarioRoles;
-			}
-			set
-			{
-				this._UsuarioRoles.Assign(value);
-			}
-		}
-		
-		[global::System.Data.Linq.Mapping.AssociationAttribute(Name="Usuarios_UsuarioRoles1", Storage="_UsuarioRoles1", ThisKey="UsuarioID", OtherKey="UsuarioID")]
-		public EntitySet<UsuarioRoles> UsuarioRoles1
-		{
-			get
-			{
-				return this._UsuarioRoles1;
-			}
-			set
-			{
-				this._UsuarioRoles1.Assign(value);
-			}
-		}
-		
-		[global::System.Data.Linq.Mapping.AssociationAttribute(Name="Usuarios_Usuarios", Storage="_Usuarios2", ThisKey="UsuarioID", OtherKey="UsuarioAltaID")]
-		public EntitySet<Usuarios> Usuarios2
-		{
-			get
-			{
-				return this._Usuarios2;
-			}
-			set
-			{
-				this._Usuarios2.Assign(value);
-			}
-		}
-		
-		[global::System.Data.Linq.Mapping.AssociationAttribute(Name="Usuarios_Bases", Storage="_Bases", ThisKey="UsuarioID", OtherKey="UsuarioAltaID")]
-		public EntitySet<Bases> Bases
-		{
-			get
-			{
-				return this._Bases;
-			}
-			set
-			{
-				this._Bases.Assign(value);
-			}
-		}
-		
-		[global::System.Data.Linq.Mapping.AssociationAttribute(Name="Usuarios_Bases1", Storage="_Bases1", ThisKey="UsuarioID", OtherKey="UsuarioModifID")]
-		public EntitySet<Bases> Bases1
-		{
-			get
-			{
-				return this._Bases1;
-			}
-			set
-			{
-				this._Bases1.Assign(value);
-			}
-		}
-		
-		[global::System.Data.Linq.Mapping.AssociationAttribute(Name="Usuarios_Materiales", Storage="_Materiales", ThisKey="UsuarioID", OtherKey="UsuarioAltaID")]
-		public EntitySet<Materiales> Materiales
-		{
-			get
-			{
-				return this._Materiales;
-			}
-			set
-			{
-				this._Materiales.Assign(value);
-			}
-		}
-		
-		[global::System.Data.Linq.Mapping.AssociationAttribute(Name="Usuarios_Materiales1", Storage="_Materiales1", ThisKey="UsuarioID", OtherKey="UsuarioModifID")]
-		public EntitySet<Materiales> Materiales1
-		{
-			get
-			{
-				return this._Materiales1;
-			}
-			set
-			{
-				this._Materiales1.Assign(value);
-			}
-		}
-		
-		[global::System.Data.Linq.Mapping.AssociationAttribute(Name="Usuarios_Usuarios", Storage="_Usuarios1", ThisKey="UsuarioAltaID", OtherKey="UsuarioID", IsForeignKey=true)]
-		public Usuarios Usuarios1
-		{
-			get
-			{
-				return this._Usuarios1.Entity;
-			}
-			set
-			{
-				Usuarios previousValue = this._Usuarios1.Entity;
-				if (((previousValue != value) 
-							|| (this._Usuarios1.HasLoadedOrAssignedValue == false)))
-				{
-					this.SendPropertyChanging();
-					if ((previousValue != null))
-					{
-						this._Usuarios1.Entity = null;
-						previousValue.Usuarios2.Remove(this);
-					}
-					this._Usuarios1.Entity = value;
-					if ((value != null))
-					{
-						value.Usuarios2.Add(this);
-						this._UsuarioAltaID = value.UsuarioID;
-					}
-					else
-					{
-						this._UsuarioAltaID = default(Nullable<int>);
-					}
-					this.SendPropertyChanged("Usuarios1");
-				}
-			}
-		}
-		
-		public event PropertyChangingEventHandler PropertyChanging;
-		
-		public event PropertyChangedEventHandler PropertyChanged;
-		
-		protected virtual void SendPropertyChanging()
-		{
-			if ((this.PropertyChanging != null))
-			{
-				this.PropertyChanging(this, emptyChangingEventArgs);
-			}
-		}
-		
-		protected virtual void SendPropertyChanged(String propertyName)
-		{
-			if ((this.PropertyChanged != null))
-			{
-				this.PropertyChanged(this, new PropertyChangedEventArgs(propertyName));
-			}
-		}
-		
-		private void attach_Entregas(Entregas entity)
-		{
-			this.SendPropertyChanging();
-			entity.Usuarios = this;
-		}
-		
-		private void detach_Entregas(Entregas entity)
-		{
-			this.SendPropertyChanging();
-			entity.Usuarios = null;
-		}
-		
-		private void attach_Movimientos(Movimientos entity)
-		{
-			this.SendPropertyChanging();
-			entity.Usuarios = this;
-		}
-		
-		private void detach_Movimientos(Movimientos entity)
-		{
-			this.SendPropertyChanging();
-			entity.Usuarios = null;
-		}
-		
-		private void attach_Paquetes(Paquetes entity)
-		{
-			this.SendPropertyChanging();
-			entity.Usuarios = this;
-		}
-		
-		private void detach_Paquetes(Paquetes entity)
-		{
-			this.SendPropertyChanging();
-			entity.Usuarios = null;
-		}
-		
-		private void attach_Produccion(Produccion entity)
-		{
-			this.SendPropertyChanging();
-			entity.Usuarios = this;
-		}
-		
-		private void detach_Produccion(Produccion entity)
-		{
-			this.SendPropertyChanging();
-			entity.Usuarios = null;
-		}
-		
-		private void attach_Productos(Productos entity)
-		{
-			this.SendPropertyChanging();
-			entity.Usuarios = this;
-		}
-		
-		private void detach_Productos(Productos entity)
-		{
-			this.SendPropertyChanging();
-			entity.Usuarios = null;
-		}
-		
-		private void attach_UsuarioRoles(UsuarioRoles entity)
-		{
-			this.SendPropertyChanging();
-			entity.Usuarios = this;
-		}
-		
-		private void detach_UsuarioRoles(UsuarioRoles entity)
-		{
-			this.SendPropertyChanging();
-			entity.Usuarios = null;
-		}
-		
-		private void attach_UsuarioRoles1(UsuarioRoles entity)
-		{
-			this.SendPropertyChanging();
-			entity.Usuarios1 = this;
-		}
-		
-		private void detach_UsuarioRoles1(UsuarioRoles entity)
-		{
-			this.SendPropertyChanging();
-			entity.Usuarios1 = null;
-		}
-		
-		private void attach_Usuarios2(Usuarios entity)
-		{
-			this.SendPropertyChanging();
-			entity.Usuarios1 = this;
-		}
-		
-		private void detach_Usuarios2(Usuarios entity)
-		{
-			this.SendPropertyChanging();
-			entity.Usuarios1 = null;
-		}
-		
-		private void attach_Bases(Bases entity)
-		{
-			this.SendPropertyChanging();
-			entity.Usuarios = this;
-		}
-		
-		private void detach_Bases(Bases entity)
-		{
-			this.SendPropertyChanging();
-			entity.Usuarios = null;
-		}
-		
-		private void attach_Bases1(Bases entity)
-		{
-			this.SendPropertyChanging();
-			entity.Usuarios1 = this;
-		}
-		
-		private void detach_Bases1(Bases entity)
-		{
-			this.SendPropertyChanging();
-			entity.Usuarios1 = null;
-		}
-		
-		private void attach_Materiales(Materiales entity)
-		{
-			this.SendPropertyChanging();
-			entity.Usuarios = this;
-		}
-		
-		private void detach_Materiales(Materiales entity)
-		{
-			this.SendPropertyChanging();
-			entity.Usuarios = null;
-		}
-		
-		private void attach_Materiales1(Materiales entity)
-		{
-			this.SendPropertyChanging();
-			entity.Usuarios1 = this;
-		}
-		
-		private void detach_Materiales1(Materiales entity)
-		{
-			this.SendPropertyChanging();
-			entity.Usuarios1 = null;
 		}
 	}
 	
@@ -7048,11 +5487,11 @@ namespace GrupoAnkhalInventario.Modelo
 		
 		private EntitySet<StockMateriales> _StockMateriales;
 		
+		private EntityRef<TiposMaterial> _TiposMaterial;
+		
 		private EntityRef<Usuarios> _Usuarios;
 		
 		private EntityRef<Usuarios> _Usuarios1;
-		
-		private EntityRef<TiposMaterial> _TiposMaterial;
 		
     #region Definiciones de métodos de extensibilidad
     partial void OnLoaded();
@@ -7097,9 +5536,9 @@ namespace GrupoAnkhalInventario.Modelo
 			this._PaqueteComponentes = new EntitySet<PaqueteComponentes>(new Action<PaqueteComponentes>(this.attach_PaqueteComponentes), new Action<PaqueteComponentes>(this.detach_PaqueteComponentes));
 			this._ProductoMateriales = new EntitySet<ProductoMateriales>(new Action<ProductoMateriales>(this.attach_ProductoMateriales), new Action<ProductoMateriales>(this.detach_ProductoMateriales));
 			this._StockMateriales = new EntitySet<StockMateriales>(new Action<StockMateriales>(this.attach_StockMateriales), new Action<StockMateriales>(this.detach_StockMateriales));
+			this._TiposMaterial = default(EntityRef<TiposMaterial>);
 			this._Usuarios = default(EntityRef<Usuarios>);
 			this._Usuarios1 = default(EntityRef<Usuarios>);
-			this._TiposMaterial = default(EntityRef<TiposMaterial>);
 			OnCreated();
 		}
 		
@@ -7480,6 +5919,40 @@ namespace GrupoAnkhalInventario.Modelo
 			}
 		}
 		
+		[global::System.Data.Linq.Mapping.AssociationAttribute(Name="TiposMaterial_Materiales", Storage="_TiposMaterial", ThisKey="TipoMaterialID", OtherKey="TipoMaterialID", IsForeignKey=true)]
+		public TiposMaterial TiposMaterial
+		{
+			get
+			{
+				return this._TiposMaterial.Entity;
+			}
+			set
+			{
+				TiposMaterial previousValue = this._TiposMaterial.Entity;
+				if (((previousValue != value) 
+							|| (this._TiposMaterial.HasLoadedOrAssignedValue == false)))
+				{
+					this.SendPropertyChanging();
+					if ((previousValue != null))
+					{
+						this._TiposMaterial.Entity = null;
+						previousValue.Materiales.Remove(this);
+					}
+					this._TiposMaterial.Entity = value;
+					if ((value != null))
+					{
+						value.Materiales.Add(this);
+						this._TipoMaterialID = value.TipoMaterialID;
+					}
+					else
+					{
+						this._TipoMaterialID = default(int);
+					}
+					this.SendPropertyChanged("TiposMaterial");
+				}
+			}
+		}
+		
 		[global::System.Data.Linq.Mapping.AssociationAttribute(Name="Usuarios_Materiales", Storage="_Usuarios", ThisKey="UsuarioAltaID", OtherKey="UsuarioID", IsForeignKey=true)]
 		public Usuarios Usuarios
 		{
@@ -7544,40 +6017,6 @@ namespace GrupoAnkhalInventario.Modelo
 						this._UsuarioModifID = default(Nullable<int>);
 					}
 					this.SendPropertyChanged("Usuarios1");
-				}
-			}
-		}
-		
-		[global::System.Data.Linq.Mapping.AssociationAttribute(Name="TiposMaterial_Materiales", Storage="_TiposMaterial", ThisKey="TipoMaterialID", OtherKey="TipoMaterialID", IsForeignKey=true)]
-		public TiposMaterial TiposMaterial
-		{
-			get
-			{
-				return this._TiposMaterial.Entity;
-			}
-			set
-			{
-				TiposMaterial previousValue = this._TiposMaterial.Entity;
-				if (((previousValue != value) 
-							|| (this._TiposMaterial.HasLoadedOrAssignedValue == false)))
-				{
-					this.SendPropertyChanging();
-					if ((previousValue != null))
-					{
-						this._TiposMaterial.Entity = null;
-						previousValue.Materiales.Remove(this);
-					}
-					this._TiposMaterial.Entity = value;
-					if ((value != null))
-					{
-						value.Materiales.Add(this);
-						this._TipoMaterialID = value.TipoMaterialID;
-					}
-					else
-					{
-						this._TipoMaterialID = default(int);
-					}
-					this.SendPropertyChanged("TiposMaterial");
 				}
 			}
 		}
@@ -7660,6 +6099,1660 @@ namespace GrupoAnkhalInventario.Modelo
 		{
 			this.SendPropertyChanging();
 			entity.Materiales = null;
+		}
+	}
+	
+	[global::System.Data.Linq.Mapping.TableAttribute(Name="dbo.Productos")]
+	public partial class Productos : INotifyPropertyChanging, INotifyPropertyChanged
+	{
+		
+		private static PropertyChangingEventArgs emptyChangingEventArgs = new PropertyChangingEventArgs(String.Empty);
+		
+		private int _ProductoID;
+		
+		private string _Codigo;
+		
+		private int _TipoProductoID;
+		
+		private string _Nombre;
+		
+		private string _Descripcion;
+		
+		private decimal _PrecioVenta;
+		
+		private bool _Activo;
+		
+		private System.DateTime _FechaAlta;
+		
+		private System.Nullable<System.DateTime> _FechaModif;
+		
+		private System.Nullable<int> _UsuarioAltaID;
+		
+		private System.Nullable<int> _UsuarioModifID;
+		
+		private EntitySet<DetalleEntregas> _DetalleEntregas;
+		
+		private EntitySet<Movimientos> _Movimientos;
+		
+		private EntitySet<PaqueteComponentes> _PaqueteComponentes;
+		
+		private EntitySet<Produccion> _Produccion;
+		
+		private EntitySet<ProductoMateriales> _ProductoMateriales;
+		
+		private EntitySet<StockProductos> _StockProductos;
+		
+		private EntityRef<Usuarios> _Usuarios;
+		
+		private EntityRef<Usuarios> _Usuarios1;
+		
+		private EntityRef<TiposProducto> _TiposProducto;
+		
+    #region Definiciones de métodos de extensibilidad
+    partial void OnLoaded();
+    partial void OnValidate(System.Data.Linq.ChangeAction action);
+    partial void OnCreated();
+    partial void OnProductoIDChanging(int value);
+    partial void OnProductoIDChanged();
+    partial void OnCodigoChanging(string value);
+    partial void OnCodigoChanged();
+    partial void OnTipoProductoIDChanging(int value);
+    partial void OnTipoProductoIDChanged();
+    partial void OnNombreChanging(string value);
+    partial void OnNombreChanged();
+    partial void OnDescripcionChanging(string value);
+    partial void OnDescripcionChanged();
+    partial void OnPrecioVentaChanging(decimal value);
+    partial void OnPrecioVentaChanged();
+    partial void OnActivoChanging(bool value);
+    partial void OnActivoChanged();
+    partial void OnFechaAltaChanging(System.DateTime value);
+    partial void OnFechaAltaChanged();
+    partial void OnFechaModifChanging(System.Nullable<System.DateTime> value);
+    partial void OnFechaModifChanged();
+    partial void OnUsuarioAltaIDChanging(System.Nullable<int> value);
+    partial void OnUsuarioAltaIDChanged();
+    partial void OnUsuarioModifIDChanging(System.Nullable<int> value);
+    partial void OnUsuarioModifIDChanged();
+    #endregion
+		
+		public Productos()
+		{
+			this._DetalleEntregas = new EntitySet<DetalleEntregas>(new Action<DetalleEntregas>(this.attach_DetalleEntregas), new Action<DetalleEntregas>(this.detach_DetalleEntregas));
+			this._Movimientos = new EntitySet<Movimientos>(new Action<Movimientos>(this.attach_Movimientos), new Action<Movimientos>(this.detach_Movimientos));
+			this._PaqueteComponentes = new EntitySet<PaqueteComponentes>(new Action<PaqueteComponentes>(this.attach_PaqueteComponentes), new Action<PaqueteComponentes>(this.detach_PaqueteComponentes));
+			this._Produccion = new EntitySet<Produccion>(new Action<Produccion>(this.attach_Produccion), new Action<Produccion>(this.detach_Produccion));
+			this._ProductoMateriales = new EntitySet<ProductoMateriales>(new Action<ProductoMateriales>(this.attach_ProductoMateriales), new Action<ProductoMateriales>(this.detach_ProductoMateriales));
+			this._StockProductos = new EntitySet<StockProductos>(new Action<StockProductos>(this.attach_StockProductos), new Action<StockProductos>(this.detach_StockProductos));
+			this._Usuarios = default(EntityRef<Usuarios>);
+			this._Usuarios1 = default(EntityRef<Usuarios>);
+			this._TiposProducto = default(EntityRef<TiposProducto>);
+			OnCreated();
+		}
+		
+		[global::System.Data.Linq.Mapping.ColumnAttribute(Storage="_ProductoID", AutoSync=AutoSync.OnInsert, DbType="Int NOT NULL IDENTITY", IsPrimaryKey=true, IsDbGenerated=true)]
+		public int ProductoID
+		{
+			get
+			{
+				return this._ProductoID;
+			}
+			set
+			{
+				if ((this._ProductoID != value))
+				{
+					this.OnProductoIDChanging(value);
+					this.SendPropertyChanging();
+					this._ProductoID = value;
+					this.SendPropertyChanged("ProductoID");
+					this.OnProductoIDChanged();
+				}
+			}
+		}
+		
+		[global::System.Data.Linq.Mapping.ColumnAttribute(Storage="_Codigo", DbType="VarChar(30) NOT NULL", CanBeNull=false)]
+		public string Codigo
+		{
+			get
+			{
+				return this._Codigo;
+			}
+			set
+			{
+				if ((this._Codigo != value))
+				{
+					this.OnCodigoChanging(value);
+					this.SendPropertyChanging();
+					this._Codigo = value;
+					this.SendPropertyChanged("Codigo");
+					this.OnCodigoChanged();
+				}
+			}
+		}
+		
+		[global::System.Data.Linq.Mapping.ColumnAttribute(Storage="_TipoProductoID", DbType="Int NOT NULL")]
+		public int TipoProductoID
+		{
+			get
+			{
+				return this._TipoProductoID;
+			}
+			set
+			{
+				if ((this._TipoProductoID != value))
+				{
+					if (this._TiposProducto.HasLoadedOrAssignedValue)
+					{
+						throw new System.Data.Linq.ForeignKeyReferenceAlreadyHasValueException();
+					}
+					this.OnTipoProductoIDChanging(value);
+					this.SendPropertyChanging();
+					this._TipoProductoID = value;
+					this.SendPropertyChanged("TipoProductoID");
+					this.OnTipoProductoIDChanged();
+				}
+			}
+		}
+		
+		[global::System.Data.Linq.Mapping.ColumnAttribute(Storage="_Nombre", DbType="VarChar(200) NOT NULL", CanBeNull=false)]
+		public string Nombre
+		{
+			get
+			{
+				return this._Nombre;
+			}
+			set
+			{
+				if ((this._Nombre != value))
+				{
+					this.OnNombreChanging(value);
+					this.SendPropertyChanging();
+					this._Nombre = value;
+					this.SendPropertyChanged("Nombre");
+					this.OnNombreChanged();
+				}
+			}
+		}
+		
+		[global::System.Data.Linq.Mapping.ColumnAttribute(Storage="_Descripcion", DbType="VarChar(500)")]
+		public string Descripcion
+		{
+			get
+			{
+				return this._Descripcion;
+			}
+			set
+			{
+				if ((this._Descripcion != value))
+				{
+					this.OnDescripcionChanging(value);
+					this.SendPropertyChanging();
+					this._Descripcion = value;
+					this.SendPropertyChanged("Descripcion");
+					this.OnDescripcionChanged();
+				}
+			}
+		}
+		
+		[global::System.Data.Linq.Mapping.ColumnAttribute(Storage="_PrecioVenta", DbType="Decimal(12,4) NOT NULL")]
+		public decimal PrecioVenta
+		{
+			get
+			{
+				return this._PrecioVenta;
+			}
+			set
+			{
+				if ((this._PrecioVenta != value))
+				{
+					this.OnPrecioVentaChanging(value);
+					this.SendPropertyChanging();
+					this._PrecioVenta = value;
+					this.SendPropertyChanged("PrecioVenta");
+					this.OnPrecioVentaChanged();
+				}
+			}
+		}
+		
+		[global::System.Data.Linq.Mapping.ColumnAttribute(Storage="_Activo", DbType="Bit NOT NULL")]
+		public bool Activo
+		{
+			get
+			{
+				return this._Activo;
+			}
+			set
+			{
+				if ((this._Activo != value))
+				{
+					this.OnActivoChanging(value);
+					this.SendPropertyChanging();
+					this._Activo = value;
+					this.SendPropertyChanged("Activo");
+					this.OnActivoChanged();
+				}
+			}
+		}
+		
+		[global::System.Data.Linq.Mapping.ColumnAttribute(Storage="_FechaAlta", DbType="DateTime2 NOT NULL")]
+		public System.DateTime FechaAlta
+		{
+			get
+			{
+				return this._FechaAlta;
+			}
+			set
+			{
+				if ((this._FechaAlta != value))
+				{
+					this.OnFechaAltaChanging(value);
+					this.SendPropertyChanging();
+					this._FechaAlta = value;
+					this.SendPropertyChanged("FechaAlta");
+					this.OnFechaAltaChanged();
+				}
+			}
+		}
+		
+		[global::System.Data.Linq.Mapping.ColumnAttribute(Storage="_FechaModif", DbType="DateTime2")]
+		public System.Nullable<System.DateTime> FechaModif
+		{
+			get
+			{
+				return this._FechaModif;
+			}
+			set
+			{
+				if ((this._FechaModif != value))
+				{
+					this.OnFechaModifChanging(value);
+					this.SendPropertyChanging();
+					this._FechaModif = value;
+					this.SendPropertyChanged("FechaModif");
+					this.OnFechaModifChanged();
+				}
+			}
+		}
+		
+		[global::System.Data.Linq.Mapping.ColumnAttribute(Storage="_UsuarioAltaID", DbType="Int")]
+		public System.Nullable<int> UsuarioAltaID
+		{
+			get
+			{
+				return this._UsuarioAltaID;
+			}
+			set
+			{
+				if ((this._UsuarioAltaID != value))
+				{
+					if (this._Usuarios.HasLoadedOrAssignedValue)
+					{
+						throw new System.Data.Linq.ForeignKeyReferenceAlreadyHasValueException();
+					}
+					this.OnUsuarioAltaIDChanging(value);
+					this.SendPropertyChanging();
+					this._UsuarioAltaID = value;
+					this.SendPropertyChanged("UsuarioAltaID");
+					this.OnUsuarioAltaIDChanged();
+				}
+			}
+		}
+		
+		[global::System.Data.Linq.Mapping.ColumnAttribute(Storage="_UsuarioModifID", DbType="Int")]
+		public System.Nullable<int> UsuarioModifID
+		{
+			get
+			{
+				return this._UsuarioModifID;
+			}
+			set
+			{
+				if ((this._UsuarioModifID != value))
+				{
+					if (this._Usuarios1.HasLoadedOrAssignedValue)
+					{
+						throw new System.Data.Linq.ForeignKeyReferenceAlreadyHasValueException();
+					}
+					this.OnUsuarioModifIDChanging(value);
+					this.SendPropertyChanging();
+					this._UsuarioModifID = value;
+					this.SendPropertyChanged("UsuarioModifID");
+					this.OnUsuarioModifIDChanged();
+				}
+			}
+		}
+		
+		[global::System.Data.Linq.Mapping.AssociationAttribute(Name="Productos_DetalleEntregas", Storage="_DetalleEntregas", ThisKey="ProductoID", OtherKey="ProductoID")]
+		public EntitySet<DetalleEntregas> DetalleEntregas
+		{
+			get
+			{
+				return this._DetalleEntregas;
+			}
+			set
+			{
+				this._DetalleEntregas.Assign(value);
+			}
+		}
+		
+		[global::System.Data.Linq.Mapping.AssociationAttribute(Name="Productos_Movimientos", Storage="_Movimientos", ThisKey="ProductoID", OtherKey="ProductoID")]
+		public EntitySet<Movimientos> Movimientos
+		{
+			get
+			{
+				return this._Movimientos;
+			}
+			set
+			{
+				this._Movimientos.Assign(value);
+			}
+		}
+		
+		[global::System.Data.Linq.Mapping.AssociationAttribute(Name="Productos_PaqueteComponentes", Storage="_PaqueteComponentes", ThisKey="ProductoID", OtherKey="ProductoID")]
+		public EntitySet<PaqueteComponentes> PaqueteComponentes
+		{
+			get
+			{
+				return this._PaqueteComponentes;
+			}
+			set
+			{
+				this._PaqueteComponentes.Assign(value);
+			}
+		}
+		
+		[global::System.Data.Linq.Mapping.AssociationAttribute(Name="Productos_Produccion", Storage="_Produccion", ThisKey="ProductoID", OtherKey="ProductoID")]
+		public EntitySet<Produccion> Produccion
+		{
+			get
+			{
+				return this._Produccion;
+			}
+			set
+			{
+				this._Produccion.Assign(value);
+			}
+		}
+		
+		[global::System.Data.Linq.Mapping.AssociationAttribute(Name="Productos_ProductoMateriales", Storage="_ProductoMateriales", ThisKey="ProductoID", OtherKey="ProductoID")]
+		public EntitySet<ProductoMateriales> ProductoMateriales
+		{
+			get
+			{
+				return this._ProductoMateriales;
+			}
+			set
+			{
+				this._ProductoMateriales.Assign(value);
+			}
+		}
+		
+		[global::System.Data.Linq.Mapping.AssociationAttribute(Name="Productos_StockProductos", Storage="_StockProductos", ThisKey="ProductoID", OtherKey="ProductoID")]
+		public EntitySet<StockProductos> StockProductos
+		{
+			get
+			{
+				return this._StockProductos;
+			}
+			set
+			{
+				this._StockProductos.Assign(value);
+			}
+		}
+		
+		[global::System.Data.Linq.Mapping.AssociationAttribute(Name="Usuarios_Productos", Storage="_Usuarios", ThisKey="UsuarioAltaID", OtherKey="UsuarioID", IsForeignKey=true)]
+		public Usuarios Usuarios
+		{
+			get
+			{
+				return this._Usuarios.Entity;
+			}
+			set
+			{
+				Usuarios previousValue = this._Usuarios.Entity;
+				if (((previousValue != value) 
+							|| (this._Usuarios.HasLoadedOrAssignedValue == false)))
+				{
+					this.SendPropertyChanging();
+					if ((previousValue != null))
+					{
+						this._Usuarios.Entity = null;
+						previousValue.Productos.Remove(this);
+					}
+					this._Usuarios.Entity = value;
+					if ((value != null))
+					{
+						value.Productos.Add(this);
+						this._UsuarioAltaID = value.UsuarioID;
+					}
+					else
+					{
+						this._UsuarioAltaID = default(Nullable<int>);
+					}
+					this.SendPropertyChanged("Usuarios");
+				}
+			}
+		}
+		
+		[global::System.Data.Linq.Mapping.AssociationAttribute(Name="Usuarios_Productos1", Storage="_Usuarios1", ThisKey="UsuarioModifID", OtherKey="UsuarioID", IsForeignKey=true)]
+		public Usuarios Usuarios1
+		{
+			get
+			{
+				return this._Usuarios1.Entity;
+			}
+			set
+			{
+				Usuarios previousValue = this._Usuarios1.Entity;
+				if (((previousValue != value) 
+							|| (this._Usuarios1.HasLoadedOrAssignedValue == false)))
+				{
+					this.SendPropertyChanging();
+					if ((previousValue != null))
+					{
+						this._Usuarios1.Entity = null;
+						previousValue.Productos1.Remove(this);
+					}
+					this._Usuarios1.Entity = value;
+					if ((value != null))
+					{
+						value.Productos1.Add(this);
+						this._UsuarioModifID = value.UsuarioID;
+					}
+					else
+					{
+						this._UsuarioModifID = default(Nullable<int>);
+					}
+					this.SendPropertyChanged("Usuarios1");
+				}
+			}
+		}
+		
+		[global::System.Data.Linq.Mapping.AssociationAttribute(Name="TiposProducto_Productos", Storage="_TiposProducto", ThisKey="TipoProductoID", OtherKey="TipoProductoID", IsForeignKey=true)]
+		public TiposProducto TiposProducto
+		{
+			get
+			{
+				return this._TiposProducto.Entity;
+			}
+			set
+			{
+				TiposProducto previousValue = this._TiposProducto.Entity;
+				if (((previousValue != value) 
+							|| (this._TiposProducto.HasLoadedOrAssignedValue == false)))
+				{
+					this.SendPropertyChanging();
+					if ((previousValue != null))
+					{
+						this._TiposProducto.Entity = null;
+						previousValue.Productos.Remove(this);
+					}
+					this._TiposProducto.Entity = value;
+					if ((value != null))
+					{
+						value.Productos.Add(this);
+						this._TipoProductoID = value.TipoProductoID;
+					}
+					else
+					{
+						this._TipoProductoID = default(int);
+					}
+					this.SendPropertyChanged("TiposProducto");
+				}
+			}
+		}
+		
+		public event PropertyChangingEventHandler PropertyChanging;
+		
+		public event PropertyChangedEventHandler PropertyChanged;
+		
+		protected virtual void SendPropertyChanging()
+		{
+			if ((this.PropertyChanging != null))
+			{
+				this.PropertyChanging(this, emptyChangingEventArgs);
+			}
+		}
+		
+		protected virtual void SendPropertyChanged(String propertyName)
+		{
+			if ((this.PropertyChanged != null))
+			{
+				this.PropertyChanged(this, new PropertyChangedEventArgs(propertyName));
+			}
+		}
+		
+		private void attach_DetalleEntregas(DetalleEntregas entity)
+		{
+			this.SendPropertyChanging();
+			entity.Productos = this;
+		}
+		
+		private void detach_DetalleEntregas(DetalleEntregas entity)
+		{
+			this.SendPropertyChanging();
+			entity.Productos = null;
+		}
+		
+		private void attach_Movimientos(Movimientos entity)
+		{
+			this.SendPropertyChanging();
+			entity.Productos = this;
+		}
+		
+		private void detach_Movimientos(Movimientos entity)
+		{
+			this.SendPropertyChanging();
+			entity.Productos = null;
+		}
+		
+		private void attach_PaqueteComponentes(PaqueteComponentes entity)
+		{
+			this.SendPropertyChanging();
+			entity.Productos = this;
+		}
+		
+		private void detach_PaqueteComponentes(PaqueteComponentes entity)
+		{
+			this.SendPropertyChanging();
+			entity.Productos = null;
+		}
+		
+		private void attach_Produccion(Produccion entity)
+		{
+			this.SendPropertyChanging();
+			entity.Productos = this;
+		}
+		
+		private void detach_Produccion(Produccion entity)
+		{
+			this.SendPropertyChanging();
+			entity.Productos = null;
+		}
+		
+		private void attach_ProductoMateriales(ProductoMateriales entity)
+		{
+			this.SendPropertyChanging();
+			entity.Productos = this;
+		}
+		
+		private void detach_ProductoMateriales(ProductoMateriales entity)
+		{
+			this.SendPropertyChanging();
+			entity.Productos = null;
+		}
+		
+		private void attach_StockProductos(StockProductos entity)
+		{
+			this.SendPropertyChanging();
+			entity.Productos = this;
+		}
+		
+		private void detach_StockProductos(StockProductos entity)
+		{
+			this.SendPropertyChanging();
+			entity.Productos = null;
+		}
+	}
+	
+	[global::System.Data.Linq.Mapping.TableAttribute(Name="dbo.Usuarios")]
+	public partial class Usuarios : INotifyPropertyChanging, INotifyPropertyChanged
+	{
+		
+		private static PropertyChangingEventArgs emptyChangingEventArgs = new PropertyChangingEventArgs(String.Empty);
+		
+		private int _UsuarioID;
+		
+		private string _Nombre;
+		
+		private string _ApellidoPaterno;
+		
+		private string _ApellidoMaterno;
+		
+		private System.Nullable<System.DateTime> _FechaNacimiento;
+		
+		private System.Nullable<System.DateTime> _FechaIngreso;
+		
+		private string _Genero;
+		
+		private string _Telefono;
+		
+		private string _Email;
+		
+		private string _NombreFamiliar;
+		
+		private string _TelefonoFamiliar;
+		
+		private string _NombreUsuario;
+		
+		private string _Clave;
+		
+		private bool _Activo;
+		
+		private System.Nullable<System.DateTime> _UltimoAcceso;
+		
+		private System.DateTime _FechaAlta;
+		
+		private System.Nullable<System.DateTime> _FechaModif;
+		
+		private System.Nullable<int> _UsuarioAltaID;
+		
+		private System.Data.Linq.Binary _Foto;
+		
+		private EntitySet<Entregas> _Entregas;
+		
+		private EntitySet<Movimientos> _Movimientos;
+		
+		private EntitySet<Paquetes> _Paquetes;
+		
+		private EntitySet<Produccion> _Produccion;
+		
+		private EntitySet<UsuarioRoles> _UsuarioRoles;
+		
+		private EntitySet<UsuarioRoles> _UsuarioRoles1;
+		
+		private EntitySet<Bases> _Bases;
+		
+		private EntitySet<Bases> _Bases1;
+		
+		private EntitySet<Materiales> _Materiales;
+		
+		private EntitySet<Materiales> _Materiales1;
+		
+		private EntitySet<Productos> _Productos;
+		
+		private EntitySet<Productos> _Productos1;
+		
+		private EntitySet<Usuarios> _Usuarios2;
+		
+		private EntityRef<Usuarios> _Usuarios1;
+		
+    #region Definiciones de métodos de extensibilidad
+    partial void OnLoaded();
+    partial void OnValidate(System.Data.Linq.ChangeAction action);
+    partial void OnCreated();
+    partial void OnUsuarioIDChanging(int value);
+    partial void OnUsuarioIDChanged();
+    partial void OnNombreChanging(string value);
+    partial void OnNombreChanged();
+    partial void OnApellidoPaternoChanging(string value);
+    partial void OnApellidoPaternoChanged();
+    partial void OnApellidoMaternoChanging(string value);
+    partial void OnApellidoMaternoChanged();
+    partial void OnFechaNacimientoChanging(System.Nullable<System.DateTime> value);
+    partial void OnFechaNacimientoChanged();
+    partial void OnFechaIngresoChanging(System.Nullable<System.DateTime> value);
+    partial void OnFechaIngresoChanged();
+    partial void OnGeneroChanging(string value);
+    partial void OnGeneroChanged();
+    partial void OnTelefonoChanging(string value);
+    partial void OnTelefonoChanged();
+    partial void OnEmailChanging(string value);
+    partial void OnEmailChanged();
+    partial void OnNombreFamiliarChanging(string value);
+    partial void OnNombreFamiliarChanged();
+    partial void OnTelefonoFamiliarChanging(string value);
+    partial void OnTelefonoFamiliarChanged();
+    partial void OnNombreUsuarioChanging(string value);
+    partial void OnNombreUsuarioChanged();
+    partial void OnClaveChanging(string value);
+    partial void OnClaveChanged();
+    partial void OnActivoChanging(bool value);
+    partial void OnActivoChanged();
+    partial void OnUltimoAccesoChanging(System.Nullable<System.DateTime> value);
+    partial void OnUltimoAccesoChanged();
+    partial void OnFechaAltaChanging(System.DateTime value);
+    partial void OnFechaAltaChanged();
+    partial void OnFechaModifChanging(System.Nullable<System.DateTime> value);
+    partial void OnFechaModifChanged();
+    partial void OnUsuarioAltaIDChanging(System.Nullable<int> value);
+    partial void OnUsuarioAltaIDChanged();
+    partial void OnFotoChanging(System.Data.Linq.Binary value);
+    partial void OnFotoChanged();
+    #endregion
+		
+		public Usuarios()
+		{
+			this._Entregas = new EntitySet<Entregas>(new Action<Entregas>(this.attach_Entregas), new Action<Entregas>(this.detach_Entregas));
+			this._Movimientos = new EntitySet<Movimientos>(new Action<Movimientos>(this.attach_Movimientos), new Action<Movimientos>(this.detach_Movimientos));
+			this._Paquetes = new EntitySet<Paquetes>(new Action<Paquetes>(this.attach_Paquetes), new Action<Paquetes>(this.detach_Paquetes));
+			this._Produccion = new EntitySet<Produccion>(new Action<Produccion>(this.attach_Produccion), new Action<Produccion>(this.detach_Produccion));
+			this._UsuarioRoles = new EntitySet<UsuarioRoles>(new Action<UsuarioRoles>(this.attach_UsuarioRoles), new Action<UsuarioRoles>(this.detach_UsuarioRoles));
+			this._UsuarioRoles1 = new EntitySet<UsuarioRoles>(new Action<UsuarioRoles>(this.attach_UsuarioRoles1), new Action<UsuarioRoles>(this.detach_UsuarioRoles1));
+			this._Bases = new EntitySet<Bases>(new Action<Bases>(this.attach_Bases), new Action<Bases>(this.detach_Bases));
+			this._Bases1 = new EntitySet<Bases>(new Action<Bases>(this.attach_Bases1), new Action<Bases>(this.detach_Bases1));
+			this._Materiales = new EntitySet<Materiales>(new Action<Materiales>(this.attach_Materiales), new Action<Materiales>(this.detach_Materiales));
+			this._Materiales1 = new EntitySet<Materiales>(new Action<Materiales>(this.attach_Materiales1), new Action<Materiales>(this.detach_Materiales1));
+			this._Productos = new EntitySet<Productos>(new Action<Productos>(this.attach_Productos), new Action<Productos>(this.detach_Productos));
+			this._Productos1 = new EntitySet<Productos>(new Action<Productos>(this.attach_Productos1), new Action<Productos>(this.detach_Productos1));
+			this._Usuarios2 = new EntitySet<Usuarios>(new Action<Usuarios>(this.attach_Usuarios2), new Action<Usuarios>(this.detach_Usuarios2));
+			this._Usuarios1 = default(EntityRef<Usuarios>);
+			OnCreated();
+		}
+		
+		[global::System.Data.Linq.Mapping.ColumnAttribute(Storage="_UsuarioID", AutoSync=AutoSync.OnInsert, DbType="Int NOT NULL IDENTITY", IsPrimaryKey=true, IsDbGenerated=true)]
+		public int UsuarioID
+		{
+			get
+			{
+				return this._UsuarioID;
+			}
+			set
+			{
+				if ((this._UsuarioID != value))
+				{
+					this.OnUsuarioIDChanging(value);
+					this.SendPropertyChanging();
+					this._UsuarioID = value;
+					this.SendPropertyChanged("UsuarioID");
+					this.OnUsuarioIDChanged();
+				}
+			}
+		}
+		
+		[global::System.Data.Linq.Mapping.ColumnAttribute(Storage="_Nombre", DbType="VarChar(500) NOT NULL", CanBeNull=false)]
+		public string Nombre
+		{
+			get
+			{
+				return this._Nombre;
+			}
+			set
+			{
+				if ((this._Nombre != value))
+				{
+					this.OnNombreChanging(value);
+					this.SendPropertyChanging();
+					this._Nombre = value;
+					this.SendPropertyChanged("Nombre");
+					this.OnNombreChanged();
+				}
+			}
+		}
+		
+		[global::System.Data.Linq.Mapping.ColumnAttribute(Storage="_ApellidoPaterno", DbType="VarChar(500)")]
+		public string ApellidoPaterno
+		{
+			get
+			{
+				return this._ApellidoPaterno;
+			}
+			set
+			{
+				if ((this._ApellidoPaterno != value))
+				{
+					this.OnApellidoPaternoChanging(value);
+					this.SendPropertyChanging();
+					this._ApellidoPaterno = value;
+					this.SendPropertyChanged("ApellidoPaterno");
+					this.OnApellidoPaternoChanged();
+				}
+			}
+		}
+		
+		[global::System.Data.Linq.Mapping.ColumnAttribute(Storage="_ApellidoMaterno", DbType="VarChar(500)")]
+		public string ApellidoMaterno
+		{
+			get
+			{
+				return this._ApellidoMaterno;
+			}
+			set
+			{
+				if ((this._ApellidoMaterno != value))
+				{
+					this.OnApellidoMaternoChanging(value);
+					this.SendPropertyChanging();
+					this._ApellidoMaterno = value;
+					this.SendPropertyChanged("ApellidoMaterno");
+					this.OnApellidoMaternoChanged();
+				}
+			}
+		}
+		
+		[global::System.Data.Linq.Mapping.ColumnAttribute(Storage="_FechaNacimiento", DbType="Date")]
+		public System.Nullable<System.DateTime> FechaNacimiento
+		{
+			get
+			{
+				return this._FechaNacimiento;
+			}
+			set
+			{
+				if ((this._FechaNacimiento != value))
+				{
+					this.OnFechaNacimientoChanging(value);
+					this.SendPropertyChanging();
+					this._FechaNacimiento = value;
+					this.SendPropertyChanged("FechaNacimiento");
+					this.OnFechaNacimientoChanged();
+				}
+			}
+		}
+		
+		[global::System.Data.Linq.Mapping.ColumnAttribute(Storage="_FechaIngreso", DbType="Date")]
+		public System.Nullable<System.DateTime> FechaIngreso
+		{
+			get
+			{
+				return this._FechaIngreso;
+			}
+			set
+			{
+				if ((this._FechaIngreso != value))
+				{
+					this.OnFechaIngresoChanging(value);
+					this.SendPropertyChanging();
+					this._FechaIngreso = value;
+					this.SendPropertyChanged("FechaIngreso");
+					this.OnFechaIngresoChanged();
+				}
+			}
+		}
+		
+		[global::System.Data.Linq.Mapping.ColumnAttribute(Storage="_Genero", DbType="VarChar(20)")]
+		public string Genero
+		{
+			get
+			{
+				return this._Genero;
+			}
+			set
+			{
+				if ((this._Genero != value))
+				{
+					this.OnGeneroChanging(value);
+					this.SendPropertyChanging();
+					this._Genero = value;
+					this.SendPropertyChanged("Genero");
+					this.OnGeneroChanged();
+				}
+			}
+		}
+		
+		[global::System.Data.Linq.Mapping.ColumnAttribute(Storage="_Telefono", DbType="VarChar(50)")]
+		public string Telefono
+		{
+			get
+			{
+				return this._Telefono;
+			}
+			set
+			{
+				if ((this._Telefono != value))
+				{
+					this.OnTelefonoChanging(value);
+					this.SendPropertyChanging();
+					this._Telefono = value;
+					this.SendPropertyChanged("Telefono");
+					this.OnTelefonoChanged();
+				}
+			}
+		}
+		
+		[global::System.Data.Linq.Mapping.ColumnAttribute(Storage="_Email", DbType="VarChar(500)")]
+		public string Email
+		{
+			get
+			{
+				return this._Email;
+			}
+			set
+			{
+				if ((this._Email != value))
+				{
+					this.OnEmailChanging(value);
+					this.SendPropertyChanging();
+					this._Email = value;
+					this.SendPropertyChanged("Email");
+					this.OnEmailChanged();
+				}
+			}
+		}
+		
+		[global::System.Data.Linq.Mapping.ColumnAttribute(Storage="_NombreFamiliar", DbType="VarChar(200)")]
+		public string NombreFamiliar
+		{
+			get
+			{
+				return this._NombreFamiliar;
+			}
+			set
+			{
+				if ((this._NombreFamiliar != value))
+				{
+					this.OnNombreFamiliarChanging(value);
+					this.SendPropertyChanging();
+					this._NombreFamiliar = value;
+					this.SendPropertyChanged("NombreFamiliar");
+					this.OnNombreFamiliarChanged();
+				}
+			}
+		}
+		
+		[global::System.Data.Linq.Mapping.ColumnAttribute(Storage="_TelefonoFamiliar", DbType="VarChar(50)")]
+		public string TelefonoFamiliar
+		{
+			get
+			{
+				return this._TelefonoFamiliar;
+			}
+			set
+			{
+				if ((this._TelefonoFamiliar != value))
+				{
+					this.OnTelefonoFamiliarChanging(value);
+					this.SendPropertyChanging();
+					this._TelefonoFamiliar = value;
+					this.SendPropertyChanged("TelefonoFamiliar");
+					this.OnTelefonoFamiliarChanged();
+				}
+			}
+		}
+		
+		[global::System.Data.Linq.Mapping.ColumnAttribute(Storage="_NombreUsuario", DbType="VarChar(50) NOT NULL", CanBeNull=false)]
+		public string NombreUsuario
+		{
+			get
+			{
+				return this._NombreUsuario;
+			}
+			set
+			{
+				if ((this._NombreUsuario != value))
+				{
+					this.OnNombreUsuarioChanging(value);
+					this.SendPropertyChanging();
+					this._NombreUsuario = value;
+					this.SendPropertyChanged("NombreUsuario");
+					this.OnNombreUsuarioChanged();
+				}
+			}
+		}
+		
+		[global::System.Data.Linq.Mapping.ColumnAttribute(Storage="_Clave", DbType="VarChar(50) NOT NULL", CanBeNull=false)]
+		public string Clave
+		{
+			get
+			{
+				return this._Clave;
+			}
+			set
+			{
+				if ((this._Clave != value))
+				{
+					this.OnClaveChanging(value);
+					this.SendPropertyChanging();
+					this._Clave = value;
+					this.SendPropertyChanged("Clave");
+					this.OnClaveChanged();
+				}
+			}
+		}
+		
+		[global::System.Data.Linq.Mapping.ColumnAttribute(Storage="_Activo", DbType="Bit NOT NULL")]
+		public bool Activo
+		{
+			get
+			{
+				return this._Activo;
+			}
+			set
+			{
+				if ((this._Activo != value))
+				{
+					this.OnActivoChanging(value);
+					this.SendPropertyChanging();
+					this._Activo = value;
+					this.SendPropertyChanged("Activo");
+					this.OnActivoChanged();
+				}
+			}
+		}
+		
+		[global::System.Data.Linq.Mapping.ColumnAttribute(Storage="_UltimoAcceso", DbType="DateTime2")]
+		public System.Nullable<System.DateTime> UltimoAcceso
+		{
+			get
+			{
+				return this._UltimoAcceso;
+			}
+			set
+			{
+				if ((this._UltimoAcceso != value))
+				{
+					this.OnUltimoAccesoChanging(value);
+					this.SendPropertyChanging();
+					this._UltimoAcceso = value;
+					this.SendPropertyChanged("UltimoAcceso");
+					this.OnUltimoAccesoChanged();
+				}
+			}
+		}
+		
+		[global::System.Data.Linq.Mapping.ColumnAttribute(Storage="_FechaAlta", DbType="DateTime2 NOT NULL")]
+		public System.DateTime FechaAlta
+		{
+			get
+			{
+				return this._FechaAlta;
+			}
+			set
+			{
+				if ((this._FechaAlta != value))
+				{
+					this.OnFechaAltaChanging(value);
+					this.SendPropertyChanging();
+					this._FechaAlta = value;
+					this.SendPropertyChanged("FechaAlta");
+					this.OnFechaAltaChanged();
+				}
+			}
+		}
+		
+		[global::System.Data.Linq.Mapping.ColumnAttribute(Storage="_FechaModif", DbType="DateTime2")]
+		public System.Nullable<System.DateTime> FechaModif
+		{
+			get
+			{
+				return this._FechaModif;
+			}
+			set
+			{
+				if ((this._FechaModif != value))
+				{
+					this.OnFechaModifChanging(value);
+					this.SendPropertyChanging();
+					this._FechaModif = value;
+					this.SendPropertyChanged("FechaModif");
+					this.OnFechaModifChanged();
+				}
+			}
+		}
+		
+		[global::System.Data.Linq.Mapping.ColumnAttribute(Storage="_UsuarioAltaID", DbType="Int")]
+		public System.Nullable<int> UsuarioAltaID
+		{
+			get
+			{
+				return this._UsuarioAltaID;
+			}
+			set
+			{
+				if ((this._UsuarioAltaID != value))
+				{
+					if (this._Usuarios1.HasLoadedOrAssignedValue)
+					{
+						throw new System.Data.Linq.ForeignKeyReferenceAlreadyHasValueException();
+					}
+					this.OnUsuarioAltaIDChanging(value);
+					this.SendPropertyChanging();
+					this._UsuarioAltaID = value;
+					this.SendPropertyChanged("UsuarioAltaID");
+					this.OnUsuarioAltaIDChanged();
+				}
+			}
+		}
+		
+		[global::System.Data.Linq.Mapping.ColumnAttribute(Storage="_Foto", DbType="VarBinary(MAX)", UpdateCheck=UpdateCheck.Never)]
+		public System.Data.Linq.Binary Foto
+		{
+			get
+			{
+				return this._Foto;
+			}
+			set
+			{
+				if ((this._Foto != value))
+				{
+					this.OnFotoChanging(value);
+					this.SendPropertyChanging();
+					this._Foto = value;
+					this.SendPropertyChanged("Foto");
+					this.OnFotoChanged();
+				}
+			}
+		}
+		
+		[global::System.Data.Linq.Mapping.AssociationAttribute(Name="Usuarios_Entregas", Storage="_Entregas", ThisKey="UsuarioID", OtherKey="RegistradoPorID")]
+		public EntitySet<Entregas> Entregas
+		{
+			get
+			{
+				return this._Entregas;
+			}
+			set
+			{
+				this._Entregas.Assign(value);
+			}
+		}
+		
+		[global::System.Data.Linq.Mapping.AssociationAttribute(Name="Usuarios_Movimientos", Storage="_Movimientos", ThisKey="UsuarioID", OtherKey="RegistradoPorID")]
+		public EntitySet<Movimientos> Movimientos
+		{
+			get
+			{
+				return this._Movimientos;
+			}
+			set
+			{
+				this._Movimientos.Assign(value);
+			}
+		}
+		
+		[global::System.Data.Linq.Mapping.AssociationAttribute(Name="Usuarios_Paquetes", Storage="_Paquetes", ThisKey="UsuarioID", OtherKey="UsuarioAltaID")]
+		public EntitySet<Paquetes> Paquetes
+		{
+			get
+			{
+				return this._Paquetes;
+			}
+			set
+			{
+				this._Paquetes.Assign(value);
+			}
+		}
+		
+		[global::System.Data.Linq.Mapping.AssociationAttribute(Name="Usuarios_Produccion", Storage="_Produccion", ThisKey="UsuarioID", OtherKey="RegistradoPorID")]
+		public EntitySet<Produccion> Produccion
+		{
+			get
+			{
+				return this._Produccion;
+			}
+			set
+			{
+				this._Produccion.Assign(value);
+			}
+		}
+		
+		[global::System.Data.Linq.Mapping.AssociationAttribute(Name="Usuarios_UsuarioRoles", Storage="_UsuarioRoles", ThisKey="UsuarioID", OtherKey="AsignadoPorID")]
+		public EntitySet<UsuarioRoles> UsuarioRoles
+		{
+			get
+			{
+				return this._UsuarioRoles;
+			}
+			set
+			{
+				this._UsuarioRoles.Assign(value);
+			}
+		}
+		
+		[global::System.Data.Linq.Mapping.AssociationAttribute(Name="Usuarios_UsuarioRoles1", Storage="_UsuarioRoles1", ThisKey="UsuarioID", OtherKey="UsuarioID")]
+		public EntitySet<UsuarioRoles> UsuarioRoles1
+		{
+			get
+			{
+				return this._UsuarioRoles1;
+			}
+			set
+			{
+				this._UsuarioRoles1.Assign(value);
+			}
+		}
+		
+		[global::System.Data.Linq.Mapping.AssociationAttribute(Name="Usuarios_Bases", Storage="_Bases", ThisKey="UsuarioID", OtherKey="UsuarioAltaID")]
+		public EntitySet<Bases> Bases
+		{
+			get
+			{
+				return this._Bases;
+			}
+			set
+			{
+				this._Bases.Assign(value);
+			}
+		}
+		
+		[global::System.Data.Linq.Mapping.AssociationAttribute(Name="Usuarios_Bases1", Storage="_Bases1", ThisKey="UsuarioID", OtherKey="UsuarioModifID")]
+		public EntitySet<Bases> Bases1
+		{
+			get
+			{
+				return this._Bases1;
+			}
+			set
+			{
+				this._Bases1.Assign(value);
+			}
+		}
+		
+		[global::System.Data.Linq.Mapping.AssociationAttribute(Name="Usuarios_Materiales", Storage="_Materiales", ThisKey="UsuarioID", OtherKey="UsuarioAltaID")]
+		public EntitySet<Materiales> Materiales
+		{
+			get
+			{
+				return this._Materiales;
+			}
+			set
+			{
+				this._Materiales.Assign(value);
+			}
+		}
+		
+		[global::System.Data.Linq.Mapping.AssociationAttribute(Name="Usuarios_Materiales1", Storage="_Materiales1", ThisKey="UsuarioID", OtherKey="UsuarioModifID")]
+		public EntitySet<Materiales> Materiales1
+		{
+			get
+			{
+				return this._Materiales1;
+			}
+			set
+			{
+				this._Materiales1.Assign(value);
+			}
+		}
+		
+		[global::System.Data.Linq.Mapping.AssociationAttribute(Name="Usuarios_Productos", Storage="_Productos", ThisKey="UsuarioID", OtherKey="UsuarioAltaID")]
+		public EntitySet<Productos> Productos
+		{
+			get
+			{
+				return this._Productos;
+			}
+			set
+			{
+				this._Productos.Assign(value);
+			}
+		}
+		
+		[global::System.Data.Linq.Mapping.AssociationAttribute(Name="Usuarios_Productos1", Storage="_Productos1", ThisKey="UsuarioID", OtherKey="UsuarioModifID")]
+		public EntitySet<Productos> Productos1
+		{
+			get
+			{
+				return this._Productos1;
+			}
+			set
+			{
+				this._Productos1.Assign(value);
+			}
+		}
+		
+		[global::System.Data.Linq.Mapping.AssociationAttribute(Name="Usuarios_Usuarios", Storage="_Usuarios2", ThisKey="UsuarioID", OtherKey="UsuarioAltaID")]
+		public EntitySet<Usuarios> Usuarios2
+		{
+			get
+			{
+				return this._Usuarios2;
+			}
+			set
+			{
+				this._Usuarios2.Assign(value);
+			}
+		}
+		
+		[global::System.Data.Linq.Mapping.AssociationAttribute(Name="Usuarios_Usuarios", Storage="_Usuarios1", ThisKey="UsuarioAltaID", OtherKey="UsuarioID", IsForeignKey=true)]
+		public Usuarios Usuarios1
+		{
+			get
+			{
+				return this._Usuarios1.Entity;
+			}
+			set
+			{
+				Usuarios previousValue = this._Usuarios1.Entity;
+				if (((previousValue != value) 
+							|| (this._Usuarios1.HasLoadedOrAssignedValue == false)))
+				{
+					this.SendPropertyChanging();
+					if ((previousValue != null))
+					{
+						this._Usuarios1.Entity = null;
+						previousValue.Usuarios2.Remove(this);
+					}
+					this._Usuarios1.Entity = value;
+					if ((value != null))
+					{
+						value.Usuarios2.Add(this);
+						this._UsuarioAltaID = value.UsuarioID;
+					}
+					else
+					{
+						this._UsuarioAltaID = default(Nullable<int>);
+					}
+					this.SendPropertyChanged("Usuarios1");
+				}
+			}
+		}
+		
+		public event PropertyChangingEventHandler PropertyChanging;
+		
+		public event PropertyChangedEventHandler PropertyChanged;
+		
+		protected virtual void SendPropertyChanging()
+		{
+			if ((this.PropertyChanging != null))
+			{
+				this.PropertyChanging(this, emptyChangingEventArgs);
+			}
+		}
+		
+		protected virtual void SendPropertyChanged(String propertyName)
+		{
+			if ((this.PropertyChanged != null))
+			{
+				this.PropertyChanged(this, new PropertyChangedEventArgs(propertyName));
+			}
+		}
+		
+		private void attach_Entregas(Entregas entity)
+		{
+			this.SendPropertyChanging();
+			entity.Usuarios = this;
+		}
+		
+		private void detach_Entregas(Entregas entity)
+		{
+			this.SendPropertyChanging();
+			entity.Usuarios = null;
+		}
+		
+		private void attach_Movimientos(Movimientos entity)
+		{
+			this.SendPropertyChanging();
+			entity.Usuarios = this;
+		}
+		
+		private void detach_Movimientos(Movimientos entity)
+		{
+			this.SendPropertyChanging();
+			entity.Usuarios = null;
+		}
+		
+		private void attach_Paquetes(Paquetes entity)
+		{
+			this.SendPropertyChanging();
+			entity.Usuarios = this;
+		}
+		
+		private void detach_Paquetes(Paquetes entity)
+		{
+			this.SendPropertyChanging();
+			entity.Usuarios = null;
+		}
+		
+		private void attach_Produccion(Produccion entity)
+		{
+			this.SendPropertyChanging();
+			entity.Usuarios = this;
+		}
+		
+		private void detach_Produccion(Produccion entity)
+		{
+			this.SendPropertyChanging();
+			entity.Usuarios = null;
+		}
+		
+		private void attach_UsuarioRoles(UsuarioRoles entity)
+		{
+			this.SendPropertyChanging();
+			entity.Usuarios = this;
+		}
+		
+		private void detach_UsuarioRoles(UsuarioRoles entity)
+		{
+			this.SendPropertyChanging();
+			entity.Usuarios = null;
+		}
+		
+		private void attach_UsuarioRoles1(UsuarioRoles entity)
+		{
+			this.SendPropertyChanging();
+			entity.Usuarios1 = this;
+		}
+		
+		private void detach_UsuarioRoles1(UsuarioRoles entity)
+		{
+			this.SendPropertyChanging();
+			entity.Usuarios1 = null;
+		}
+		
+		private void attach_Bases(Bases entity)
+		{
+			this.SendPropertyChanging();
+			entity.Usuarios = this;
+		}
+		
+		private void detach_Bases(Bases entity)
+		{
+			this.SendPropertyChanging();
+			entity.Usuarios = null;
+		}
+		
+		private void attach_Bases1(Bases entity)
+		{
+			this.SendPropertyChanging();
+			entity.Usuarios1 = this;
+		}
+		
+		private void detach_Bases1(Bases entity)
+		{
+			this.SendPropertyChanging();
+			entity.Usuarios1 = null;
+		}
+		
+		private void attach_Materiales(Materiales entity)
+		{
+			this.SendPropertyChanging();
+			entity.Usuarios = this;
+		}
+		
+		private void detach_Materiales(Materiales entity)
+		{
+			this.SendPropertyChanging();
+			entity.Usuarios = null;
+		}
+		
+		private void attach_Materiales1(Materiales entity)
+		{
+			this.SendPropertyChanging();
+			entity.Usuarios1 = this;
+		}
+		
+		private void detach_Materiales1(Materiales entity)
+		{
+			this.SendPropertyChanging();
+			entity.Usuarios1 = null;
+		}
+		
+		private void attach_Productos(Productos entity)
+		{
+			this.SendPropertyChanging();
+			entity.Usuarios = this;
+		}
+		
+		private void detach_Productos(Productos entity)
+		{
+			this.SendPropertyChanging();
+			entity.Usuarios = null;
+		}
+		
+		private void attach_Productos1(Productos entity)
+		{
+			this.SendPropertyChanging();
+			entity.Usuarios1 = this;
+		}
+		
+		private void detach_Productos1(Productos entity)
+		{
+			this.SendPropertyChanging();
+			entity.Usuarios1 = null;
+		}
+		
+		private void attach_Usuarios2(Usuarios entity)
+		{
+			this.SendPropertyChanging();
+			entity.Usuarios1 = this;
+		}
+		
+		private void detach_Usuarios2(Usuarios entity)
+		{
+			this.SendPropertyChanging();
+			entity.Usuarios1 = null;
+		}
+	}
+	
+	[global::System.Data.Linq.Mapping.TableAttribute(Name="dbo.TiposProducto")]
+	public partial class TiposProducto : INotifyPropertyChanging, INotifyPropertyChanged
+	{
+		
+		private static PropertyChangingEventArgs emptyChangingEventArgs = new PropertyChangingEventArgs(String.Empty);
+		
+		private int _TipoProductoID;
+		
+		private string _Clave;
+		
+		private string _Nombre;
+		
+		private bool _Activo;
+		
+		private EntitySet<Productos> _Productos;
+		
+    #region Definiciones de métodos de extensibilidad
+    partial void OnLoaded();
+    partial void OnValidate(System.Data.Linq.ChangeAction action);
+    partial void OnCreated();
+    partial void OnTipoProductoIDChanging(int value);
+    partial void OnTipoProductoIDChanged();
+    partial void OnClaveChanging(string value);
+    partial void OnClaveChanged();
+    partial void OnNombreChanging(string value);
+    partial void OnNombreChanged();
+    partial void OnActivoChanging(bool value);
+    partial void OnActivoChanged();
+    #endregion
+		
+		public TiposProducto()
+		{
+			this._Productos = new EntitySet<Productos>(new Action<Productos>(this.attach_Productos), new Action<Productos>(this.detach_Productos));
+			OnCreated();
+		}
+		
+		[global::System.Data.Linq.Mapping.ColumnAttribute(Storage="_TipoProductoID", AutoSync=AutoSync.OnInsert, DbType="Int NOT NULL IDENTITY", IsPrimaryKey=true, IsDbGenerated=true)]
+		public int TipoProductoID
+		{
+			get
+			{
+				return this._TipoProductoID;
+			}
+			set
+			{
+				if ((this._TipoProductoID != value))
+				{
+					this.OnTipoProductoIDChanging(value);
+					this.SendPropertyChanging();
+					this._TipoProductoID = value;
+					this.SendPropertyChanged("TipoProductoID");
+					this.OnTipoProductoIDChanged();
+				}
+			}
+		}
+		
+		[global::System.Data.Linq.Mapping.ColumnAttribute(Storage="_Clave", DbType="VarChar(20) NOT NULL", CanBeNull=false)]
+		public string Clave
+		{
+			get
+			{
+				return this._Clave;
+			}
+			set
+			{
+				if ((this._Clave != value))
+				{
+					this.OnClaveChanging(value);
+					this.SendPropertyChanging();
+					this._Clave = value;
+					this.SendPropertyChanged("Clave");
+					this.OnClaveChanged();
+				}
+			}
+		}
+		
+		[global::System.Data.Linq.Mapping.ColumnAttribute(Storage="_Nombre", DbType="VarChar(100) NOT NULL", CanBeNull=false)]
+		public string Nombre
+		{
+			get
+			{
+				return this._Nombre;
+			}
+			set
+			{
+				if ((this._Nombre != value))
+				{
+					this.OnNombreChanging(value);
+					this.SendPropertyChanging();
+					this._Nombre = value;
+					this.SendPropertyChanged("Nombre");
+					this.OnNombreChanged();
+				}
+			}
+		}
+		
+		[global::System.Data.Linq.Mapping.ColumnAttribute(Storage="_Activo", DbType="Bit NOT NULL")]
+		public bool Activo
+		{
+			get
+			{
+				return this._Activo;
+			}
+			set
+			{
+				if ((this._Activo != value))
+				{
+					this.OnActivoChanging(value);
+					this.SendPropertyChanging();
+					this._Activo = value;
+					this.SendPropertyChanged("Activo");
+					this.OnActivoChanged();
+				}
+			}
+		}
+		
+		[global::System.Data.Linq.Mapping.AssociationAttribute(Name="TiposProducto_Productos", Storage="_Productos", ThisKey="TipoProductoID", OtherKey="TipoProductoID")]
+		public EntitySet<Productos> Productos
+		{
+			get
+			{
+				return this._Productos;
+			}
+			set
+			{
+				this._Productos.Assign(value);
+			}
+		}
+		
+		public event PropertyChangingEventHandler PropertyChanging;
+		
+		public event PropertyChangedEventHandler PropertyChanged;
+		
+		protected virtual void SendPropertyChanging()
+		{
+			if ((this.PropertyChanging != null))
+			{
+				this.PropertyChanging(this, emptyChangingEventArgs);
+			}
+		}
+		
+		protected virtual void SendPropertyChanged(String propertyName)
+		{
+			if ((this.PropertyChanged != null))
+			{
+				this.PropertyChanged(this, new PropertyChangedEventArgs(propertyName));
+			}
+		}
+		
+		private void attach_Productos(Productos entity)
+		{
+			this.SendPropertyChanging();
+			entity.TiposProducto = this;
+		}
+		
+		private void detach_Productos(Productos entity)
+		{
+			this.SendPropertyChanging();
+			entity.TiposProducto = null;
 		}
 	}
 }
