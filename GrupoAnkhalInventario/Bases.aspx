@@ -92,7 +92,7 @@
                         <div class="table-responsive">
                             <asp:GridView ID="gvBases" runat="server" AutoGenerateColumns="False"
                                 CssClass="table table-bordered table-striped custom-grid"
-                                AllowPaging="True" PageSize="15"
+                                AllowPaging="True" AllowCustomPaging="True" PageSize="2"
                                 OnPageIndexChanging="gvBases_PageIndexChanging"
                                 PagerStyle-CssClass="pager-custom"
                                 PagerSettings-Mode="NumericFirstLast"
@@ -129,7 +129,8 @@
                                                     '<%# Server.HtmlEncode((Eval("Direccion")   ?? "").ToString()) %>',
                                                     '<%# Eval("MetaTarimas") %>',
                                                     '<%# Eval("MetaCajas") %>',
-                                                    '<%# Eval("MetaAccesorios") %>'
+                                                    '<%# Eval("MetaAccesorios") %>',
+                                                    '<%# RowVersionBase64(Eval("RowVersion")) %>'
                                                 )">
                                                 <i class="fas fa-edit"></i> Editar
                                             </button>
@@ -275,6 +276,7 @@
                 </div>
                 <div class="modal-body">
                     <asp:HiddenField ID="hdnBaseID" runat="server" />
+                    <asp:HiddenField ID="hdnRowVersion" runat="server" />
                     <div class="row">
                         <div class="col-md-4">
                             <div class="form-group">
@@ -410,8 +412,9 @@
             $('#modalNueva').modal('show');
         }
 
-        function abrirModalEditar(id, codigo, nombre, tipo, responsable, telefono, direccion, metaTarimas, metaCajas, metaAccesorios) {
+        function abrirModalEditar(id, codigo, nombre, tipo, responsable, telefono, direccion, metaTarimas, metaCajas, metaAccesorios, rowVersion) {
             document.getElementById('<%= hdnBaseID.ClientID %>').value = id;
+            document.getElementById('<%= hdnRowVersion.ClientID %>').value = rowVersion;
             document.getElementById('<%= txtCodigoEdit.ClientID %>').value = codigo;
             document.getElementById('<%= txtNombreEdit.ClientID %>').value = nombre;
             document.getElementById('<%= ddlTipoEdit.ClientID %>').value = tipo;
