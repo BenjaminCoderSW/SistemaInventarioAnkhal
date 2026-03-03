@@ -11,12 +11,21 @@ namespace GrupoAnkhalInventario
 {
     public partial class Productos : Page
     {
-        private InventarioAnkhalDBDataContext db = new InventarioAnkhalDBDataContext(
-            ConfigurationManager.ConnectionStrings["InventarioAnkhalDBConnectionString"].ConnectionString);
+        // ── Cadena de conexión centralizada ───────────────────────────────────
+        private static readonly string _connStr =
+            ConfigurationManager.ConnectionStrings["InventarioAnkhalDBConnectionString"].ConnectionString;
+
+        // ── Helper: crea un DataContext nuevo ─────────────────────────────────
+        private InventarioAnkhalDBDataContext NuevoDb(bool tracking = true)
+        {
+            var ctx = new InventarioAnkhalDBDataContext(_connStr);
+            ctx.ObjectTrackingEnabled = tracking;
+            return ctx;
+        }
 
         private readonly JavaScriptSerializer _json = new JavaScriptSerializer();
 
-        // ── DTOs ─────────────────────────────────────────────
+        // ── DTOs ─────────────────────────────────────────────────────────────
         public class ProductoVM
         {
             public int ProductoID { get; set; }
@@ -29,24 +38,7 @@ namespace GrupoAnkhalInventario
             public decimal PrecioVenta { get; set; }
             public bool Activo { get; set; }
             public int TotalComponentes { get; set; }
-        }
-
-        public class ComponenteVM
-        {
-            public int pmID { get; set; }
-            public int materialID { get; set; }
-            public string materialNombre { get; set; }
-            public string unidad { get; set; }
-            public decimal cantMin { get; set; }
-            public decimal cantMax { get; set; }
-            public string notas { get; set; }
-        }
-
-        public class MaterialSelectVM
-        {
-            public int id { get; set; }
-            public string nombre { get; set; }
-            public string unidad { get; set; }
+            public System.Data.Linq.Binary RowVersion { get; set; }
         }
 
         public class CompNuevoVM
@@ -57,10 +49,7 @@ namespace GrupoAnkhalInventario
             public string notas { get; set; }
         }
 
-        // ── Datos embebidos en la página para el JS ───────────
-        private List<ProductoVM> _productosCache;
-
-        // ─────────────────────────────────────────────────────
+        // ─────────────────────────────────────────────────────────────────────
         protected void Page_Load(object sender, EventArgs e)
         {
             if (Session["UsuarioID"] == null) { Response.Redirect("~/Login.aspx"); return; }
@@ -68,126 +57,167 @@ namespace GrupoAnkhalInventario
             if (!IsPostBack)
             {
                 CargarTipos();
-                CargarProductos(); // CargarProductos ya llama InjectJsData internamente
+                CargarProductos();
             }
             else
             {
-                // En postbacks solo reinyectar datos JS.
-                // CargarTipos() no se llama aquí para no resetear SelectedValue.
+                // Restaurar VirtualItemCount antes de que se ejecute cualquier evento,
+                // igual que en Bases y Materiales para que el paginador funcione.
+                if (ViewState["TotalRegistros"] != null)
+                    gvProductos.VirtualItemCount = (int)ViewState["TotalRegistros"];
+
+                // Reinyectar datos JS en cada postback (modales de componentes los necesitan)
                 InjectJsData();
             }
         }
 
-        // ── Tipos ─────────────────────────────────────────────
+        // ── Catálogo de tipos ─────────────────────────────────────────────────
         private void CargarTipos()
         {
-            // Solo repoblar si están vacíos (primera carga).
-            // En postback NO limpiar: limpiar resetea SelectedValue antes de que
-            // los event handlers lo lean, causando falsos errores de validación.
             if (ddlTipo.Items.Count > 0) return;
 
-            var tipos = db.TiposProducto.Where(t => t.Activo).OrderBy(t => t.Nombre).ToList();
-
-            foreach (var ddl in new[] { ddlTipo, ddlTipoEdit })
+            using (var db = NuevoDb(tracking: false))
             {
-                ddl.Items.Clear();
-                ddl.Items.Add(new System.Web.UI.WebControls.ListItem("-- Seleccione --", ""));
-                foreach (var t in tipos)
-                    ddl.Items.Add(new System.Web.UI.WebControls.ListItem(t.Nombre, t.TipoProductoID.ToString()));
-            }
+                var tipos = db.TiposProducto
+                              .Where(t => t.Activo)
+                              .OrderBy(t => t.Nombre)
+                              .ToList();
 
-            ddlFiltrTipo.Items.Clear();
-            ddlFiltrTipo.Items.Add(new System.Web.UI.WebControls.ListItem("-- Todos --", ""));
-            foreach (var t in tipos)
-                ddlFiltrTipo.Items.Add(new System.Web.UI.WebControls.ListItem(t.Nombre, t.TipoProductoID.ToString()));
+                foreach (var ddl in new[] { ddlTipo, ddlTipoEdit })
+                {
+                    ddl.Items.Clear();
+                    ddl.Items.Add(new ListItem("-- Seleccione --", ""));
+                    foreach (var t in tipos)
+                        ddl.Items.Add(new ListItem(t.Nombre, t.TipoProductoID.ToString()));
+                }
+
+                ddlFiltrTipo.Items.Clear();
+                ddlFiltrTipo.Items.Add(new ListItem("-- Todos --", ""));
+                foreach (var t in tipos)
+                    ddlFiltrTipo.Items.Add(new ListItem(t.Nombre, t.TipoProductoID.ToString()));
+            }
         }
 
-        // ── Carga principal ───────────────────────────────────
+        // ══ CARGA PRINCIPAL CON PAGINACIÓN EN SQL ════════════════════════════
         private void CargarProductos()
         {
-            string buscar = (txtBuscar.Text ?? "").Trim().ToLower();
+            string buscar = (txtBuscar.Text ?? "").Trim();
             string filTipo = ddlFiltrTipo.SelectedValue;
             string filEst = ddlFiltrEstado.SelectedValue;
+            int pageIdx = gvProductos.PageIndex;
+            int pageSz = gvProductos.PageSize;
 
-            var query =
-                from p in db.Productos
-                join tp in db.TiposProducto on p.TipoProductoID equals tp.TipoProductoID
-                select new { p, tp };
-
-            if (!string.IsNullOrEmpty(buscar))
-                query = query.Where(x =>
-                    x.p.Codigo.ToLower().Contains(buscar) ||
-                    x.p.Nombre.ToLower().Contains(buscar));
-
-            if (!string.IsNullOrEmpty(filTipo))
-                query = query.Where(x => x.p.TipoProductoID.ToString() == filTipo);
-
-            if (filEst == "1") query = query.Where(x => x.p.Activo == true);
-            else if (filEst == "0") query = query.Where(x => x.p.Activo == false);
-
-            // Contar componentes por producto
-            var compCounts = db.ProductoMateriales
-                .GroupBy(pm => pm.ProductoID)
-                .Select(g => new { ProductoID = g.Key, Total = g.Count() })
-                .ToList();
-
-            var lista = query.OrderBy(x => x.p.Codigo).ToList().Select(x => new ProductoVM
+            using (var db = NuevoDb(tracking: false))
             {
-                ProductoID = x.p.ProductoID,
-                Codigo = x.p.Codigo,
-                Nombre = x.p.Nombre,
-                TipoProductoID = x.p.TipoProductoID,
-                TipoNombre = x.tp.Nombre,
-                TipoClave = x.tp.Clave,
-                Descripcion = x.p.Descripcion,
-                PrecioVenta = x.p.PrecioVenta,
-                Activo = x.p.Activo,
-                TotalComponentes = compCounts.FirstOrDefault(c => c.ProductoID == x.p.ProductoID)?.Total ?? 0
-            }).ToList();
+                var query =
+                    from p in db.Productos
+                    join tp in db.TiposProducto on p.TipoProductoID equals tp.TipoProductoID
+                    select new { p, tp };
 
-            _productosCache = lista;
+                // ── Filtros sin .ToLower() ────────────────────────────────────
+                if (!string.IsNullOrEmpty(buscar))
+                    query = query.Where(x =>
+                        x.p.Codigo.Contains(buscar) ||
+                        x.p.Nombre.Contains(buscar));
 
-            // Dashboard
-            lblTotal.Text = lista.Count.ToString();
-            lblTarimas.Text = lista.Count(p => p.TipoClave == "TARIMA").ToString();
-            lblCajas.Text = lista.Count(p => p.TipoClave == "CAJA").ToString();
-            lblAccesorios.Text = lista.Count(p => p.TipoClave == "ACCESORIO").ToString();
+                if (!string.IsNullOrEmpty(filTipo))
+                {
+                    int tipoID = int.Parse(filTipo);
+                    query = query.Where(x => x.p.TipoProductoID == tipoID);
+                }
 
-            lblResultados.Text = lista.Count == 1
-                ? "1 registro encontrado."
-                : lista.Count + " registros encontrados.";
+                if (filEst == "1") query = query.Where(x => x.p.Activo == true);
+                else if (filEst == "0") query = query.Where(x => x.p.Activo == false);
 
-            gvProductos.DataSource = lista;
-            gvProductos.DataBind();
+                query = query.OrderBy(x => x.p.Codigo);
 
-            // Inyectar datos JSON para el JavaScript del cliente
-            InjectJsData();
+                // ── COUNT en SQL ──────────────────────────────────────────────
+                int totalRegistros = query.Count();
+
+                lblResultados.Text = totalRegistros == 1
+                    ? "1 registro encontrado."
+                    : totalRegistros + " registros encontrados.";
+
+                ViewState["TotalRegistros"] = totalRegistros;
+
+                // ── PAGINACIÓN EN SQL (Skip/Take → OFFSET/FETCH NEXT) ─────────
+                var pagina = query
+                    .Skip(pageIdx * pageSz)
+                    .Take(pageSz)
+                    .ToList();
+
+                // ── Conteo de componentes solo para IDs de la página actual ───
+                var idsPagina = pagina.Select(x => x.p.ProductoID).ToList();
+
+                var compCounts = db.ProductoMateriales
+                    .Where(pm => idsPagina.Contains(pm.ProductoID))
+                    .GroupBy(pm => pm.ProductoID)
+                    .Select(g => new { ProductoID = g.Key, Total = g.Count() })
+                    .ToList();
+
+                var lista = pagina.Select(x => new ProductoVM
+                {
+                    ProductoID = x.p.ProductoID,
+                    Codigo = x.p.Codigo,
+                    Nombre = x.p.Nombre,
+                    TipoProductoID = x.p.TipoProductoID,
+                    TipoNombre = x.tp.Nombre,
+                    TipoClave = x.tp.Clave,
+                    Descripcion = x.p.Descripcion,
+                    PrecioVenta = x.p.PrecioVenta,
+                    Activo = x.p.Activo,
+                    RowVersion = x.p.RowVersion,
+                    TotalComponentes = compCounts
+                        .FirstOrDefault(c => c.ProductoID == x.p.ProductoID)?.Total ?? 0
+                }).ToList();
+
+                // ── Dashboard: COUNT por tipo sobre TODA la tabla ─────────────
+                var dashboard = (from p in db.Productos
+                                 join tp in db.TiposProducto on p.TipoProductoID equals tp.TipoProductoID
+                                 group tp.Clave by tp.Clave into g
+                                 select new { Clave = g.Key, Total = g.Count() })
+                                .ToList();
+
+                lblTotal.Text = totalRegistros.ToString();
+                lblTarimas.Text = (dashboard.FirstOrDefault(d => d.Clave == "TARIMA")?.Total ?? 0).ToString();
+                lblCajas.Text = (dashboard.FirstOrDefault(d => d.Clave == "CAJA")?.Total ?? 0).ToString();
+                lblAccesorios.Text = (dashboard.FirstOrDefault(d => d.Clave == "ACCESORIO")?.Total ?? 0).ToString();
+
+                gvProductos.VirtualItemCount = totalRegistros;
+                gvProductos.DataSource = lista;
+                gvProductos.DataBind();
+
+                InjectJsData(db, lista);
+            }
         }
 
-
-        // ── Inyectar datos para JS ────────────────────────────
-        private void InjectJsData()
+        // ── Inyectar datos JS ─────────────────────────────────────────────────
+        // Versión principal: reutiliza el db ya abierto y la lista de la página
+        private void InjectJsData(InventarioAnkhalDBDataContext db, List<ProductoVM> lista)
         {
-            // Materiales activos para los selects de componentes
             var mats = db.Materiales
                 .Where(m => m.Activo == true)
                 .OrderBy(m => m.Nombre)
                 .Select(m => new { id = m.MaterialID, nombre = m.Nombre, unidad = m.Unidad })
                 .ToList();
-            string matsJson = _json.Serialize(mats);
 
-            // Componentes de todos los productos (dict productoID -> lista)
-            var pms = db.ProductoMateriales.ToList();
-            var mats2 = db.Materiales.ToList();
-            var dict = new System.Collections.Generic.Dictionary<string, object>();
+            // Solo componentes de los productos visibles en la página
+            var idsPagina = lista.Select(p => p.ProductoID).ToList();
+            var pms = db.ProductoMateriales
+                .Where(pm => idsPagina.Contains(pm.ProductoID))
+                .ToList();
+            var matIds = pms.Select(pm => pm.MaterialID).Distinct().ToList();
+            var mats2 = db.Materiales.Where(m => matIds.Contains(m.MaterialID)).ToList();
+
+            var dict = new Dictionary<string, object>();
             foreach (var pm in pms)
             {
                 var mat = mats2.FirstOrDefault(m => m.MaterialID == pm.MaterialID);
                 if (mat == null) continue;
                 string key = pm.ProductoID.ToString();
                 if (!dict.ContainsKey(key))
-                    dict[key] = new System.Collections.Generic.List<object>();
-                ((System.Collections.Generic.List<object>)dict[key]).Add(new
+                    dict[key] = new List<object>();
+                ((List<object>)dict[key]).Add(new
                 {
                     pmID = pm.ProductoMaterialID,
                     materialID = pm.MaterialID,
@@ -198,22 +228,60 @@ namespace GrupoAnkhalInventario
                     notas = pm.Notas ?? ""
                 });
             }
-            string compJson = _json.Serialize(dict);
 
-            // Inyectar ANTES del bloque <script> de la página usando el Literal
-            // Así las variables están disponibles cuando las funciones JS se definen
             litJsData.Text = string.Format(
                 "<script>window._materialesData = {0}; window._componentesData = {1};</script>",
-                matsJson, compJson);
+                _json.Serialize(mats), _json.Serialize(dict));
         }
 
-        // ── Paginación / Buscar / Limpiar ─────────────────────
+        // Sobrecarga para postbacks donde no hay lista disponible (toggle, guardar comp)
+        private void InjectJsData()
+        {
+            using (var db = NuevoDb(tracking: false))
+            {
+                var mats = db.Materiales
+                    .Where(m => m.Activo == true)
+                    .OrderBy(m => m.Nombre)
+                    .Select(m => new { id = m.MaterialID, nombre = m.Nombre, unidad = m.Unidad })
+                    .ToList();
+
+                var pms = db.ProductoMateriales.ToList();
+                var mats2 = db.Materiales.ToList();
+
+                var dict = new Dictionary<string, object>();
+                foreach (var pm in pms)
+                {
+                    var mat = mats2.FirstOrDefault(m => m.MaterialID == pm.MaterialID);
+                    if (mat == null) continue;
+                    string key = pm.ProductoID.ToString();
+                    if (!dict.ContainsKey(key))
+                        dict[key] = new List<object>();
+                    ((List<object>)dict[key]).Add(new
+                    {
+                        pmID = pm.ProductoMaterialID,
+                        materialID = pm.MaterialID,
+                        materialNombre = mat.Nombre,
+                        unidad = mat.Unidad,
+                        cantMin = pm.CantidadMin,
+                        cantMax = pm.CantidadMax,
+                        notas = pm.Notas ?? ""
+                    });
+                }
+
+                litJsData.Text = string.Format(
+                    "<script>window._materialesData = {0}; window._componentesData = {1};</script>",
+                    _json.Serialize(mats), _json.Serialize(dict));
+            }
+        }
+
+        // ══ PAGINACIÓN ════════════════════════════════════════════════════════
         protected void gvProductos_PageIndexChanging(object sender, GridViewPageEventArgs e)
         {
             gvProductos.PageIndex = e.NewPageIndex;
             CargarProductos();
         }
 
+        // ══ BUSCAR / LIMPIAR ══════════════════════════════════════════════════
         protected void btnBuscar_Click(object sender, EventArgs e)
         {
             gvProductos.PageIndex = 0;
@@ -229,7 +297,7 @@ namespace GrupoAnkhalInventario
             CargarProductos();
         }
 
-        // ── GUARDAR NUEVO ─────────────────────────────────────
+        // ══ GUARDAR NUEVO PRODUCTO ════════════════════════════════════════════
         protected void btnGuardar_Click(object sender, EventArgs e)
         {
             if (!ValidarCamposProd(txtCodigo.Text, txtNombre.Text,
@@ -238,60 +306,62 @@ namespace GrupoAnkhalInventario
             string codigoUpper = txtCodigo.Text.Trim().ToUpper();
             string nombreTrim = txtNombre.Text.Trim();
 
-            if (db.Productos.Any(p => p.Codigo == codigoUpper))
-            { SetMsg("error", "Código duplicado", "Ya existe un producto con el código '" + codigoUpper + "'.", "modalNuevo"); return; }
-
-            if (db.Productos.Any(p => p.Nombre.ToLower() == nombreTrim.ToLower()))
-            { SetMsg("error", "Nombre duplicado", "Ya existe un producto con el nombre '" + nombreTrim + "'.", "modalNuevo"); return; }
-
-            try
+            using (var db = NuevoDb())
             {
-                var nuevo = new GrupoAnkhalInventario.Modelo.Productos
-                {
-                    Codigo = codigoUpper,
-                    Nombre = nombreTrim,
-                    TipoProductoID = int.Parse(ddlTipo.SelectedValue),
-                    Descripcion = txtDescripcion.Text.Trim(),
-                    PrecioVenta = ParseDec(txtPrecio.Text),
-                    Activo = true,
-                    UsuarioAltaID = Convert.ToInt32(Session["UsuarioID"])
-                };
-                db.Productos.InsertOnSubmit(nuevo);
-                db.SubmitChanges();
+                if (db.Productos.Any(p => p.Codigo == codigoUpper))
+                { SetMsg("error", "Código duplicado", "Ya existe un producto con el código '" + codigoUpper + "'.", "modalNuevo"); return; }
 
-                // Guardar componentes
-                string jsonComp = hdnComponentesNuevo.Value;
-                if (!string.IsNullOrEmpty(jsonComp) && jsonComp != "[]")
+                if (db.Productos.Any(p => p.Nombre.ToLower() == nombreTrim.ToLower()))
+                { SetMsg("error", "Nombre duplicado", "Ya existe un producto con el nombre '" + nombreTrim + "'.", "modalNuevo"); return; }
+
+                try
                 {
-                    var comps = _json.Deserialize<List<CompNuevoVM>>(jsonComp);
-                    foreach (var c in comps)
+                    var nuevo = new GrupoAnkhalInventario.Modelo.Productos
                     {
-                        if (string.IsNullOrEmpty(c.materialID)) continue;
-                        var pm = new GrupoAnkhalInventario.Modelo.ProductoMateriales
-                        {
-                            ProductoID = nuevo.ProductoID,
-                            MaterialID = int.Parse(c.materialID),
-                            CantidadMin = c.cantMin,
-                            CantidadMax = c.cantMax >= c.cantMin ? c.cantMax : c.cantMin,
-                            Notas = c.notas
-                        };
-                        db.ProductoMateriales.InsertOnSubmit(pm);
-                    }
+                        Codigo = codigoUpper,
+                        Nombre = nombreTrim,
+                        TipoProductoID = int.Parse(ddlTipo.SelectedValue),
+                        Descripcion = txtDescripcion.Text.Trim(),
+                        PrecioVenta = ParseDec(txtPrecio.Text),
+                        Activo = true,
+                        UsuarioAltaID = Convert.ToInt32(Session["UsuarioID"])
+                    };
+                    db.Productos.InsertOnSubmit(nuevo);
                     db.SubmitChanges();
-                }
 
-                LimpiarNuevo();
-                CargarProductos();
-                SetMsg("success", "¡Guardado!", "El producto fue creado correctamente.");
-            }
-            catch (Exception ex)
-            {
-                System.Diagnostics.Debug.WriteLine("Error guardar producto: " + ex.Message);
-                SetMsg("error", "Error del sistema", "No se pudo guardar el producto.", "modalNuevo");
+                    string jsonComp = hdnComponentesNuevo.Value;
+                    if (!string.IsNullOrEmpty(jsonComp) && jsonComp != "[]")
+                    {
+                        var comps = _json.Deserialize<List<CompNuevoVM>>(jsonComp);
+                        foreach (var c in comps)
+                        {
+                            if (string.IsNullOrEmpty(c.materialID)) continue;
+                            var pm = new GrupoAnkhalInventario.Modelo.ProductoMateriales
+                            {
+                                ProductoID = nuevo.ProductoID,
+                                MaterialID = int.Parse(c.materialID),
+                                CantidadMin = c.cantMin,
+                                CantidadMax = c.cantMax >= c.cantMin ? c.cantMax : c.cantMin,
+                                Notas = c.notas
+                            };
+                            db.ProductoMateriales.InsertOnSubmit(pm);
+                        }
+                        db.SubmitChanges();
+                    }
+
+                    LimpiarNuevo();
+                    CargarProductos();
+                    SetMsg("success", "¡Guardado!", "El producto fue creado correctamente.");
+                }
+                catch (Exception ex)
+                {
+                    System.Diagnostics.Debug.WriteLine("Error guardar producto: " + ex.Message);
+                    SetMsg("error", "Error del sistema", "No se pudo guardar el producto.", "modalNuevo");
+                }
             }
         }
 
-        // ── GUARDAR EDICIÓN ───────────────────────────────────
+        // ══ GUARDAR EDICIÓN CON CONTROL DE CONCURRENCIA ══════════════════════
         protected void btnGuardarEdit_Click(object sender, EventArgs e)
         {
             if (string.IsNullOrWhiteSpace(hdnProductoID.Value)) return;
@@ -303,129 +373,175 @@ namespace GrupoAnkhalInventario
             string codigoUpper = txtCodigoEdit.Text.Trim().ToUpper();
             string nombreTrim = txtNombreEdit.Text.Trim();
 
-            if (db.Productos.Any(p => p.Codigo == codigoUpper && p.ProductoID != prodID))
-            { SetMsg("error", "Código duplicado", "Ya existe otro producto con ese código.", "modalEditar"); return; }
-
-            if (db.Productos.Any(p => p.Nombre.ToLower() == nombreTrim.ToLower() && p.ProductoID != prodID))
-            { SetMsg("error", "Nombre duplicado", "Ya existe otro producto con ese nombre.", "modalEditar"); return; }
-
-            try
+            using (var db = NuevoDb())
             {
-                var prod = db.Productos.FirstOrDefault(p => p.ProductoID == prodID);
-                if (prod == null) { SetMsg("error", "Error", "No se encontró el producto."); return; }
+                if (db.Productos.Any(p => p.Codigo == codigoUpper && p.ProductoID != prodID))
+                { SetMsg("error", "Código duplicado", "Ya existe otro producto con ese código.", "modalEditar"); return; }
 
-                prod.Codigo = codigoUpper;
-                prod.Nombre = nombreTrim;
-                prod.TipoProductoID = int.Parse(ddlTipoEdit.SelectedValue);
-                prod.Descripcion = txtDescripcionEdit.Text.Trim();
-                prod.PrecioVenta = ParseDec(txtPrecioEdit.Text);
-                prod.FechaModif = DateTime.Now;
-                prod.UsuarioModifID = Convert.ToInt32(Session["UsuarioID"]);
+                if (db.Productos.Any(p => p.Nombre.ToLower() == nombreTrim.ToLower() && p.ProductoID != prodID))
+                { SetMsg("error", "Nombre duplicado", "Ya existe otro producto con ese nombre.", "modalEditar"); return; }
 
-                db.SubmitChanges();
-                CargarProductos();
-                SetMsg("success", "¡Actualizado!", "El producto fue actualizado correctamente.");
-            }
-            catch (Exception ex)
-            {
-                System.Diagnostics.Debug.WriteLine("Error editar producto: " + ex.Message);
-                SetMsg("error", "Error del sistema", "No se pudo actualizar el producto.", "modalEditar");
+                try
+                {
+                    var prod = db.Productos.FirstOrDefault(p => p.ProductoID == prodID);
+                    if (prod == null) { SetMsg("error", "Error", "No se encontró el producto."); return; }
+
+                    // ── Control de concurrencia ───────────────────────────────
+                    byte[] rowVersionOriginal = null;
+                    if (!string.IsNullOrEmpty(hdnRowVersion.Value))
+                        rowVersionOriginal = Convert.FromBase64String(hdnRowVersion.Value);
+
+                    if (rowVersionOriginal != null &&
+                        prod.RowVersion != null &&
+                        !rowVersionOriginal.SequenceEqual(prod.RowVersion.ToArray()))
+                    {
+                        SetMsg("warning",
+                            "Registro modificado",
+                            "Otro usuario acaba de modificar este producto. " +
+                            "Recarga la página para ver los datos actuales y vuelve a editar.",
+                            "modalEditar");
+                        return;
+                    }
+
+                    prod.Codigo = codigoUpper;
+                    prod.Nombre = nombreTrim;
+                    prod.TipoProductoID = int.Parse(ddlTipoEdit.SelectedValue);
+                    prod.Descripcion = txtDescripcionEdit.Text.Trim();
+                    prod.PrecioVenta = ParseDec(txtPrecioEdit.Text);
+                    prod.FechaModif = DateTime.Now;
+                    prod.UsuarioModifID = Convert.ToInt32(Session["UsuarioID"]);
+
+                    db.SubmitChanges(System.Data.Linq.ConflictMode.FailOnFirstConflict);
+
+                    CargarProductos();
+                    SetMsg("success", "¡Actualizado!", "El producto fue actualizado correctamente.");
+                }
+                catch (System.Data.Linq.ChangeConflictException)
+                {
+                    SetMsg("warning",
+                        "Conflicto de edición",
+                        "Otro usuario guardó cambios en este producto al mismo tiempo. " +
+                        "Recarga la página para ver los datos más recientes.",
+                        "modalEditar");
+                }
+                catch (Exception ex)
+                {
+                    System.Diagnostics.Debug.WriteLine("Error editar producto: " + ex.Message);
+                    SetMsg("error", "Error del sistema", "No se pudo actualizar el producto.", "modalEditar");
+                }
             }
         }
 
-        // ── COMPONENTES: INSERT / UPDATE / DELETE ─────────────
+        // ══ COMPONENTES: INSERT / UPDATE / DELETE ════════════════════════════
         protected void btnGuardarComponentes_Click(object sender, EventArgs e)
         {
             string accion = hdnCompAccion.Value;
             int prodID = ParseInt(hdnCompProductoID.Value);
 
-            try
+            using (var db = NuevoDb())
             {
-                switch (accion)
+                try
                 {
-                    case "INSERT":
-                        int matID = ParseInt(hdnCompMaterialID.Value);
-                        decimal cmi = ParseDec(hdnCompCantMin.Value);
-                        decimal cma = ParseDec(hdnCompCantMax.Value);
+                    switch (accion)
+                    {
+                        case "INSERT":
+                            int matID = ParseInt(hdnCompMaterialID.Value);
+                            decimal cmi = ParseDec(hdnCompCantMin.Value);
+                            decimal cma = ParseDec(hdnCompCantMax.Value);
 
-                        // Validar duplicado
-                        if (db.ProductoMateriales.Any(pm => pm.ProductoID == prodID && pm.MaterialID == matID))
-                        { SetMsg("error", "Duplicado", "Ese material ya es componente de este producto.", null, true); break; }
+                            if (db.ProductoMateriales.Any(pm => pm.ProductoID == prodID && pm.MaterialID == matID))
+                            { SetMsg("error", "Duplicado", "Ese material ya es componente de este producto.", null, true); break; }
 
-                        var nuevo = new GrupoAnkhalInventario.Modelo.ProductoMateriales
-                        {
-                            ProductoID = prodID,
-                            MaterialID = matID,
-                            CantidadMin = cmi,
-                            CantidadMax = cma >= cmi ? cma : cmi,
-                            Notas = hdnCompNotas.Value
-                        };
-                        db.ProductoMateriales.InsertOnSubmit(nuevo);
-                        db.SubmitChanges();
-                        SetMsg("success", "¡Agregado!", "Componente agregado correctamente.", null, true);
-                        break;
-
-                    case "UPDATE":
-                        int pmID = ParseInt(hdnCompPMID.Value);
-                        var pm2 = db.ProductoMateriales.FirstOrDefault(x => x.ProductoMaterialID == pmID);
-                        if (pm2 == null) break;
-                        decimal cmi2 = ParseDec(hdnCompCantMin.Value);
-                        decimal cma2 = ParseDec(hdnCompCantMax.Value);
-                        pm2.CantidadMin = cmi2;
-                        pm2.CantidadMax = cma2 >= cmi2 ? cma2 : cmi2;
-                        pm2.Notas = hdnCompNotas.Value;
-                        db.SubmitChanges();
-                        SetMsg("success", "¡Actualizado!", "Componente actualizado.", null, true);
-                        break;
-
-                    case "DELETE":
-                        int pmDel = ParseInt(hdnCompPMID.Value);
-                        var pmD = db.ProductoMateriales.FirstOrDefault(x => x.ProductoMaterialID == pmDel);
-                        if (pmD != null)
-                        {
-                            db.ProductoMateriales.DeleteOnSubmit(pmD);
+                            var nuevo = new GrupoAnkhalInventario.Modelo.ProductoMateriales
+                            {
+                                ProductoID = prodID,
+                                MaterialID = matID,
+                                CantidadMin = cmi,
+                                CantidadMax = cma >= cmi ? cma : cmi,
+                                Notas = hdnCompNotas.Value
+                            };
+                            db.ProductoMateriales.InsertOnSubmit(nuevo);
                             db.SubmitChanges();
-                        }
-                        SetMsg("success", "¡Eliminado!", "Componente eliminado.", null, true);
-                        break;
-                }
+                            SetMsg("success", "¡Agregado!", "Componente agregado correctamente.", null, true);
+                            break;
 
-                CargarProductos();
-            }
-            catch (Exception ex)
-            {
-                System.Diagnostics.Debug.WriteLine("Error componente: " + ex.Message);
-                SetMsg("error", "Error del sistema", "No se pudo procesar la operación.", null, true);
+                        case "UPDATE":
+                            int pmID = ParseInt(hdnCompPMID.Value);
+                            var pm2 = db.ProductoMateriales.FirstOrDefault(x => x.ProductoMaterialID == pmID);
+                            if (pm2 == null) break;
+                            decimal cmi2 = ParseDec(hdnCompCantMin.Value);
+                            decimal cma2 = ParseDec(hdnCompCantMax.Value);
+                            pm2.CantidadMin = cmi2;
+                            pm2.CantidadMax = cma2 >= cmi2 ? cma2 : cmi2;
+                            pm2.Notas = hdnCompNotas.Value;
+                            db.SubmitChanges();
+                            SetMsg("success", "¡Actualizado!", "Componente actualizado.", null, true);
+                            break;
+
+                        case "DELETE":
+                            int pmDel = ParseInt(hdnCompPMID.Value);
+                            var pmD = db.ProductoMateriales.FirstOrDefault(x => x.ProductoMaterialID == pmDel);
+                            if (pmD != null)
+                            {
+                                db.ProductoMateriales.DeleteOnSubmit(pmD);
+                                db.SubmitChanges();
+                            }
+                            SetMsg("success", "¡Eliminado!", "Componente eliminado.", null, true);
+                            break;
+                    }
+
+                    CargarProductos();
+                }
+                catch (Exception ex)
+                {
+                    System.Diagnostics.Debug.WriteLine("Error componente: " + ex.Message);
+                    SetMsg("error", "Error del sistema", "No se pudo procesar la operación.", null, true);
+                }
             }
         }
 
-        // ── Toggle ────────────────────────────────────────────
+        // ══ TOGGLE ════════════════════════════════════════════════════════════
         protected void btnToggle_Click(object sender, EventArgs e) { }
 
         protected void btnToggleHidden_Click(object sender, EventArgs e)
         {
             if (string.IsNullOrWhiteSpace(hdnToggleProductoID.Value)) return;
             int prodID = int.Parse(hdnToggleProductoID.Value);
-            try
+
+            using (var db = NuevoDb())
             {
-                var p = db.Productos.FirstOrDefault(x => x.ProductoID == prodID);
-                if (p == null) return;
-                p.Activo = !p.Activo;
-                p.FechaModif = DateTime.Now;
-                p.UsuarioModifID = Convert.ToInt32(Session["UsuarioID"]);
-                db.SubmitChanges();
-                string estado = p.Activo ? "activado" : "desactivado";
-                CargarProductos();
-                SetMsg("success", "¡Listo!", "El producto fue " + estado + " correctamente.");
-            }
-            catch (Exception ex)
-            {
-                System.Diagnostics.Debug.WriteLine("Error toggle: " + ex.Message);
-                SetMsg("error", "Error", "No se pudo cambiar el estatus.");
+                try
+                {
+                    var p = db.Productos.FirstOrDefault(x => x.ProductoID == prodID);
+                    if (p == null) return;
+                    p.Activo = !p.Activo;
+                    p.FechaModif = DateTime.Now;
+                    p.UsuarioModifID = Convert.ToInt32(Session["UsuarioID"]);
+                    db.SubmitChanges();
+
+                    string estado = p.Activo ? "activado" : "desactivado";
+                    CargarProductos();
+                    SetMsg("success", "¡Listo!", "El producto fue " + estado + " correctamente.");
+                }
+                catch (Exception ex)
+                {
+                    System.Diagnostics.Debug.WriteLine("Error toggle: " + ex.Message);
+                    SetMsg("error", "Error", "No se pudo cambiar el estatus.");
+                }
             }
         }
 
-        // ── Helpers ───────────────────────────────────────────
+        // ══ HELPERS ═══════════════════════════════════════════════════════════
+        public string RowVersionBase64(object rowVersion)
+        {
+            if (rowVersion == null) return "";
+            if (rowVersion is System.Data.Linq.Binary)
+                return Convert.ToBase64String(((System.Data.Linq.Binary)rowVersion).ToArray());
+            if (rowVersion is byte[])
+                return Convert.ToBase64String((byte[])rowVersion);
+            return "";
+        }
+
         private bool ValidarCamposProd(string cod, string nom, string tipo, string modal)
         {
             if (string.IsNullOrWhiteSpace(cod) || cod.Trim().Length < 2)

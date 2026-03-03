@@ -240,6 +240,15 @@ namespace GrupoAnkhalInventario
         protected global::System.Web.UI.WebControls.HiddenField hdnProductoID;
 
         /// <summary>
+        /// Control hdnRowVersion.
+        /// </summary>
+        /// <remarks>
+        /// Campo generado automáticamente.
+        /// Para modificarlo, mueva la declaración del campo del archivo del diseñador al archivo de código subyacente.
+        /// </remarks>
+        protected global::System.Web.UI.WebControls.HiddenField hdnRowVersion;
+
+        /// <summary>
         /// Control txtCodigoEdit.
         /// </summary>
         /// <remarks>

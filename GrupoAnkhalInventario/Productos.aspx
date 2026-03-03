@@ -131,9 +131,10 @@
 
             <!-- ── GRID ── -->
             <div class="table-responsive">
+                <!-- CAMBIO 1: agregado AllowCustomPaging="True" -->
                 <asp:GridView ID="gvProductos" runat="server" AutoGenerateColumns="False"
                     CssClass="table table-bordered table-striped custom-grid"
-                    AllowPaging="True" PageSize="15"
+                    AllowPaging="True" AllowCustomPaging="True" PageSize="2"
                     OnPageIndexChanging="gvProductos_PageIndexChanging"
                     DataKeyNames="ProductoID"
                     PagerStyle-CssClass="pager-custom"
@@ -167,6 +168,7 @@
                         </asp:TemplateField>
                         <asp:TemplateField HeaderText="Acciones">
                             <ItemTemplate>
+                                <!-- CAMBIO 2: agregado parámetro rowVersion a abrirModalEditar -->
                                 <button type="button" class="btn btn-primary btn-sm"
                                     onclick="abrirModalEditar(
                                         '<%# Eval("ProductoID") %>',
@@ -174,7 +176,8 @@
                                         '<%# Server.HtmlEncode((Eval("Nombre") ?? "").ToString()) %>',
                                         '<%# Eval("TipoProductoID") %>',
                                         '<%# Server.HtmlEncode((Eval("Descripcion") ?? "").ToString()) %>',
-                                        '<%# Eval("PrecioVenta") %>'
+                                        '<%# Eval("PrecioVenta") %>',
+                                        '<%# RowVersionBase64(Eval("RowVersion")) %>'
                                     )">
                                     <i class="fas fa-edit"></i> Editar
                                 </button>
@@ -268,7 +271,6 @@
           <i class="fas fa-info-circle"></i> Sin componentes agregados. Puedes dejar vacío o agregar los que necesites.
         </div>
 
-        <!-- Campo oculto para pasar JSON de componentes al servidor -->
         <asp:HiddenField ID="hdnComponentesNuevo" runat="server" Value="[]" />
       </div>
       <div class="modal-footer">
@@ -282,7 +284,7 @@
   </div>
 </div>
 
-<!-- ══ MODAL EDITAR PRODUCTO (solo datos, sin componentes) ══ -->
+<!-- ══ MODAL EDITAR PRODUCTO ════════════════════════ -->
 <div class="modal fade" id="modalEditar" tabindex="-1" role="dialog" data-backdrop="static">
   <div class="modal-dialog modal-lg" role="document">
     <div class="modal-content">
@@ -292,6 +294,8 @@
       </div>
       <div class="modal-body">
         <asp:HiddenField ID="hdnProductoID" runat="server" />
+        <!-- CAMBIO 3: agregado hdnRowVersion para control de concurrencia -->
+        <asp:HiddenField ID="hdnRowVersion" runat="server" />
         <div class="row">
           <div class="col-md-3">
             <div class="form-group">
@@ -358,7 +362,6 @@
       </div>
       <div class="modal-body">
 
-        <!-- Tabla de componentes existentes -->
         <div id="divTablaComponentes">
           <table class="table table-bordered comp-view-table" id="tblComponentes">
             <thead>
@@ -371,7 +374,6 @@
               </tr>
             </thead>
             <tbody id="tbodyComponentes">
-              <!-- se llena con JS -->
             </tbody>
           </table>
           <div id="divSinCompModal" class="text-muted text-center py-3" style="display:none; font-size:.88rem;">
@@ -380,7 +382,6 @@
         </div>
 
         <hr />
-        <!-- Agregar nuevo componente -->
         <h6 style="color:#003366;font-weight:600;"><i class="fas fa-plus-circle"></i> Agregar componente</h6>
         <div class="row align-items-end">
           <div class="col-md-4">
@@ -408,7 +409,6 @@
           </div>
         </div>
 
-        <!-- Hidden fields para postback -->
         <asp:HiddenField ID="hdnCompProductoID"  runat="server" Value="" />
         <asp:HiddenField ID="hdnCompAccion"      runat="server" Value="" />
         <asp:HiddenField ID="hdnCompMaterialID"  runat="server" Value="" />
@@ -429,39 +429,39 @@
 
 <script>
     // ════════════════════════════════════════════════════
-    // MENSAJE PENDIENTE (mismo patrón que Bases/Materiales)
+    // MENSAJE PENDIENTE
     // ════════════════════════════════════════════════════
     window.addEventListener('load', function () {
         var hdnMsg = document.getElementById('<%= hdnMensajePendiente.ClientID %>');
-    if (!hdnMsg || !hdnMsg.value) return;
-    try {
-        var msg = JSON.parse(hdnMsg.value);
-        hdnMsg.value = '';
-        var opts = { icon: msg.icon, title: msg.title, text: msg.text, confirmButtonColor: '#003366' };
-        if (msg.icon === 'success') { opts.showConfirmButton = false; opts.timer = 2000; }
-        if (msg.modal) {
-            opts.showConfirmButton = true;
-            Swal.fire(opts).then(function () { $('#' + msg.modal).modal('show'); });
-        } else { Swal.fire(opts); }
+        if (!hdnMsg || !hdnMsg.value) return;
+        try {
+            var msg = JSON.parse(hdnMsg.value);
+            hdnMsg.value = '';
+            var opts = { icon: msg.icon, title: msg.title, text: msg.text, confirmButtonColor: '#003366' };
+            if (msg.icon === 'success') { opts.showConfirmButton = false; opts.timer = 2000; }
+            if (msg.modal) {
+                opts.showConfirmButton = true;
+                Swal.fire(opts).then(function () { $('#' + msg.modal).modal('show'); });
+            } else { Swal.fire(opts); }
 
-        // Si venía del modal de componentes, reabrirlo con datos actualizados
-        if (msg.reopenComp) {
-            var pid = document.getElementById('<%= hdnCompProductoID.ClientID %>').value;
-            var pnom = document.getElementById('spanNombreProducto') ? document.getElementById('spanNombreProducto').innerText : '';
-            if (pid) setTimeout(function () { cargarComponentesModal(pid, pnom); }, 300);
-        }
-    } catch (e) { }
-});
+            if (msg.reopenComp) {
+                var pid = document.getElementById('<%= hdnCompProductoID.ClientID %>').value;
+                var pnom = document.getElementById('spanNombreProducto')
+                    ? document.getElementById('spanNombreProducto').innerText : '';
+                if (pid) setTimeout(function () { cargarComponentesModal(pid, pnom); }, 300);
+            }
+        } catch (e) { }
+    });
 
     // ════════════════════════════════════════════════════
-    // DATOS DE MATERIALES (para los selects de componentes)
+    // DATOS DE MATERIALES
     // ════════════════════════════════════════════════════
     var _materiales = window._materialesData || [];
 
     // ════════════════════════════════════════════════════
     // MODAL NUEVO — componentes dinámicos
     // ════════════════════════════════════════════════════
-    var _compNuevo = []; // array de {materialID, nombre, cantMin, cantMax, notas}
+    var _compNuevo = [];
 
     function abrirModalNuevo() {
         _compNuevo = [];
@@ -470,8 +470,6 @@
     }
 
     function agregarComponenteNuevo() {
-        // Crear fila con select de material + inputs
-        var idx = _compNuevo.length;
         _compNuevo.push({ materialID: '', nombre: '', cantMin: 0, cantMax: 0, notas: '' });
         renderComponentesNuevo();
     }
@@ -481,10 +479,7 @@
         var sinDiv = document.getElementById('divSinComponentes');
         div.innerHTML = '';
 
-        if (_compNuevo.length === 0) {
-            sinDiv.style.display = 'block';
-            return;
-        }
+        if (_compNuevo.length === 0) { sinDiv.style.display = 'block'; return; }
         sinDiv.style.display = 'none';
 
         _compNuevo.forEach(function (c, i) {
@@ -533,21 +528,23 @@
 
     // ════════════════════════════════════════════════════
     // MODAL EDITAR PRODUCTO
+    // CAMBIO 3: función actualizada para recibir y guardar rowVersion
     // ════════════════════════════════════════════════════
-    function abrirModalEditar(id, codigo, nombre, tipoID, descripcion, precio) {
+    function abrirModalEditar(id, codigo, nombre, tipoID, descripcion, precio, rowVersion) {
         document.getElementById('<%= hdnProductoID.ClientID %>').value = id;
-    document.getElementById('<%= txtCodigoEdit.ClientID %>').value = codigo;
-    document.getElementById('<%= txtNombreEdit.ClientID %>').value = nombre;
-    document.getElementById('<%= ddlTipoEdit.ClientID %>').value = tipoID;
-    document.getElementById('<%= txtDescripcionEdit.ClientID %>').value = descripcion;
-    document.getElementById('<%= txtPrecioEdit.ClientID %>').value = precio;
+        document.getElementById('<%= hdnRowVersion.ClientID %>').value = rowVersion;
+        document.getElementById('<%= txtCodigoEdit.ClientID %>').value = codigo;
+        document.getElementById('<%= txtNombreEdit.ClientID %>').value = nombre;
+        document.getElementById('<%= ddlTipoEdit.ClientID %>').value = tipoID;
+        document.getElementById('<%= txtDescripcionEdit.ClientID %>').value = descripcion;
+        document.getElementById('<%= txtPrecioEdit.ClientID %>').value = precio;
         $('#modalEditar').modal('show');
     }
 
     // ════════════════════════════════════════════════════
     // MODAL COMPONENTES — Ver y editar
     // ════════════════════════════════════════════════════
-    var _compModal = []; // componentes cargados actualmente
+    var _compModal = [];
 
     function verComponentes(productoID, nombre) {
         document.getElementById('<%= hdnCompProductoID.ClientID %>').value = productoID;
@@ -556,11 +553,9 @@
     }
 
     function cargarComponentesModal(productoID, nombre) {
-        // Obtener componentes del servidor via los datos embebidos en la página
         var data = window._componentesData || {};
         _compModal = data[productoID] || [];
 
-        // Llenar select de materiales
         var sel = document.getElementById('ddlMaterialComp');
         sel.innerHTML = '<option value="">-- Seleccione --</option>';
         _materiales.forEach(function (m) {
@@ -569,7 +564,6 @@
 
         renderTablaComp();
         document.getElementById('spanNombreProducto').innerText = nombre || '';
-        // Limpiar form de agregar
         document.getElementById('txtCantMinComp').value = '0';
         document.getElementById('txtCantMaxComp').value = '0';
         document.getElementById('txtNotasComp').value = '';
@@ -583,175 +577,162 @@
         var sinDiv = document.getElementById('divSinCompModal');
         tbody.innerHTML = '';
 
-        if (_compModal.length === 0) {
-            sinDiv.style.display = 'block';
-            return;
-        }
+        if (_compModal.length === 0) { sinDiv.style.display = 'block'; return; }
         sinDiv.style.display = 'none';
 
         _compModal.forEach(function (c) {
             var tr = document.createElement('tr');
             tr.innerHTML =
                 '<td><strong>' + escHtml(c.materialNombre) + '</strong><br><small class="text-muted">' + escHtml(c.unidad) + '</small></td>' +
-                '<td><input type="number" class="form-control form-control-sm comp-edit-row" value="' + c.cantMin + '" min="0" step="0.01" ' +
-                'onchange="c.cantMin=parseFloat(this.value)||0;" id="cmin_' + c.pmID + '" /></td>' +
-                '<td><input type="number" class="form-control form-control-sm comp-edit-row" value="' + c.cantMax + '" min="0" step="0.01" ' +
-                'onchange="c.cantMax=parseFloat(this.value)||0;" id="cmax_' + c.pmID + '" /></td>' +
-                '<td><input type="text" class="form-control form-control-sm comp-edit-row" value="' + escHtml(c.notas) + '" maxlength="200" ' +
-                'onchange="c.notas=this.value;" id="cnot_' + c.pmID + '" /></td>' +
+                '<td><input type="number" class="form-control form-control-sm comp-edit-row" value="' + c.cantMin + '" min="0" step="0.01" id="cmin_' + c.pmID + '" /></td>' +
+                '<td><input type="number" class="form-control form-control-sm comp-edit-row" value="' + c.cantMax + '" min="0" step="0.01" id="cmax_' + c.pmID + '" /></td>' +
+                '<td><input type="text"   class="form-control form-control-sm comp-edit-row" value="' + escHtml(c.notas) + '" maxlength="200" id="cnot_' + c.pmID + '" /></td>' +
                 '<td class="text-center">' +
                 '<button type="button" class="btn btn-success btn-xs btn-sm mr-1" onclick="guardarCompExistente(' + c.pmID + ', ' + c.materialID + ')" title="Guardar"><i class="fas fa-save"></i></button>' +
-                '<button type="button" class="btn btn-danger btn-xs btn-sm" onclick="eliminarComp(' + c.pmID + ')" title="Eliminar"><i class="fas fa-trash"></i></button>' +
+                '<button type="button" class="btn btn-danger  btn-xs btn-sm"      onclick="eliminarComp(' + c.pmID + ')" title="Eliminar"><i class="fas fa-trash"></i></button>' +
                 '</td>';
-            // cerrar la referencia en el closure
-            (function (comp) {
-                tr.querySelectorAll('input').forEach(function (inp) {
-                    inp.addEventListener('change', function () { });
-                });
-            })(c);
             tbody.appendChild(tr);
         });
     }
 
     function guardarCompExistente(pmID, materialID) {
-        var c = _compModal.find(function (x) { return x.pmID == pmID; });
-        if (!c) return;
-
         var cantMin = parseFloat(document.getElementById('cmin_' + pmID).value) || 0;
         var cantMax = parseFloat(document.getElementById('cmax_' + pmID).value) || 0;
         var notas = document.getElementById('cnot_' + pmID).value;
 
         if (cantMax < cantMin) {
-            Swal.fire({ icon: 'warning', title: 'Rango inválido', text: 'La cantidad máxima debe ser ≥ a la mínima.', confirmButtonColor: '#003366' })
+            Swal.fire({
+                icon: 'warning', title: 'Rango inválido',
+                text: 'La cantidad máxima debe ser ≥ a la mínima.', confirmButtonColor: '#003366'
+            })
                 .then(function () { $('#modalComponentes').modal('show'); });
             return;
         }
 
-        document.getElementById('<%= hdnCompAccion.ClientID %>').value     = 'UPDATE';
-    document.getElementById('<%= hdnCompPMID.ClientID %>').value       = pmID;
-    document.getElementById('<%= hdnCompCantMin.ClientID %>').value    = cantMin;
-    document.getElementById('<%= hdnCompCantMax.ClientID %>').value    = cantMax;
-    document.getElementById('<%= hdnCompNotas.ClientID %>').value      = notas;
-    __doPostBack('<%= btnGuardarComponentes.UniqueID %>', '');
-}
-
-function eliminarComp(pmID) {
-    Swal.fire({
-        icon:'warning', title:'¿Eliminar componente?',
-        text:'Se eliminará este componente del producto.',
-        showCancelButton:true, confirmButtonText:'Sí, eliminar',
-        confirmButtonColor:'#e74c3c', cancelButtonColor:'#6c757d'
-    }).then(function(r){
-        if (r.isConfirmed) {
-            document.getElementById('<%= hdnCompAccion.ClientID %>').value = 'DELETE';
-            document.getElementById('<%= hdnCompPMID.ClientID %>').value   = pmID;
-            __doPostBack('<%= btnGuardarComponentes.UniqueID %>', '');
-        }
-    });
-}
-
-function agregarComponenteModal() {
-    var matID   = document.getElementById('ddlMaterialComp').value;
-    var cantMin = parseFloat(document.getElementById('txtCantMinComp').value) || 0;
-    var cantMax = parseFloat(document.getElementById('txtCantMaxComp').value) || 0;
-    var notas   = document.getElementById('txtNotasComp').value;
-    var prodID  = document.getElementById('<%= hdnCompProductoID.ClientID %>').value;
-
-    if (!matID) {
-        Swal.fire({ icon:'warning', title:'Material requerido', text:'Seleccione un material.', confirmButtonColor:'#003366' })
-            .then(function(){ $('#modalComponentes').modal('show'); });
-        return;
-    }
-    if (cantMax < cantMin) {
-        Swal.fire({ icon:'warning', title:'Rango inválido', text:'La cantidad máxima debe ser ≥ a la mínima.', confirmButtonColor:'#003366' })
-            .then(function(){ $('#modalComponentes').modal('show'); });
-        return;
-    }
-    // Verificar duplicado local
-    if (_compModal.find(function(c){ return c.materialID == matID; })) {
-        Swal.fire({ icon:'warning', title:'Duplicado', text:'Ese material ya está como componente de este producto.', confirmButtonColor:'#003366' })
-            .then(function(){ $('#modalComponentes').modal('show'); });
-        return;
+        document.getElementById('<%= hdnCompAccion.ClientID %>').value  = 'UPDATE';
+        document.getElementById('<%= hdnCompPMID.ClientID %>').value    = pmID;
+        document.getElementById('<%= hdnCompCantMin.ClientID %>').value = cantMin;
+        document.getElementById('<%= hdnCompCantMax.ClientID %>').value = cantMax;
+        document.getElementById('<%= hdnCompNotas.ClientID %>').value   = notas;
+        __doPostBack('<%= btnGuardarComponentes.UniqueID %>', '');
     }
 
-    document.getElementById('<%= hdnCompAccion.ClientID %>').value     = 'INSERT';
-    document.getElementById('<%= hdnCompMaterialID.ClientID %>').value = matID;
-    document.getElementById('<%= hdnCompCantMin.ClientID %>').value    = cantMin;
-    document.getElementById('<%= hdnCompCantMax.ClientID %>').value    = cantMax;
-    document.getElementById('<%= hdnCompNotas.ClientID %>').value      = notas;
-    __doPostBack('<%= btnGuardarComponentes.UniqueID %>', '');
-}
+    function eliminarComp(pmID) {
+        Swal.fire({
+            icon: 'warning', title: '¿Eliminar componente?',
+            text: 'Se eliminará este componente del producto.',
+            showCancelButton: true, confirmButtonText: 'Sí, eliminar',
+            confirmButtonColor: '#e74c3c', cancelButtonColor: '#6c757d'
+        }).then(function (r) {
+            if (r.isConfirmed) {
+                document.getElementById('<%= hdnCompAccion.ClientID %>').value = 'DELETE';
+                document.getElementById('<%= hdnCompPMID.ClientID %>').value   = pmID;
+                __doPostBack('<%= btnGuardarComponentes.UniqueID %>', '');
+            }
+        });
+    }
 
-// ════════════════════════════════════════════════════
-// TOGGLE
-// ════════════════════════════════════════════════════
-function confirmarToggle(prodID, nombre, activo) {
-    var accion = activo ? 'desactivar' : 'activar';
-    Swal.fire({
-        icon: activo ? 'warning' : 'question',
-        title: '¿' + (activo?'Desactivar':'Activar') + ' producto?',
-        html: '¿Seguro de <b>' + accion + '</b> el producto <b>' + nombre + '</b>?',
-        showCancelButton:true, confirmButtonText:'Sí, '+accion,
-        confirmButtonColor: activo ? '#e0a800' : '#28a745',
-        cancelButtonColor:'#6c757d'
-    }).then(function(r){
-        if (r.isConfirmed) {
-            document.getElementById('<%= hdnToggleProductoID.ClientID %>').value = prodID;
-            __doPostBack('<%= btnToggleHidden.UniqueID %>', '');
-        }
-    });
-    return false;
-}
+    function agregarComponenteModal() {
+        var matID   = document.getElementById('ddlMaterialComp').value;
+        var cantMin = parseFloat(document.getElementById('txtCantMinComp').value) || 0;
+        var cantMax = parseFloat(document.getElementById('txtCantMaxComp').value) || 0;
+        var notas   = document.getElementById('txtNotasComp').value;
+        var prodID  = document.getElementById('<%= hdnCompProductoID.ClientID %>').value;
 
-// ════════════════════════════════════════════════════
-// VALIDACIONES
-// ════════════════════════════════════════════════════
-function prepararYValidarNuevo() {
-    if (!_validarProd(
-        '<%= txtCodigo.ClientID %>',
-        '<%= txtNombre.ClientID %>',
-        '<%= ddlTipo.ClientID %>',
-        '<%= txtPrecio.ClientID %>',
-        'modalNuevo')) return false;
+        if (!matID) {
+            Swal.fire({ icon: 'warning', title: 'Material requerido',
+                text: 'Seleccione un material.', confirmButtonColor: '#003366' })
+                .then(function () { $('#modalComponentes').modal('show'); });
+            return;
+        }
+        if (cantMax < cantMin) {
+            Swal.fire({ icon: 'warning', title: 'Rango inválido',
+                text: 'La cantidad máxima debe ser ≥ a la mínima.', confirmButtonColor: '#003366' })
+                .then(function () { $('#modalComponentes').modal('show'); });
+            return;
+        }
+        if (_compModal.find(function (c) { return c.materialID == matID; })) {
+            Swal.fire({ icon: 'warning', title: 'Duplicado',
+                text: 'Ese material ya está como componente de este producto.', confirmButtonColor: '#003366' })
+                .then(function () { $('#modalComponentes').modal('show'); });
+            return;
+        }
 
-    // Validar componentes
-    for (var i = 0; i < _compNuevo.length; i++) {
-        var c = _compNuevo[i];
-        if (!c.materialID) {
-            Swal.fire({ icon:'warning', title:'Componente incompleto',
-                text:'El componente #' + (i+1) + ' no tiene material seleccionado.',
-                confirmButtonColor:'#003366' }).then(function(){ $('#modalNuevo').modal('show'); });
-            return false;
-        }
-        if (c.cantMax < c.cantMin) {
-            Swal.fire({ icon:'warning', title:'Rango inválido',
-                text:'El componente #' + (i+1) + ': la cantidad máxima debe ser ≥ a la mínima.',
-                confirmButtonColor:'#003366' }).then(function(){ $('#modalNuevo').modal('show'); });
-            return false;
-        }
-        // Duplicados
-        for (var j = i+1; j < _compNuevo.length; j++) {
-            if (_compNuevo[j].materialID === c.materialID) {
-                Swal.fire({ icon:'warning', title:'Componente duplicado',
-                    text:'El mismo material aparece más de una vez.',
-                    confirmButtonColor:'#003366' }).then(function(){ $('#modalNuevo').modal('show'); });
+        document.getElementById('<%= hdnCompAccion.ClientID %>').value     = 'INSERT';
+        document.getElementById('<%= hdnCompMaterialID.ClientID %>').value = matID;
+        document.getElementById('<%= hdnCompCantMin.ClientID %>').value    = cantMin;
+        document.getElementById('<%= hdnCompCantMax.ClientID %>').value    = cantMax;
+        document.getElementById('<%= hdnCompNotas.ClientID %>').value      = notas;
+        __doPostBack('<%= btnGuardarComponentes.UniqueID %>', '');
+    }
+
+    // ════════════════════════════════════════════════════
+    // TOGGLE
+    // ════════════════════════════════════════════════════
+    function confirmarToggle(prodID, nombre, activo) {
+        var accion = activo ? 'desactivar' : 'activar';
+        Swal.fire({
+            icon: activo ? 'warning' : 'question',
+            title: '¿' + (activo ? 'Desactivar' : 'Activar') + ' producto?',
+            html: '¿Seguro de <b>' + accion + '</b> el producto <b>' + nombre + '</b>?',
+            showCancelButton: true, confirmButtonText: 'Sí, ' + accion,
+            confirmButtonColor: activo ? '#e0a800' : '#28a745',
+            cancelButtonColor: '#6c757d'
+        }).then(function (r) {
+            if (r.isConfirmed) {
+                document.getElementById('<%= hdnToggleProductoID.ClientID %>').value = prodID;
+                __doPostBack('<%= btnToggleHidden.UniqueID %>', '');
+            }
+        });
+        return false;
+    }
+
+    // ════════════════════════════════════════════════════
+    // VALIDACIONES
+    // ════════════════════════════════════════════════════
+    function prepararYValidarNuevo() {
+        if (!_validarProd(
+            '<%= txtCodigo.ClientID %>',
+            '<%= txtNombre.ClientID %>',
+            '<%= ddlTipo.ClientID %>',
+            '<%= txtPrecio.ClientID %>',
+            'modalNuevo')) return false;
+
+        for (var i = 0; i < _compNuevo.length; i++) {
+            var c = _compNuevo[i];
+            if (!c.materialID) {
+                Swal.fire({ icon: 'warning', title: 'Componente incompleto',
+                    text: 'El componente #' + (i + 1) + ' no tiene material seleccionado.',
+                    confirmButtonColor: '#003366' }).then(function () { $('#modalNuevo').modal('show'); });
                 return false;
             }
+            if (c.cantMax < c.cantMin) {
+                Swal.fire({ icon: 'warning', title: 'Rango inválido',
+                    text: 'El componente #' + (i + 1) + ': la cantidad máxima debe ser ≥ a la mínima.',
+                    confirmButtonColor: '#003366' }).then(function () { $('#modalNuevo').modal('show'); });
+                return false;
+            }
+            for (var j = i + 1; j < _compNuevo.length; j++) {
+                if (_compNuevo[j].materialID === c.materialID) {
+                    Swal.fire({ icon: 'warning', title: 'Componente duplicado',
+                        text: 'El mismo material aparece más de una vez.',
+                        confirmButtonColor: '#003366' }).then(function () { $('#modalNuevo').modal('show'); });
+                    return false;
+                }
+            }
         }
+
+        document.getElementById('<%= hdnComponentesNuevo.ClientID %>').value = JSON.stringify(_compNuevo);
+        return true;
     }
 
-    // Serializar componentes al hidden field
-    document.getElementById('<%= hdnComponentesNuevo.ClientID %>').value = JSON.stringify(_compNuevo);
-    return true;
-}
-
-function validarEditar() {
-    return _validarProd(
-        '<%= txtCodigoEdit.ClientID %>',
-        '<%= txtNombreEdit.ClientID %>',
-        '<%= ddlTipoEdit.ClientID %>',
-        '<%= txtPrecioEdit.ClientID %>',
-        'modalEditar');
+    function validarEditar() {
+        return _validarProd(
+            '<%= txtCodigoEdit.ClientID %>',
+            '<%= txtNombreEdit.ClientID %>',
+            '<%= ddlTipoEdit.ClientID %>',
+            '<%= txtPrecioEdit.ClientID %>',
+            'modalEditar');
     }
 
     function _validarProd(idCod, idNom, idTipo, idPre, modal) {
@@ -777,7 +758,11 @@ function validarEditar() {
     // ════════════════════════════════════════════════════
     function escHtml(s) {
         if (!s) return '';
-        return String(s).replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;').replace(/"/g, '&quot;');
+        return String(s)
+            .replace(/&/g, '&amp;')
+            .replace(/</g, '&lt;')
+            .replace(/>/g, '&gt;')
+            .replace(/"/g, '&quot;');
     }
 </script>
 
