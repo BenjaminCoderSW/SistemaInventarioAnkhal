@@ -67,13 +67,13 @@
         .bases-accordion tr:hover td { background:#e3eaf3; }
 
         /* ── Paginador ── */
+        /* ── CAMBIO: estilos paginador custom igual que Bases ── */
         .pager-custom span {
             background:#003366; color:#fff; font-weight:700;
             border-radius:4px; padding:4px 9px;
         }
         .pager-custom a { padding:4px 9px; border-radius:4px; }
 
-        /* activo al filtrar por nivel */
         .stock-card.activo-filtro { outline: 3px solid #fff; outline-offset: 2px; }
     </style>
 </asp:Content>
@@ -178,7 +178,7 @@
             <div class="table-responsive">
                 <asp:GridView ID="gvMateriales" runat="server" AutoGenerateColumns="False"
                     CssClass="table table-bordered table-striped custom-grid"
-                    AllowPaging="True" PageSize="15"
+                    AllowPaging="True" AllowCustomPaging="True" PageSize="2"
                     OnPageIndexChanging="gvMateriales_PageIndexChanging"
                     OnRowDataBound="gvMateriales_RowDataBound"
                     DataKeyNames="MaterialID"
@@ -247,7 +247,8 @@
                                         '<%# Eval("PrecioUnitario") %>',
                                         '<%# Eval("StockCritico") %>',
                                         '<%# Eval("StockMinimo") %>',
-                                        '<%# Eval("StockOptimo") %>'
+                                        '<%# Eval("StockOptimo") %>',
+                                        '<%# RowVersionBase64(Eval("RowVersion")) %>'
                                     )">
                                     <i class="fas fa-edit"></i> Editar
                                 </button>
@@ -382,6 +383,7 @@
       </div>
       <div class="modal-body">
         <asp:HiddenField ID="hdnMaterialID" runat="server" />
+        <asp:HiddenField ID="hdnRowVersion" runat="server" />
         <div class="row">
           <div class="col-md-3">
             <div class="form-group">
@@ -466,25 +468,24 @@
     // ── Mensaje pendiente (mismo patrón que Bases) ────────────────
     window.addEventListener('load', function () {
         var hdnMsg = document.getElementById('<%= hdnMensajePendiente.ClientID %>');
-    if (!hdnMsg || !hdnMsg.value) return;
-    try {
-        var msg = JSON.parse(hdnMsg.value);
-        hdnMsg.value = '';
-        var opts = { icon: msg.icon, title: msg.title, text: msg.text, confirmButtonColor: '#003366' };
-        if (msg.icon === 'success') { opts.showConfirmButton = false; opts.timer = 2000; }
-        if (msg.modal) {
-            opts.showConfirmButton = true;
-            Swal.fire(opts).then(function () { $('#' + msg.modal).modal('show'); });
-        } else { Swal.fire(opts); }
-    } catch (e) { }
-});
+        if (!hdnMsg || !hdnMsg.value) return;
+        try {
+            var msg = JSON.parse(hdnMsg.value);
+            hdnMsg.value = '';
+            var opts = { icon: msg.icon, title: msg.title, text: msg.text, confirmButtonColor: '#003366' };
+            if (msg.icon === 'success') { opts.showConfirmButton = false; opts.timer = 2000; }
+            if (msg.modal) {
+                opts.showConfirmButton = true;
+                Swal.fire(opts).then(function () { $('#' + msg.modal).modal('show'); });
+            } else { Swal.fire(opts); }
+        } catch (e) { }
+    });
 
     // ── Acordeón de bases ──────────────────────────────────────────
     function toggleAcordeon(id, btn) {
         var el = document.getElementById(id);
         if (!el) return;
         var visible = el.style.display !== 'none' && el.style.display !== '';
-        // cerrar todos
         document.querySelectorAll('[id^="acc_"]').forEach(function (a) { a.style.display = 'none'; });
         document.querySelectorAll('.btn-info.btn-sm.activo-acc').forEach(function (b) {
             b.classList.remove('activo-acc');
@@ -500,74 +501,76 @@
     // ── Filtrar por nivel desde las cards del dashboard ───────────
     function filtrarNivel(nivel) {
         document.getElementById('<%= hdnNivelFiltro.ClientID %>').value = nivel;
-    document.getElementById('<%= ddlFiltrNivel.ClientID %>').value = nivel;
-    document.getElementById('<%= btnBuscar.ClientID %>').click();
-}
+        document.getElementById('<%= ddlFiltrNivel.ClientID %>').value = nivel;
+        document.getElementById('<%= btnBuscar.ClientID %>').click();
+    }
 
-// ── Abrir modales ─────────────────────────────────────────────
-function abrirModalNuevo() { $('#modalNuevo').modal('show'); }
+    // ── Abrir modales ─────────────────────────────────────────────
+    function abrirModalNuevo() { $('#modalNuevo').modal('show'); }
 
-function abrirModalEditar(id, codigo, nombre, tipoID, subtipo, unidad, precio, critico, minimo, optimo) {
-    document.getElementById('<%= hdnMaterialID.ClientID %>').value          = id;
-    document.getElementById('<%= txtCodigoEdit.ClientID %>').value          = codigo;
-    document.getElementById('<%= txtNombreEdit.ClientID %>').value          = nombre;
-    document.getElementById('<%= ddlTipoEdit.ClientID %>').value            = tipoID;
-    document.getElementById('<%= txtSubtipoEdit.ClientID %>').value         = subtipo;
-    document.getElementById('<%= txtUnidadEdit.ClientID %>').value          = unidad;
-    document.getElementById('<%= txtPrecioEdit.ClientID %>').value          = precio;
-    document.getElementById('<%= txtStockCriticoEdit.ClientID %>').value    = critico;
-    document.getElementById('<%= txtStockMinimoEdit.ClientID %>').value     = minimo;
-    document.getElementById('<%= txtStockOptimoEdit.ClientID %>').value     = optimo;
-    $('#modalEditar').modal('show');
-}
+    // ── CAMBIO: se agrega parámetro rowVersion igual que en Bases ──
+    function abrirModalEditar(id, codigo, nombre, tipoID, subtipo, unidad, precio, critico, minimo, optimo, rowVersion) {
+        document.getElementById('<%= hdnMaterialID.ClientID %>').value          = id;
+        document.getElementById('<%= hdnRowVersion.ClientID %>').value          = rowVersion;
+        document.getElementById('<%= txtCodigoEdit.ClientID %>').value          = codigo;
+        document.getElementById('<%= txtNombreEdit.ClientID %>').value          = nombre;
+        document.getElementById('<%= ddlTipoEdit.ClientID %>').value            = tipoID;
+        document.getElementById('<%= txtSubtipoEdit.ClientID %>').value         = subtipo;
+        document.getElementById('<%= txtUnidadEdit.ClientID %>').value          = unidad;
+        document.getElementById('<%= txtPrecioEdit.ClientID %>').value          = precio;
+        document.getElementById('<%= txtStockCriticoEdit.ClientID %>').value    = critico;
+        document.getElementById('<%= txtStockMinimoEdit.ClientID %>').value     = minimo;
+        document.getElementById('<%= txtStockOptimoEdit.ClientID %>').value     = optimo;
+        $('#modalEditar').modal('show');
+    }
 
-// ── Toggle ────────────────────────────────────────────────────
-function confirmarToggle(matID, nombre, activo) {
-    var accion = activo ? 'desactivar' : 'activar';
-    Swal.fire({
-        icon: activo ? 'warning' : 'question',
-        title: '¿' + (activo ? 'Desactivar' : 'Activar') + ' material?',
-        html: '¿Seguro de <b>' + accion + '</b> el material <b>' + nombre + '</b>?',
-        showCancelButton: true,
-        confirmButtonText: 'Sí, ' + accion,
-        cancelButtonText: 'Cancelar',
-        confirmButtonColor: activo ? '#e0a800' : '#28a745',
-        cancelButtonColor: '#6c757d'
-    }).then(function(r) {
-        if (r.isConfirmed) {
-            document.getElementById('<%= hdnToggleMaterialID.ClientID %>').value = matID;
-            __doPostBack('<%= btnToggleHidden.UniqueID %>', '');
-        }
-    });
-    return false;
-}
+    // ── Toggle ────────────────────────────────────────────────────
+    function confirmarToggle(matID, nombre, activo) {
+        var accion = activo ? 'desactivar' : 'activar';
+        Swal.fire({
+            icon: activo ? 'warning' : 'question',
+            title: '¿' + (activo ? 'Desactivar' : 'Activar') + ' material?',
+            html: '¿Seguro de <b>' + accion + '</b> el material <b>' + nombre + '</b>?',
+            showCancelButton: true,
+            confirmButtonText: 'Sí, ' + accion,
+            cancelButtonText: 'Cancelar',
+            confirmButtonColor: activo ? '#e0a800' : '#28a745',
+            cancelButtonColor: '#6c757d'
+        }).then(function(r) {
+            if (r.isConfirmed) {
+                document.getElementById('<%= hdnToggleMaterialID.ClientID %>').value = matID;
+                __doPostBack('<%= btnToggleHidden.UniqueID %>', '');
+            }
+        });
+        return false;
+    }
 
-// ── Validaciones cliente ──────────────────────────────────────
-function validarNuevo() {
-    return _validar(
-        '<%= txtCodigo.ClientID %>',
-        '<%= txtNombre.ClientID %>',
-        '<%= ddlTipo.ClientID %>',
-        '<%= txtUnidad.ClientID %>',
-        '<%= txtPrecio.ClientID %>',
-        '<%= txtStockCritico.ClientID %>',
-        '<%= txtStockMinimo.ClientID %>',
-        '<%= txtStockOptimo.ClientID %>',
-        'modalNuevo'
-    );
-}
-function validarEditar() {
-    return _validar(
-        '<%= txtCodigoEdit.ClientID %>',
-        '<%= txtNombreEdit.ClientID %>',
-        '<%= ddlTipoEdit.ClientID %>',
-        '<%= txtUnidadEdit.ClientID %>',
-        '<%= txtPrecioEdit.ClientID %>',
-        '<%= txtStockCriticoEdit.ClientID %>',
-        '<%= txtStockMinimoEdit.ClientID %>',
-        '<%= txtStockOptimoEdit.ClientID %>',
-        'modalEditar'
-    );
+    // ── Validaciones cliente ──────────────────────────────────────
+    function validarNuevo() {
+        return _validar(
+            '<%= txtCodigo.ClientID %>',
+            '<%= txtNombre.ClientID %>',
+            '<%= ddlTipo.ClientID %>',
+            '<%= txtUnidad.ClientID %>',
+            '<%= txtPrecio.ClientID %>',
+            '<%= txtStockCritico.ClientID %>',
+            '<%= txtStockMinimo.ClientID %>',
+            '<%= txtStockOptimo.ClientID %>',
+            'modalNuevo'
+        );
+    }
+    function validarEditar() {
+        return _validar(
+            '<%= txtCodigoEdit.ClientID %>',
+            '<%= txtNombreEdit.ClientID %>',
+            '<%= ddlTipoEdit.ClientID %>',
+            '<%= txtUnidadEdit.ClientID %>',
+            '<%= txtPrecioEdit.ClientID %>',
+            '<%= txtStockCriticoEdit.ClientID %>',
+            '<%= txtStockMinimoEdit.ClientID %>',
+            '<%= txtStockOptimoEdit.ClientID %>',
+            'modalEditar'
+        );
     }
     function _validar(idCod, idNom, idTipo, idUni, idPre, idCrit, idMin, idOpt, modal) {
         var cod = document.getElementById(idCod).value.trim();
