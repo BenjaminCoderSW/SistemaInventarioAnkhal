@@ -1,108 +1,95 @@
-﻿using GrupoAnkhalInventario.Modelo;
-using System;
+﻿using System;
 using System.Configuration;
-using System.Linq;
+using System.Data;
+using System.Data.SqlClient;
 using System.Web.UI;
 
 namespace GrupoAnkhalInventario
 {
     public partial class Login : Page
     {
-        // Conexión a la base de datos usando LINQ to SQL
-        public InventarioAnkhalDBDataContext db = new InventarioAnkhalDBDataContext(
-            ConfigurationManager.ConnectionStrings["InventarioAnkhalDBConnectionString"].ConnectionString);
+        private static readonly string _connStr =
+            ConfigurationManager.ConnectionStrings["InventarioAnkhalDBConnectionString"].ConnectionString;
 
         protected void Page_Load(object sender, EventArgs e)
         {
             if (!IsPostBack)
-            {
-                // Limpiar sesión al cargar el login
                 Session.Clear();
-            }
         }
 
         protected void btnIngresar_Click(object sender, EventArgs e)
         {
             try
             {
-                // Validar campos vacíos
                 if (string.IsNullOrWhiteSpace(txtUsuario.Text) || string.IsNullOrWhiteSpace(txtClave.Text))
                 {
                     MostrarError("Campos vacíos", "Por favor ingrese usuario y contraseña.");
                     return;
                 }
 
-                // Buscar usuario en la base de datos
-                var usuarioDb = db.Usuarios.FirstOrDefault(u =>
-                    u.NombreUsuario == txtUsuario.Text.Trim() &&
-                    u.Clave == txtClave.Text &&
-                    u.Activo == true);
+                const string sql = @"
+                    SELECT ClaveID, UsuarioID, Usuario, Clave,
+                           Nombre, ApellidoPaterno, Email,
+                           Rol, Activo
+                    FROM DatosUsuario
+                    WHERE Usuario = @usuario AND Activo = 1";
 
-                if (usuarioDb != null)
+                using (var cn = new SqlConnection(_connStr))
                 {
-                    // Obtener el rol activo del usuario (el más reciente sin revocar)
-                    var rolActivo = (from ur in db.UsuarioRoles
-                                     join r in db.Roles on ur.RolID equals r.RolID
-                                     where ur.UsuarioID == usuarioDb.UsuarioID
-                                           && ur.FechaRevocacion == null
-                                           && r.Activo == true
-                                     orderby ur.FechaAsignacion descending
-                                     select r.Nombre).FirstOrDefault();
+                    cn.Open();
 
-                    // Crear variables de sesión
-                    Session["UsuarioID"] = usuarioDb.UsuarioID;
-                    Session["NombreUsuario"] = usuarioDb.Nombre;
-                    Session["NombreCompleto"] = $"{usuarioDb.Nombre} {usuarioDb.ApellidoPaterno ?? ""}".Trim();
-                    Session["Rol"] = rolActivo ?? "Operador";
-                    Session["Email"] = usuarioDb.Email;
-
-                    // Actualizar último acceso
-                    usuarioDb.UltimoAcceso = DateTime.Now;
-                    db.SubmitChanges();
-
-                    // Redirigir según el rol
-                    string rol = Session["Rol"].ToString();
-
-                    if (rol == "Administrador" || rol == "Supervisor")
+                    DataRow row = null;
+                    using (var cmd = new SqlCommand(sql, cn))
                     {
-                        Response.Redirect("~/Default.aspx", false);
+                        cmd.Parameters.AddWithValue("@usuario", txtUsuario.Text.Trim());
+                        var dt = new DataTable();
+                        using (var da = new SqlDataAdapter(cmd))
+                            da.Fill(dt);
+                        if (dt.Rows.Count > 0)
+                            row = dt.Rows[0];
                     }
-                    else if (rol == "Operador")
+
+                    // Verificar contraseña con BCrypt
+                    bool valido = row != null &&
+                        BCrypt.Net.BCrypt.Verify(txtClave.Text, row["Clave"].ToString());
+
+                    if (valido)
                     {
+                        int claveID = Convert.ToInt32(row["ClaveID"]);
+
+                        // Guardar sesión
+                        Session["UsuarioID"] = claveID;
+                        Session["NombreUsuario"] = row["Usuario"].ToString();
+                        Session["NombreCompleto"] = (row["Nombre"] + " " + row["ApellidoPaterno"]).Trim();
+                        Session["Rol"] = row["Rol"] != DBNull.Value ? row["Rol"].ToString() : "Reporte";
+                        Session["Email"] = row["Email"] != DBNull.Value ? row["Email"].ToString() : "";
+
+                        // Actualizar UltimoAcceso
+                        using (var cmd = new SqlCommand(
+                            "UPDATE dbo.Usuario SET UltimoAcceso = GETDATE() WHERE ClaveID = @id", cn))
+                        {
+                            cmd.Parameters.AddWithValue("@id", claveID);
+                            cmd.ExecuteNonQuery();
+                        }
+
                         Response.Redirect("~/Default.aspx", false);
-                    }
-                    else if (rol == "Consulta")
-                    {
-                        Response.Redirect("~/Default.aspx", false);
+                        Context.ApplicationInstance.CompleteRequest();
                     }
                     else
                     {
-                        // Rol no reconocido, llevar al dashboard genérico
-                        Response.Redirect("~/Default.aspx", false);
+                        MostrarError("Acceso Denegado",
+                            "Usuario o contraseña incorrectos. Verifique sus credenciales.");
                     }
-
-                    Context.ApplicationInstance.CompleteRequest();
-                }
-                else
-                {
-                    // Usuario no encontrado o credenciales incorrectas
-                    MostrarError("Acceso Denegado", "Usuario o contraseña incorrectos. Verifique sus credenciales.");
                 }
             }
             catch (Exception ex)
             {
-                // Error en el proceso de login
-                MostrarError("Error del Sistema", $"Ocurrió un error al iniciar sesión. Por favor contacte al administrador del sistema.<br/><small>Detalles técnicos: {ex.Message}</small>");
-
-                // Log del error para debugging
-                System.Diagnostics.Debug.WriteLine($"[{DateTime.Now}] Error en Login: {ex.Message}");
-                System.Diagnostics.Debug.WriteLine($"StackTrace: {ex.StackTrace}");
+                System.Diagnostics.Debug.WriteLine($"[Login] {ex.Message}");
+                MostrarError("Error del Sistema",
+                    "Ocurrió un error al iniciar sesión. Contacte al administrador.");
             }
         }
 
-        /// <summary>
-        /// Muestra un mensaje de error usando SweetAlert2
-        /// </summary>
         private void MostrarError(string titulo, string mensaje)
         {
             string script = $@"
@@ -115,7 +102,6 @@ namespace GrupoAnkhalInventario
                     document.getElementById('{txtClave.ClientID}').value = '';
                     document.getElementById('{txtClave.ClientID}').focus();
                 }});";
-
             ScriptManager.RegisterStartupScript(this, GetType(), "SweetAlert", script, true);
         }
     }

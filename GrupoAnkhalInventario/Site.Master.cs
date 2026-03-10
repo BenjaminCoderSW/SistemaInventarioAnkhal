@@ -1,5 +1,6 @@
 ﻿using GrupoAnkhalInventario.Modelo;
 using System;
+using System.Collections.Generic;
 using System.Configuration;
 using System.Linq;
 using System.Web.UI;
@@ -8,62 +9,111 @@ namespace GrupoAnkhalInventario
 {
     public partial class Site : MasterPage
     {
-        // Conexión a la base de datos
-        public InventarioAnkhalDBDataContext db = new InventarioAnkhalDBDataContext(
-            ConfigurationManager.ConnectionStrings["InventarioAnkhalDBConnectionString"].ConnectionString);
+        // ── Mapa de permisos por página ───────────────────────────────────────
+        // Clave: nombre del archivo .aspx (case-insensitive, sin ruta).
+        // Valor: roles con acceso. Si la página no está en el diccionario,
+        //        cualquier usuario autenticado puede acceder.
+        // SINCRONIZAR con ConfigurarMenuPorRol() cuando cambien los roles.
+        private static readonly Dictionary<string, List<string>> _permisosPagina =
+            new Dictionary<string, List<string>>(StringComparer.OrdinalIgnoreCase)
+            {
+                // ── Catálogos (Administrador + Compras) ──
+                { "bases.aspx",      new List<string> { "Administrador", "Compras" } },
+                { "materiales.aspx", new List<string> { "Administrador", "Compras" } },
+                { "productos.aspx",  new List<string> { "Administrador", "Compras", "Ventas" } },
+                { "paquetes.aspx",   new List<string> { "Administrador", "Compras", "Ventas" } },
 
+                // ── Operaciones ──
+                { "produccion.aspx",  new List<string> { "Administrador", "Produccion", "Almacen" } },
+                { "entregas.aspx",    new List<string> { "Administrador", "Ventas",     "Almacen" } },
+                { "movimientos.aspx", new List<string> { "Administrador", "Almacen",    "Produccion" } },
+
+                // ── Inventario (todos excepto roles no definidos) ──
+                { "inventario.aspx", new List<string>
+                    { "Administrador", "Ventas", "Compras", "Almacen", "Produccion", "Reporte" } },
+
+                // ── Administración ──
+                { "usuarios.aspx", new List<string> { "Administrador" } },
+            };
+
+        // ─────────────────────────────────────────────────────────────────────
         protected void Page_Load(object sender, EventArgs e)
         {
             if (!IsPostBack)
             {
-                // Verificar si hay sesión activa
                 if (Session["UsuarioID"] != null)
                 {
+                    ValidarAccesoPagina();
                     CargarDatosUsuario();
                     ConfigurarMenuPorRol();
                 }
                 else
                 {
-                    // No hay sesión, redirigir al login
                     Response.Redirect("~/Login.aspx", false);
                     Context.ApplicationInstance.CompleteRequest();
                 }
             }
         }
 
+        // ── Validación centralizada de acceso ─────────────────────────────────
+        private void ValidarAccesoPagina()
+        {
+            string pagina = System.IO.Path.GetFileName(Request.FilePath);
+            if (!_permisosPagina.TryGetValue(pagina, out var rolesPermitidos))
+                return; // No listada = accesible para cualquier autenticado
+
+            string rol = Session["Rol"]?.ToString() ?? "";
+            if (!rolesPermitidos.Contains(rol))
+            {
+                Response.Redirect("~/Default.aspx", false);
+                Context.ApplicationInstance.CompleteRequest();
+            }
+        }
+
         /// <summary>
-        /// Carga los datos del usuario desde la sesión
+        /// Para validación extra granular desde una página específica.
+        /// Ejemplo: ((Site)Master).RequiereRol("Administrador")
         /// </summary>
+        public void RequiereRol(params string[] roles)
+        {
+            string rol = Session["Rol"]?.ToString() ?? "";
+            if (!((IList<string>)roles).Contains(rol))
+            {
+                Response.Redirect("~/Default.aspx", false);
+                Context.ApplicationInstance.CompleteRequest();
+            }
+        }
+
+        // ── Carga de datos del usuario en el sidebar ──────────────────────────
         private void CargarDatosUsuario()
         {
             try
             {
-                // Mostrar nombre completo del usuario
-                lblUsuario.Text = Session["NombreCompleto"]?.ToString() ?? "Usuario";
+                if (Session["UsuarioID"] == null)
+                {
+                    Response.Redirect("~/Login.aspx", false);
+                    Context.ApplicationInstance.CompleteRequest();
+                    return;
+                }
 
-                // Mostrar rol
+                lblUsuario.Text = Session["NombreCompleto"]?.ToString() ?? "Usuario";
                 lblRol.Text = Session["Rol"]?.ToString() ?? "Sin rol";
 
-                // Cargar foto del usuario
                 int usuarioID = Convert.ToInt32(Session["UsuarioID"]);
-                var usuario = db.Usuarios.FirstOrDefault(u => u.UsuarioID == usuarioID);
 
-                if (usuario != null && usuario.Foto != null)
+                using (var db = new InventarioAnkhalDBDataContext(
+                    ConfigurationManager.ConnectionStrings["InventarioAnkhalDBConnectionString"].ConnectionString))
                 {
-                    byte[] fotoBytes = usuario.Foto.ToArray();
-                    if (fotoBytes != null && fotoBytes.Length > 0)
+                    var usuario = db.Usuarios.FirstOrDefault(u => u.UsuarioID == usuarioID);
+                    if (usuario?.Foto != null && usuario.Foto.Length > 0)
                     {
-                        string base64 = Convert.ToBase64String(fotoBytes);
-                        imgUsuario.Src = "data:image/png;base64," + base64;
+                        string base64 = Convert.ToBase64String(usuario.Foto.ToArray());
+                        imgUsuario.Src = "data:image/jpeg;base64," + base64;
                     }
                     else
                     {
                         imgUsuario.Src = "dist/img/user2-160x160.jpg";
                     }
-                }
-                else
-                {
-                    imgUsuario.Src = "dist/img/user2-160x160.jpg";
                 }
             }
             catch (Exception ex)
@@ -75,17 +125,28 @@ namespace GrupoAnkhalInventario
             }
         }
 
-        /// <summary>
-        /// Configura la visibilidad del menú según el rol del usuario
-        /// </summary>
+        // ── Configuración del menú por rol ────────────────────────────────────
+        // Roles: Administrador | Ventas | Compras | Almacen | Produccion | Reporte
         private void ConfigurarMenuPorRol()
         {
-            string rol = Session["Rol"]?.ToString() ?? "Consulta";
+            string rol = Session["Rol"]?.ToString() ?? "Reporte";
+
+            // Por defecto: todo oculto
+            headerConfiguracion.Visible = false;
+            menuCatalogos.Visible = false;
+            headerOperaciones.Visible = false;
+            menuProduccion.Visible = false;
+            menuEntregas.Visible = false;
+            menuMovimientos.Visible = false;
+            headerInventario.Visible = false;
+            menuInventario.Visible = false;
+            headerAdministracion.Visible = false;
+            menuUsuarios.Visible = false;
+            lnkInicio.Visible = true;
 
             switch (rol)
             {
                 case "Administrador":
-                    // Ve todo
                     headerConfiguracion.Visible = true;
                     menuCatalogos.Visible = true;
                     headerOperaciones.Visible = true;
@@ -96,89 +157,60 @@ namespace GrupoAnkhalInventario
                     menuInventario.Visible = true;
                     headerAdministracion.Visible = true;
                     menuUsuarios.Visible = true;
-                    lnkInicio.Visible = true;
                     break;
 
-                case "Supervisor":
-                    // Ve configuración, operaciones e inventario
+                case "Ventas":
                     headerConfiguracion.Visible = true;
-                    menuCatalogos.Visible = true;
+                    menuCatalogos.Visible = true;   // Productos y Paquetes
+                    headerOperaciones.Visible = true;
+                    menuEntregas.Visible = true;
+                    headerInventario.Visible = true;
+                    menuInventario.Visible = true;
+                    break;
+
+                case "Compras":
+                    headerConfiguracion.Visible = true;
+                    menuCatalogos.Visible = true;   // Bases, Materiales, Productos, Paquetes
+                    headerInventario.Visible = true;
+                    menuInventario.Visible = true;
+                    break;
+
+                case "Almacen":
                     headerOperaciones.Visible = true;
                     menuProduccion.Visible = true;
                     menuEntregas.Visible = true;
                     menuMovimientos.Visible = true;
                     headerInventario.Visible = true;
                     menuInventario.Visible = true;
-                    headerAdministracion.Visible = false;
-                    menuUsuarios.Visible = false;
-                    lnkInicio.Visible = true;
                     break;
 
-                case "Operador":
-                    // Solo ve operaciones e inventario (consulta)
-                    headerConfiguracion.Visible = false;
-                    menuCatalogos.Visible = false;
+                case "Produccion":
                     headerOperaciones.Visible = true;
                     menuProduccion.Visible = true;
-                    menuEntregas.Visible = true;
                     menuMovimientos.Visible = true;
                     headerInventario.Visible = true;
                     menuInventario.Visible = true;
-                    headerAdministracion.Visible = false;
-                    menuUsuarios.Visible = false;
-                    lnkInicio.Visible = true;
                     break;
 
-                case "Consulta":
-                    // Solo ve inventario (lectura)
-                    headerConfiguracion.Visible = false;
-                    menuCatalogos.Visible = false;
-                    headerOperaciones.Visible = false;
-                    menuProduccion.Visible = false;
-                    menuEntregas.Visible = false;
-                    menuMovimientos.Visible = false;
+                case "Reporte":
                     headerInventario.Visible = true;
                     menuInventario.Visible = true;
-                    headerAdministracion.Visible = false;
-                    menuUsuarios.Visible = false;
-                    lnkInicio.Visible = true;
                     break;
 
-                default:
-                    // Rol desconocido - solo dashboard
-                    headerConfiguracion.Visible = false;
-                    menuCatalogos.Visible = false;
-                    headerOperaciones.Visible = false;
-                    menuProduccion.Visible = false;
-                    menuEntregas.Visible = false;
-                    menuMovimientos.Visible = false;
-                    headerInventario.Visible = false;
-                    menuInventario.Visible = false;
-                    headerAdministracion.Visible = false;
-                    menuUsuarios.Visible = false;
-                    lnkInicio.Visible = true;
-                    break;
+                    // default: todo oculto (ya establecido arriba)
             }
         }
 
-        /// <summary>
-        /// Redirige al dashboard al hacer click en el logo
-        /// </summary>
+        // ── Navegación y sesión ───────────────────────────────────────────────
         protected void btnHome_Click(object sender, EventArgs e)
         {
             Response.Redirect("~/Default.aspx");
         }
 
-        /// <summary>
-        /// Cierra la sesión del usuario
-        /// </summary>
         protected void CerrarSesion_Click(object sender, EventArgs e)
         {
-            // Limpiar completamente la sesión
             Session.Clear();
             Session.Abandon();
-
-            // Redirigir al login
             Response.Redirect("~/Login.aspx", false);
             Context.ApplicationInstance.CompleteRequest();
         }

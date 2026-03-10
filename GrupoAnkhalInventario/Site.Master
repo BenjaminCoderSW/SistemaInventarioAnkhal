@@ -94,19 +94,16 @@
 
             <!-- Navbar -->
             <nav class="main-header navbar navbar-expand navbar-custom">
-                <!-- Left navbar links -->
                 <ul class="navbar-nav">
                     <li class="nav-item">
                         <a class="nav-link" data-widget="pushmenu" href="#"><i class="fas fa-bars"></i></a>
                     </li>
                     <li class="nav-item d-none d-sm-inline-block">
-                       <a id="lnkInicio" href="Default.aspx" runat="server" class="nav-link">Dashboard</a>
+                        <a id="lnkInicio" href="Default.aspx" runat="server" class="nav-link">Dashboard</a>
                     </li>
                 </ul>
 
-                <!-- Right navbar links -->
                 <ul class="navbar-nav ml-auto">
-                    <!-- Navbar Search -->
                     <li class="nav-item">
                         <div class="navbar-search-block">
                             <form class="form-inline">
@@ -124,15 +121,12 @@
                             </form>
                         </div>
                     </li>
-
                     <li class="nav-item">
                         <a class="nav-link" data-widget="fullscreen" href="#" role="button">
                             <i class="fas fa-expand-arrows-alt"></i>
                         </a>
                     </li>
-                    
                     <li class="nav-item">
-                        <!-- Botón de salir -->
                         <a class="nav-link text-danger" runat="server" OnServerClick="CerrarSesion_Click">
                             <i class="fas fa-sign-out-alt"></i>
                         </a>
@@ -156,17 +150,16 @@
                     </div>
                     <div class="info">
                         <asp:Label ID="lblUsuario" runat="server" CssClass="d-block text-white" Text="Usuario"></asp:Label>
-                        <asp:Label ID="lblRol" runat="server" CssClass="d-block text-white-50 small" Text="Rol"></asp:Label>
+                        <asp:Label ID="lblRol"     runat="server" CssClass="d-block text-white-50 small" Text="Rol"></asp:Label>
                     </div>
                 </div>
 
                 <!-- Sidebar -->
                 <div class="sidebar">
-                    <!-- Sidebar Menu -->
                     <nav class="mt-2">
                         <ul class="nav nav-pills nav-sidebar flex-column" data-widget="treeview" role="menu" data-accordion="false">
-                            
-                            <!-- DASHBOARD -->
+
+                            <!-- ── DASHBOARD ─────────────────────────────── -->
                             <li class="nav-item">
                                 <a href="Default.aspx" class="nav-link">
                                     <i class="nav-icon fas fa-tachometer-alt"></i>
@@ -174,8 +167,10 @@
                                 </a>
                             </li>
 
-                            <!-- CONFIGURACIÓN -->
+                            <!-- ── CONFIGURACIÓN ──────────────────────────── -->
                             <li id="headerConfiguracion" runat="server" class="nav-header">CONFIGURACIÓN</li>
+
+                            <!-- Catálogos (desplegable) -->
                             <li class="nav-item" id="menuCatalogos" runat="server">
                                 <a href="#" class="nav-link">
                                     <i class="nav-icon fas fa-cogs"></i>
@@ -188,7 +183,7 @@
                                     <li class="nav-item">
                                         <a href="Bases.aspx" class="nav-link">
                                             <i class="far fa-circle nav-icon"></i>
-                                            <p>Bases/Plantas</p>
+                                            <p>Bases / Plantas</p>
                                         </a>
                                     </li>
                                     <li class="nav-item">
@@ -212,53 +207,117 @@
                                 </ul>
                             </li>
 
-                            <!-- OPERACIONES -->
+                            <!-- ── OPERACIONES ────────────────────────────── -->
                             <li id="headerOperaciones" runat="server" class="nav-header">OPERACIONES</li>
+
+                            <!-- Producción (desplegable) -->
                             <li class="nav-item" id="menuProduccion" runat="server">
-                                <a href="Produccion.aspx" class="nav-link">
+                                <a href="#" class="nav-link">
                                     <i class="nav-icon fas fa-industry"></i>
-                                    <p>Producción</p>
+                                    <p>
+                                        Producción
+                                        <i class="fas fa-angle-left right"></i>
+                                    </p>
                                 </a>
+                                <ul class="nav nav-treeview">
+                                    <li class="nav-item">
+                                        <a href="Produccion.aspx" class="nav-link">
+                                            <i class="far fa-circle nav-icon"></i>
+                                            <p>Registrar Producción</p>
+                                        </a>
+                                    </li>
+                                </ul>
                             </li>
+
+                            <!-- Entregas (desplegable) -->
                             <li class="nav-item" id="menuEntregas" runat="server">
-                                <a href="Entregas.aspx" class="nav-link">
+                                <a href="#" class="nav-link">
                                     <i class="nav-icon fas fa-truck"></i>
-                                    <p>Entregas</p>
+                                    <p>
+                                        Entregas
+                                        <i class="fas fa-angle-left right"></i>
+                                    </p>
                                 </a>
+                                <ul class="nav nav-treeview">
+                                    <li class="nav-item">
+                                        <a href="Entregas.aspx" class="nav-link">
+                                            <i class="far fa-circle nav-icon"></i>
+                                            <p>Registrar Entrega</p>
+                                        </a>
+                                    </li>
+                                </ul>
                             </li>
+
+                            <!-- Movimientos (desplegable) -->
                             <li class="nav-item" id="menuMovimientos" runat="server">
-                                <a href="Movimientos.aspx" class="nav-link">
+                                <a href="#" class="nav-link">
                                     <i class="nav-icon fas fa-exchange-alt"></i>
-                                    <p>Movimientos</p>
+                                    <p>
+                                        Movimientos
+                                        <i class="fas fa-angle-left right"></i>
+                                    </p>
                                 </a>
+                                <ul class="nav nav-treeview">
+                                    <li class="nav-item">
+                                        <a href="Movimientos.aspx" class="nav-link">
+                                            <i class="far fa-circle nav-icon"></i>
+                                            <p>Registrar Movimiento</p>
+                                        </a>
+                                    </li>
+                                </ul>
                             </li>
 
-                            <!-- INVENTARIO -->
+                            <!-- ── INVENTARIO ──────────────────────────────── -->
                             <li id="headerInventario" runat="server" class="nav-header">INVENTARIO</li>
+
+                            <!-- Inventario (desplegable) -->
                             <li class="nav-item" id="menuInventario" runat="server">
-                                <a href="Inventario.aspx" class="nav-link">
+                                <a href="#" class="nav-link">
                                     <i class="nav-icon fas fa-clipboard-list"></i>
-                                    <p>Consulta de Inventario</p>
+                                    <p>
+                                        Inventario
+                                        <i class="fas fa-angle-left right"></i>
+                                    </p>
                                 </a>
+                                <ul class="nav nav-treeview">
+                                    <li class="nav-item">
+                                        <a href="Inventario.aspx" class="nav-link">
+                                            <i class="far fa-circle nav-icon"></i>
+                                            <p>Consulta de Inventario</p>
+                                        </a>
+                                    </li>
+                                </ul>
                             </li>
 
-                            <!-- ADMINISTRACIÓN -->
+                            <!-- ── ADMINISTRACIÓN ─────────────────────────── -->
                             <li id="headerAdministracion" runat="server" class="nav-header">ADMINISTRACIÓN</li>
+
+                            <!-- Usuarios (desplegable) -->
                             <li class="nav-item" id="menuUsuarios" runat="server">
-                                <a href="Usuarios.aspx" class="nav-link">
+                                <a href="#" class="nav-link">
                                     <i class="nav-icon fas fa-users"></i>
-                                    <p>Usuarios</p>
+                                    <p>
+                                        Usuarios
+                                        <i class="fas fa-angle-left right"></i>
+                                    </p>
                                 </a>
+                                <ul class="nav nav-treeview">
+                                    <li class="nav-item">
+                                        <a href="Usuarios.aspx" class="nav-link">
+                                            <i class="far fa-circle nav-icon"></i>
+                                            <p>Gestión de Usuarios</p>
+                                        </a>
+                                    </li>
+                                </ul>
                             </li>
 
                         </ul>
                     </nav>
-                    <!-- /.sidebar-menu -->
                 </div>
                 <!-- /.sidebar -->
             </aside>
 
-            <!-- Content Wrapper. Contains page content -->
+            <!-- Content Wrapper -->
             <div class="content-wrapper">
                 <section class="content">
                     <div class="container-fluid pt-3">
@@ -266,7 +325,6 @@
                     </div>
                 </section>
             </div>
-            <!-- /.content-wrapper -->
 
             <!-- Main Footer -->
             <footer class="main-footer">
