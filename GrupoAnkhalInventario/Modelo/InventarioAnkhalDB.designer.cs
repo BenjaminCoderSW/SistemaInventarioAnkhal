@@ -257,19 +257,19 @@ namespace GrupoAnkhalInventario.Modelo
 			}
 		}
 		
-		public System.Data.Linq.Table<Usuario> Usuario
-		{
-			get
-			{
-				return this.GetTable<Usuario>();
-			}
-		}
-		
 		public System.Data.Linq.Table<DatosUsuario> DatosUsuario
 		{
 			get
 			{
 				return this.GetTable<DatosUsuario>();
+			}
+		}
+		
+		public System.Data.Linq.Table<Usuario> Usuario
+		{
+			get
+			{
+				return this.GetTable<Usuario>();
 			}
 		}
 	}
@@ -6937,6 +6937,375 @@ namespace GrupoAnkhalInventario.Modelo
 		}
 	}
 	
+	[global::System.Data.Linq.Mapping.TableAttribute(Name="dbo.DatosUsuario")]
+	public partial class DatosUsuario
+	{
+		
+		private int _ClaveID;
+		
+		private System.Nullable<int> _UsuarioID;
+		
+		private string _Nombre;
+		
+		private string _ApellidoPaterno;
+		
+		private string _ApellidoMaterno;
+		
+		private string _Telefono;
+		
+		private string _Email;
+		
+		private string _NumeroEmpleado;
+		
+		private string _TelefonoFamiliar;
+		
+		private System.Data.Linq.Binary _Foto;
+		
+		private string _Usuario;
+		
+		private string _Clave;
+		
+		private string _Rol;
+		
+		private System.Nullable<int> _RolID;
+		
+		private bool _Activo;
+		
+		private System.Nullable<System.DateTime> _FechaAlta;
+		
+		private System.Nullable<System.DateTime> _FechaModif;
+		
+		private System.Nullable<System.DateTime> _UltimoAcceso;
+		
+		private System.Nullable<int> _UsuarioAltaID;
+		
+		private System.Data.Linq.Binary _RowVersion;
+		
+		public DatosUsuario()
+		{
+		}
+		
+		[global::System.Data.Linq.Mapping.ColumnAttribute(Storage="_ClaveID", DbType="Int NOT NULL", UpdateCheck=UpdateCheck.Never)]
+		public int ClaveID
+		{
+			get
+			{
+				return this._ClaveID;
+			}
+			set
+			{
+				if ((this._ClaveID != value))
+				{
+					this._ClaveID = value;
+				}
+			}
+		}
+		
+		[global::System.Data.Linq.Mapping.ColumnAttribute(Storage="_UsuarioID", DbType="Int", UpdateCheck=UpdateCheck.Never)]
+		public System.Nullable<int> UsuarioID
+		{
+			get
+			{
+				return this._UsuarioID;
+			}
+			set
+			{
+				if ((this._UsuarioID != value))
+				{
+					this._UsuarioID = value;
+				}
+			}
+		}
+		
+		[global::System.Data.Linq.Mapping.ColumnAttribute(Storage="_Nombre", DbType="VarChar(500)", UpdateCheck=UpdateCheck.Never)]
+		public string Nombre
+		{
+			get
+			{
+				return this._Nombre;
+			}
+			set
+			{
+				if ((this._Nombre != value))
+				{
+					this._Nombre = value;
+				}
+			}
+		}
+		
+		[global::System.Data.Linq.Mapping.ColumnAttribute(Storage="_ApellidoPaterno", DbType="VarChar(500)", UpdateCheck=UpdateCheck.Never)]
+		public string ApellidoPaterno
+		{
+			get
+			{
+				return this._ApellidoPaterno;
+			}
+			set
+			{
+				if ((this._ApellidoPaterno != value))
+				{
+					this._ApellidoPaterno = value;
+				}
+			}
+		}
+		
+		[global::System.Data.Linq.Mapping.ColumnAttribute(Storage="_ApellidoMaterno", DbType="VarChar(500)", UpdateCheck=UpdateCheck.Never)]
+		public string ApellidoMaterno
+		{
+			get
+			{
+				return this._ApellidoMaterno;
+			}
+			set
+			{
+				if ((this._ApellidoMaterno != value))
+				{
+					this._ApellidoMaterno = value;
+				}
+			}
+		}
+		
+		[global::System.Data.Linq.Mapping.ColumnAttribute(Storage="_Telefono", DbType="VarChar(50)", UpdateCheck=UpdateCheck.Never)]
+		public string Telefono
+		{
+			get
+			{
+				return this._Telefono;
+			}
+			set
+			{
+				if ((this._Telefono != value))
+				{
+					this._Telefono = value;
+				}
+			}
+		}
+		
+		[global::System.Data.Linq.Mapping.ColumnAttribute(Storage="_Email", DbType="VarChar(5000)", UpdateCheck=UpdateCheck.Never)]
+		public string Email
+		{
+			get
+			{
+				return this._Email;
+			}
+			set
+			{
+				if ((this._Email != value))
+				{
+					this._Email = value;
+				}
+			}
+		}
+		
+		[global::System.Data.Linq.Mapping.ColumnAttribute(Storage="_NumeroEmpleado", DbType="VarChar(50)", UpdateCheck=UpdateCheck.Never)]
+		public string NumeroEmpleado
+		{
+			get
+			{
+				return this._NumeroEmpleado;
+			}
+			set
+			{
+				if ((this._NumeroEmpleado != value))
+				{
+					this._NumeroEmpleado = value;
+				}
+			}
+		}
+		
+		[global::System.Data.Linq.Mapping.ColumnAttribute(Storage="_TelefonoFamiliar", DbType="VarChar(50)", UpdateCheck=UpdateCheck.Never)]
+		public string TelefonoFamiliar
+		{
+			get
+			{
+				return this._TelefonoFamiliar;
+			}
+			set
+			{
+				if ((this._TelefonoFamiliar != value))
+				{
+					this._TelefonoFamiliar = value;
+				}
+			}
+		}
+		
+		[global::System.Data.Linq.Mapping.ColumnAttribute(Storage="_Foto", DbType="VarBinary(MAX)", UpdateCheck=UpdateCheck.Never)]
+		public System.Data.Linq.Binary Foto
+		{
+			get
+			{
+				return this._Foto;
+			}
+			set
+			{
+				if ((this._Foto != value))
+				{
+					this._Foto = value;
+				}
+			}
+		}
+		
+		[global::System.Data.Linq.Mapping.ColumnAttribute(Storage="_Usuario", DbType="VarChar(100)", UpdateCheck=UpdateCheck.Never)]
+		public string Usuario
+		{
+			get
+			{
+				return this._Usuario;
+			}
+			set
+			{
+				if ((this._Usuario != value))
+				{
+					this._Usuario = value;
+				}
+			}
+		}
+		
+		[global::System.Data.Linq.Mapping.ColumnAttribute(Storage="_Clave", DbType="VarChar(70)", UpdateCheck=UpdateCheck.Never)]
+		public string Clave
+		{
+			get
+			{
+				return this._Clave;
+			}
+			set
+			{
+				if ((this._Clave != value))
+				{
+					this._Clave = value;
+				}
+			}
+		}
+		
+		[global::System.Data.Linq.Mapping.ColumnAttribute(Storage="_Rol", DbType="VarChar(50)", UpdateCheck=UpdateCheck.Never)]
+		public string Rol
+		{
+			get
+			{
+				return this._Rol;
+			}
+			set
+			{
+				if ((this._Rol != value))
+				{
+					this._Rol = value;
+				}
+			}
+		}
+		
+		[global::System.Data.Linq.Mapping.ColumnAttribute(Storage="_RolID", DbType="Int", UpdateCheck=UpdateCheck.Never)]
+		public System.Nullable<int> RolID
+		{
+			get
+			{
+				return this._RolID;
+			}
+			set
+			{
+				if ((this._RolID != value))
+				{
+					this._RolID = value;
+				}
+			}
+		}
+		
+		[global::System.Data.Linq.Mapping.ColumnAttribute(Storage="_Activo", DbType="Bit NOT NULL", UpdateCheck=UpdateCheck.Never)]
+		public bool Activo
+		{
+			get
+			{
+				return this._Activo;
+			}
+			set
+			{
+				if ((this._Activo != value))
+				{
+					this._Activo = value;
+				}
+			}
+		}
+		
+		[global::System.Data.Linq.Mapping.ColumnAttribute(Storage="_FechaAlta", DbType="DateTime2", UpdateCheck=UpdateCheck.Never)]
+		public System.Nullable<System.DateTime> FechaAlta
+		{
+			get
+			{
+				return this._FechaAlta;
+			}
+			set
+			{
+				if ((this._FechaAlta != value))
+				{
+					this._FechaAlta = value;
+				}
+			}
+		}
+		
+		[global::System.Data.Linq.Mapping.ColumnAttribute(Storage="_FechaModif", DbType="DateTime2", UpdateCheck=UpdateCheck.Never)]
+		public System.Nullable<System.DateTime> FechaModif
+		{
+			get
+			{
+				return this._FechaModif;
+			}
+			set
+			{
+				if ((this._FechaModif != value))
+				{
+					this._FechaModif = value;
+				}
+			}
+		}
+		
+		[global::System.Data.Linq.Mapping.ColumnAttribute(Storage="_UltimoAcceso", DbType="DateTime2", UpdateCheck=UpdateCheck.Never)]
+		public System.Nullable<System.DateTime> UltimoAcceso
+		{
+			get
+			{
+				return this._UltimoAcceso;
+			}
+			set
+			{
+				if ((this._UltimoAcceso != value))
+				{
+					this._UltimoAcceso = value;
+				}
+			}
+		}
+		
+		[global::System.Data.Linq.Mapping.ColumnAttribute(Storage="_UsuarioAltaID", DbType="Int", UpdateCheck=UpdateCheck.Never)]
+		public System.Nullable<int> UsuarioAltaID
+		{
+			get
+			{
+				return this._UsuarioAltaID;
+			}
+			set
+			{
+				if ((this._UsuarioAltaID != value))
+				{
+					this._UsuarioAltaID = value;
+				}
+			}
+		}
+		
+		[global::System.Data.Linq.Mapping.ColumnAttribute(Storage="_RowVersion", AutoSync=AutoSync.Always, DbType="rowversion NOT NULL", CanBeNull=false, IsDbGenerated=true, IsVersion=true, UpdateCheck=UpdateCheck.Never)]
+		public System.Data.Linq.Binary RowVersion
+		{
+			get
+			{
+				return this._RowVersion;
+			}
+			set
+			{
+				if ((this._RowVersion != value))
+				{
+					this._RowVersion = value;
+				}
+			}
+		}
+	}
+	
 	[global::System.Data.Linq.Mapping.TableAttribute(Name="dbo.Usuario")]
 	public partial class Usuario : INotifyPropertyChanging, INotifyPropertyChanged
 	{
@@ -6964,6 +7333,12 @@ namespace GrupoAnkhalInventario.Modelo
 		private System.Data.Linq.Binary _RowVersion;
 		
 		private bool _Activo;
+		
+		private int _IntentosFallidos;
+		
+		private System.Nullable<System.DateTime> _BloqueadoHasta;
+		
+		private System.Nullable<System.DateTime> _UltimoIntento;
 		
 		private EntitySet<Entregas> _Entregas;
 		
@@ -7019,6 +7394,12 @@ namespace GrupoAnkhalInventario.Modelo
     partial void OnRowVersionChanged();
     partial void OnActivoChanging(bool value);
     partial void OnActivoChanged();
+    partial void OnIntentosFallidosChanging(int value);
+    partial void OnIntentosFallidosChanged();
+    partial void OnBloqueadoHastaChanging(System.Nullable<System.DateTime> value);
+    partial void OnBloqueadoHastaChanged();
+    partial void OnUltimoIntentoChanging(System.Nullable<System.DateTime> value);
+    partial void OnUltimoIntentoChanged();
     #endregion
 		
 		public Usuario()
@@ -7260,6 +7641,66 @@ namespace GrupoAnkhalInventario.Modelo
 					this._Activo = value;
 					this.SendPropertyChanged("Activo");
 					this.OnActivoChanged();
+				}
+			}
+		}
+		
+		[global::System.Data.Linq.Mapping.ColumnAttribute(Storage="_IntentosFallidos", DbType="Int NOT NULL", UpdateCheck=UpdateCheck.Never)]
+		public int IntentosFallidos
+		{
+			get
+			{
+				return this._IntentosFallidos;
+			}
+			set
+			{
+				if ((this._IntentosFallidos != value))
+				{
+					this.OnIntentosFallidosChanging(value);
+					this.SendPropertyChanging();
+					this._IntentosFallidos = value;
+					this.SendPropertyChanged("IntentosFallidos");
+					this.OnIntentosFallidosChanged();
+				}
+			}
+		}
+		
+		[global::System.Data.Linq.Mapping.ColumnAttribute(Storage="_BloqueadoHasta", DbType="DateTime2", UpdateCheck=UpdateCheck.Never)]
+		public System.Nullable<System.DateTime> BloqueadoHasta
+		{
+			get
+			{
+				return this._BloqueadoHasta;
+			}
+			set
+			{
+				if ((this._BloqueadoHasta != value))
+				{
+					this.OnBloqueadoHastaChanging(value);
+					this.SendPropertyChanging();
+					this._BloqueadoHasta = value;
+					this.SendPropertyChanged("BloqueadoHasta");
+					this.OnBloqueadoHastaChanged();
+				}
+			}
+		}
+		
+		[global::System.Data.Linq.Mapping.ColumnAttribute(Storage="_UltimoIntento", DbType="DateTime2", UpdateCheck=UpdateCheck.Never)]
+		public System.Nullable<System.DateTime> UltimoIntento
+		{
+			get
+			{
+				return this._UltimoIntento;
+			}
+			set
+			{
+				if ((this._UltimoIntento != value))
+				{
+					this.OnUltimoIntentoChanging(value);
+					this.SendPropertyChanging();
+					this._UltimoIntento = value;
+					this.SendPropertyChanged("UltimoIntento");
+					this.OnUltimoIntentoChanged();
 				}
 			}
 		}
@@ -7641,375 +8082,6 @@ namespace GrupoAnkhalInventario.Modelo
 		{
 			this.SendPropertyChanging();
 			entity.Usuario2 = null;
-		}
-	}
-	
-	[global::System.Data.Linq.Mapping.TableAttribute(Name="dbo.DatosUsuario")]
-	public partial class DatosUsuario
-	{
-		
-		private int _ClaveID;
-		
-		private System.Nullable<int> _UsuarioID;
-		
-		private string _Nombre;
-		
-		private string _ApellidoPaterno;
-		
-		private string _ApellidoMaterno;
-		
-		private string _Telefono;
-		
-		private string _Email;
-		
-		private string _NumeroEmpleado;
-		
-		private string _TelefonoFamiliar;
-		
-		private System.Data.Linq.Binary _Foto;
-		
-		private string _Usuario;
-		
-		private string _Clave;
-		
-		private string _Rol;
-		
-		private System.Nullable<int> _RolID;
-		
-		private bool _Activo;
-		
-		private System.Nullable<System.DateTime> _FechaAlta;
-		
-		private System.Nullable<System.DateTime> _FechaModif;
-		
-		private System.Nullable<System.DateTime> _UltimoAcceso;
-		
-		private System.Nullable<int> _UsuarioAltaID;
-		
-		private System.Data.Linq.Binary _RowVersion;
-		
-		public DatosUsuario()
-		{
-		}
-		
-		[global::System.Data.Linq.Mapping.ColumnAttribute(Storage="_ClaveID", DbType="Int NOT NULL", UpdateCheck=UpdateCheck.Never)]
-		public int ClaveID
-		{
-			get
-			{
-				return this._ClaveID;
-			}
-			set
-			{
-				if ((this._ClaveID != value))
-				{
-					this._ClaveID = value;
-				}
-			}
-		}
-		
-		[global::System.Data.Linq.Mapping.ColumnAttribute(Storage="_UsuarioID", DbType="Int", UpdateCheck=UpdateCheck.Never)]
-		public System.Nullable<int> UsuarioID
-		{
-			get
-			{
-				return this._UsuarioID;
-			}
-			set
-			{
-				if ((this._UsuarioID != value))
-				{
-					this._UsuarioID = value;
-				}
-			}
-		}
-		
-		[global::System.Data.Linq.Mapping.ColumnAttribute(Storage="_Nombre", DbType="VarChar(500)", UpdateCheck=UpdateCheck.Never)]
-		public string Nombre
-		{
-			get
-			{
-				return this._Nombre;
-			}
-			set
-			{
-				if ((this._Nombre != value))
-				{
-					this._Nombre = value;
-				}
-			}
-		}
-		
-		[global::System.Data.Linq.Mapping.ColumnAttribute(Storage="_ApellidoPaterno", DbType="VarChar(500)", UpdateCheck=UpdateCheck.Never)]
-		public string ApellidoPaterno
-		{
-			get
-			{
-				return this._ApellidoPaterno;
-			}
-			set
-			{
-				if ((this._ApellidoPaterno != value))
-				{
-					this._ApellidoPaterno = value;
-				}
-			}
-		}
-		
-		[global::System.Data.Linq.Mapping.ColumnAttribute(Storage="_ApellidoMaterno", DbType="VarChar(500)", UpdateCheck=UpdateCheck.Never)]
-		public string ApellidoMaterno
-		{
-			get
-			{
-				return this._ApellidoMaterno;
-			}
-			set
-			{
-				if ((this._ApellidoMaterno != value))
-				{
-					this._ApellidoMaterno = value;
-				}
-			}
-		}
-		
-		[global::System.Data.Linq.Mapping.ColumnAttribute(Storage="_Telefono", DbType="VarChar(50)", UpdateCheck=UpdateCheck.Never)]
-		public string Telefono
-		{
-			get
-			{
-				return this._Telefono;
-			}
-			set
-			{
-				if ((this._Telefono != value))
-				{
-					this._Telefono = value;
-				}
-			}
-		}
-		
-		[global::System.Data.Linq.Mapping.ColumnAttribute(Storage="_Email", DbType="VarChar(5000)", UpdateCheck=UpdateCheck.Never)]
-		public string Email
-		{
-			get
-			{
-				return this._Email;
-			}
-			set
-			{
-				if ((this._Email != value))
-				{
-					this._Email = value;
-				}
-			}
-		}
-		
-		[global::System.Data.Linq.Mapping.ColumnAttribute(Storage="_NumeroEmpleado", DbType="VarChar(50)", UpdateCheck=UpdateCheck.Never)]
-		public string NumeroEmpleado
-		{
-			get
-			{
-				return this._NumeroEmpleado;
-			}
-			set
-			{
-				if ((this._NumeroEmpleado != value))
-				{
-					this._NumeroEmpleado = value;
-				}
-			}
-		}
-		
-		[global::System.Data.Linq.Mapping.ColumnAttribute(Storage="_TelefonoFamiliar", DbType="VarChar(50)", UpdateCheck=UpdateCheck.Never)]
-		public string TelefonoFamiliar
-		{
-			get
-			{
-				return this._TelefonoFamiliar;
-			}
-			set
-			{
-				if ((this._TelefonoFamiliar != value))
-				{
-					this._TelefonoFamiliar = value;
-				}
-			}
-		}
-		
-		[global::System.Data.Linq.Mapping.ColumnAttribute(Storage="_Foto", DbType="VarBinary(MAX)", UpdateCheck=UpdateCheck.Never)]
-		public System.Data.Linq.Binary Foto
-		{
-			get
-			{
-				return this._Foto;
-			}
-			set
-			{
-				if ((this._Foto != value))
-				{
-					this._Foto = value;
-				}
-			}
-		}
-		
-		[global::System.Data.Linq.Mapping.ColumnAttribute(Storage="_Usuario", DbType="VarChar(100)", UpdateCheck=UpdateCheck.Never)]
-		public string Usuario
-		{
-			get
-			{
-				return this._Usuario;
-			}
-			set
-			{
-				if ((this._Usuario != value))
-				{
-					this._Usuario = value;
-				}
-			}
-		}
-		
-		[global::System.Data.Linq.Mapping.ColumnAttribute(Storage="_Clave", DbType="VarChar(70)", UpdateCheck=UpdateCheck.Never)]
-		public string Clave
-		{
-			get
-			{
-				return this._Clave;
-			}
-			set
-			{
-				if ((this._Clave != value))
-				{
-					this._Clave = value;
-				}
-			}
-		}
-		
-		[global::System.Data.Linq.Mapping.ColumnAttribute(Storage="_Rol", DbType="VarChar(50)", UpdateCheck=UpdateCheck.Never)]
-		public string Rol
-		{
-			get
-			{
-				return this._Rol;
-			}
-			set
-			{
-				if ((this._Rol != value))
-				{
-					this._Rol = value;
-				}
-			}
-		}
-		
-		[global::System.Data.Linq.Mapping.ColumnAttribute(Storage="_RolID", DbType="Int", UpdateCheck=UpdateCheck.Never)]
-		public System.Nullable<int> RolID
-		{
-			get
-			{
-				return this._RolID;
-			}
-			set
-			{
-				if ((this._RolID != value))
-				{
-					this._RolID = value;
-				}
-			}
-		}
-		
-		[global::System.Data.Linq.Mapping.ColumnAttribute(Storage="_Activo", DbType="Bit NOT NULL", UpdateCheck=UpdateCheck.Never)]
-		public bool Activo
-		{
-			get
-			{
-				return this._Activo;
-			}
-			set
-			{
-				if ((this._Activo != value))
-				{
-					this._Activo = value;
-				}
-			}
-		}
-		
-		[global::System.Data.Linq.Mapping.ColumnAttribute(Storage="_FechaAlta", DbType="DateTime2", UpdateCheck=UpdateCheck.Never)]
-		public System.Nullable<System.DateTime> FechaAlta
-		{
-			get
-			{
-				return this._FechaAlta;
-			}
-			set
-			{
-				if ((this._FechaAlta != value))
-				{
-					this._FechaAlta = value;
-				}
-			}
-		}
-		
-		[global::System.Data.Linq.Mapping.ColumnAttribute(Storage="_FechaModif", DbType="DateTime2", UpdateCheck=UpdateCheck.Never)]
-		public System.Nullable<System.DateTime> FechaModif
-		{
-			get
-			{
-				return this._FechaModif;
-			}
-			set
-			{
-				if ((this._FechaModif != value))
-				{
-					this._FechaModif = value;
-				}
-			}
-		}
-		
-		[global::System.Data.Linq.Mapping.ColumnAttribute(Storage="_UltimoAcceso", DbType="DateTime2", UpdateCheck=UpdateCheck.Never)]
-		public System.Nullable<System.DateTime> UltimoAcceso
-		{
-			get
-			{
-				return this._UltimoAcceso;
-			}
-			set
-			{
-				if ((this._UltimoAcceso != value))
-				{
-					this._UltimoAcceso = value;
-				}
-			}
-		}
-		
-		[global::System.Data.Linq.Mapping.ColumnAttribute(Storage="_UsuarioAltaID", DbType="Int", UpdateCheck=UpdateCheck.Never)]
-		public System.Nullable<int> UsuarioAltaID
-		{
-			get
-			{
-				return this._UsuarioAltaID;
-			}
-			set
-			{
-				if ((this._UsuarioAltaID != value))
-				{
-					this._UsuarioAltaID = value;
-				}
-			}
-		}
-		
-		[global::System.Data.Linq.Mapping.ColumnAttribute(Storage="_RowVersion", AutoSync=AutoSync.Always, DbType="rowversion NOT NULL", CanBeNull=false, IsDbGenerated=true, IsVersion=true, UpdateCheck=UpdateCheck.Never)]
-		public System.Data.Linq.Binary RowVersion
-		{
-			get
-			{
-				return this._RowVersion;
-			}
-			set
-			{
-				if ((this._RowVersion != value))
-				{
-					this._RowVersion = value;
-				}
-			}
 		}
 	}
 }
