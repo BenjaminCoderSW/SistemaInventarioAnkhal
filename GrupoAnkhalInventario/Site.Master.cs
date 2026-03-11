@@ -2,6 +2,7 @@
 using System;
 using System.Collections.Generic;
 using System.Configuration;
+using System.Data.SqlClient;
 using System.Linq;
 using System.Web.UI;
 
@@ -99,20 +100,35 @@ namespace GrupoAnkhalInventario
                 lblUsuario.Text = Session["NombreCompleto"]?.ToString() ?? "Usuario";
                 lblRol.Text = Session["Rol"]?.ToString() ?? "Sin rol";
 
-                int usuarioID = Convert.ToInt32(Session["UsuarioID"]);
+                // Session["UsuarioID"] guarda ClaveID (no UsuarioID del empleado)
+                int claveID = Convert.ToInt32(Session["UsuarioID"]);
 
-                using (var db = new InventarioAnkhalDBDataContext(
+                const string sql = @"
+                SELECT tu.Foto
+                FROM dbo.Usuario u
+                INNER JOIN AsistenciaAnkhal.dbo.tUsuario tu ON u.UsuarioID = tu.IdUsuario
+                WHERE u.ClaveID = @claveID";
+
+                using (var cn = new SqlConnection(
                     ConfigurationManager.ConnectionStrings["InventarioAnkhalDBConnectionString"].ConnectionString))
                 {
-                    var usuario = db.Usuarios.FirstOrDefault(u => u.UsuarioID == usuarioID);
-                    if (usuario?.Foto != null && usuario.Foto.Length > 0)
+                    cn.Open();
+                    using (var cmd = new SqlCommand(sql, cn))
                     {
-                        string base64 = Convert.ToBase64String(usuario.Foto.ToArray());
-                        imgUsuario.Src = "data:image/jpeg;base64," + base64;
-                    }
-                    else
-                    {
-                        imgUsuario.Src = "dist/img/user2-160x160.jpg";
+                        cmd.Parameters.AddWithValue("@claveID", claveID);
+                        var result = cmd.ExecuteScalar();
+
+                        if (result != null && result != DBNull.Value)
+                        {
+                            byte[] foto = (byte[])result;
+                            imgUsuario.Src = foto.Length > 0
+                                ? "data:image/jpeg;base64," + Convert.ToBase64String(foto)
+                                : "dist/img/user2-160x160.jpg";
+                        }
+                        else
+                        {
+                            imgUsuario.Src = "dist/img/user2-160x160.jpg";
+                        }
                     }
                 }
             }

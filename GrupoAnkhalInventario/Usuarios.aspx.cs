@@ -429,28 +429,30 @@ namespace GrupoAnkhalInventario
                 using (var cn = new SqlConnection(_connStr))
                 {
                     cn.Open();
-                    int urID = 0;
+
+                    // Leer estado actual
+                    bool activoActual = false;
                     using (var cmd = new SqlCommand(
-                        "SELECT UsuarioRolID FROM dbo.UsuarioRoles WHERE UsuarioID=@uid AND FechaRevocacion IS NULL", cn))
+                        "SELECT Activo FROM dbo.Usuario WHERE ClaveID = @id", cn))
                     {
-                        cmd.Parameters.AddWithValue("@uid", claveID);
+                        cmd.Parameters.AddWithValue("@id", claveID);
                         var result = cmd.ExecuteScalar();
-                        if (result != null) urID = Convert.ToInt32(result);
+                        if (result != null) activoActual = Convert.ToBoolean(result);
                     }
 
-                    if (urID > 0)
+                    // Invertir estado
+                    using (var cmd = new SqlCommand(
+                        "UPDATE dbo.Usuario SET Activo = @activo, FechaModif = GETDATE() WHERE ClaveID = @id", cn))
                     {
-                        using (var cmd = new SqlCommand(
-                            "UPDATE dbo.UsuarioRoles SET FechaRevocacion=GETDATE() WHERE UsuarioRolID=@id", cn))
-                        { cmd.Parameters.AddWithValue("@id", urID); cmd.ExecuteNonQuery(); }
-                        SetMsg("success", "Acceso revocado", "El usuario ya no puede acceder al sistema de inventario.");
+                        cmd.Parameters.AddWithValue("@activo", !activoActual);
+                        cmd.Parameters.AddWithValue("@id", claveID);
+                        cmd.ExecuteNonQuery();
                     }
-                    else
-                    {
-                        SetMsg("info", "Sin rol activo",
-                            "Este usuario no tiene un rol activo. Para reactivarlo, usa Editar y asígnale un rol.");
-                    }
+
+                    string estado = !activoActual ? "activado" : "desactivado";
+                    SetMsg("success", "¡Listo!", $"El usuario fue {estado} correctamente.");
                 }
+
                 CargarGrid();
             }
             catch (Exception ex)
