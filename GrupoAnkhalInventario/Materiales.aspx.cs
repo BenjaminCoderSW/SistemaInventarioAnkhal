@@ -53,7 +53,7 @@ namespace GrupoAnkhalInventario
         // ─────────────────────────────────────────────────────────────────────
         protected void Page_Load(object sender, EventArgs e)
         {
-            if (Session["UsuarioID"] == null) { Response.Redirect("~/Login.aspx"); return; }
+            if (Session["ClaveID"] == null) { Response.Redirect("~/Login.aspx"); return; }
 
             if (!IsPostBack)
             {
@@ -448,7 +448,7 @@ namespace GrupoAnkhalInventario
                         StockMinimo = minimo,
                         StockOptimo = optimo,
                         Activo = true,
-                        UsuarioAltaID = Convert.ToInt32(Session["UsuarioID"])
+                        UsuarioAltaID = Convert.ToInt32(Session["ClaveID"])
                     };
                     db.Materiales.InsertOnSubmit(nuevo);
                     db.SubmitChanges();
@@ -524,7 +524,7 @@ namespace GrupoAnkhalInventario
                     mat.StockMinimo = minimo;
                     mat.StockOptimo = optimo;
                     mat.FechaModif = DateTime.Now;
-                    mat.UsuarioModifID = Convert.ToInt32(Session["UsuarioID"]);
+                    mat.UsuarioModifID = Convert.ToInt32(Session["ClaveID"]);
 
                     // FailOnFirstConflict como segunda red de seguridad
                     db.SubmitChanges(System.Data.Linq.ConflictMode.FailOnFirstConflict);
@@ -565,7 +565,7 @@ namespace GrupoAnkhalInventario
                     if (m == null) return;
                     m.Activo = !m.Activo;
                     m.FechaModif = DateTime.Now;
-                    m.UsuarioModifID = Convert.ToInt32(Session["UsuarioID"]);
+                    m.UsuarioModifID = Convert.ToInt32(Session["ClaveID"]);
                     db.SubmitChanges();
 
                     string estado = m.Activo ? "activado" : "desactivado";

@@ -28,7 +28,7 @@ namespace GrupoAnkhalInventario
         // ─────────────────────────────────────────────────────────────────────
         protected void Page_Load(object sender, EventArgs e)
         {
-            if (Session["UsuarioID"] == null)
+            if (Session["ClaveID"] == null)
             {
                 Response.Redirect("~/Login.aspx");
                 return;
@@ -178,7 +178,7 @@ namespace GrupoAnkhalInventario
                         MetaAccesorios = ParseMeta(txtMetaAccesorios.Text),
                         Activo = true,
                         FechaCreacion = DateTime.Now,
-                        UsuarioAltaID = Convert.ToInt32(Session["UsuarioID"])
+                        UsuarioAltaID = Convert.ToInt32(Session["ClaveID"])
                     };
 
                     db.Bases.InsertOnSubmit(nueva);
@@ -282,7 +282,7 @@ namespace GrupoAnkhalInventario
                     base_.MetaCajas = ParseMeta(txtMetaCajasEdit.Text);
                     base_.MetaAccesorios = ParseMeta(txtMetaAccesoriosEdit.Text);
                     base_.FechaModif = DateTime.Now;
-                    base_.UsuarioModifID = Convert.ToInt32(Session["UsuarioID"]);
+                    base_.UsuarioModifID = Convert.ToInt32(Session["ClaveID"]);
 
                     db.SubmitChanges(System.Data.Linq.ConflictMode.FailOnFirstConflict);
 
@@ -325,7 +325,7 @@ namespace GrupoAnkhalInventario
 
                     b.Activo = !b.Activo;
                     b.FechaModif = DateTime.Now;
-                    b.UsuarioModifID = Convert.ToInt32(Session["UsuarioID"]);
+                    b.UsuarioModifID = Convert.ToInt32(Session["ClaveID"]);
                     db.SubmitChanges();
 
                     string estado = b.Activo ? "activada" : "desactivada";

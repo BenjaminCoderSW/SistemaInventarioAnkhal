@@ -52,7 +52,7 @@ namespace GrupoAnkhalInventario
         // ─────────────────────────────────────────────────────────────────────
         protected void Page_Load(object sender, EventArgs e)
         {
-            if (Session["UsuarioID"] == null) { Response.Redirect("~/Login.aspx"); return; }
+            if (Session["ClaveID"] == null) { Response.Redirect("~/Login.aspx"); return; }
 
             if (!IsPostBack)
             {
@@ -324,7 +324,7 @@ namespace GrupoAnkhalInventario
                         Descripcion = txtDescripcion.Text.Trim(),
                         PrecioVenta = ParseDec(txtPrecio.Text),
                         Activo = true,
-                        UsuarioAltaID = Convert.ToInt32(Session["UsuarioID"])
+                        UsuarioAltaID = Convert.ToInt32(Session["ClaveID"])
                     };
                     db.Productos.InsertOnSubmit(nuevo);
                     db.SubmitChanges();
@@ -409,7 +409,7 @@ namespace GrupoAnkhalInventario
                     prod.Descripcion = txtDescripcionEdit.Text.Trim();
                     prod.PrecioVenta = ParseDec(txtPrecioEdit.Text);
                     prod.FechaModif = DateTime.Now;
-                    prod.UsuarioModifID = Convert.ToInt32(Session["UsuarioID"]);
+                    prod.UsuarioModifID = Convert.ToInt32(Session["ClaveID"]);
 
                     db.SubmitChanges(System.Data.Linq.ConflictMode.FailOnFirstConflict);
 
@@ -516,7 +516,7 @@ namespace GrupoAnkhalInventario
                     if (p == null) return;
                     p.Activo = !p.Activo;
                     p.FechaModif = DateTime.Now;
-                    p.UsuarioModifID = Convert.ToInt32(Session["UsuarioID"]);
+                    p.UsuarioModifID = Convert.ToInt32(Session["ClaveID"]);
                     db.SubmitChanges();
 
                     string estado = p.Activo ? "activado" : "desactivado";

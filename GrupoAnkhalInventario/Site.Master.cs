@@ -42,7 +42,7 @@ namespace GrupoAnkhalInventario
         {
             if (!IsPostBack)
             {
-                if (Session["UsuarioID"] != null)
+                if (Session["ClaveID"] != null)
                 {
                     ValidarAccesoPagina();
                     CargarDatosUsuario();
@@ -90,7 +90,7 @@ namespace GrupoAnkhalInventario
         {
             try
             {
-                if (Session["UsuarioID"] == null)
+                if (Session["ClaveID"] == null)
                 {
                     Response.Redirect("~/Login.aspx", false);
                     Context.ApplicationInstance.CompleteRequest();
@@ -100,8 +100,8 @@ namespace GrupoAnkhalInventario
                 lblUsuario.Text = Session["NombreCompleto"]?.ToString() ?? "Usuario";
                 lblRol.Text = Session["Rol"]?.ToString() ?? "Sin rol";
 
-                // Session["UsuarioID"] guarda ClaveID (no UsuarioID del empleado)
-                int claveID = Convert.ToInt32(Session["UsuarioID"]);
+                // Session["ClaveID"] guarda ClaveID (no UsuarioID del empleado)
+                int claveID = Convert.ToInt32(Session["ClaveID"]);
 
                 const string sql = @"
                 SELECT tu.Foto

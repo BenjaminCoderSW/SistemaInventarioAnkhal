@@ -16,7 +16,7 @@ namespace GrupoAnkhalInventario
 
         protected void Page_Load(object sender, EventArgs e)
         {
-            if (Session["UsuarioID"] == null)
+            if (Session["ClaveID"] == null)
             {
                 Response.Redirect("~/Login.aspx");
                 return;
@@ -288,7 +288,7 @@ namespace GrupoAnkhalInventario
                         cmd.Parameters.AddWithValue("@uid", idEmpleado);
                         cmd.Parameters.AddWithValue("@usr", usuario);
                         cmd.Parameters.AddWithValue("@clave", claveHash);
-                        cmd.Parameters.AddWithValue("@altaID", Convert.ToInt32(Session["UsuarioID"]));
+                        cmd.Parameters.AddWithValue("@altaID", Convert.ToInt32(Session["ClaveID"]));
                         nuevoClaveID = Convert.ToInt32(cmd.ExecuteScalar());
                     }
 
@@ -299,7 +299,7 @@ namespace GrupoAnkhalInventario
                     {
                         cmd.Parameters.AddWithValue("@uid", nuevoClaveID);
                         cmd.Parameters.AddWithValue("@rol", idRol);
-                        cmd.Parameters.AddWithValue("@asigPor", Convert.ToInt32(Session["UsuarioID"]));
+                        cmd.Parameters.AddWithValue("@asigPor", Convert.ToInt32(Session["ClaveID"]));
                         cmd.ExecuteNonQuery();
                     }
                 }
@@ -400,7 +400,7 @@ namespace GrupoAnkhalInventario
                         {
                             cmd.Parameters.AddWithValue("@uid", claveID);
                             cmd.Parameters.AddWithValue("@rol", idRol);
-                            cmd.Parameters.AddWithValue("@asigPor", Convert.ToInt32(Session["UsuarioID"]));
+                            cmd.Parameters.AddWithValue("@asigPor", Convert.ToInt32(Session["ClaveID"]));
                             cmd.ExecuteNonQuery();
                         }
                     }

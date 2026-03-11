@@ -12,7 +12,7 @@ namespace GrupoAnkhalInventario
             if (!IsPostBack)
             {
                 // Verificar si hay sesión activa
-                if (Session["UsuarioID"] == null)
+                if (Session["ClaveID"] == null)
                 {
                     // No hay sesión, redirigir al login
                     Response.Redirect("~/Login.aspx", false);
