@@ -16,8 +16,6 @@ namespace GrupoAnkhalInventario
             ConfigurationManager.ConnectionStrings["InventarioAnkhalDBConnectionString"].ConnectionString;
 
         // ── Helper: crea un DataContext nuevo ─────────────────────────────────
-        // tracking: false → solo lectura (menos memoria, sin caché de identidad)
-        // tracking: true  → lectura + escritura (necesario para Insert/Update/Delete)
         private InventarioAnkhalDBDataContext NuevoDb(bool tracking = true)
         {
             var ctx = new InventarioAnkhalDBDataContext(_connStr);
@@ -40,12 +38,7 @@ namespace GrupoAnkhalInventario
             }
             else
             {
-                // En cada postback (toggle, guardar, cambio de página, etc.)
-                // el GridView pierde el VirtualItemCount porque el ciclo de vida
-                // de ASP.NET no lo persiste automáticamente. Sin este valor el
-                // paginador no puede calcular cuántos botones dibujar.
-                // Lo restauramos desde ViewState ANTES de que se ejecute
-                // cualquier evento, así el paginador siempre está sincronizado.
+                // Restaurar VirtualItemCount antes de que se ejecuten los eventos
                 if (ViewState["TotalRegistros"] != null)
                     gvBases.VirtualItemCount = (int)ViewState["TotalRegistros"];
             }
@@ -58,7 +51,7 @@ namespace GrupoAnkhalInventario
             string filTipo = ddlFiltrTipo.SelectedValue;
             string filEst = ddlFiltrEstado.SelectedValue;
             int pageIdx = gvBases.PageIndex;
-            int pageSz = gvBases.PageSize;   // 15
+            int pageSz = gvBases.PageSize;
 
             using (var db = NuevoDb(tracking: false))
             {
@@ -79,30 +72,20 @@ namespace GrupoAnkhalInventario
                 query = query.OrderBy(b => b.Codigo);
 
                 // ── COUNT en SQL ─────────────────────────────────────────────
-                // Una sola ida a la BD para saber el total real con los filtros
-                // aplicados. Esto actualiza el paginador correctamente cada vez
-                // que cambia la búsqueda.
                 int totalRegistros = query.Count();
 
                 lblResultados.Text = totalRegistros == 1
                     ? "1 registro encontrado."
                     : totalRegistros + " registros encontrados.";
 
-                // ── Guardar total en ViewState ───────────────────────────────
-                // Se guarda ANTES del DataBind para que el Page_Load de los
-                // postbacks siguientes pueda restaurar VirtualItemCount a tiempo.
                 ViewState["TotalRegistros"] = totalRegistros;
 
                 // ── PAGINACIÓN EN SQL ────────────────────────────────────────
-                // Skip/Take se traducen a OFFSET/FETCH NEXT en SQL Server.
-                // Solo viajan los N registros de la página actual, nunca toda la tabla.
                 var pagina = query
                     .Skip(pageIdx * pageSz)
                     .Take(pageSz)
                     .ToList();
 
-                // VirtualItemCount le dice al GridView el total real para que
-                // dibuje los botones de página correctamente con AllowCustomPaging.
                 gvBases.VirtualItemCount = totalRegistros;
                 gvBases.DataSource = pagina;
                 gvBases.DataBind();
@@ -173,9 +156,9 @@ namespace GrupoAnkhalInventario
                         Responsable = txtResponsable.Text.Trim(),
                         Telefono = txtTelefono.Text.Trim(),
                         Direccion = txtDireccion.Text.Trim(),
-                        MetaTarimas = ParseMeta(txtMetaTarimas.Text),
-                        MetaCajas = ParseMeta(txtMetaCajas.Text),
-                        MetaAccesorios = ParseMeta(txtMetaAccesorios.Text),
+                        MetaDiaria = ParseMeta(txtMetaDiaria.Text),
+                        MetaSemanal = ParseMeta(txtMetaSemanal.Text),
+                        MetaMensual = ParseMeta(txtMetaMensual.Text),
                         Activo = true,
                         FechaCreacion = DateTime.Now,
                         UsuarioAltaID = Convert.ToInt32(Session["ClaveID"])
@@ -198,19 +181,6 @@ namespace GrupoAnkhalInventario
         }
 
         // ══ GUARDAR EDICIÓN CON CONTROL DE CONCURRENCIA ══════════════════════
-        //
-        // ¿Cómo funciona el control de concurrencia?
-        // ─────────────────────────────────────────────────────────────────────
-        // 1. Al guardar, se lee el RowVersion actual de la BD y se compara con
-        //    el que se guardó en ViewState cuando se abrió el modal.
-        // 2. Si no coinciden: otro usuario editó el registro en el ínterin.
-        //    Se muestra un aviso en lugar de pisar los cambios ajenos.
-        // 3. LINQ to SQL también lanza ChangeConflictException como red de
-        //    seguridad adicional al hacer SubmitChanges.
-        //
-        // REQUISITO: columna RowVersion en la tabla Bases + DataContext actualizado.
-        //   ALTER TABLE [dbo].[Bases] ADD [RowVersion] rowversion NOT NULL;
-        // ─────────────────────────────────────────────────────────────────────
         protected void btnGuardarEdit_Click(object sender, EventArgs e)
         {
             if (string.IsNullOrWhiteSpace(hdnBaseID.Value) ||
@@ -252,10 +222,7 @@ namespace GrupoAnkhalInventario
                         return;
                     }
 
-                    // ── Control de concurrencia ──────────────────────────────────────
-                    // El RowVersion que vio el usuario cuando abrió el modal viaja de
-                    // vuelta en hdnRowVersion como Base64. Lo comparamos contra el que
-                    // está en la BD ahora. Si no coinciden, alguien más guardó antes.
+                    // ── Control de concurrencia ──────────────────────────────
                     byte[] rowVersionOriginal = null;
                     if (!string.IsNullOrEmpty(hdnRowVersion.Value))
                         rowVersionOriginal = Convert.FromBase64String(hdnRowVersion.Value);
@@ -278,9 +245,9 @@ namespace GrupoAnkhalInventario
                     base_.Responsable = txtResponsableEdit.Text.Trim();
                     base_.Telefono = txtTelefonoEdit.Text.Trim();
                     base_.Direccion = txtDireccionEdit.Text.Trim();
-                    base_.MetaTarimas = ParseMeta(txtMetaTarimasEdit.Text);
-                    base_.MetaCajas = ParseMeta(txtMetaCajasEdit.Text);
-                    base_.MetaAccesorios = ParseMeta(txtMetaAccesoriosEdit.Text);
+                    base_.MetaDiaria = ParseMeta(txtMetaDiariaEdit.Text);
+                    base_.MetaSemanal = ParseMeta(txtMetaSemanalEdit.Text);
+                    base_.MetaMensual = ParseMeta(txtMetaMensualEdit.Text);
                     base_.FechaModif = DateTime.Now;
                     base_.UsuarioModifID = Convert.ToInt32(Session["ClaveID"]);
 
@@ -357,10 +324,26 @@ namespace GrupoAnkhalInventario
             return "";
         }
 
-        private int ParseMeta(string valor)
+        /// <summary>
+        /// Parsea un decimal ≥ 0. Acepta tanto coma como punto como separador decimal.
+        /// </summary>
+        private decimal ParseMeta(string valor)
         {
-            int resultado;
-            return int.TryParse(valor, out resultado) && resultado >= 0 ? resultado : 0;
+            decimal resultado;
+            if (decimal.TryParse(valor,
+                    System.Globalization.NumberStyles.Any,
+                    System.Globalization.CultureInfo.InvariantCulture,
+                    out resultado) && resultado >= 0)
+                return resultado;
+
+            // Segundo intento con cultura local (por si el navegador manda coma)
+            if (decimal.TryParse(valor,
+                    System.Globalization.NumberStyles.Any,
+                    System.Globalization.CultureInfo.CurrentCulture,
+                    out resultado) && resultado >= 0)
+                return resultado;
+
+            return 0m;
         }
 
         private void LimpiarNueva()
@@ -371,9 +354,9 @@ namespace GrupoAnkhalInventario
             txtResponsable.Text = "";
             txtTelefono.Text = "";
             txtDireccion.Text = "";
-            txtMetaTarimas.Text = "0";
-            txtMetaCajas.Text = "0";
-            txtMetaAccesorios.Text = "0";
+            txtMetaDiaria.Text = "0";
+            txtMetaSemanal.Text = "0";
+            txtMetaMensual.Text = "0";
         }
     }
 }

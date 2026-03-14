@@ -168,31 +168,31 @@ namespace GrupoAnkhalInventario
         protected global::System.Web.UI.WebControls.TextBox txtDireccion;
 
         /// <summary>
-        /// Control txtMetaTarimas.
+        /// Control txtMetaDiaria.
         /// </summary>
         /// <remarks>
         /// Campo generado automáticamente.
         /// Para modificarlo, mueva la declaración del campo del archivo del diseñador al archivo de código subyacente.
         /// </remarks>
-        protected global::System.Web.UI.WebControls.TextBox txtMetaTarimas;
+        protected global::System.Web.UI.WebControls.TextBox txtMetaDiaria;
 
         /// <summary>
-        /// Control txtMetaCajas.
+        /// Control txtMetaSemanal.
         /// </summary>
         /// <remarks>
         /// Campo generado automáticamente.
         /// Para modificarlo, mueva la declaración del campo del archivo del diseñador al archivo de código subyacente.
         /// </remarks>
-        protected global::System.Web.UI.WebControls.TextBox txtMetaCajas;
+        protected global::System.Web.UI.WebControls.TextBox txtMetaSemanal;
 
         /// <summary>
-        /// Control txtMetaAccesorios.
+        /// Control txtMetaMensual.
         /// </summary>
         /// <remarks>
         /// Campo generado automáticamente.
         /// Para modificarlo, mueva la declaración del campo del archivo del diseñador al archivo de código subyacente.
         /// </remarks>
-        protected global::System.Web.UI.WebControls.TextBox txtMetaAccesorios;
+        protected global::System.Web.UI.WebControls.TextBox txtMetaMensual;
 
         /// <summary>
         /// Control btnGuardar.
@@ -276,31 +276,31 @@ namespace GrupoAnkhalInventario
         protected global::System.Web.UI.WebControls.TextBox txtDireccionEdit;
 
         /// <summary>
-        /// Control txtMetaTarimasEdit.
+        /// Control txtMetaDiariaEdit.
         /// </summary>
         /// <remarks>
         /// Campo generado automáticamente.
         /// Para modificarlo, mueva la declaración del campo del archivo del diseñador al archivo de código subyacente.
         /// </remarks>
-        protected global::System.Web.UI.WebControls.TextBox txtMetaTarimasEdit;
+        protected global::System.Web.UI.WebControls.TextBox txtMetaDiariaEdit;
 
         /// <summary>
-        /// Control txtMetaCajasEdit.
+        /// Control txtMetaSemanalEdit.
         /// </summary>
         /// <remarks>
         /// Campo generado automáticamente.
         /// Para modificarlo, mueva la declaración del campo del archivo del diseñador al archivo de código subyacente.
         /// </remarks>
-        protected global::System.Web.UI.WebControls.TextBox txtMetaCajasEdit;
+        protected global::System.Web.UI.WebControls.TextBox txtMetaSemanalEdit;
 
         /// <summary>
-        /// Control txtMetaAccesoriosEdit.
+        /// Control txtMetaMensualEdit.
         /// </summary>
         /// <remarks>
         /// Campo generado automáticamente.
         /// Para modificarlo, mueva la declaración del campo del archivo del diseñador al archivo de código subyacente.
         /// </remarks>
-        protected global::System.Web.UI.WebControls.TextBox txtMetaAccesoriosEdit;
+        protected global::System.Web.UI.WebControls.TextBox txtMetaMensualEdit;
 
         /// <summary>
         /// Control btnGuardarEdit.

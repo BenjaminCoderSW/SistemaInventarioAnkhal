@@ -100,15 +100,15 @@
                                 PagerSettings-LastPageText="»"
                                 PagerSettings-PageButtonCount="5">
                                 <Columns>
-                                    <asp:BoundField DataField="BaseID"        HeaderText="ID"              Visible="false" />
-                                    <asp:BoundField DataField="Codigo"        HeaderText="Código" />
-                                    <asp:BoundField DataField="Nombre"        HeaderText="Nombre" />
-                                    <asp:BoundField DataField="Tipo"          HeaderText="Tipo" />
-                                    <asp:BoundField DataField="Responsable"   HeaderText="Responsable" />
-                                    <asp:BoundField DataField="Telefono"      HeaderText="Teléfono" />
-                                    <asp:BoundField DataField="MetaTarimas"   HeaderText="Meta Tarimas" />
-                                    <asp:BoundField DataField="MetaCajas"     HeaderText="Meta Cajas" />
-                                    <asp:BoundField DataField="MetaAccesorios" HeaderText="Meta Accesorios" />
+                                    <asp:BoundField DataField="BaseID"       HeaderText="ID"          Visible="false" />
+                                    <asp:BoundField DataField="Codigo"       HeaderText="Código" />
+                                    <asp:BoundField DataField="Nombre"       HeaderText="Nombre" />
+                                    <asp:BoundField DataField="Tipo"         HeaderText="Tipo" />
+                                    <asp:BoundField DataField="Responsable"  HeaderText="Responsable" />
+                                    <asp:BoundField DataField="Telefono"     HeaderText="Teléfono" />
+                                    <asp:BoundField DataField="MetaDiaria"   HeaderText="Meta Diaria"   DataFormatString="{0:C2}" />
+                                    <asp:BoundField DataField="MetaSemanal"  HeaderText="Meta Semanal"  DataFormatString="{0:C2}" />
+                                    <asp:BoundField DataField="MetaMensual"  HeaderText="Meta Mensual"  DataFormatString="{0:C2}" />
                                     <asp:TemplateField HeaderText="Estatus">
                                         <ItemTemplate>
                                             <span class="badge badge-<%# Convert.ToBoolean(Eval("Activo")) ? "success" : "secondary" %>">
@@ -127,9 +127,9 @@
                                                     '<%# Server.HtmlEncode((Eval("Responsable") ?? "").ToString()) %>',
                                                     '<%# Server.HtmlEncode((Eval("Telefono")    ?? "").ToString()) %>',
                                                     '<%# Server.HtmlEncode((Eval("Direccion")   ?? "").ToString()) %>',
-                                                    '<%# Eval("MetaTarimas") %>',
-                                                    '<%# Eval("MetaCajas") %>',
-                                                    '<%# Eval("MetaAccesorios") %>',
+                                                    '<%# Eval("MetaDiaria") %>',
+                                                    '<%# Eval("MetaSemanal") %>',
+                                                    '<%# Eval("MetaMensual") %>',
                                                     '<%# RowVersionBase64(Eval("RowVersion")) %>'
                                                 )">
                                                 <i class="fas fa-edit"></i> Editar
@@ -157,10 +157,10 @@
     <asp:Button ID="btnToggleHidden" runat="server" CssClass="d-none"
         OnClick="btnToggleHidden_Click" />
 
-    <!-- Hidden para mensajes pendientes (se disparan después del postback) -->
+    <!-- Hidden para mensajes pendientes -->
     <asp:HiddenField ID="hdnMensajePendiente" runat="server" Value="" />
 
-    <!-- Modal Nueva Base -->
+    <!-- ══ MODAL NUEVA BASE ══════════════════════════════════════════════════ -->
     <div class="modal fade" id="modalNueva" tabindex="-1" role="dialog" data-backdrop="static">
         <div class="modal-dialog modal-lg" role="document">
             <div class="modal-content">
@@ -226,29 +226,41 @@
                     </div>
                     <hr />
                     <h6 style="color:#003366; font-weight:600;">
-                        <i class="fas fa-bullseye"></i> Metas Diarias de Producción
+                        <i class="fas fa-dollar-sign"></i> Metas de Venta
                     </h6>
-                    <small class="text-muted">Poner 0 si no aplica (ej. almacén puro).</small>
+                    <small class="text-muted">Montos en pesos ($). Poner 0 si no aplica.</small>
                     <div class="row mt-2">
                         <div class="col-md-4">
                             <div class="form-group">
-                                <label>Meta Tarimas / día</label>
-                                <asp:TextBox ID="txtMetaTarimas" runat="server" CssClass="form-control"
-                                    TextMode="Number" Text="0"></asp:TextBox>
+                                <label>Meta diaria ($)</label>
+                                <div class="input-group">
+                                    <div class="input-group-prepend"><span class="input-group-text">$</span></div>
+                                    <asp:TextBox ID="txtMetaDiaria" runat="server" CssClass="form-control"
+                                        TextMode="Number" Text="0" min="0" step="0.01"
+                                        Placeholder="0.00"></asp:TextBox>
+                                </div>
                             </div>
                         </div>
                         <div class="col-md-4">
                             <div class="form-group">
-                                <label>Meta Cajas / día</label>
-                                <asp:TextBox ID="txtMetaCajas" runat="server" CssClass="form-control"
-                                    TextMode="Number" Text="0"></asp:TextBox>
+                                <label>Meta semanal ($)</label>
+                                <div class="input-group">
+                                    <div class="input-group-prepend"><span class="input-group-text">$</span></div>
+                                    <asp:TextBox ID="txtMetaSemanal" runat="server" CssClass="form-control"
+                                        TextMode="Number" Text="0" min="0" step="0.01"
+                                        Placeholder="0.00"></asp:TextBox>
+                                </div>
                             </div>
                         </div>
                         <div class="col-md-4">
                             <div class="form-group">
-                                <label>Meta Accesorios / día</label>
-                                <asp:TextBox ID="txtMetaAccesorios" runat="server" CssClass="form-control"
-                                    TextMode="Number" Text="0"></asp:TextBox>
+                                <label>Meta mensual ($)</label>
+                                <div class="input-group">
+                                    <div class="input-group-prepend"><span class="input-group-text">$</span></div>
+                                    <asp:TextBox ID="txtMetaMensual" runat="server" CssClass="form-control"
+                                        TextMode="Number" Text="0" min="0" step="0.01"
+                                        Placeholder="0.00"></asp:TextBox>
+                                </div>
                             </div>
                         </div>
                     </div>
@@ -264,7 +276,7 @@
         </div>
     </div>
 
-    <!-- Modal Editar Base -->
+    <!-- ══ MODAL EDITAR BASE ═════════════════════════════════════════════════ -->
     <div class="modal fade" id="modalEditar" tabindex="-1" role="dialog" data-backdrop="static">
         <div class="modal-dialog modal-lg" role="document">
             <div class="modal-content">
@@ -332,29 +344,38 @@
                     </div>
                     <hr />
                     <h6 style="color:#003366; font-weight:600;">
-                        <i class="fas fa-bullseye"></i> Metas Diarias de Producción
+                        <i class="fas fa-dollar-sign"></i> Metas de Venta
                     </h6>
-                    <small class="text-muted">Poner 0 si no aplica.</small>
+                    <small class="text-muted">Montos en pesos ($). Poner 0 si no aplica.</small>
                     <div class="row mt-2">
                         <div class="col-md-4">
                             <div class="form-group">
-                                <label>Meta Tarimas / día</label>
-                                <asp:TextBox ID="txtMetaTarimasEdit" runat="server" CssClass="form-control"
-                                    TextMode="Number"></asp:TextBox>
+                                <label>Meta diaria ($)</label>
+                                <div class="input-group">
+                                    <div class="input-group-prepend"><span class="input-group-text">$</span></div>
+                                    <asp:TextBox ID="txtMetaDiariaEdit" runat="server" CssClass="form-control"
+                                        TextMode="Number" min="0" step="0.01"></asp:TextBox>
+                                </div>
                             </div>
                         </div>
                         <div class="col-md-4">
                             <div class="form-group">
-                                <label>Meta Cajas / día</label>
-                                <asp:TextBox ID="txtMetaCajasEdit" runat="server" CssClass="form-control"
-                                    TextMode="Number"></asp:TextBox>
+                                <label>Meta semanal ($)</label>
+                                <div class="input-group">
+                                    <div class="input-group-prepend"><span class="input-group-text">$</span></div>
+                                    <asp:TextBox ID="txtMetaSemanalEdit" runat="server" CssClass="form-control"
+                                        TextMode="Number" min="0" step="0.01"></asp:TextBox>
+                                </div>
                             </div>
                         </div>
                         <div class="col-md-4">
                             <div class="form-group">
-                                <label>Meta Accesorios / día</label>
-                                <asp:TextBox ID="txtMetaAccesoriosEdit" runat="server" CssClass="form-control"
-                                    TextMode="Number"></asp:TextBox>
+                                <label>Meta mensual ($)</label>
+                                <div class="input-group">
+                                    <div class="input-group-prepend"><span class="input-group-text">$</span></div>
+                                    <asp:TextBox ID="txtMetaMensualEdit" runat="server" CssClass="form-control"
+                                        TextMode="Number" min="0" step="0.01"></asp:TextBox>
+                                </div>
                             </div>
                         </div>
                     </div>
@@ -412,18 +433,19 @@
             $('#modalNueva').modal('show');
         }
 
-        function abrirModalEditar(id, codigo, nombre, tipo, responsable, telefono, direccion, metaTarimas, metaCajas, metaAccesorios, rowVersion) {
+        function abrirModalEditar(id, codigo, nombre, tipo, responsable, telefono, direccion,
+            metaDiaria, metaSemanal, metaMensual, rowVersion) {
             document.getElementById('<%= hdnBaseID.ClientID %>').value = id;
             document.getElementById('<%= hdnRowVersion.ClientID %>').value = rowVersion;
             document.getElementById('<%= txtCodigoEdit.ClientID %>').value = codigo;
             document.getElementById('<%= txtNombreEdit.ClientID %>').value = nombre;
-            document.getElementById('<%= ddlTipoEdit.ClientID %>').value = tipo;
-            document.getElementById('<%= txtResponsableEdit.ClientID %>').value    = responsable;
-            document.getElementById('<%= txtTelefonoEdit.ClientID %>').value       = telefono;
-            document.getElementById('<%= txtDireccionEdit.ClientID %>').value      = direccion;
-            document.getElementById('<%= txtMetaTarimasEdit.ClientID %>').value    = metaTarimas;
-            document.getElementById('<%= txtMetaCajasEdit.ClientID %>').value      = metaCajas;
-            document.getElementById('<%= txtMetaAccesoriosEdit.ClientID %>').value = metaAccesorios;
+            document.getElementById('<%= ddlTipoEdit.ClientID %>').value            = tipo;
+            document.getElementById('<%= txtResponsableEdit.ClientID %>').value     = responsable;
+            document.getElementById('<%= txtTelefonoEdit.ClientID %>').value        = telefono;
+            document.getElementById('<%= txtDireccionEdit.ClientID %>').value       = direccion;
+            document.getElementById('<%= txtMetaDiariaEdit.ClientID %>').value      = metaDiaria;
+            document.getElementById('<%= txtMetaSemanalEdit.ClientID %>').value     = metaSemanal;
+            document.getElementById('<%= txtMetaMensualEdit.ClientID %>').value     = metaMensual;
             $('#modalEditar').modal('show');
         }
 
@@ -432,9 +454,9 @@
             var nombre = document.getElementById('<%= txtNombre.ClientID %>').value.trim();
             var tipo   = document.getElementById('<%= ddlTipo.ClientID %>').value;
             var telef  = document.getElementById('<%= txtTelefono.ClientID %>').value.trim();
-            var metaT  = parseInt(document.getElementById('<%= txtMetaTarimas.ClientID %>').value) || 0;
-            var metaC  = parseInt(document.getElementById('<%= txtMetaCajas.ClientID %>').value) || 0;
-            var metaA  = parseInt(document.getElementById('<%= txtMetaAccesorios.ClientID %>').value) || 0;
+            var metaD  = parseFloat(document.getElementById('<%= txtMetaDiaria.ClientID %>').value)  || 0;
+            var metaS  = parseFloat(document.getElementById('<%= txtMetaSemanal.ClientID %>').value) || 0;
+            var metaM  = parseFloat(document.getElementById('<%= txtMetaMensual.ClientID %>').value) || 0;
 
             if (codigo === '') {
                 Swal.fire({ icon: 'warning', title: 'Campo obligatorio', text: 'El código es obligatorio.', confirmButtonColor: '#003366' });
@@ -460,7 +482,7 @@
                 Swal.fire({ icon: 'warning', title: 'Teléfono inválido', text: 'El teléfono debe contener solo números (7 a 20 dígitos).', confirmButtonColor: '#003366' });
                 return false;
             }
-            if (metaT < 0 || metaC < 0 || metaA < 0) {
+            if (metaD < 0 || metaS < 0 || metaM < 0) {
                 Swal.fire({ icon: 'warning', title: 'Metas inválidas', text: 'Las metas no pueden ser negativas.', confirmButtonColor: '#003366' });
                 return false;
             }
@@ -472,9 +494,9 @@
             var nombre = document.getElementById('<%= txtNombreEdit.ClientID %>').value.trim();
             var tipo   = document.getElementById('<%= ddlTipoEdit.ClientID %>').value;
             var telef  = document.getElementById('<%= txtTelefonoEdit.ClientID %>').value.trim();
-            var metaT  = parseInt(document.getElementById('<%= txtMetaTarimasEdit.ClientID %>').value) || 0;
-            var metaC  = parseInt(document.getElementById('<%= txtMetaCajasEdit.ClientID %>').value) || 0;
-            var metaA  = parseInt(document.getElementById('<%= txtMetaAccesoriosEdit.ClientID %>').value) || 0;
+            var metaD  = parseFloat(document.getElementById('<%= txtMetaDiariaEdit.ClientID %>').value)  || 0;
+            var metaS  = parseFloat(document.getElementById('<%= txtMetaSemanalEdit.ClientID %>').value) || 0;
+            var metaM  = parseFloat(document.getElementById('<%= txtMetaMensualEdit.ClientID %>').value) || 0;
 
             if (codigo === '') {
                 Swal.fire({ icon: 'warning', title: 'Campo obligatorio', text: 'El código es obligatorio.', confirmButtonColor: '#003366' });
@@ -500,7 +522,7 @@
                 Swal.fire({ icon: 'warning', title: 'Teléfono inválido', text: 'El teléfono debe contener solo números (7 a 20 dígitos).', confirmButtonColor: '#003366' });
                 return false;
             }
-            if (metaT < 0 || metaC < 0 || metaA < 0) {
+            if (metaD < 0 || metaS < 0 || metaM < 0) {
                 Swal.fire({ icon: 'warning', title: 'Metas inválidas', text: 'Las metas no pueden ser negativas.', confirmButtonColor: '#003366' });
                 return false;
             }
