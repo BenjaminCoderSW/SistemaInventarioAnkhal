@@ -177,13 +177,13 @@ namespace GrupoAnkhalInventario
         protected global::System.Web.UI.WebControls.TextBox txtCodigo;
 
         /// <summary>
-        /// Control txtNombre.
+        /// Control txtDescripcion.
         /// </summary>
         /// <remarks>
         /// Campo generado automáticamente.
         /// Para modificarlo, mueva la declaración del campo del archivo del diseñador al archivo de código subyacente.
         /// </remarks>
-        protected global::System.Web.UI.WebControls.TextBox txtNombre;
+        protected global::System.Web.UI.WebControls.TextBox txtDescripcion;
 
         /// <summary>
         /// Control ddlTipo.
@@ -222,15 +222,6 @@ namespace GrupoAnkhalInventario
         protected global::System.Web.UI.WebControls.TextBox txtPrecio;
 
         /// <summary>
-        /// Control txtStockCritico.
-        /// </summary>
-        /// <remarks>
-        /// Campo generado automáticamente.
-        /// Para modificarlo, mueva la declaración del campo del archivo del diseñador al archivo de código subyacente.
-        /// </remarks>
-        protected global::System.Web.UI.WebControls.TextBox txtStockCritico;
-
-        /// <summary>
         /// Control txtStockMinimo.
         /// </summary>
         /// <remarks>
@@ -238,6 +229,15 @@ namespace GrupoAnkhalInventario
         /// Para modificarlo, mueva la declaración del campo del archivo del diseñador al archivo de código subyacente.
         /// </remarks>
         protected global::System.Web.UI.WebControls.TextBox txtStockMinimo;
+
+        /// <summary>
+        /// Control txtStockMaximo.
+        /// </summary>
+        /// <remarks>
+        /// Campo generado automáticamente.
+        /// Para modificarlo, mueva la declaración del campo del archivo del diseñador al archivo de código subyacente.
+        /// </remarks>
+        protected global::System.Web.UI.WebControls.TextBox txtStockMaximo;
 
         /// <summary>
         /// Control txtStockOptimo.
@@ -285,13 +285,13 @@ namespace GrupoAnkhalInventario
         protected global::System.Web.UI.WebControls.TextBox txtCodigoEdit;
 
         /// <summary>
-        /// Control txtNombreEdit.
+        /// Control txtDescripcionEdit.
         /// </summary>
         /// <remarks>
         /// Campo generado automáticamente.
         /// Para modificarlo, mueva la declaración del campo del archivo del diseñador al archivo de código subyacente.
         /// </remarks>
-        protected global::System.Web.UI.WebControls.TextBox txtNombreEdit;
+        protected global::System.Web.UI.WebControls.TextBox txtDescripcionEdit;
 
         /// <summary>
         /// Control ddlTipoEdit.
@@ -330,15 +330,6 @@ namespace GrupoAnkhalInventario
         protected global::System.Web.UI.WebControls.TextBox txtPrecioEdit;
 
         /// <summary>
-        /// Control txtStockCriticoEdit.
-        /// </summary>
-        /// <remarks>
-        /// Campo generado automáticamente.
-        /// Para modificarlo, mueva la declaración del campo del archivo del diseñador al archivo de código subyacente.
-        /// </remarks>
-        protected global::System.Web.UI.WebControls.TextBox txtStockCriticoEdit;
-
-        /// <summary>
         /// Control txtStockMinimoEdit.
         /// </summary>
         /// <remarks>
@@ -346,6 +337,15 @@ namespace GrupoAnkhalInventario
         /// Para modificarlo, mueva la declaración del campo del archivo del diseñador al archivo de código subyacente.
         /// </remarks>
         protected global::System.Web.UI.WebControls.TextBox txtStockMinimoEdit;
+
+        /// <summary>
+        /// Control txtStockMaximoEdit.
+        /// </summary>
+        /// <remarks>
+        /// Campo generado automáticamente.
+        /// Para modificarlo, mueva la declaración del campo del archivo del diseñador al archivo de código subyacente.
+        /// </remarks>
+        protected global::System.Web.UI.WebControls.TextBox txtStockMaximoEdit;
 
         /// <summary>
         /// Control txtStockOptimoEdit.

@@ -26,18 +26,17 @@ namespace GrupoAnkhalInventario
         {
             public int MaterialID { get; set; }
             public string Codigo { get; set; }
-            public string Nombre { get; set; }
+            public string Descripcion { get; set; }   // antes: Nombre
             public int TipoMaterialID { get; set; }
             public string TipoNombre { get; set; }
             public string Subtipo { get; set; }
             public string Unidad { get; set; }
             public decimal PrecioUnitario { get; set; }
-            public decimal StockCritico { get; set; }
-            public decimal StockMinimo { get; set; }
+            public decimal StockMinimo { get; set; }   // antes: StockCritico
+            public decimal StockMaximo { get; set; }   // antes: StockMinimo
             public decimal StockOptimo { get; set; }
             public decimal StockGlobal { get; set; }
             public bool Activo { get; set; }
-            // Detalle por base: List<(BaseNombre, Cantidad)>
             public List<StockBaseVM> StockBases { get; set; }
             public System.Data.Linq.Binary RowVersion { get; set; }
         }
@@ -104,7 +103,6 @@ namespace GrupoAnkhalInventario
             int pageIdx = gvMateriales.PageIndex;
             int pageSz = gvMateriales.PageSize;
 
-            // ── CAMBIO: using en lugar del DataContext público ──
             using (var db = NuevoDb(tracking: false))
             {
                 // ── JOIN Materiales + TiposMaterial ──────────────────────────
@@ -115,14 +113,14 @@ namespace GrupoAnkhalInventario
                     {
                         m.MaterialID,
                         m.Codigo,
-                        m.Nombre,
+                        Descripcion = m.Descripcion,   // columna renombrada
                         m.TipoMaterialID,
                         TipoNombre = tp.Nombre,
                         m.Subtipo,
                         m.Unidad,
                         m.PrecioUnitario,
-                        m.StockCritico,
-                        m.StockMinimo,
+                        StockMinimo = m.StockMinimo,   // columna renombrada (antes StockCritico)
+                        StockMaximo = m.StockMaximo,   // columna renombrada (antes StockMinimo)
                         m.StockOptimo,
                         m.Activo,
                         m.RowVersion
@@ -132,7 +130,7 @@ namespace GrupoAnkhalInventario
                 if (!string.IsNullOrEmpty(buscar))
                     query = query.Where(m =>
                         m.Codigo.Contains(buscar) ||
-                        m.Nombre.Contains(buscar));
+                        m.Descripcion.Contains(buscar));
 
                 if (!string.IsNullOrEmpty(filTipo))
                 {
@@ -165,7 +163,6 @@ namespace GrupoAnkhalInventario
                                                sm.CantidadActual
                                            }).ToList();
 
-                    // Construir VMs con nivel calculado y aplicar filtro de nivel
                     var vmsFiltradas = new List<MaterialVM>();
                     foreach (var m in listaCompleta)
                     {
@@ -176,25 +173,25 @@ namespace GrupoAnkhalInventario
                                 BaseNombre = s.Nombre,
                                 BaseCodigo = s.Codigo,
                                 Cantidad = s.CantidadActual,
-                                NivelCss = GetNivelCss(s.CantidadActual, m.StockCritico, m.StockMinimo, m.StockOptimo)
+                                NivelCss = GetNivelCss(s.CantidadActual, m.StockMinimo, m.StockMaximo, m.StockOptimo)
                             }).ToList();
 
                         decimal global = bases.Sum(s => s.Cantidad);
-                        string nivel = GetNivel(global, m.StockCritico, m.StockMinimo, m.StockOptimo);
+                        string nivel = GetNivel(global, m.StockMinimo, m.StockMaximo, m.StockOptimo);
                         if (nivel != filNivel) continue;
 
                         vmsFiltradas.Add(new MaterialVM
                         {
                             MaterialID = m.MaterialID,
                             Codigo = m.Codigo,
-                            Nombre = m.Nombre,
+                            Descripcion = m.Descripcion,
                             TipoMaterialID = m.TipoMaterialID,
                             TipoNombre = m.TipoNombre,
                             Subtipo = m.Subtipo,
                             Unidad = m.Unidad,
                             PrecioUnitario = m.PrecioUnitario,
-                            StockCritico = m.StockCritico,
                             StockMinimo = m.StockMinimo,
+                            StockMaximo = m.StockMaximo,
                             StockOptimo = m.StockOptimo,
                             StockGlobal = global,
                             Activo = m.Activo,
@@ -207,7 +204,6 @@ namespace GrupoAnkhalInventario
                     ViewState["TotalRegistros"] = totalConNivel;
                     gvMateriales.VirtualItemCount = totalConNivel;
 
-                    // Paginar en memoria sobre la lista ya filtrada por nivel
                     vms = vmsFiltradas
                         .Skip(pageIdx * pageSz)
                         .Take(pageSz)
@@ -222,7 +218,6 @@ namespace GrupoAnkhalInventario
                 else
                 {
                     // ── Sin filtro de nivel: paginación pura en SQL ──────────
-                    // Esta es la ruta más común y la más eficiente.
                     ViewState["TotalRegistros"] = totalSinNivel;
                     gvMateriales.VirtualItemCount = totalSinNivel;
 
@@ -254,7 +249,7 @@ namespace GrupoAnkhalInventario
                                 BaseNombre = s.Nombre,
                                 BaseCodigo = s.Codigo,
                                 Cantidad = s.CantidadActual,
-                                NivelCss = GetNivelCss(s.CantidadActual, m.StockCritico, m.StockMinimo, m.StockOptimo)
+                                NivelCss = GetNivelCss(s.CantidadActual, m.StockMinimo, m.StockMaximo, m.StockOptimo)
                             }).ToList();
 
                         decimal global = bases.Sum(s => s.Cantidad);
@@ -263,14 +258,14 @@ namespace GrupoAnkhalInventario
                         {
                             MaterialID = m.MaterialID,
                             Codigo = m.Codigo,
-                            Nombre = m.Nombre,
+                            Descripcion = m.Descripcion,
                             TipoMaterialID = m.TipoMaterialID,
                             TipoNombre = m.TipoNombre,
                             Subtipo = m.Subtipo,
                             Unidad = m.Unidad,
                             PrecioUnitario = m.PrecioUnitario,
-                            StockCritico = m.StockCritico,
                             StockMinimo = m.StockMinimo,
+                            StockMaximo = m.StockMaximo,
                             StockOptimo = m.StockOptimo,
                             StockGlobal = global,
                             Activo = m.Activo,
@@ -284,8 +279,8 @@ namespace GrupoAnkhalInventario
                                        select new
                                        {
                                            m2.MaterialID,
-                                           m2.StockCritico,
-                                           m2.StockMinimo,
+                                           StockMinimo = m2.StockMinimo,
+                                           StockMaximo = m2.StockMaximo,
                                            m2.StockOptimo,
                                            StockGlobal = (decimal?)smg.Sum(s => s.CantidadActual) ?? 0m
                                        }).ToList();
@@ -302,26 +297,27 @@ namespace GrupoAnkhalInventario
             }
         }
 
-        // ── Dashboard: cuenta niveles sobre lista de VMs (ruta con filtro de nivel) ──
+        // ── Dashboard: cuenta niveles sobre lista de VMs ─────────────────────
         private void ActualizarDashboard(List<MaterialVM> vms)
         {
             lblTotal.Text = vms.Count.ToString();
-            lblCritico.Text = vms.Count(m => GetNivel(m.StockGlobal, m.StockCritico, m.StockMinimo, m.StockOptimo) == "critico").ToString();
-            lblBajo.Text = vms.Count(m => GetNivel(m.StockGlobal, m.StockCritico, m.StockMinimo, m.StockOptimo) == "bajo").ToString();
-            lblOptimo.Text = vms.Count(m => GetNivel(m.StockGlobal, m.StockCritico, m.StockMinimo, m.StockOptimo) == "optimo").ToString();
+            lblCritico.Text = vms.Count(m => GetNivel(m.StockGlobal, m.StockMinimo, m.StockMaximo, m.StockOptimo) == "critico").ToString();
+            lblBajo.Text = vms.Count(m => GetNivel(m.StockGlobal, m.StockMinimo, m.StockMaximo, m.StockOptimo) == "bajo").ToString();
+            lblOptimo.Text = vms.Count(m => GetNivel(m.StockGlobal, m.StockMinimo, m.StockMaximo, m.StockOptimo) == "optimo").ToString();
         }
 
-        // ── Dashboard: cuenta niveles desde query ligera (ruta sin filtro de nivel) ──
-        private void ActualizarDashboardDesdeQuery(
-            IEnumerable<dynamic> lista)
+        // ── Dashboard: desde query ligera ────────────────────────────────────
+        private void ActualizarDashboardDesdeQuery(IEnumerable<dynamic> lista)
         {
-            // Usamos un tipo anónimo con los campos necesarios
             int total = 0, critico = 0, bajo = 0, optimo = 0;
             foreach (dynamic item in lista)
             {
                 total++;
-                string nivel = GetNivel((decimal)item.StockGlobal, (decimal)item.StockCritico,
-                                        (decimal)item.StockMinimo, (decimal)item.StockOptimo);
+                string nivel = GetNivel(
+                    (decimal)item.StockGlobal,
+                    (decimal)item.StockMinimo,
+                    (decimal)item.StockMaximo,
+                    (decimal)item.StockOptimo);
                 if (nivel == "critico") critico++;
                 else if (nivel == "bajo") bajo++;
                 else if (nivel == "optimo") optimo++;
@@ -412,40 +408,40 @@ namespace GrupoAnkhalInventario
         // ══ GUARDAR NUEVO ═════════════════════════════════════════════════════
         protected void btnGuardar_Click(object sender, EventArgs e)
         {
-            if (!ValidarCampos(txtCodigo.Text, txtNombre.Text,
+            if (!ValidarCampos(txtCodigo.Text, txtDescripcion.Text,
                                ddlTipo.SelectedValue, txtUnidad.Text,
                                txtPrecio.Text, "modalNuevo")) return;
 
             string codigoUpper = txtCodigo.Text.Trim().ToUpper();
-            string nombreTrim = txtNombre.Text.Trim();
+            string descripTrim = txtDescripcion.Text.Trim();
 
             using (var db = NuevoDb())
             {
                 if (db.Materiales.Any(m => m.Codigo == codigoUpper))
                 { SetMsg("error", "Código duplicado", "Ya existe un material con el código '" + codigoUpper + "'.", "modalNuevo"); return; }
 
-                if (db.Materiales.Any(m => m.Nombre.ToLower() == nombreTrim.ToLower()))
-                { SetMsg("error", "Nombre duplicado", "Ya existe un material con el nombre '" + nombreTrim + "'.", "modalNuevo"); return; }
+                if (db.Materiales.Any(m => m.Descripcion.ToLower() == descripTrim.ToLower()))
+                { SetMsg("error", "Descripción duplicada", "Ya existe un material con esa descripción.", "modalNuevo"); return; }
 
-                decimal critico = ParseDec(txtStockCritico.Text);
                 decimal minimo = ParseDec(txtStockMinimo.Text);
+                decimal maximo = ParseDec(txtStockMaximo.Text);
                 decimal optimo = ParseDec(txtStockOptimo.Text);
 
-                if (critico > minimo || minimo > optimo)
-                { SetMsg("warning", "Niveles inválidos", "Debe cumplirse: Crítico ≤ Mínimo ≤ Óptimo.", "modalNuevo"); return; }
+                if (minimo > maximo || maximo > optimo)
+                { SetMsg("warning", "Niveles inválidos", "Debe cumplirse: Mínimo ≤ Máximo ≤ Óptimo.", "modalNuevo"); return; }
 
                 try
                 {
                     var nuevo = new GrupoAnkhalInventario.Modelo.Materiales
                     {
                         Codigo = codigoUpper,
-                        Nombre = nombreTrim,
+                        Descripcion = descripTrim,
                         TipoMaterialID = int.Parse(ddlTipo.SelectedValue),
                         Subtipo = txtSubtipo.Text.Trim(),
                         Unidad = txtUnidad.Text.Trim(),
                         PrecioUnitario = ParseDec(txtPrecio.Text),
-                        StockCritico = critico,
                         StockMinimo = minimo,
+                        StockMaximo = maximo,
                         StockOptimo = optimo,
                         Activo = true,
                         UsuarioAltaID = Convert.ToInt32(Session["ClaveID"])
@@ -470,34 +466,35 @@ namespace GrupoAnkhalInventario
         {
             if (string.IsNullOrWhiteSpace(hdnMaterialID.Value)) return;
 
-            if (!ValidarCampos(txtCodigoEdit.Text, txtNombreEdit.Text,
+            if (!ValidarCampos(txtCodigoEdit.Text, txtDescripcionEdit.Text,
                                ddlTipoEdit.SelectedValue, txtUnidadEdit.Text,
                                txtPrecioEdit.Text, "modalEditar")) return;
 
             int matID = int.Parse(hdnMaterialID.Value);
             string codigoUpper = txtCodigoEdit.Text.Trim().ToUpper();
-            string nombreTrim = txtNombreEdit.Text.Trim();
+            string descripTrim = txtDescripcionEdit.Text.Trim();
 
             using (var db = NuevoDb())
             {
                 if (db.Materiales.Any(m => m.Codigo == codigoUpper && m.MaterialID != matID))
                 { SetMsg("error", "Código duplicado", "Ya existe otro material con el código '" + codigoUpper + "'.", "modalEditar"); return; }
 
-                if (db.Materiales.Any(m => m.Nombre.ToLower() == nombreTrim.ToLower() && m.MaterialID != matID))
-                { SetMsg("error", "Nombre duplicado", "Ya existe otro material con el nombre '" + nombreTrim + "'.", "modalEditar"); return; }
+                if (db.Materiales.Any(m => m.Descripcion.ToLower() == descripTrim.ToLower() && m.MaterialID != matID))
+                { SetMsg("error", "Descripción duplicada", "Ya existe otro material con esa descripción.", "modalEditar"); return; }
 
-                decimal critico = ParseDec(txtStockCriticoEdit.Text);
                 decimal minimo = ParseDec(txtStockMinimoEdit.Text);
+                decimal maximo = ParseDec(txtStockMaximoEdit.Text);
                 decimal optimo = ParseDec(txtStockOptimoEdit.Text);
 
-                if (critico > minimo || minimo > optimo)
-                { SetMsg("warning", "Niveles inválidos", "Debe cumplirse: Crítico ≤ Mínimo ≤ Óptimo.", "modalEditar"); return; }
+                if (minimo > maximo || maximo > optimo)
+                { SetMsg("warning", "Niveles inválidos", "Debe cumplirse: Mínimo ≤ Máximo ≤ Óptimo.", "modalEditar"); return; }
 
                 try
                 {
                     var mat = db.Materiales.FirstOrDefault(m => m.MaterialID == matID);
                     if (mat == null) { SetMsg("error", "Error", "No se encontró el material."); return; }
 
+                    // ── Control de concurrencia ──────────────────────────────
                     byte[] rowVersionOriginal = null;
                     if (!string.IsNullOrEmpty(hdnRowVersion.Value))
                         rowVersionOriginal = Convert.FromBase64String(hdnRowVersion.Value);
@@ -508,25 +505,24 @@ namespace GrupoAnkhalInventario
                     {
                         SetMsg("warning",
                             "Registro modificado",
-                            "Otro usuario acaba de modificar este material justo ahora. " +
+                            "Otro usuario acaba de modificar este material. " +
                             "Salte y vuelve a entrar a Materiales para ver los datos actuales y poder editar.",
                             "modalEditar");
                         return;
                     }
 
                     mat.Codigo = codigoUpper;
-                    mat.Nombre = nombreTrim;
+                    mat.Descripcion = descripTrim;
                     mat.TipoMaterialID = int.Parse(ddlTipoEdit.SelectedValue);
                     mat.Subtipo = txtSubtipoEdit.Text.Trim();
                     mat.Unidad = txtUnidadEdit.Text.Trim();
                     mat.PrecioUnitario = ParseDec(txtPrecioEdit.Text);
-                    mat.StockCritico = critico;
                     mat.StockMinimo = minimo;
+                    mat.StockMaximo = maximo;
                     mat.StockOptimo = optimo;
                     mat.FechaModif = DateTime.Now;
                     mat.UsuarioModifID = Convert.ToInt32(Session["ClaveID"]);
 
-                    // FailOnFirstConflict como segunda red de seguridad
                     db.SubmitChanges(System.Data.Linq.ConflictMode.FailOnFirstConflict);
 
                     CargarMateriales();
@@ -534,7 +530,6 @@ namespace GrupoAnkhalInventario
                 }
                 catch (System.Data.Linq.ChangeConflictException)
                 {
-                    // ── CAMBIO: captura explícita del conflicto de concurrencia de LINQ ──
                     SetMsg("warning",
                         "Conflicto de edición",
                         "Otro usuario guardó cambios en este material al mismo tiempo. " +
@@ -581,17 +576,23 @@ namespace GrupoAnkhalInventario
         }
 
         // ══ HELPERS DE NIVEL (públicos para usar en .aspx) ═══════════════════
-        public string GetNivel(decimal stock, decimal critico, decimal minimo, decimal optimo)
+        /// <summary>
+        /// Calcula el nivel semáforo usando los nuevos nombres de columna.
+        /// minimo  = antes StockCritico  (🔴 si stock menor a este)
+        /// maximo  = antes StockMinimo   (🟡 si stock entre minimo y maximo)
+        /// optimo  = sin cambio          (🟢 si stock mayor o igual a este)
+        /// </summary>
+        public string GetNivel(decimal stock, decimal minimo, decimal maximo, decimal optimo)
         {
-            if (stock < critico) return "critico";
-            if (stock < minimo) return "bajo";
+            if (stock < minimo) return "critico";
+            if (stock < maximo) return "bajo";
             if (stock >= optimo) return "optimo";
             return "sin";
         }
 
-        public string GetNivelCss(decimal stock, decimal critico, decimal minimo, decimal optimo)
+        public string GetNivelCss(decimal stock, decimal minimo, decimal maximo, decimal optimo)
         {
-            switch (GetNivel(stock, critico, minimo, optimo))
+            switch (GetNivel(stock, minimo, maximo, optimo))
             {
                 case "critico": return "nivel-critico";
                 case "bajo": return "nivel-bajo";
@@ -600,9 +601,9 @@ namespace GrupoAnkhalInventario
             }
         }
 
-        public string GetNivelIcon(decimal stock, decimal critico, decimal minimo, decimal optimo)
+        public string GetNivelIcon(decimal stock, decimal minimo, decimal maximo, decimal optimo)
         {
-            switch (GetNivel(stock, critico, minimo, optimo))
+            switch (GetNivel(stock, minimo, maximo, optimo))
             {
                 case "critico": return "🔴";
                 case "bajo": return "🟡";
@@ -611,14 +612,14 @@ namespace GrupoAnkhalInventario
             }
         }
 
-        public string GetBarCss(decimal stock, decimal critico, decimal minimo, decimal optimo)
+        public string GetBarCss(decimal stock, decimal minimo, decimal maximo, decimal optimo)
         {
             return "";
         }
 
-        public string GetBarColor(decimal stock, decimal critico, decimal minimo, decimal optimo)
+        public string GetBarColor(decimal stock, decimal minimo, decimal maximo, decimal optimo)
         {
-            switch (GetNivel(stock, critico, minimo, optimo))
+            switch (GetNivel(stock, minimo, maximo, optimo))
             {
                 case "critico": return "#e74c3c";
                 case "bajo": return "#e67e22";
@@ -638,8 +639,8 @@ namespace GrupoAnkhalInventario
         {
             switch (css)
             {
-                case "nivel-critico": return "Crítico";
-                case "nivel-bajo": return "Bajo";
+                case "nivel-critico": return "Bajo mínimo";
+                case "nivel-bajo": return "Bajo máximo";
                 case "nivel-optimo": return "Óptimo";
                 default: return "Sin stock";
             }
@@ -656,12 +657,12 @@ namespace GrupoAnkhalInventario
         }
 
         // ══ VALIDACIONES SERVIDOR ═════════════════════════════════════════════
-        private bool ValidarCampos(string cod, string nom, string tipo, string uni, string pre, string modal)
+        private bool ValidarCampos(string cod, string desc, string tipo, string uni, string pre, string modal)
         {
             if (string.IsNullOrWhiteSpace(cod) || cod.Trim().Length < 2)
             { SetMsg("warning", "Código inválido", "El código es obligatorio y debe tener al menos 2 caracteres.", modal); return false; }
-            if (string.IsNullOrWhiteSpace(nom) || nom.Trim().Length < 3)
-            { SetMsg("warning", "Nombre inválido", "El nombre es obligatorio y debe tener al menos 3 caracteres.", modal); return false; }
+            if (string.IsNullOrWhiteSpace(desc) || desc.Trim().Length < 3)
+            { SetMsg("warning", "Descripción inválida", "La descripción es obligatoria y debe tener al menos 3 caracteres.", modal); return false; }
             if (string.IsNullOrWhiteSpace(tipo))
             { SetMsg("warning", "Tipo obligatorio", "Debe seleccionar el tipo de material.", modal); return false; }
             if (string.IsNullOrWhiteSpace(uni))
@@ -678,13 +679,13 @@ namespace GrupoAnkhalInventario
         private void LimpiarNuevo()
         {
             txtCodigo.Text = "";
-            txtNombre.Text = "";
+            txtDescripcion.Text = "";
             ddlTipo.SelectedIndex = 0;
             txtSubtipo.Text = "";
             txtUnidad.Text = "";
             txtPrecio.Text = "0";
-            txtStockCritico.Text = "0";
             txtStockMinimo.Text = "0";
+            txtStockMaximo.Text = "0";
             txtStockOptimo.Text = "0";
         }
 

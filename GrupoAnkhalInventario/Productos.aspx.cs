@@ -61,12 +61,9 @@ namespace GrupoAnkhalInventario
             }
             else
             {
-                // Restaurar VirtualItemCount antes de que se ejecute cualquier evento,
-                // igual que en Bases y Materiales para que el paginador funcione.
                 if (ViewState["TotalRegistros"] != null)
                     gvProductos.VirtualItemCount = (int)ViewState["TotalRegistros"];
 
-                // Reinyectar datos JS en cada postback (modales de componentes los necesitan)
                 InjectJsData();
             }
         }
@@ -114,7 +111,6 @@ namespace GrupoAnkhalInventario
                     join tp in db.TiposProducto on p.TipoProductoID equals tp.TipoProductoID
                     select new { p, tp };
 
-                // ── Filtros sin .ToLower() ────────────────────────────────────
                 if (!string.IsNullOrEmpty(buscar))
                     query = query.Where(x =>
                         x.p.Codigo.Contains(buscar) ||
@@ -131,7 +127,6 @@ namespace GrupoAnkhalInventario
 
                 query = query.OrderBy(x => x.p.Codigo);
 
-                // ── COUNT en SQL ──────────────────────────────────────────────
                 int totalRegistros = query.Count();
 
                 lblResultados.Text = totalRegistros == 1
@@ -140,13 +135,11 @@ namespace GrupoAnkhalInventario
 
                 ViewState["TotalRegistros"] = totalRegistros;
 
-                // ── PAGINACIÓN EN SQL (Skip/Take → OFFSET/FETCH NEXT) ─────────
                 var pagina = query
                     .Skip(pageIdx * pageSz)
                     .Take(pageSz)
                     .ToList();
 
-                // ── Conteo de componentes solo para IDs de la página actual ───
                 var idsPagina = pagina.Select(x => x.p.ProductoID).ToList();
 
                 var compCounts = db.ProductoMateriales
@@ -171,7 +164,6 @@ namespace GrupoAnkhalInventario
                         .FirstOrDefault(c => c.ProductoID == x.p.ProductoID)?.Total ?? 0
                 }).ToList();
 
-                // ── Dashboard: COUNT por tipo sobre TODA la tabla ─────────────
                 var dashboard = (from p in db.Productos
                                  join tp in db.TiposProducto on p.TipoProductoID equals tp.TipoProductoID
                                  group tp.Clave by tp.Clave into g
@@ -195,13 +187,13 @@ namespace GrupoAnkhalInventario
         // Versión principal: reutiliza el db ya abierto y la lista de la página
         private void InjectJsData(InventarioAnkhalDBDataContext db, List<ProductoVM> lista)
         {
+            // CAMBIO: m.Nombre → m.Descripcion (columna renombrada en Materiales)
             var mats = db.Materiales
                 .Where(m => m.Activo == true)
-                .OrderBy(m => m.Nombre)
-                .Select(m => new { id = m.MaterialID, nombre = m.Nombre, unidad = m.Unidad })
+                .OrderBy(m => m.Descripcion)
+                .Select(m => new { id = m.MaterialID, nombre = m.Descripcion, unidad = m.Unidad })
                 .ToList();
 
-            // Solo componentes de los productos visibles en la página
             var idsPagina = lista.Select(p => p.ProductoID).ToList();
             var pms = db.ProductoMateriales
                 .Where(pm => idsPagina.Contains(pm.ProductoID))
@@ -221,7 +213,8 @@ namespace GrupoAnkhalInventario
                 {
                     pmID = pm.ProductoMaterialID,
                     materialID = pm.MaterialID,
-                    materialNombre = mat.Nombre,
+                    // CAMBIO: mat.Nombre → mat.Descripcion
+                    materialNombre = mat.Descripcion,
                     unidad = mat.Unidad,
                     cantMin = pm.CantidadMin,
                     cantMax = pm.CantidadMax,
@@ -239,10 +232,11 @@ namespace GrupoAnkhalInventario
         {
             using (var db = NuevoDb(tracking: false))
             {
+                // CAMBIO: m.Nombre → m.Descripcion (columna renombrada en Materiales)
                 var mats = db.Materiales
                     .Where(m => m.Activo == true)
-                    .OrderBy(m => m.Nombre)
-                    .Select(m => new { id = m.MaterialID, nombre = m.Nombre, unidad = m.Unidad })
+                    .OrderBy(m => m.Descripcion)
+                    .Select(m => new { id = m.MaterialID, nombre = m.Descripcion, unidad = m.Unidad })
                     .ToList();
 
                 var pms = db.ProductoMateriales.ToList();
@@ -260,7 +254,8 @@ namespace GrupoAnkhalInventario
                     {
                         pmID = pm.ProductoMaterialID,
                         materialID = pm.MaterialID,
-                        materialNombre = mat.Nombre,
+                        // CAMBIO: mat.Nombre → mat.Descripcion
+                        materialNombre = mat.Descripcion,
                         unidad = mat.Unidad,
                         cantMin = pm.CantidadMin,
                         cantMax = pm.CantidadMax,
@@ -386,7 +381,6 @@ namespace GrupoAnkhalInventario
                     var prod = db.Productos.FirstOrDefault(p => p.ProductoID == prodID);
                     if (prod == null) { SetMsg("error", "Error", "No se encontró el producto."); return; }
 
-                    // ── Control de concurrencia ───────────────────────────────
                     byte[] rowVersionOriginal = null;
                     if (!string.IsNullOrEmpty(hdnRowVersion.Value))
                         rowVersionOriginal = Convert.FromBase64String(hdnRowVersion.Value);

@@ -67,7 +67,6 @@
         .bases-accordion tr:hover td { background:#e3eaf3; }
 
         /* ── Paginador ── */
-        /* ── CAMBIO: estilos paginador custom igual que Bases ── */
         .pager-custom span {
             background:#003366; color:#fff; font-weight:700;
             border-radius:4px; padding:4px 9px;
@@ -96,14 +95,14 @@
             <div class="icon"><i class="fas fa-exclamation-circle"></i></div>
             <div class="info">
                 <div class="num"><asp:Label ID="lblCritico" runat="server" Text="0"></asp:Label></div>
-                <div class="lbl">🔴 Stock crítico</div>
+                <div class="lbl">🔴 Stock bajo mínimo</div>
             </div>
         </div>
         <div class="stock-card bajo" onclick="filtrarNivel('bajo')" id="cardBajo">
             <div class="icon"><i class="fas fa-exclamation-triangle"></i></div>
             <div class="info">
                 <div class="num"><asp:Label ID="lblBajo"    runat="server" Text="0"></asp:Label></div>
-                <div class="lbl">🟡 Stock bajo</div>
+                <div class="lbl">🟡 Stock bajo máximo</div>
             </div>
         </div>
         <div class="stock-card optimo" onclick="filtrarNivel('optimo')" id="cardOptimo">
@@ -131,9 +130,9 @@
             <div class="filtros-bar">
                 <div class="row align-items-end">
                     <div class="col-md-3">
-                        <label>Buscar por Nombre o Código</label>
+                        <label>Buscar por Descripción o Código</label>
                         <asp:TextBox ID="txtBuscar" runat="server" CssClass="form-control form-control-sm"
-                            Placeholder="Nombre o código..."></asp:TextBox>
+                            Placeholder="Descripción o código..."></asp:TextBox>
                     </div>
                     <div class="col-md-2">
                         <label>Tipo de material</label>
@@ -145,8 +144,8 @@
                         <label>Nivel de stock</label>
                         <asp:DropDownList ID="ddlFiltrNivel" runat="server" CssClass="form-control form-control-sm">
                             <asp:ListItem Value="">-- Todos --</asp:ListItem>
-                            <asp:ListItem Value="critico">🔴 Crítico</asp:ListItem>
-                            <asp:ListItem Value="bajo">🟡 Bajo</asp:ListItem>
+                            <asp:ListItem Value="critico">🔴 Bajo mínimo</asp:ListItem>
+                            <asp:ListItem Value="bajo">🟡 Bajo máximo</asp:ListItem>
                             <asp:ListItem Value="optimo">🟢 Óptimo</asp:ListItem>
                             <asp:ListItem Value="sin">⚪ Sin stock</asp:ListItem>
                         </asp:DropDownList>
@@ -188,30 +187,30 @@
                     PagerSettings-LastPageText="»"
                     PagerSettings-PageButtonCount="5">
                     <Columns>
-                        <asp:BoundField DataField="MaterialID"  HeaderText="ID"     Visible="false" />
-                        <asp:BoundField DataField="Codigo"      HeaderText="Código" />
-                        <asp:BoundField DataField="Nombre"      HeaderText="Nombre" />
-                        <asp:BoundField DataField="TipoNombre"  HeaderText="Tipo" />
-                        <asp:BoundField DataField="Subtipo"     HeaderText="Subtipo" />
-                        <asp:BoundField DataField="Unidad"      HeaderText="Unidad" />
+                        <asp:BoundField DataField="MaterialID"   HeaderText="ID"          Visible="false" />
+                        <asp:BoundField DataField="Codigo"       HeaderText="Código" />
+                        <asp:BoundField DataField="Descripcion"  HeaderText="Descripción" />
+                        <asp:BoundField DataField="TipoNombre"   HeaderText="Tipo" />
+                        <asp:BoundField DataField="Subtipo"      HeaderText="Subtipo" />
+                        <asp:BoundField DataField="Unidad"       HeaderText="Unidad" />
                         <asp:BoundField DataField="PrecioUnitario" HeaderText="Precio" DataFormatString="{0:C2}" />
 
                         <asp:TemplateField HeaderText="Stock Global">
                             <ItemTemplate>
                                 <div>
-                                    <span class='nivel-badge <%# GetNivelCss((decimal)Eval("StockGlobal"), (decimal)Eval("StockCritico"), (decimal)Eval("StockMinimo"), (decimal)Eval("StockOptimo")) %>'>
-                                        <%# GetNivelIcon((decimal)Eval("StockGlobal"), (decimal)Eval("StockCritico"), (decimal)Eval("StockMinimo"), (decimal)Eval("StockOptimo")) %>
+                                    <span class='nivel-badge <%# GetNivelCss((decimal)Eval("StockGlobal"), (decimal)Eval("StockMinimo"), (decimal)Eval("StockMaximo"), (decimal)Eval("StockOptimo")) %>'>
+                                        <%# GetNivelIcon((decimal)Eval("StockGlobal"), (decimal)Eval("StockMinimo"), (decimal)Eval("StockMaximo"), (decimal)Eval("StockOptimo")) %>
                                         <%# string.Format("{0:N2}", Eval("StockGlobal")) %> <%# Eval("Unidad") %>
                                     </span>
                                     <div class="stock-bar-wrap">
-                                        <div class="stock-bar-fill <%# GetBarCss((decimal)Eval("StockGlobal"), (decimal)Eval("StockCritico"), (decimal)Eval("StockMinimo"), (decimal)Eval("StockOptimo")) %>"
-                                             style="width:<%# GetBarPct((decimal)Eval("StockGlobal"), (decimal)Eval("StockOptimo")) %>%; background:<%# GetBarColor((decimal)Eval("StockGlobal"), (decimal)Eval("StockCritico"), (decimal)Eval("StockMinimo"), (decimal)Eval("StockOptimo")) %>">
+                                        <div class="stock-bar-fill <%# GetBarCss((decimal)Eval("StockGlobal"), (decimal)Eval("StockMinimo"), (decimal)Eval("StockMaximo"), (decimal)Eval("StockOptimo")) %>"
+                                             style="width:<%# GetBarPct((decimal)Eval("StockGlobal"), (decimal)Eval("StockOptimo")) %>%; background:<%# GetBarColor((decimal)Eval("StockGlobal"), (decimal)Eval("StockMinimo"), (decimal)Eval("StockMaximo"), (decimal)Eval("StockOptimo")) %>">
                                         </div>
                                     </div>
                                 </div>
                                 <small class="text-muted" style="font-size:.72rem;">
-                                    🔴&lt;<%# string.Format("{0:N2}", Eval("StockCritico")) %> &nbsp;
-                                    🟡&lt;<%# string.Format("{0:N2}", Eval("StockMinimo")) %> &nbsp;
+                                    🔴&lt;<%# string.Format("{0:N2}", Eval("StockMinimo")) %> &nbsp;
+                                    🟡&lt;<%# string.Format("{0:N2}", Eval("StockMaximo")) %> &nbsp;
                                     🟢≥<%# string.Format("{0:N2}", Eval("StockOptimo")) %>
                                 </small>
                             </ItemTemplate>
@@ -240,13 +239,13 @@
                                     onclick="abrirModalEditar(
                                         '<%# Eval("MaterialID") %>',
                                         '<%# Eval("Codigo") %>',
-                                        '<%# Server.HtmlEncode((Eval("Nombre") ?? "").ToString()) %>',
+                                        '<%# Server.HtmlEncode((Eval("Descripcion") ?? "").ToString()) %>',
                                         '<%# Eval("TipoMaterialID") %>',
                                         '<%# Server.HtmlEncode((Eval("Subtipo") ?? "").ToString()) %>',
                                         '<%# Server.HtmlEncode((Eval("Unidad") ?? "").ToString()) %>',
                                         '<%# Eval("PrecioUnitario") %>',
-                                        '<%# Eval("StockCritico") %>',
                                         '<%# Eval("StockMinimo") %>',
+                                        '<%# Eval("StockMaximo") %>',
                                         '<%# Eval("StockOptimo") %>',
                                         '<%# RowVersionBase64(Eval("RowVersion")) %>'
                                     )">
@@ -256,7 +255,7 @@
                                     CssClass='<%# Convert.ToBoolean(Eval("Activo")) ? "btn btn-warning btn-sm" : "btn btn-success btn-sm" %>'
                                     Text='<%# Convert.ToBoolean(Eval("Activo")) ? "Desactivar" : "Activar" %>'
                                     CommandArgument='<%# Eval("MaterialID") %>'
-                                    OnClientClick='<%# "return confirmarToggle(\"" + Eval("MaterialID") + "\", \"" + Server.HtmlEncode((Eval("Nombre") ?? "").ToString()) + "\", " + Eval("Activo").ToString().ToLower() + ");" %>'
+                                    OnClientClick='<%# "return confirmarToggle(\"" + Eval("MaterialID") + "\", \"" + Server.HtmlEncode((Eval("Descripcion") ?? "").ToString()) + "\", " + Eval("Activo").ToString().ToLower() + ");" %>'
                                     OnClick="btnToggle_Click" />
                             </ItemTemplate>
                         </asp:TemplateField>
@@ -285,7 +284,7 @@
         <button type="button" class="close text-white" data-dismiss="modal"><span>&times;</span></button>
       </div>
       <div class="modal-body">
-        <!-- Fila 1: Código + Nombre -->
+        <!-- Fila 1: Código + Descripción -->
         <div class="row">
           <div class="col-md-3">
             <div class="form-group">
@@ -296,8 +295,8 @@
           </div>
           <div class="col-md-9">
             <div class="form-group">
-              <label>Nombre <span style="color:red">*</span></label>
-              <asp:TextBox ID="txtNombre" runat="server" CssClass="form-control" Placeholder="Nombre completo del material" MaxLength="200"></asp:TextBox>
+              <label>Descripción <span style="color:red">*</span></label>
+              <asp:TextBox ID="txtDescripcion" runat="server" CssClass="form-control" Placeholder="Descripción completa del material" MaxLength="200"></asp:TextBox>
             </div>
           </div>
         </div>
@@ -337,21 +336,21 @@
         <hr />
         <h6 style="color:#003366;font-weight:600;"><i class="fas fa-layer-group"></i> Niveles de stock</h6>
         <small class="text-muted d-block mb-2">
-            Definen el semáforo: <span style="color:#c0392b">🔴 Crítico</span> si stock &lt; Crítico &nbsp;|&nbsp;
-            <span style="color:#d35400">🟡 Bajo</span> si stock &lt; Mínimo &nbsp;|&nbsp;
+            Definen el semáforo: <span style="color:#c0392b">🔴 Bajo mínimo</span> si stock &lt; Mínimo &nbsp;|&nbsp;
+            <span style="color:#d35400">🟡 Bajo máximo</span> si stock &lt; Máximo &nbsp;|&nbsp;
             <span style="color:#1e8449">🟢 Óptimo</span> si stock ≥ Óptimo
         </small>
         <div class="row">
           <div class="col-md-4">
             <div class="form-group">
-              <label>Stock crítico <span style="color:red">*</span> <small class="text-danger">(🔴)</small></label>
-              <asp:TextBox ID="txtStockCritico" runat="server" CssClass="form-control" TextMode="Number" Text="0" min="0" step="0.01"></asp:TextBox>
+              <label>Stock mínimo <span style="color:red">*</span> <small class="text-danger">(🔴)</small></label>
+              <asp:TextBox ID="txtStockMinimo" runat="server" CssClass="form-control" TextMode="Number" Text="0" min="0" step="0.01"></asp:TextBox>
             </div>
           </div>
           <div class="col-md-4">
             <div class="form-group">
-              <label>Stock mínimo <span style="color:red">*</span> <small class="text-warning">(🟡)</small></label>
-              <asp:TextBox ID="txtStockMinimo" runat="server" CssClass="form-control" TextMode="Number" Text="0" min="0" step="0.01"></asp:TextBox>
+              <label>Stock máximo <span style="color:red">*</span> <small class="text-warning">(🟡)</small></label>
+              <asp:TextBox ID="txtStockMaximo" runat="server" CssClass="form-control" TextMode="Number" Text="0" min="0" step="0.01"></asp:TextBox>
             </div>
           </div>
           <div class="col-md-4">
@@ -394,8 +393,8 @@
           </div>
           <div class="col-md-9">
             <div class="form-group">
-              <label>Nombre <span style="color:red">*</span></label>
-              <asp:TextBox ID="txtNombreEdit" runat="server" CssClass="form-control" MaxLength="200"></asp:TextBox>
+              <label>Descripción <span style="color:red">*</span></label>
+              <asp:TextBox ID="txtDescripcionEdit" runat="server" CssClass="form-control" MaxLength="200"></asp:TextBox>
             </div>
           </div>
         </div>
@@ -435,14 +434,14 @@
         <div class="row">
           <div class="col-md-4">
             <div class="form-group">
-              <label>Stock crítico <small class="text-danger">(🔴)</small></label>
-              <asp:TextBox ID="txtStockCriticoEdit" runat="server" CssClass="form-control" TextMode="Number" min="0" step="0.01"></asp:TextBox>
+              <label>Stock mínimo <small class="text-danger">(🔴)</small></label>
+              <asp:TextBox ID="txtStockMinimoEdit" runat="server" CssClass="form-control" TextMode="Number" min="0" step="0.01"></asp:TextBox>
             </div>
           </div>
           <div class="col-md-4">
             <div class="form-group">
-              <label>Stock mínimo <small class="text-warning">(🟡)</small></label>
-              <asp:TextBox ID="txtStockMinimoEdit" runat="server" CssClass="form-control" TextMode="Number" min="0" step="0.01"></asp:TextBox>
+              <label>Stock máximo <small class="text-warning">(🟡)</small></label>
+              <asp:TextBox ID="txtStockMaximoEdit" runat="server" CssClass="form-control" TextMode="Number" min="0" step="0.01"></asp:TextBox>
             </div>
           </div>
           <div class="col-md-4">
@@ -508,29 +507,28 @@
     // ── Abrir modales ─────────────────────────────────────────────
     function abrirModalNuevo() { $('#modalNuevo').modal('show'); }
 
-    // ── CAMBIO: se agrega parámetro rowVersion igual que en Bases ──
-    function abrirModalEditar(id, codigo, nombre, tipoID, subtipo, unidad, precio, critico, minimo, optimo, rowVersion) {
+    function abrirModalEditar(id, codigo, descripcion, tipoID, subtipo, unidad, precio, minimo, maximo, optimo, rowVersion) {
         document.getElementById('<%= hdnMaterialID.ClientID %>').value          = id;
         document.getElementById('<%= hdnRowVersion.ClientID %>').value          = rowVersion;
         document.getElementById('<%= txtCodigoEdit.ClientID %>').value          = codigo;
-        document.getElementById('<%= txtNombreEdit.ClientID %>').value          = nombre;
+        document.getElementById('<%= txtDescripcionEdit.ClientID %>').value     = descripcion;
         document.getElementById('<%= ddlTipoEdit.ClientID %>').value            = tipoID;
         document.getElementById('<%= txtSubtipoEdit.ClientID %>').value         = subtipo;
         document.getElementById('<%= txtUnidadEdit.ClientID %>').value          = unidad;
         document.getElementById('<%= txtPrecioEdit.ClientID %>').value          = precio;
-        document.getElementById('<%= txtStockCriticoEdit.ClientID %>').value    = critico;
         document.getElementById('<%= txtStockMinimoEdit.ClientID %>').value     = minimo;
+        document.getElementById('<%= txtStockMaximoEdit.ClientID %>').value     = maximo;
         document.getElementById('<%= txtStockOptimoEdit.ClientID %>').value     = optimo;
         $('#modalEditar').modal('show');
     }
 
     // ── Toggle ────────────────────────────────────────────────────
-    function confirmarToggle(matID, nombre, activo) {
+    function confirmarToggle(matID, descripcion, activo) {
         var accion = activo ? 'desactivar' : 'activar';
         Swal.fire({
             icon: activo ? 'warning' : 'question',
             title: '¿' + (activo ? 'Desactivar' : 'Activar') + ' material?',
-            html: '¿Seguro de <b>' + accion + '</b> el material <b>' + nombre + '</b>?',
+            html: '¿Seguro de <b>' + accion + '</b> el material <b>' + descripcion + '</b>?',
             showCancelButton: true,
             confirmButtonText: 'Sí, ' + accion,
             cancelButtonText: 'Cancelar',
@@ -549,12 +547,12 @@
     function validarNuevo() {
         return _validar(
             '<%= txtCodigo.ClientID %>',
-            '<%= txtNombre.ClientID %>',
+            '<%= txtDescripcion.ClientID %>',
             '<%= ddlTipo.ClientID %>',
             '<%= txtUnidad.ClientID %>',
             '<%= txtPrecio.ClientID %>',
-            '<%= txtStockCritico.ClientID %>',
             '<%= txtStockMinimo.ClientID %>',
+            '<%= txtStockMaximo.ClientID %>',
             '<%= txtStockOptimo.ClientID %>',
             'modalNuevo'
         );
@@ -562,24 +560,24 @@
     function validarEditar() {
         return _validar(
             '<%= txtCodigoEdit.ClientID %>',
-            '<%= txtNombreEdit.ClientID %>',
+            '<%= txtDescripcionEdit.ClientID %>',
             '<%= ddlTipoEdit.ClientID %>',
             '<%= txtUnidadEdit.ClientID %>',
             '<%= txtPrecioEdit.ClientID %>',
-            '<%= txtStockCriticoEdit.ClientID %>',
             '<%= txtStockMinimoEdit.ClientID %>',
+            '<%= txtStockMaximoEdit.ClientID %>',
             '<%= txtStockOptimoEdit.ClientID %>',
             'modalEditar'
         );
     }
-    function _validar(idCod, idNom, idTipo, idUni, idPre, idCrit, idMin, idOpt, modal) {
+    function _validar(idCod, idDesc, idTipo, idUni, idPre, idMin, idMax, idOpt, modal) {
         var cod = document.getElementById(idCod).value.trim();
-        var nom = document.getElementById(idNom).value.trim();
+        var desc = document.getElementById(idDesc).value.trim();
         var tipo = document.getElementById(idTipo).value;
         var uni = document.getElementById(idUni).value.trim();
         var pre = parseFloat(document.getElementById(idPre).value) || 0;
-        var crit = parseFloat(document.getElementById(idCrit).value) || 0;
         var min = parseFloat(document.getElementById(idMin).value) || 0;
+        var max = parseFloat(document.getElementById(idMax).value) || 0;
         var opt = parseFloat(document.getElementById(idOpt).value) || 0;
 
         function warn(txt) {
@@ -589,14 +587,14 @@
         }
         if (!cod) return warn('El código es obligatorio.');
         if (cod.length < 2) return warn('El código debe tener al menos 2 caracteres.');
-        if (!nom) return warn('El nombre es obligatorio.');
-        if (nom.length < 3) return warn('El nombre debe tener al menos 3 caracteres.');
+        if (!desc) return warn('La descripción es obligatoria.');
+        if (desc.length < 3) return warn('La descripción debe tener al menos 3 caracteres.');
         if (!tipo) return warn('Debe seleccionar el tipo de material.');
         if (!uni) return warn('La unidad de medida es obligatoria.');
         if (pre < 0) return warn('El precio no puede ser negativo.');
-        if (crit < 0) return warn('El stock crítico no puede ser negativo.');
-        if (min < crit) return warn('El stock mínimo debe ser ≥ stock crítico.');
-        if (opt < min) return warn('El stock óptimo debe ser ≥ stock mínimo.');
+        if (min < 0) return warn('El stock mínimo no puede ser negativo.');
+        if (max < min) return warn('El stock máximo debe ser ≥ stock mínimo.');
+        if (opt < max) return warn('El stock óptimo debe ser ≥ stock máximo.');
         return true;
     }
 </script>
