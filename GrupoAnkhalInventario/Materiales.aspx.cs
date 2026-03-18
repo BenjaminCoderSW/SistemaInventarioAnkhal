@@ -444,6 +444,7 @@ namespace GrupoAnkhalInventario
                         StockMaximo = maximo,
                         StockOptimo = optimo,
                         Activo = true,
+                        FechaAlta = DateTime.Now,
                         UsuarioAltaID = Convert.ToInt32(Session["ClaveID"])
                     };
                     db.Materiales.InsertOnSubmit(nuevo);

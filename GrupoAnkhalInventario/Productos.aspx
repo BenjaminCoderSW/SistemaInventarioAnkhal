@@ -98,9 +98,9 @@
             <div class="filtros-bar">
                 <div class="row align-items-end">
                     <div class="col-md-4">
-                        <label>Buscar por Nombre o Código</label>
+                        <label>Buscar por Descripción o Código</label>
                         <asp:TextBox ID="txtBuscar" runat="server" CssClass="form-control form-control-sm"
-                            Placeholder="Nombre o código..."></asp:TextBox>
+                            Placeholder="Descripción o código..."></asp:TextBox>
                     </div>
                     <div class="col-md-2">
                         <label>Tipo</label>
@@ -131,7 +131,6 @@
 
             <!-- ── GRID ── -->
             <div class="table-responsive">
-                <!-- CAMBIO 1: agregado AllowCustomPaging="True" -->
                 <asp:GridView ID="gvProductos" runat="server" AutoGenerateColumns="False"
                     CssClass="table table-bordered table-striped custom-grid"
                     AllowPaging="True" AllowCustomPaging="True" PageSize="2"
@@ -143,16 +142,15 @@
                     PagerSettings-LastPageText="»"
                     PagerSettings-PageButtonCount="5">
                     <Columns>
-                        <asp:BoundField DataField="ProductoID"     HeaderText="ID"          Visible="false" />
-                        <asp:BoundField DataField="Codigo"         HeaderText="Código" />
-                        <asp:BoundField DataField="Nombre"         HeaderText="Nombre" />
-                        <asp:BoundField DataField="TipoNombre"     HeaderText="Tipo" />
-                        <asp:BoundField DataField="Descripcion"    HeaderText="Descripción" />
-                        <asp:BoundField DataField="PrecioVenta"    HeaderText="Precio Venta" DataFormatString="{0:C2}" />
+                        <asp:BoundField DataField="ProductoID"  HeaderText="ID"           Visible="false" />
+                        <asp:BoundField DataField="Codigo"      HeaderText="Código" />
+                        <asp:BoundField DataField="Descripcion" HeaderText="Descripción" />
+                        <asp:BoundField DataField="TipoNombre"  HeaderText="Tipo" />
+                        <asp:BoundField DataField="PrecioVenta" HeaderText="Precio Venta" DataFormatString="{0:C2}" />
                         <asp:TemplateField HeaderText="Componentes">
                             <ItemTemplate>
                                 <button type="button" class="btn btn-info btn-sm"
-                                    onclick="verComponentes('<%# Eval("ProductoID") %>', '<%# Server.HtmlEncode((Eval("Nombre") ?? "").ToString()) %>')">
+                                    onclick="verComponentes('<%# Eval("ProductoID") %>', '<%# Server.HtmlEncode((Eval("Descripcion") ?? "").ToString()) %>')">
                                     <i class="fas fa-list-ul"></i>
                                     Ver
                                     <span class="badge badge-light ml-1"><%# Eval("TotalComponentes") %></span>
@@ -168,14 +166,12 @@
                         </asp:TemplateField>
                         <asp:TemplateField HeaderText="Acciones">
                             <ItemTemplate>
-                                <!-- CAMBIO 2: agregado parámetro rowVersion a abrirModalEditar -->
                                 <button type="button" class="btn btn-primary btn-sm"
                                     onclick="abrirModalEditar(
                                         '<%# Eval("ProductoID") %>',
                                         '<%# Eval("Codigo") %>',
-                                        '<%# Server.HtmlEncode((Eval("Nombre") ?? "").ToString()) %>',
-                                        '<%# Eval("TipoProductoID") %>',
                                         '<%# Server.HtmlEncode((Eval("Descripcion") ?? "").ToString()) %>',
+                                        '<%# Eval("TipoProductoID") %>',
                                         '<%# Eval("PrecioVenta") %>',
                                         '<%# RowVersionBase64(Eval("RowVersion")) %>'
                                     )">
@@ -185,7 +181,7 @@
                                     CssClass='<%# Convert.ToBoolean(Eval("Activo")) ? "btn btn-warning btn-sm" : "btn btn-success btn-sm" %>'
                                     Text='<%# Convert.ToBoolean(Eval("Activo")) ? "Desactivar" : "Activar" %>'
                                     CommandArgument='<%# Eval("ProductoID") %>'
-                                    OnClientClick='<%# "return confirmarToggle(\"" + Eval("ProductoID") + "\", \"" + Server.HtmlEncode((Eval("Nombre") ?? "").ToString()) + "\", " + Eval("Activo").ToString().ToLower() + ");" %>'
+                                    OnClientClick='<%# "return confirmarToggle(\"" + Eval("ProductoID") + "\", \"" + Server.HtmlEncode((Eval("Descripcion") ?? "").ToString()) + "\", " + Eval("Activo").ToString().ToLower() + ");" %>'
                                     OnClick="btnToggle_Click" />
                             </ItemTemplate>
                         </asp:TemplateField>
@@ -225,31 +221,25 @@
           </div>
           <div class="col-md-9">
             <div class="form-group">
-              <label>Nombre <span style="color:red">*</span></label>
-              <asp:TextBox ID="txtNombre" runat="server" CssClass="form-control" Placeholder="Nombre completo del producto" MaxLength="200"></asp:TextBox>
+              <label>Descripción <span style="color:red">*</span></label>
+              <asp:TextBox ID="txtDescripcion" runat="server" CssClass="form-control" Placeholder="Descripción completa del producto" MaxLength="200"></asp:TextBox>
             </div>
           </div>
         </div>
         <div class="row">
-          <div class="col-md-4">
+          <div class="col-md-6">
             <div class="form-group">
               <label>Tipo <span style="color:red">*</span></label>
               <asp:DropDownList ID="ddlTipo" runat="server" CssClass="form-control"></asp:DropDownList>
             </div>
           </div>
-          <div class="col-md-4">
+          <div class="col-md-6">
             <div class="form-group">
               <label>Precio de venta <span style="color:red">*</span></label>
               <div class="input-group">
                 <div class="input-group-prepend"><span class="input-group-text">$</span></div>
                 <asp:TextBox ID="txtPrecio" runat="server" CssClass="form-control" Placeholder="0.00" TextMode="Number" min="0" step="0.01"></asp:TextBox>
               </div>
-            </div>
-          </div>
-          <div class="col-md-4">
-            <div class="form-group">
-              <label>Descripción</label>
-              <asp:TextBox ID="txtDescripcion" runat="server" CssClass="form-control" Placeholder="Opcional" MaxLength="500"></asp:TextBox>
             </div>
           </div>
         </div>
@@ -294,7 +284,6 @@
       </div>
       <div class="modal-body">
         <asp:HiddenField ID="hdnProductoID" runat="server" />
-        <!-- CAMBIO 3: agregado hdnRowVersion para control de concurrencia -->
         <asp:HiddenField ID="hdnRowVersion" runat="server" />
         <div class="row">
           <div class="col-md-3">
@@ -306,31 +295,25 @@
           </div>
           <div class="col-md-9">
             <div class="form-group">
-              <label>Nombre <span style="color:red">*</span></label>
-              <asp:TextBox ID="txtNombreEdit" runat="server" CssClass="form-control" MaxLength="200"></asp:TextBox>
+              <label>Descripción <span style="color:red">*</span></label>
+              <asp:TextBox ID="txtDescripcionEdit" runat="server" CssClass="form-control" MaxLength="200"></asp:TextBox>
             </div>
           </div>
         </div>
         <div class="row">
-          <div class="col-md-4">
+          <div class="col-md-6">
             <div class="form-group">
               <label>Tipo <span style="color:red">*</span></label>
               <asp:DropDownList ID="ddlTipoEdit" runat="server" CssClass="form-control"></asp:DropDownList>
             </div>
           </div>
-          <div class="col-md-4">
+          <div class="col-md-6">
             <div class="form-group">
               <label>Precio de venta <span style="color:red">*</span></label>
               <div class="input-group">
                 <div class="input-group-prepend"><span class="input-group-text">$</span></div>
                 <asp:TextBox ID="txtPrecioEdit" runat="server" CssClass="form-control" TextMode="Number" min="0" step="0.01"></asp:TextBox>
               </div>
-            </div>
-          </div>
-          <div class="col-md-4">
-            <div class="form-group">
-              <label>Descripción</label>
-              <asp:TextBox ID="txtDescripcionEdit" runat="server" CssClass="form-control" MaxLength="500"></asp:TextBox>
             </div>
           </div>
         </div>
@@ -528,15 +511,13 @@
 
     // ════════════════════════════════════════════════════
     // MODAL EDITAR PRODUCTO
-    // CAMBIO 3: función actualizada para recibir y guardar rowVersion
     // ════════════════════════════════════════════════════
-    function abrirModalEditar(id, codigo, nombre, tipoID, descripcion, precio, rowVersion) {
+    function abrirModalEditar(id, codigo, descripcion, tipoID, precio, rowVersion) {
         document.getElementById('<%= hdnProductoID.ClientID %>').value = id;
         document.getElementById('<%= hdnRowVersion.ClientID %>').value = rowVersion;
         document.getElementById('<%= txtCodigoEdit.ClientID %>').value = codigo;
-        document.getElementById('<%= txtNombreEdit.ClientID %>').value = nombre;
-        document.getElementById('<%= ddlTipoEdit.ClientID %>').value = tipoID;
         document.getElementById('<%= txtDescripcionEdit.ClientID %>').value = descripcion;
+        document.getElementById('<%= ddlTipoEdit.ClientID %>').value = tipoID;
         document.getElementById('<%= txtPrecioEdit.ClientID %>').value = precio;
         $('#modalEditar').modal('show');
     }
@@ -546,13 +527,13 @@
     // ════════════════════════════════════════════════════
     var _compModal = [];
 
-    function verComponentes(productoID, nombre) {
+    function verComponentes(productoID, descripcion) {
         document.getElementById('<%= hdnCompProductoID.ClientID %>').value = productoID;
-        document.getElementById('spanNombreProducto').innerText = nombre;
-        cargarComponentesModal(productoID, nombre);
+        document.getElementById('spanNombreProducto').innerText = descripcion;
+        cargarComponentesModal(productoID, descripcion);
     }
 
-    function cargarComponentesModal(productoID, nombre) {
+    function cargarComponentesModal(productoID, descripcion) {
         var data = window._componentesData || {};
         _compModal = data[productoID] || [];
 
@@ -563,7 +544,7 @@
         });
 
         renderTablaComp();
-        document.getElementById('spanNombreProducto').innerText = nombre || '';
+        document.getElementById('spanNombreProducto').innerText = descripcion || '';
         document.getElementById('txtCantMinComp').value = '0';
         document.getElementById('txtCantMaxComp').value = '0';
         document.getElementById('txtNotasComp').value = '';
@@ -609,7 +590,7 @@
             return;
         }
 
-        document.getElementById('<%= hdnCompAccion.ClientID %>').value  = 'UPDATE';
+        document.getElementById('<%= hdnCompAccion.ClientID %>').value = 'UPDATE';
         document.getElementById('<%= hdnCompPMID.ClientID %>').value    = pmID;
         document.getElementById('<%= hdnCompCantMin.ClientID %>').value = cantMin;
         document.getElementById('<%= hdnCompCantMax.ClientID %>').value = cantMax;
@@ -669,12 +650,12 @@
     // ════════════════════════════════════════════════════
     // TOGGLE
     // ════════════════════════════════════════════════════
-    function confirmarToggle(prodID, nombre, activo) {
+    function confirmarToggle(prodID, descripcion, activo) {
         var accion = activo ? 'desactivar' : 'activar';
         Swal.fire({
             icon: activo ? 'warning' : 'question',
             title: '¿' + (activo ? 'Desactivar' : 'Activar') + ' producto?',
-            html: '¿Seguro de <b>' + accion + '</b> el producto <b>' + nombre + '</b>?',
+            html: '¿Seguro de <b>' + accion + '</b> el producto <b>' + descripcion + '</b>?',
             showCancelButton: true, confirmButtonText: 'Sí, ' + accion,
             confirmButtonColor: activo ? '#e0a800' : '#28a745',
             cancelButtonColor: '#6c757d'
@@ -693,7 +674,7 @@
     function prepararYValidarNuevo() {
         if (!_validarProd(
             '<%= txtCodigo.ClientID %>',
-            '<%= txtNombre.ClientID %>',
+            '<%= txtDescripcion.ClientID %>',
             '<%= ddlTipo.ClientID %>',
             '<%= txtPrecio.ClientID %>',
             'modalNuevo')) return false;
@@ -729,15 +710,15 @@
     function validarEditar() {
         return _validarProd(
             '<%= txtCodigoEdit.ClientID %>',
-            '<%= txtNombreEdit.ClientID %>',
+            '<%= txtDescripcionEdit.ClientID %>',
             '<%= ddlTipoEdit.ClientID %>',
             '<%= txtPrecioEdit.ClientID %>',
             'modalEditar');
     }
 
-    function _validarProd(idCod, idNom, idTipo, idPre, modal) {
+    function _validarProd(idCod, idDesc, idTipo, idPre, modal) {
         var cod = document.getElementById(idCod).value.trim();
-        var nom = document.getElementById(idNom).value.trim();
+        var desc = document.getElementById(idDesc).value.trim();
         var tipo = document.getElementById(idTipo).value;
         var pre = parseFloat(document.getElementById(idPre).value) || 0;
 
@@ -747,7 +728,7 @@
             return false;
         }
         if (!cod || cod.length < 2) return warn('El código es obligatorio (mínimo 2 caracteres).');
-        if (!nom || nom.length < 3) return warn('El nombre es obligatorio (mínimo 3 caracteres).');
+        if (!desc || desc.length < 3) return warn('La descripción es obligatoria (mínimo 3 caracteres).');
         if (!tipo) return warn('Debe seleccionar el tipo de producto.');
         if (pre < 0) return warn('El precio no puede ser negativo.');
         return true;

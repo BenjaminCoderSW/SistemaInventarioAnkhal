@@ -30,11 +30,10 @@ namespace GrupoAnkhalInventario
         {
             public int ProductoID { get; set; }
             public string Codigo { get; set; }
-            public string Nombre { get; set; }
+            public string Descripcion { get; set; }
             public int TipoProductoID { get; set; }
             public string TipoNombre { get; set; }
             public string TipoClave { get; set; }
-            public string Descripcion { get; set; }
             public decimal PrecioVenta { get; set; }
             public bool Activo { get; set; }
             public int TotalComponentes { get; set; }
@@ -114,7 +113,7 @@ namespace GrupoAnkhalInventario
                 if (!string.IsNullOrEmpty(buscar))
                     query = query.Where(x =>
                         x.p.Codigo.Contains(buscar) ||
-                        x.p.Nombre.Contains(buscar));
+                        x.p.Descripcion.Contains(buscar));   // antes: x.p.Nombre
 
                 if (!string.IsNullOrEmpty(filTipo))
                 {
@@ -152,11 +151,10 @@ namespace GrupoAnkhalInventario
                 {
                     ProductoID = x.p.ProductoID,
                     Codigo = x.p.Codigo,
-                    Nombre = x.p.Nombre,
+                    Descripcion = x.p.Descripcion,        // antes: Nombre
                     TipoProductoID = x.p.TipoProductoID,
                     TipoNombre = x.tp.Nombre,
                     TipoClave = x.tp.Clave,
-                    Descripcion = x.p.Descripcion,
                     PrecioVenta = x.p.PrecioVenta,
                     Activo = x.p.Activo,
                     RowVersion = x.p.RowVersion,
@@ -184,10 +182,8 @@ namespace GrupoAnkhalInventario
         }
 
         // ── Inyectar datos JS ─────────────────────────────────────────────────
-        // Versión principal: reutiliza el db ya abierto y la lista de la página
         private void InjectJsData(InventarioAnkhalDBDataContext db, List<ProductoVM> lista)
         {
-            // CAMBIO: m.Nombre → m.Descripcion (columna renombrada en Materiales)
             var mats = db.Materiales
                 .Where(m => m.Activo == true)
                 .OrderBy(m => m.Descripcion)
@@ -213,7 +209,6 @@ namespace GrupoAnkhalInventario
                 {
                     pmID = pm.ProductoMaterialID,
                     materialID = pm.MaterialID,
-                    // CAMBIO: mat.Nombre → mat.Descripcion
                     materialNombre = mat.Descripcion,
                     unidad = mat.Unidad,
                     cantMin = pm.CantidadMin,
@@ -227,12 +222,11 @@ namespace GrupoAnkhalInventario
                 _json.Serialize(mats), _json.Serialize(dict));
         }
 
-        // Sobrecarga para postbacks donde no hay lista disponible (toggle, guardar comp)
+        // Sobrecarga para postbacks donde no hay lista disponible
         private void InjectJsData()
         {
             using (var db = NuevoDb(tracking: false))
             {
-                // CAMBIO: m.Nombre → m.Descripcion (columna renombrada en Materiales)
                 var mats = db.Materiales
                     .Where(m => m.Activo == true)
                     .OrderBy(m => m.Descripcion)
@@ -254,7 +248,6 @@ namespace GrupoAnkhalInventario
                     {
                         pmID = pm.ProductoMaterialID,
                         materialID = pm.MaterialID,
-                        // CAMBIO: mat.Nombre → mat.Descripcion
                         materialNombre = mat.Descripcion,
                         unidad = mat.Unidad,
                         cantMin = pm.CantidadMin,
@@ -295,30 +288,30 @@ namespace GrupoAnkhalInventario
         // ══ GUARDAR NUEVO PRODUCTO ════════════════════════════════════════════
         protected void btnGuardar_Click(object sender, EventArgs e)
         {
-            if (!ValidarCamposProd(txtCodigo.Text, txtNombre.Text,
+            if (!ValidarCamposProd(txtCodigo.Text, txtDescripcion.Text,
                                    ddlTipo.SelectedValue, "modalNuevo")) return;
 
             string codigoUpper = txtCodigo.Text.Trim().ToUpper();
-            string nombreTrim = txtNombre.Text.Trim();
+            string descripTrim = txtDescripcion.Text.Trim();   // antes: nombreTrim
 
             using (var db = NuevoDb())
             {
                 if (db.Productos.Any(p => p.Codigo == codigoUpper))
                 { SetMsg("error", "Código duplicado", "Ya existe un producto con el código '" + codigoUpper + "'.", "modalNuevo"); return; }
 
-                if (db.Productos.Any(p => p.Nombre.ToLower() == nombreTrim.ToLower()))
-                { SetMsg("error", "Nombre duplicado", "Ya existe un producto con el nombre '" + nombreTrim + "'.", "modalNuevo"); return; }
+                if (db.Productos.Any(p => p.Descripcion.ToLower() == descripTrim.ToLower()))   // antes: p.Nombre
+                { SetMsg("error", "Descripción duplicada", "Ya existe un producto con esa descripción.", "modalNuevo"); return; }
 
                 try
                 {
                     var nuevo = new GrupoAnkhalInventario.Modelo.Productos
                     {
                         Codigo = codigoUpper,
-                        Nombre = nombreTrim,
+                        Descripcion = descripTrim,                           // antes: Nombre
                         TipoProductoID = int.Parse(ddlTipo.SelectedValue),
-                        Descripcion = txtDescripcion.Text.Trim(),
                         PrecioVenta = ParseDec(txtPrecio.Text),
                         Activo = true,
+                        FechaAlta = DateTime.Now,                          // ← corrige 0001-01-01
                         UsuarioAltaID = Convert.ToInt32(Session["ClaveID"])
                     };
                     db.Productos.InsertOnSubmit(nuevo);
@@ -361,20 +354,20 @@ namespace GrupoAnkhalInventario
         {
             if (string.IsNullOrWhiteSpace(hdnProductoID.Value)) return;
 
-            if (!ValidarCamposProd(txtCodigoEdit.Text, txtNombreEdit.Text,
+            if (!ValidarCamposProd(txtCodigoEdit.Text, txtDescripcionEdit.Text,
                                    ddlTipoEdit.SelectedValue, "modalEditar")) return;
 
             int prodID = int.Parse(hdnProductoID.Value);
             string codigoUpper = txtCodigoEdit.Text.Trim().ToUpper();
-            string nombreTrim = txtNombreEdit.Text.Trim();
+            string descripTrim = txtDescripcionEdit.Text.Trim();   // antes: nombreTrim
 
             using (var db = NuevoDb())
             {
                 if (db.Productos.Any(p => p.Codigo == codigoUpper && p.ProductoID != prodID))
                 { SetMsg("error", "Código duplicado", "Ya existe otro producto con ese código.", "modalEditar"); return; }
 
-                if (db.Productos.Any(p => p.Nombre.ToLower() == nombreTrim.ToLower() && p.ProductoID != prodID))
-                { SetMsg("error", "Nombre duplicado", "Ya existe otro producto con ese nombre.", "modalEditar"); return; }
+                if (db.Productos.Any(p => p.Descripcion.ToLower() == descripTrim.ToLower() && p.ProductoID != prodID))   // antes: p.Nombre
+                { SetMsg("error", "Descripción duplicada", "Ya existe otro producto con esa descripción.", "modalEditar"); return; }
 
                 try
                 {
@@ -398,9 +391,8 @@ namespace GrupoAnkhalInventario
                     }
 
                     prod.Codigo = codigoUpper;
-                    prod.Nombre = nombreTrim;
+                    prod.Descripcion = descripTrim;           // antes: prod.Nombre
                     prod.TipoProductoID = int.Parse(ddlTipoEdit.SelectedValue);
-                    prod.Descripcion = txtDescripcionEdit.Text.Trim();
                     prod.PrecioVenta = ParseDec(txtPrecioEdit.Text);
                     prod.FechaModif = DateTime.Now;
                     prod.UsuarioModifID = Convert.ToInt32(Session["ClaveID"]);
@@ -536,12 +528,12 @@ namespace GrupoAnkhalInventario
             return "";
         }
 
-        private bool ValidarCamposProd(string cod, string nom, string tipo, string modal)
+        private bool ValidarCamposProd(string cod, string desc, string tipo, string modal)
         {
             if (string.IsNullOrWhiteSpace(cod) || cod.Trim().Length < 2)
             { SetMsg("warning", "Código inválido", "El código es obligatorio (mín. 2 caracteres).", modal); return false; }
-            if (string.IsNullOrWhiteSpace(nom) || nom.Trim().Length < 3)
-            { SetMsg("warning", "Nombre inválido", "El nombre es obligatorio (mín. 3 caracteres).", modal); return false; }
+            if (string.IsNullOrWhiteSpace(desc) || desc.Trim().Length < 3)
+            { SetMsg("warning", "Descripción inválida", "La descripción es obligatoria (mín. 3 caracteres).", modal); return false; }
             if (string.IsNullOrWhiteSpace(tipo))
             { SetMsg("warning", "Tipo obligatorio", "Debe seleccionar el tipo de producto.", modal); return false; }
             return true;
@@ -556,9 +548,8 @@ namespace GrupoAnkhalInventario
         private void LimpiarNuevo()
         {
             txtCodigo.Text = "";
-            txtNombre.Text = "";
-            ddlTipo.SelectedIndex = 0;
             txtDescripcion.Text = "";
+            ddlTipo.SelectedIndex = 0;
             txtPrecio.Text = "0";
             hdnComponentesNuevo.Value = "[]";
         }
