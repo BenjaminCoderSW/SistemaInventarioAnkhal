@@ -150,6 +150,7 @@
     <Content Include="img\mapa.png" />
     <Content Include="Login.aspx" />
     <Content Include="Materiales.aspx" />
+    <Content Include="Paquetes.aspx" />
     <Content Include="plugins\bootstrap-colorpicker\css\bootstrap-colorpicker.css" />
     <Content Include="plugins\bootstrap-colorpicker\css\bootstrap-colorpicker.min.css" />
     <Content Include="plugins\bootstrap-colorpicker\js\bootstrap-colorpicker.js" />
@@ -2062,6 +2063,13 @@
       <DependentUpon>InventarioAnkhalDB.dbml</DependentUpon>
     </Compile>
     <Compile Include="obj\Debug\.NETFramework,Version=v4.7.2.AssemblyAttributes.cs" />
+    <Compile Include="Paquetes.aspx.cs">
+      <DependentUpon>Paquetes.aspx</DependentUpon>
+      <SubType>ASPXCodeBehind</SubType>
+    </Compile>
+    <Compile Include="Paquetes.aspx.designer.cs">
+      <DependentUpon>Paquetes.aspx</DependentUpon>
+    </Compile>
     <Compile Include="Productos.aspx.cs">
       <DependentUpon>Productos.aspx</DependentUpon>
       <SubType>ASPXCodeBehind</SubType>
