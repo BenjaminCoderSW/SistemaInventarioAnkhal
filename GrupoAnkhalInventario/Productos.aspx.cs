@@ -37,7 +37,16 @@ namespace GrupoAnkhalInventario
             public decimal PrecioVenta { get; set; }
             public bool Activo { get; set; }
             public int TotalComponentes { get; set; }
+            public int StockGlobal { get; set; }
+            public List<StockBaseVM> StockBases { get; set; }
             public System.Data.Linq.Binary RowVersion { get; set; }
+        }
+
+        public class StockBaseVM
+        {
+            public string BaseNombre { get; set; }
+            public string BaseCodigo { get; set; }
+            public int Cantidad { get; set; }
         }
 
         public class CompNuevoVM
@@ -147,11 +156,18 @@ namespace GrupoAnkhalInventario
                     .Select(g => new { ProductoID = g.Key, Total = g.Count() })
                     .ToList();
 
+                // Stock por base para los productos de esta página
+                var stocksPagina = db.StockProductos
+                    .Where(s => idsPagina.Contains(s.ProductoID) && s.CantidadBuenas > 0)
+                    .Join(db.Bases, s => s.BaseID, b => b.BaseID,
+                          (s, b) => new { s.ProductoID, b.Nombre, b.Codigo, s.CantidadBuenas })
+                    .ToList();
+
                 var lista = pagina.Select(x => new ProductoVM
                 {
                     ProductoID = x.p.ProductoID,
                     Codigo = x.p.Codigo,
-                    Descripcion = x.p.Descripcion,        // antes: Nombre
+                    Descripcion = x.p.Descripcion,
                     TipoProductoID = x.p.TipoProductoID,
                     TipoNombre = x.tp.Nombre,
                     TipoClave = x.tp.Clave,
@@ -159,7 +175,18 @@ namespace GrupoAnkhalInventario
                     Activo = x.p.Activo,
                     RowVersion = x.p.RowVersion,
                     TotalComponentes = compCounts
-                        .FirstOrDefault(c => c.ProductoID == x.p.ProductoID)?.Total ?? 0
+                        .FirstOrDefault(c => c.ProductoID == x.p.ProductoID)?.Total ?? 0,
+                    StockBases = stocksPagina
+                        .Where(s => s.ProductoID == x.p.ProductoID)
+                        .Select(s => new StockBaseVM
+                        {
+                            BaseNombre = s.Nombre,
+                            BaseCodigo = s.Codigo,
+                            Cantidad   = s.CantidadBuenas
+                        }).ToList(),
+                    StockGlobal = stocksPagina
+                        .Where(s => s.ProductoID == x.p.ProductoID)
+                        .Sum(s => s.CantidadBuenas)
                 }).ToList();
 
                 var dashboard = (from p in db.Productos
@@ -267,6 +294,49 @@ namespace GrupoAnkhalInventario
         {
             gvProductos.PageIndex = e.NewPageIndex;
             CargarProductos();
+        }
+
+        // ── RowDataBound: inyectar fila acordeón de bases ─────────────────────
+        protected void gvProductos_RowDataBound(object sender, GridViewRowEventArgs e)
+        {
+            if (e.Row.RowType != DataControlRowType.DataRow) return;
+            var vm = (ProductoVM)e.Row.DataItem;
+            if (vm == null || vm.StockBases == null || vm.StockBases.Count == 0) return;
+
+            e.Row.Attributes["data-id"] = vm.ProductoID.ToString();
+            int lastCell = e.Row.Cells.Count - 1;
+            e.Row.Cells[lastCell].Controls.Add(
+                new LiteralControl(
+                    "</td></tr>" +
+                    "<tr id=\"acc_" + vm.ProductoID + "\" style=\"display:none;\">" +
+                    "<td colspan=\"" + gvProductos.Columns.Count + "\" style=\"padding:0;background:#eef3fa;\">" +
+                    "<div class=\"bases-accordion\">" +
+                    "<strong style='color:#003366'><i class='fas fa-warehouse'></i> Stock por base/planta</strong>" +
+                    BuildBasesTableProducto(vm) +
+                    "</div></td>" +
+                    "<td style='display:none'>"
+                )
+            );
+        }
+
+        private string BuildBasesTableProducto(ProductoVM vm)
+        {
+            if (vm.StockBases == null || vm.StockBases.Count == 0)
+                return "<p class='text-muted mt-1 mb-0'>Sin stock registrado en ninguna base.</p>";
+
+            var sb = new System.Text.StringBuilder();
+            sb.Append("<table class='table table-sm mb-0 mt-1'>");
+            sb.Append("<thead><tr><th>Base</th><th>Código</th><th>Piezas en stock</th></tr></thead><tbody>");
+            foreach (var b in vm.StockBases)
+            {
+                sb.Append("<tr>");
+                sb.Append("<td>" + System.Web.HttpUtility.HtmlEncode(b.BaseNombre) + "</td>");
+                sb.Append("<td>" + System.Web.HttpUtility.HtmlEncode(b.BaseCodigo) + "</td>");
+                sb.Append("<td><strong>" + b.Cantidad + "</strong></td>");
+                sb.Append("</tr>");
+            }
+            sb.Append("</tbody></table>");
+            return sb.ToString();
         }
 
         // ══ BUSCAR / LIMPIAR ══════════════════════════════════════════════════

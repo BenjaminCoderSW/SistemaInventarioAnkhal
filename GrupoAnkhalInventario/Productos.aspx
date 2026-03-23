@@ -42,6 +42,13 @@
         /* ── Paginador ── */
         .pager-custom span { background:#003366; color:#fff; font-weight:700; border-radius:4px; padding:4px 9px; }
         .pager-custom a    { padding:4px 9px; border-radius:4px; }
+
+        /* ── Accordion stock por base ── */
+        .bases-accordion { background:#f0f4f8; border-radius:6px; padding:10px 14px; margin-top:6px; }
+        .bases-accordion table { width:100%; font-size:.83rem; }
+        .bases-accordion th { color:#003366; font-weight:600; padding:4px 8px; }
+        .bases-accordion td { padding:4px 8px; }
+        .bases-accordion tr:hover td { background:#e3eaf3; }
     </style>
 </asp:Content>
 
@@ -135,6 +142,7 @@
                     CssClass="table table-bordered table-striped custom-grid"
                     AllowPaging="True" AllowCustomPaging="True" PageSize="2"
                     OnPageIndexChanging="gvProductos_PageIndexChanging"
+                    OnRowDataBound="gvProductos_RowDataBound"
                     DataKeyNames="ProductoID"
                     PagerStyle-CssClass="pager-custom"
                     PagerSettings-Mode="NumericFirstLast"
@@ -146,7 +154,16 @@
                         <asp:BoundField DataField="Codigo"      HeaderText="Código" />
                         <asp:BoundField DataField="Descripcion" HeaderText="Descripción" />
                         <asp:BoundField DataField="TipoNombre"  HeaderText="Tipo" />
-                        <asp:BoundField DataField="PrecioVenta" HeaderText="Precio Venta" DataFormatString="{0:C2}" />
+                        <asp:BoundField DataField="PrecioVenta"  HeaderText="Precio Venta" DataFormatString="{0:C2}" />
+                        <asp:BoundField DataField="StockGlobal" HeaderText="Stock Global" />
+                        <asp:TemplateField HeaderText="Por Base">
+                            <ItemTemplate>
+                                <button type="button" class="btn btn-info btn-sm"
+                                    onclick="toggleAcordeon('acc_<%# Eval("ProductoID") %>', this)">
+                                    <i class="fas fa-layer-group"></i> Ver bases
+                                </button>
+                            </ItemTemplate>
+                        </asp:TemplateField>
                         <asp:TemplateField HeaderText="Componentes">
                             <ItemTemplate>
                                 <button type="button" class="btn btn-info btn-sm"
@@ -411,6 +428,17 @@
 <asp:Literal ID="litJsData" runat="server"></asp:Literal>
 
 <script>
+    // ── Toggle accordion de stock por base ──────────────
+    function toggleAcordeon(id, btn) {
+        var row = document.getElementById(id);
+        if (!row) return;
+        var visible = row.style.display !== 'none';
+        row.style.display = visible ? 'none' : 'table-row';
+        btn.innerHTML = visible
+            ? '<i class="fas fa-layer-group"></i> Ver bases'
+            : '<i class="fas fa-times"></i> Cerrar';
+    }
+
     // ════════════════════════════════════════════════════
     // MENSAJE PENDIENTE
     // ════════════════════════════════════════════════════

@@ -198,12 +198,6 @@
                                             <p>Productos</p>
                                         </a>
                                     </li>
-                                    <li class="nav-item">
-                                        <a href="Paquetes.aspx" class="nav-link">
-                                            <i class="far fa-circle nav-icon"></i>
-                                            <p>Paquetes</p>
-                                        </a>
-                                    </li>
                                 </ul>
                             </li>
 

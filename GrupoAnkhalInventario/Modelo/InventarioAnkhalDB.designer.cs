@@ -200,7 +200,7 @@ namespace GrupoAnkhalInventario.Modelo
 				return this.GetTable<StockProductos>();
 			}
 		}
-		
+
 		public System.Data.Linq.Table<TiposMaterial> TiposMaterial
 		{
 			get
@@ -2040,43 +2040,43 @@ namespace GrupoAnkhalInventario.Modelo
 		private string _TipoItem;
 		
 		private System.Nullable<int> _MaterialID;
-		
+
 		private System.Nullable<int> _ProductoID;
-		
+
 		private System.Nullable<int> _BaseOrigenID;
-		
+
 		private System.Nullable<int> _BaseDestinoID;
-		
+
 		private decimal _Cantidad;
-		
+
 		private decimal _Costo;
-		
+
 		private System.Nullable<int> _EntregaID;
-		
+
 		private System.Nullable<int> _ProduccionID;
-		
+
 		private string _Observaciones;
-		
+
 		private int _RegistradoPorID;
-		
+
 		private System.DateTime _FechaMovimiento;
-		
+
 		private EntityRef<Bases> _Bases;
-		
+
 		private EntityRef<Bases> _Bases1;
-		
+
 		private EntityRef<Entregas> _Entregas;
-		
+
 		private EntityRef<Produccion> _Produccion;
-		
+
 		private EntityRef<TiposMovimiento> _TiposMovimiento;
-		
+
 		private EntityRef<Usuario> _Usuario;
-		
+
 		private EntityRef<Materiales> _Materiales;
-		
+
 		private EntityRef<Productos> _Productos;
-		
+
     #region Definiciones de métodos de extensibilidad
     partial void OnLoaded();
     partial void OnValidate(System.Data.Linq.ChangeAction action);
@@ -2235,7 +2235,7 @@ namespace GrupoAnkhalInventario.Modelo
 				}
 			}
 		}
-		
+
 		[global::System.Data.Linq.Mapping.ColumnAttribute(Storage="_BaseOrigenID", DbType="Int")]
 		public System.Nullable<int> BaseOrigenID
 		{
@@ -4496,11 +4496,11 @@ namespace GrupoAnkhalInventario.Modelo
 	[global::System.Data.Linq.Mapping.TableAttribute(Name="dbo.TiposMaterial")]
 	public partial class TiposMaterial : INotifyPropertyChanging, INotifyPropertyChanged
 	{
-		
+
 		private static PropertyChangingEventArgs emptyChangingEventArgs = new PropertyChangingEventArgs(String.Empty);
-		
+
 		private int _TipoMaterialID;
-		
+
 		private string _Clave;
 		
 		private string _Nombre;
@@ -7777,17 +7777,19 @@ namespace GrupoAnkhalInventario.Modelo
 		private string _Descripcion;
 		
 		private bool _Activo;
-		
+
+		private decimal _PrecioUnitario;
+
 		private System.DateTime _FechaAlta;
-		
+
 		private System.Nullable<System.DateTime> _FechaModif;
-		
+
 		private System.Nullable<int> _UsuarioAltaID;
-		
+
 		private System.Data.Linq.Binary _RowVersion;
-		
+
 		private System.Nullable<int> _UsuarioModifID;
-		
+
 		private EntitySet<DetalleEntregas> _DetalleEntregas;
 		
 		private EntitySet<PaqueteComponentes> _PaqueteComponentes;
@@ -7810,6 +7812,8 @@ namespace GrupoAnkhalInventario.Modelo
     partial void OnDescripcionChanged();
     partial void OnActivoChanging(bool value);
     partial void OnActivoChanged();
+    partial void OnPrecioUnitarioChanging(decimal value);
+    partial void OnPrecioUnitarioChanged();
     partial void OnFechaAltaChanging(System.DateTime value);
     partial void OnFechaAltaChanged();
     partial void OnFechaModifChanging(System.Nullable<System.DateTime> value);
@@ -7821,7 +7825,7 @@ namespace GrupoAnkhalInventario.Modelo
     partial void OnUsuarioModifIDChanging(System.Nullable<int> value);
     partial void OnUsuarioModifIDChanged();
     #endregion
-		
+
 		public Paquetes()
 		{
 			this._DetalleEntregas = new EntitySet<DetalleEntregas>(new Action<DetalleEntregas>(this.attach_DetalleEntregas), new Action<DetalleEntregas>(this.detach_DetalleEntregas));
@@ -8038,7 +8042,27 @@ namespace GrupoAnkhalInventario.Modelo
 				}
 			}
 		}
-		
+
+		[global::System.Data.Linq.Mapping.ColumnAttribute(Storage="_PrecioUnitario", DbType="Decimal(18,2) NOT NULL", CanBeNull=false, UpdateCheck=UpdateCheck.Never)]
+		public decimal PrecioUnitario
+		{
+			get
+			{
+				return this._PrecioUnitario;
+			}
+			set
+			{
+				if ((this._PrecioUnitario != value))
+				{
+					this.OnPrecioUnitarioChanging(value);
+					this.SendPropertyChanging();
+					this._PrecioUnitario = value;
+					this.SendPropertyChanged("PrecioUnitario");
+					this.OnPrecioUnitarioChanged();
+				}
+			}
+		}
+
 		[global::System.Data.Linq.Mapping.AssociationAttribute(Name="Paquetes_DetalleEntregas", Storage="_DetalleEntregas", ThisKey="PaqueteID", OtherKey="PaqueteID")]
 		public EntitySet<DetalleEntregas> DetalleEntregas
 		{

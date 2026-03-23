@@ -144,13 +144,15 @@
     <Content Include="dist\js\pages\dashboard.js" />
     <Content Include="dist\js\pages\dashboard2.js" />
     <Content Include="dist\js\pages\dashboard3.js" />
+    <Content Include="Entregas.aspx" />
     <Content Include="Global.asax" />
     <Content Include="img\ankhal.png" />
     <Content Include="img\GrupoAnkhalPapeleta.jpeg" />
     <Content Include="img\mapa.png" />
+    <Content Include="Inventario.aspx" />
     <Content Include="Login.aspx" />
     <Content Include="Materiales.aspx" />
-    <Content Include="Paquetes.aspx" />
+    <Content Include="Movimientos.aspx" />
     <Content Include="plugins\bootstrap-colorpicker\css\bootstrap-colorpicker.css" />
     <Content Include="plugins\bootstrap-colorpicker\css\bootstrap-colorpicker.min.css" />
     <Content Include="plugins\bootstrap-colorpicker\js\bootstrap-colorpicker.js" />
@@ -2020,6 +2022,7 @@
     <Content Include="plugins\uplot\uPlot.iife.js" />
     <Content Include="plugins\uplot\uPlot.iife.min.js" />
     <Content Include="plugins\uplot\uPlot.min.css" />
+    <Content Include="Produccion.aspx" />
     <Content Include="Productos.aspx" />
     <Content Include="scriptsPropios\sweetalert2%4011.js" />
     <Content Include="Usuarios.aspx" />
@@ -2040,8 +2043,22 @@
     <Compile Include="Default.aspx.designer.cs">
       <DependentUpon>Default.aspx</DependentUpon>
     </Compile>
+    <Compile Include="Entregas.aspx.cs">
+      <DependentUpon>Entregas.aspx</DependentUpon>
+      <SubType>ASPXCodeBehind</SubType>
+    </Compile>
+    <Compile Include="Entregas.aspx.designer.cs">
+      <DependentUpon>Entregas.aspx</DependentUpon>
+    </Compile>
     <Compile Include="Global.asax.cs">
       <DependentUpon>Global.asax</DependentUpon>
+    </Compile>
+    <Compile Include="Inventario.aspx.cs">
+      <DependentUpon>Inventario.aspx</DependentUpon>
+      <SubType>ASPXCodeBehind</SubType>
+    </Compile>
+    <Compile Include="Inventario.aspx.designer.cs">
+      <DependentUpon>Inventario.aspx</DependentUpon>
     </Compile>
     <Compile Include="Login.aspx.cs">
       <DependentUpon>Login.aspx</DependentUpon>
@@ -2062,13 +2079,20 @@
       <DesignTime>True</DesignTime>
       <DependentUpon>InventarioAnkhalDB.dbml</DependentUpon>
     </Compile>
-    <Compile Include="obj\Debug\.NETFramework,Version=v4.7.2.AssemblyAttributes.cs" />
-    <Compile Include="Paquetes.aspx.cs">
-      <DependentUpon>Paquetes.aspx</DependentUpon>
+    <Compile Include="Movimientos.aspx.cs">
+      <DependentUpon>Movimientos.aspx</DependentUpon>
       <SubType>ASPXCodeBehind</SubType>
     </Compile>
-    <Compile Include="Paquetes.aspx.designer.cs">
-      <DependentUpon>Paquetes.aspx</DependentUpon>
+    <Compile Include="Movimientos.aspx.designer.cs">
+      <DependentUpon>Movimientos.aspx</DependentUpon>
+    </Compile>
+    <Compile Include="obj\Debug\.NETFramework,Version=v4.7.2.AssemblyAttributes.cs" />
+    <Compile Include="Produccion.aspx.cs">
+      <DependentUpon>Produccion.aspx</DependentUpon>
+      <SubType>ASPXCodeBehind</SubType>
+    </Compile>
+    <Compile Include="Produccion.aspx.designer.cs">
+      <DependentUpon>Produccion.aspx</DependentUpon>
     </Compile>
     <Compile Include="Productos.aspx.cs">
       <DependentUpon>Productos.aspx</DependentUpon>
