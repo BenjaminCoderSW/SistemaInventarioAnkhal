@@ -585,10 +585,10 @@ namespace GrupoAnkhalInventario
         /// </summary>
         public string GetNivel(decimal stock, decimal minimo, decimal maximo, decimal optimo)
         {
-            if (stock < minimo) return "critico";
-            if (stock < maximo) return "bajo";
-            if (stock >= optimo) return "optimo";
-            return "sin";
+            if (stock == 0)        return "sin";
+            if (stock < minimo)    return "critico";
+            if (stock < maximo)    return "bajo";
+            return "optimo";   // stock >= maximo → verde (optimo se usa solo para la barra %)
         }
 
         public string GetNivelCss(decimal stock, decimal minimo, decimal maximo, decimal optimo)
