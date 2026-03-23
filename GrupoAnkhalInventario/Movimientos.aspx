@@ -84,7 +84,7 @@
             <div class="icon"><i class="fas fa-exchange-alt"></i></div>
             <div class="info">
                 <div class="num"><asp:Label ID="lblTotalHoy" runat="server" Text="0"></asp:Label></div>
-                <div class="lbl">Total Hoy</div>
+                <div class="lbl"><asp:Label ID="lblTituloTotal" runat="server" Text="TOTAL HOY"></asp:Label></div>
             </div>
         </div>
         <div class="stock-card entradas">
@@ -124,7 +124,7 @@
                 <div class="num" style="font-size:2.4rem;">
                     <asp:Label ID="lblValorHoy" runat="server" Text="$0.00"></asp:Label>
                 </div>
-                <div class="lbl">Valor Total del Día (Entradas + Ajustes − Mermas/Ajustes negativos)</div>
+                <div class="lbl"><asp:Label ID="lblDescValor" runat="server" Text="Valor Total del Día (Entradas + Ajustes − Mermas/Ajustes negativos)"></asp:Label></div>
             </div>
         </div>
     </div>

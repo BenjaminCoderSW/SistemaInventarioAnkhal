@@ -268,5 +268,15 @@ namespace GrupoAnkhalInventario
         /// Control lblMermas (nuevo, separado de lblAjustes en Cambio 5).
         /// </summary>
         protected global::System.Web.UI.WebControls.Label lblMermas;
+
+        /// <summary>
+        /// Control lblTituloTotal — muestra "TOTAL HOY" o "TOTAL FILTRADO" según contexto.
+        /// </summary>
+        protected global::System.Web.UI.WebControls.Label lblTituloTotal;
+
+        /// <summary>
+        /// Control lblDescValor — descripción dinámica del card de valor total.
+        /// </summary>
+        protected global::System.Web.UI.WebControls.Label lblDescValor;
     }
 }

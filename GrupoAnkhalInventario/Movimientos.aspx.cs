@@ -48,6 +48,10 @@ namespace GrupoAnkhalInventario
             {
                 CargarCatalogos();
                 InjectJsData();
+                // Por defecto mostrar solo hoy en grid y cards
+                string hoy = DateTime.Today.ToString("yyyy-MM-dd");
+                txtFechaDesde.Text = hoy;
+                txtFechaHasta.Text = hoy;
                 CargarDashboard();
                 CargarGrid();
             }
@@ -144,33 +148,83 @@ namespace GrupoAnkhalInventario
             }
         }
 
+        // ══ Filtros compartidos entre Dashboard y Grid ═══════════════════════
+        /// <summary>
+        /// Aplica los controles de filtro del formulario a una query.
+        /// Devuelve si se usó algún filtro de fecha (para decidir si el dashboard muestra "hoy" o "filtrado").
+        /// </summary>
+        private IQueryable<Modelo.Movimientos> AplicarFiltrosBusqueda(
+            IQueryable<Modelo.Movimientos> q, out bool hayFiltroFecha)
+        {
+            hayFiltroFecha = false;
+
+            if (!string.IsNullOrEmpty(ddlFiltrTipo.SelectedValue))
+            {
+                int id = int.Parse(ddlFiltrTipo.SelectedValue);
+                q = q.Where(mv => mv.TipoMovimientoID == id);
+            }
+            if (!string.IsNullOrEmpty(ddlFiltrBase.SelectedValue))
+            {
+                int id = int.Parse(ddlFiltrBase.SelectedValue);
+                q = q.Where(mv => mv.BaseOrigenID == id || mv.BaseDestinoID == id);
+            }
+            if (!string.IsNullOrEmpty(ddlFiltrItem.SelectedValue))
+            {
+                string ti = ddlFiltrItem.SelectedValue;
+                q = q.Where(mv => mv.TipoItem == ti);
+            }
+            if (!string.IsNullOrEmpty(txtFechaDesde.Text))
+            {
+                DateTime d = DateTime.Parse(txtFechaDesde.Text);
+                q = q.Where(mv => mv.FechaMovimiento >= d);
+                hayFiltroFecha = true;
+            }
+            if (!string.IsNullOrEmpty(txtFechaHasta.Text))
+            {
+                DateTime h = DateTime.Parse(txtFechaHasta.Text).AddDays(1);
+                q = q.Where(mv => mv.FechaMovimiento < h);
+                hayFiltroFecha = true;
+            }
+            return q;
+        }
+
         // ══ Dashboard ════════════════════════════════════════════════════════
         private void CargarDashboard()
         {
             using (var db = NuevoDb(false))
             {
-                DateTime hoy    = DateTime.Today;
-                DateTime manana = hoy.AddDays(1);
+                bool hayFiltroFecha;
+                var movQ = AplicarFiltrosBusqueda(db.Movimientos.AsQueryable(), out hayFiltroFecha);
 
-                var movHoy = (from mv in db.Movimientos
-                              join tm in db.TiposMovimiento
-                                  on mv.TipoMovimientoID equals tm.TipoMovimientoID
-                              where mv.FechaMovimiento >= hoy && mv.FechaMovimiento < manana
-                              select new { tm.Clave, mv.Cantidad, mv.Costo }).ToList();
+                var movData = (from mv in movQ
+                               join tm in db.TiposMovimiento
+                                   on mv.TipoMovimientoID equals tm.TipoMovimientoID
+                               select new { tm.Clave, mv.Cantidad, mv.Costo }).ToList();
 
-                lblTotalHoy.Text  = movHoy.Count.ToString();
-                lblEntradas.Text  = movHoy.Count(m => m.Clave == "ENTRADA").ToString();
-                lblTraspasos.Text = movHoy.Count(m => m.Clave == "TRANSFERENCIA").ToString();
-                lblAjustes.Text   = movHoy.Count(m =>
+                lblTotalHoy.Text  = movData.Count.ToString();
+                lblEntradas.Text  = movData.Count(m => m.Clave == "ENTRADA").ToString();
+                lblTraspasos.Text = movData.Count(m => m.Clave == "TRANSFERENCIA").ToString();
+                lblAjustes.Text   = movData.Count(m =>
                     m.Clave == "AJUSTE_POS" || m.Clave == "AJUSTE_NEG").ToString();
-                lblMermas.Text    = movHoy.Count(m => m.Clave == "MERMA").ToString();
+                lblMermas.Text    = movData.Count(m => m.Clave == "MERMA").ToString();
 
                 // AJUSTE_NEG y MERMA restan; TRANSFERENCIA tiene costo=0 y no afecta
-                decimal valorTotal = movHoy.Sum(m =>
+                decimal valorTotal = movData.Sum(m =>
                     (m.Clave == "AJUSTE_NEG" || m.Clave == "MERMA")
                     ? -(m.Cantidad * m.Costo)
                     :  (m.Cantidad * m.Costo));
                 lblValorHoy.Text = valorTotal.ToString("$#,##0.00");
+
+                // Actualizar etiquetas según contexto
+                bool hayFiltroActivo = hayFiltroFecha ||
+                    !string.IsNullOrEmpty(ddlFiltrTipo.SelectedValue) ||
+                    !string.IsNullOrEmpty(ddlFiltrBase.SelectedValue) ||
+                    !string.IsNullOrEmpty(ddlFiltrItem.SelectedValue);
+
+                lblTituloTotal.Text = hayFiltroActivo ? "TOTAL FILTRADO" : "TOTAL";
+                lblDescValor.Text   = hayFiltroActivo
+                    ? "Valor Total del Período / Filtro Aplicado"
+                    : "Valor Total (Entradas + Ajustes − Mermas/Ajustes negativos)";
             }
         }
 
@@ -180,33 +234,9 @@ namespace GrupoAnkhalInventario
             using (var db = NuevoDb(false))
             {
                 // ── Paso 1: Filtros sobre la tabla base ───────────────────────
-                IQueryable<Modelo.Movimientos> movQ = db.Movimientos;
-
-                if (!string.IsNullOrEmpty(ddlFiltrTipo.SelectedValue))
-                {
-                    int id = int.Parse(ddlFiltrTipo.SelectedValue);
-                    movQ = movQ.Where(mv => mv.TipoMovimientoID == id);
-                }
-                if (!string.IsNullOrEmpty(ddlFiltrBase.SelectedValue))
-                {
-                    int id = int.Parse(ddlFiltrBase.SelectedValue);
-                    movQ = movQ.Where(mv => mv.BaseOrigenID == id || mv.BaseDestinoID == id);
-                }
-                if (!string.IsNullOrEmpty(ddlFiltrItem.SelectedValue))
-                {
-                    string ti = ddlFiltrItem.SelectedValue;
-                    movQ = movQ.Where(mv => mv.TipoItem == ti);
-                }
-                if (!string.IsNullOrEmpty(txtFechaDesde.Text))
-                {
-                    DateTime d = DateTime.Parse(txtFechaDesde.Text);
-                    movQ = movQ.Where(mv => mv.FechaMovimiento >= d);
-                }
-                if (!string.IsNullOrEmpty(txtFechaHasta.Text))
-                {
-                    DateTime h = DateTime.Parse(txtFechaHasta.Text).AddDays(1);
-                    movQ = movQ.Where(mv => mv.FechaMovimiento < h);
-                }
+                bool hayFiltroFecha;
+                IQueryable<Modelo.Movimientos> movQ =
+                    AplicarFiltrosBusqueda(db.Movimientos.AsQueryable(), out hayFiltroFecha);
 
                 int total   = movQ.Count();
                 int pageIdx = gvMovimientos.PageIndex;
@@ -312,6 +342,7 @@ namespace GrupoAnkhalInventario
         protected void btnBuscar_Click(object sender, EventArgs e)
         {
             gvMovimientos.PageIndex = 0;
+            CargarDashboard();
             CargarGrid();
         }
 
@@ -323,6 +354,7 @@ namespace GrupoAnkhalInventario
             txtFechaDesde.Text         = "";
             txtFechaHasta.Text         = "";
             gvMovimientos.PageIndex    = 0;
+            CargarDashboard();
             CargarGrid();
         }
 
