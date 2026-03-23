@@ -366,14 +366,17 @@ namespace GrupoAnkhalInventario
                 return;
             }
             decimal costo;
-            if (!decimal.TryParse(txtCosto.Text, out costo) || costo < 0)
+            // Las transferencias entre bases no tienen costo (campo deshabilitado no envía valor)
+            if (tipoMovID == 3)
+            {
+                costo = 0m;
+            }
+            else if (!decimal.TryParse(txtCosto.Text, out costo) || costo < 0)
             {
                 SetMsg("warning", "Campo inválido",
                     "El costo unitario no puede ser negativo.", "modalNuevo");
                 return;
             }
-            // Las transferencias entre bases no tienen costo (son internas)
-            if (tipoMovID == 3) costo = 0m;
 
             // ── Determinar qué bases son requeridas ───────────────────────────
             // ENTRADA(1)      → solo base DESTINO
