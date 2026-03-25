@@ -34,6 +34,19 @@ namespace GrupoAnkhalInventario
             if (Session["ClaveID"] == null) { Response.Redirect("~/Login.aspx"); return; }
             if (!IsPostBack)
             {
+                // Poblar checkboxes con los tipos distintos de bases activas
+                using (var db = NuevoDb(false))
+                {
+                    var tipos = db.Bases
+                        .Where(b => b.Activo && b.Tipo != null)
+                        .Select(b => b.Tipo)
+                        .Distinct()
+                        .OrderBy(t => t)
+                        .ToList();
+                    foreach (var t in tipos)
+                        cblFiltrTipo.Items.Add(new System.Web.UI.WebControls.ListItem(t, t));
+                }
+
                 string hoy = DateTime.Today.ToString("yyyy-MM-dd");
                 txtDesde.Text = hoy;
                 txtHasta.Text = hoy;
@@ -49,6 +62,7 @@ namespace GrupoAnkhalInventario
 
         protected void btnLimpiar_Click(object sender, EventArgs e)
         {
+            foreach (System.Web.UI.WebControls.ListItem li in cblFiltrTipo.Items) li.Selected = false;
             string hoy = DateTime.Today.ToString("yyyy-MM-dd");
             txtDesde.Text = hoy;
             txtHasta.Text = hoy;
@@ -65,6 +79,11 @@ namespace GrupoAnkhalInventario
 
             int numDias = (hasta - desde).Days + 1;
 
+            var selTipos = cblFiltrTipo.Items.Cast<System.Web.UI.WebControls.ListItem>()
+                .Where(li => li.Selected)
+                .Select(li => li.Value)
+                .ToList();
+
             // Etiquetas del período
             string periodoStr = desde == hasta
                 ? desde.ToString("dd/MM/yyyy")
@@ -75,25 +94,31 @@ namespace GrupoAnkhalInventario
                 ? "META DIARIA &mdash; ANKHAL"
                 : "META DEL PER&Iacute;ODO &mdash; ANKHAL (" + numDias + " d&iacute;as)";
 
-            CargarDashboard(desde, hasta, numDias);
-            CargarMetaBases(desde, hasta, numDias);
+            CargarDashboard(desde, hasta, numDias, selTipos);
+            CargarMetaBases(desde, hasta, numDias, selTipos);
         }
 
         // ══ Dashboard ════════════════════════════════════════════════════════
-        private void CargarDashboard(DateTime desde, DateTime hasta, int numDias)
+        private void CargarDashboard(DateTime desde, DateTime hasta, int numDias,
+            System.Collections.Generic.List<string> selTipos)
         {
             using (var db = NuevoDb(false))
             {
-                // Meta total del período = MetaDiaria × días (suma de todas las bases activas)
-                decimal metaDiaria = db.Bases
-                    .Where(b => b.Activo)
-                    .Sum(b => (decimal?)b.MetaDiaria) ?? 0m;
+                // Bases activas aplicando filtro de tipo
+                var basesQ = db.Bases.Where(b => b.Activo);
+                if (selTipos.Any())
+                    basesQ = basesQ.Where(b => selTipos.Contains(b.Tipo));
+
+                var baseIds = basesQ.Select(b => b.BaseID).ToList();
+
+                decimal metaDiaria = basesQ.Sum(b => (decimal?)b.MetaDiaria) ?? 0m;
                 decimal metaPeriodo = metaDiaria * numDias;
 
-                // Valor producido en el período
+                // Valor producido en el período (solo bases filtradas)
                 var valorRaw = (from p  in db.Produccion
                                 join pr in db.Productos on p.ProductoID equals pr.ProductoID
                                 where p.Fecha >= desde && p.Fecha <= hasta
+                                      && baseIds.Contains(p.BaseID)
                                 select p.CantidadBuena * pr.PrecioVenta).ToList();
                 decimal valorPeriodo = valorRaw.Any() ? valorRaw.Sum() : 0m;
 
@@ -101,25 +126,33 @@ namespace GrupoAnkhalInventario
                     ? (int)Math.Round((double)valorPeriodo / (double)metaPeriodo * 100)
                     : 0;
 
-                lblMetaTotal.Text    = metaPeriodo.ToString("$#,##0.00");
-                lblCumplimiento.Text = cumplPct.ToString() + "%";
+                lblMetaTotal.Text      = metaPeriodo.ToString("$#,##0.00");
+                lblValorProducido.Text = valorPeriodo.ToString("$#,##0.00");
+                lblCumplimiento.Text   = cumplPct.ToString() + "%";
             }
         }
 
         // ══ Tabla por base ═══════════════════════════════════════════════════
-        private void CargarMetaBases(DateTime desde, DateTime hasta, int numDias)
+        private void CargarMetaBases(DateTime desde, DateTime hasta, int numDias,
+            System.Collections.Generic.List<string> selTipos)
         {
             using (var db = NuevoDb(false))
             {
-                // Valor producido en el período agrupado por base
+                // Bases activas aplicando filtro de tipo
+                var basesQ = db.Bases.Where(b => b.Activo);
+                if (selTipos.Any())
+                    basesQ = basesQ.Where(b => selTipos.Contains(b.Tipo));
+                var bases = basesQ.OrderBy(b => b.Nombre).ToList();
+
+                var baseIds = bases.Select(b => b.BaseID).ToList();
+
+                // Valor producido en el período agrupado por base (solo bases filtradas)
                 var valorPorBase = (from p  in db.Produccion
                                     join pr in db.Productos on p.ProductoID equals pr.ProductoID
                                     where p.Fecha >= desde && p.Fecha <= hasta
+                                          && baseIds.Contains(p.BaseID)
                                     group p.CantidadBuena * pr.PrecioVenta by p.BaseID into g
                                     select new { BaseID = g.Key, Valor = g.Sum() }).ToList();
-
-                // Todas las bases activas
-                var bases = db.Bases.Where(b => b.Activo).OrderBy(b => b.Nombre).ToList();
 
                 var lista = bases.Select(b =>
                 {

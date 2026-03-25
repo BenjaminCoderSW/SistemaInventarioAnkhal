@@ -17,8 +17,14 @@ namespace GrupoAnkhalInventario
         /// <summary>Control lblCardMeta.</summary>
         protected global::System.Web.UI.WebControls.Label lblCardMeta;
 
+        /// <summary>Control lblValorProducido.</summary>
+        protected global::System.Web.UI.WebControls.Label lblValorProducido;
+
         /// <summary>Control lblCumplimiento.</summary>
         protected global::System.Web.UI.WebControls.Label lblCumplimiento;
+
+        /// <summary>Control cblFiltrTipo.</summary>
+        protected global::System.Web.UI.WebControls.CheckBoxList cblFiltrTipo;
 
         /// <summary>Control txtDesde.</summary>
         protected global::System.Web.UI.WebControls.TextBox txtDesde;

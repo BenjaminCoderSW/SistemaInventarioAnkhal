@@ -35,6 +35,7 @@ namespace GrupoAnkhalInventario
             public string   BaseOrigen    { get; set; }
             public string   BaseDestino   { get; set; }
             public decimal  Cantidad      { get; set; }
+            public string   Unidad        { get; set; }
             public decimal  Costo         { get; set; }
             public decimal  Total         { get; set; }   // Cantidad × Costo
             public string   RegistradoPor { get; set; }
@@ -158,11 +159,12 @@ namespace GrupoAnkhalInventario
         {
             hayFiltroFecha = false;
 
-            if (!string.IsNullOrEmpty(ddlFiltrTipo.SelectedValue))
-            {
-                int id = int.Parse(ddlFiltrTipo.SelectedValue);
-                q = q.Where(mv => mv.TipoMovimientoID == id);
-            }
+            var selTipos = cblFiltrTipo.Items.Cast<ListItem>()
+                .Where(li => li.Selected)
+                .Select(li => int.Parse(li.Value))
+                .ToList();
+            if (selTipos.Any())
+                q = q.Where(mv => selTipos.Contains(mv.TipoMovimientoID));
             if (!string.IsNullOrEmpty(ddlFiltrBase.SelectedValue))
             {
                 int id = int.Parse(ddlFiltrBase.SelectedValue);
@@ -217,7 +219,7 @@ namespace GrupoAnkhalInventario
 
                 // Actualizar etiquetas según contexto
                 bool hayFiltroActivo = hayFiltroFecha ||
-                    !string.IsNullOrEmpty(ddlFiltrTipo.SelectedValue) ||
+                    cblFiltrTipo.Items.Cast<ListItem>().Any(li => li.Selected) ||
                     !string.IsNullOrEmpty(ddlFiltrBase.SelectedValue) ||
                     !string.IsNullOrEmpty(ddlFiltrItem.SelectedValue);
 
@@ -287,6 +289,7 @@ namespace GrupoAnkhalInventario
                                TipoNombre    = tm.Nombre,
                                TipoItem      = mv.TipoItem,
                                MatNombre     = mat.Descripcion,
+                               MatUnidad     = mat.Unidad,
                                PrdNombre     = prd.Descripcion,
                                BaseOrig      = bo.Nombre,
                                BaseDest      = bd.Nombre,
@@ -325,6 +328,9 @@ namespace GrupoAnkhalInventario
                         BaseOrigen    = r.BaseOrig  ?? "",
                         BaseDestino   = r.BaseDest  ?? "",
                         Cantidad      = r.Cantidad,
+                        Unidad        = r.TipoItem == "Material"
+                                        ? (r.MatUnidad ?? "")
+                                        : "Unidad/es",
                         Costo         = r.Costo,
                         Total         = r.Cantidad * r.Costo,
                         RegistradoPor = nombresUsuario.ContainsKey(r.RegistradoPorID)
@@ -348,7 +354,7 @@ namespace GrupoAnkhalInventario
 
         protected void btnLimpiar_Click(object sender, EventArgs e)
         {
-            ddlFiltrTipo.SelectedIndex = 0;
+            foreach (ListItem li in cblFiltrTipo.Items) li.Selected = false;
             ddlFiltrBase.SelectedIndex = 0;
             ddlFiltrItem.SelectedIndex = 0;
             txtFechaDesde.Text         = "";

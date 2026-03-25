@@ -561,15 +561,23 @@ namespace GrupoAnkhalInventario
                             // 2. Consumos de materiales del BOM
                             foreach (var c in listaConsumos)
                             {
+                                decimal tMin = c.CantMin * totalProd;
+                                decimal tMax = c.CantMax * totalProd;
+                                string notaConsumo = c.CantReal > tMax
+                                    ? string.Format("Merma: real {0:N2} > m\u00e1x {1:N2}", c.CantReal, tMax)
+                                    : c.CantReal < tMin
+                                        ? string.Format("Bajo m\u00ednimo: real {0:N2} < m\u00edn {1:N2}", c.CantReal, tMin)
+                                        : string.Format("Dentro de rango ({0:N2}\u2013{1:N2})", tMin, tMax);
+
                                 db.ConsumosProduccion.InsertOnSubmit(new ConsumosProduccion
                                 {
                                     ProduccionID       = prod.ProduccionID,
                                     MaterialID         = c.MatID,
                                     CantidadReal       = c.CantReal,
-                                    CantidadTeoricaMin = c.CantMin * totalProd,
-                                    CantidadTeoricaMax = c.CantMax * totalProd,
-                                    EsMerma            = (c.CantReal > c.CantMax * totalProd),
-                                    Notas              = null
+                                    CantidadTeoricaMin = tMin,
+                                    CantidadTeoricaMax = tMax,
+                                    EsMerma            = (c.CantReal > tMax),
+                                    Notas              = notaConsumo
                                 });
 
                                 if (c.CantReal > 0)

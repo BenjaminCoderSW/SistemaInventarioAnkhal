@@ -23,8 +23,9 @@
             transition: transform .15s, box-shadow .15s;
         }
         .stock-card:hover { transform: translateY(-3px); box-shadow: 0 6px 16px rgba(0,0,0,0.2); }
-        .stock-card.meta  { background: linear-gradient(135deg,#6c3483,#8e44ad); }
-        .stock-card.cumpl { background: linear-gradient(135deg,#1e8449,#27ae60); }
+        .stock-card.meta     { background: linear-gradient(135deg,#6c3483,#8e44ad); }
+        .stock-card.producido { background: linear-gradient(135deg,#1a5276,#2980b9); }
+        .stock-card.cumpl    { background: linear-gradient(135deg,#1e8449,#27ae60); }
         .stock-card .icon      { font-size: 2.2rem; opacity: .9; }
         .stock-card .info .num { font-size: 2rem; font-weight: 700; line-height: 1; }
         .stock-card .info .lbl { font-size: .78rem; opacity: .9; text-transform: uppercase; letter-spacing: .5px; }
@@ -37,6 +38,10 @@
         .filtros-bar label { font-weight: 600; font-size: .84rem; color: #003366; margin-bottom: 2px; }
         .btn-filtro-rapido { border-radius: 20px; font-size: .82rem; padding: 4px 14px; margin-right: 4px; }
         .btn-filtro-rapido.active { background: #003366; color: #fff; }
+
+        /* ── Checkboxes tipo base ── */
+        .tipos-check-group span { display: inline-flex; align-items: center; margin-right: 14px; margin-bottom: 2px; }
+        .tipos-check-group input[type=checkbox] { margin-right: 4px; }
     </style>
 </asp:Content>
 
@@ -54,6 +59,13 @@
                 <div class="lbl"><asp:Label ID="lblCardMeta" runat="server" Text="META DEL PERÍODO — ANKHAL"></asp:Label></div>
             </div>
         </div>
+        <div class="stock-card producido">
+            <div class="icon"><i class="fas fa-dollar-sign"></i></div>
+            <div class="info">
+                <div class="num"><asp:Label ID="lblValorProducido" runat="server" Text="$0.00"></asp:Label></div>
+                <div class="lbl">Valor Producido del Per&iacute;odo</div>
+            </div>
+        </div>
         <div class="stock-card cumpl">
             <div class="icon"><i class="fas fa-chart-bar"></i></div>
             <div class="info">
@@ -65,6 +77,18 @@
 
     <!-- ══ FILTROS ══ -->
     <div class="filtros-bar">
+        <!-- Fila 1: tipos de base (multi-selección) -->
+        <div class="row mb-2">
+            <div class="col-12">
+                <label>Tipo de base</label><br />
+                <asp:CheckBoxList ID="cblFiltrTipo" runat="server"
+                    RepeatDirection="Horizontal" RepeatLayout="Flow"
+                    CssClass="tipos-check-group">
+                </asp:CheckBoxList>
+                <small class="text-muted">(Sin selecci&oacute;n = todos los tipos)</small>
+            </div>
+        </div>
+        <!-- Fila 2: período -->
         <div class="row align-items-end">
             <div class="col-auto">
                 <label>Per&iacute;odo r&aacute;pido</label><br />

@@ -56,6 +56,10 @@
         .badge-ajuste-pos     { background:#2ecc71; color:#fff; }
         .badge-ajuste-neg     { background:#c0392b; color:#fff; }
 
+        /* ── Checkboxes de tipo movimiento ── */
+        .tipos-check-group span { display: inline-flex; align-items: center; margin-right: 14px; margin-bottom: 2px; }
+        .tipos-check-group input[type=checkbox] { margin-right: 4px; }
+
         /* ── Modal radio buttons ── */
         .tipo-item-radio label { margin-right: 20px; font-weight: 500; cursor: pointer; }
         .tipo-item-radio input[type="radio"] { margin-right: 5px; }
@@ -143,11 +147,13 @@
 
             <!-- ── FILTROS ── -->
             <div class="filtros-bar">
-                <div class="row align-items-end">
-                    <div class="col-md-2">
-                        <label>Tipo de movimiento</label>
-                        <asp:DropDownList ID="ddlFiltrTipo" runat="server" CssClass="form-control form-control-sm">
-                            <asp:ListItem Value="">-- Todos --</asp:ListItem>
+                <!-- Fila 1: tipos de movimiento (multi-selección) -->
+                <div class="row mb-2">
+                    <div class="col-12">
+                        <label>Tipo de movimiento</label><br />
+                        <asp:CheckBoxList ID="cblFiltrTipo" runat="server"
+                            RepeatDirection="Horizontal" RepeatLayout="Flow"
+                            CssClass="tipos-check-group">
                             <asp:ListItem Value="1">Entrada</asp:ListItem>
                             <asp:ListItem Value="3">Transferencia</asp:ListItem>
                             <asp:ListItem Value="6">Ajuste positivo</asp:ListItem>
@@ -155,8 +161,12 @@
                             <asp:ListItem Value="5">Merma</asp:ListItem>
                             <asp:ListItem Value="4">Consumo</asp:ListItem>
                             <asp:ListItem Value="2">Salida</asp:ListItem>
-                        </asp:DropDownList>
+                        </asp:CheckBoxList>
+                        <small class="text-muted">(Sin selecci&oacute;n = todos los tipos)</small>
                     </div>
+                </div>
+                <!-- Fila 2: resto de filtros -->
+                <div class="row align-items-end">
                     <div class="col-md-2">
                         <label>Base</label>
                         <asp:DropDownList ID="ddlFiltrBase" runat="server" CssClass="form-control form-control-sm">
@@ -226,6 +236,8 @@
                         <asp:BoundField DataField="BaseDestino" HeaderText="Base Destino" />
 
                         <asp:BoundField DataField="Cantidad" HeaderText="Cantidad" DataFormatString="{0:N2}" />
+
+                        <asp:BoundField DataField="Unidad" HeaderText="Unidad" />
 
                         <asp:BoundField DataField="Costo" HeaderText="Costo Unit." DataFormatString="{0:C2}" />
 
