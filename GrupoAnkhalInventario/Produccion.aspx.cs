@@ -35,7 +35,7 @@ namespace GrupoAnkhalInventario
             public int      CantidadBuena   { get; set; }
             public int      CantidadRechazo { get; set; }
             public int      Total           { get; set; }
-            public int      MetaDia         { get; set; }
+            public decimal  MetaBase        { get; set; }   // MetaDiaria de la base ($)
             public int      CumplPct        { get; set; }
             public decimal  Valor           { get; set; }
             public string   RegistradoPor   { get; set; }
@@ -54,16 +54,6 @@ namespace GrupoAnkhalInventario
             public bool    EsMerma        { get; set; }
         }
 
-        public class ResumenBaseVM
-        {
-            public string  BaseNombre      { get; set; }
-            public int     TotalProducido  { get; set; }
-            public int     Buenos          { get; set; }
-            public int     Rechazo         { get; set; }
-            public int     Meta            { get; set; }
-            public int     CumplimientoPct { get; set; }
-            public decimal Valor           { get; set; }
-        }
 
         public class ConsumoVM
         {
@@ -94,7 +84,6 @@ namespace GrupoAnkhalInventario
                 pnlConsumos.Visible     = false;
                 lblSinConsumos.Visible  = true;
                 CargarDashboard();
-                CargarResumenBases();
                 CargarGrid();
             }
         }
@@ -130,10 +119,13 @@ namespace GrupoAnkhalInventario
                 ddlProducto.Items.Add(new ListItem("-- Seleccione --", ""));
                 ddlProductoHoja.Items.Clear();
                 ddlProductoHoja.Items.Add(new ListItem("-- Seleccione --", ""));
+                ddlFiltrProducto.Items.Clear();
+                ddlFiltrProducto.Items.Add(new ListItem("-- Todos --", ""));
                 foreach (var p in productos)
                 {
                     ddlProducto.Items.Add(new ListItem(p.Descripcion, p.ProductoID.ToString()));
                     ddlProductoHoja.Items.Add(new ListItem(p.Descripcion, p.ProductoID.ToString()));
+                    ddlFiltrProducto.Items.Add(new ListItem(p.Descripcion, p.ProductoID.ToString()));
                 }
             }
         }
@@ -156,6 +148,11 @@ namespace GrupoAnkhalInventario
                 DateTime h = DateTime.Parse(txtFechaHasta.Text);
                 q = q.Where(p => p.Fecha <= h);
             }
+            if (!string.IsNullOrEmpty(ddlFiltrProducto.SelectedValue))
+            {
+                int pid = int.Parse(ddlFiltrProducto.SelectedValue);
+                q = q.Where(p => p.ProductoID == pid);
+            }
             return q;
         }
 
@@ -172,71 +169,21 @@ namespace GrupoAnkhalInventario
                             {
                                 p.CantidadBuena,
                                 p.CantidadRechazo,
-                                p.MetaDia,
                                 Valor = p.CantidadBuena * pr.PrecioVenta
                             }).ToList();
 
                 int     totalRegs   = data.Count;
                 int     totalBuenos = data.Sum(x => x.CantidadBuena);
                 int     totalRech   = data.Sum(x => x.CantidadRechazo);
-                int     totalMeta   = data.Sum(x => x.MetaDia);
                 decimal totalValor  = data.Sum(x => x.Valor);
-                int     pct = totalMeta > 0
-                    ? (int)Math.Round((double)totalBuenos / totalMeta * 100)
-                    : 0;
 
-                lblTotalProd.Text    = totalRegs.ToString("N0");
-                lblBuenos.Text       = totalBuenos.ToString("N0");
-                lblRechazo.Text      = totalRech.ToString("N0");
-                lblMeta.Text         = totalMeta.ToString("N0");
-                lblCumplimiento.Text = pct.ToString() + "%";
-                lblValorProd.Text    = totalValor.ToString("$#,##0.00");
+                lblTotalProd.Text = totalRegs.ToString("N0");
+                lblBuenos.Text    = totalBuenos.ToString("N0");
+                lblRechazo.Text   = totalRech.ToString("N0");
+                lblValorProd.Text = totalValor.ToString("$#,##0.00");
             }
         }
 
-        // ══ Resumen por bases ════════════════════════════════════════════════
-        private void CargarResumenBases()
-        {
-            using (var db = NuevoDb(false))
-            {
-                var q = AplicarFiltros(db.Produccion.AsQueryable());
-
-                var raw = (from p  in q
-                           join b  in db.Bases    on p.BaseID     equals b.BaseID
-                           join pr in db.Productos on p.ProductoID equals pr.ProductoID
-                           select new
-                           {
-                               b.BaseID,
-                               b.Nombre,
-                               p.CantidadBuena,
-                               p.CantidadRechazo,
-                               p.MetaDia,
-                               Valor = p.CantidadBuena * pr.PrecioVenta
-                           }).ToList();
-
-                var resumen = raw
-                    .GroupBy(x => new { x.BaseID, x.Nombre })
-                    .Select(g => new ResumenBaseVM
-                    {
-                        BaseNombre     = g.Key.Nombre,
-                        TotalProducido = g.Sum(x => x.CantidadBuena + x.CantidadRechazo),
-                        Buenos         = g.Sum(x => x.CantidadBuena),
-                        Rechazo        = g.Sum(x => x.CantidadRechazo),
-                        Meta           = g.Sum(x => x.MetaDia),
-                        Valor          = g.Sum(x => x.Valor)
-                    })
-                    .OrderBy(r => r.BaseNombre)
-                    .ToList();
-
-                foreach (var r in resumen)
-                    r.CumplimientoPct = r.Meta > 0
-                        ? (int)Math.Round((double)r.Buenos / r.Meta * 100)
-                        : 0;
-
-                rptResumenBases.DataSource = resumen;
-                rptResumenBases.DataBind();
-            }
-        }
 
         // ══ Grid ═════════════════════════════════════════════════════════════
         private void CargarGrid()
@@ -280,11 +227,11 @@ namespace GrupoAnkhalInventario
                                p.ProduccionID,
                                p.Fecha,
                                BaseNombre      = b.Nombre,
+                               MetaDiaria      = b.MetaDiaria,
                                p.Turno,
                                ProductoNombre  = pr.Descripcion,
                                p.CantidadBuena,
                                p.CantidadRechazo,
-                               p.MetaDia,
                                PrecioVenta     = pr.PrecioVenta,
                                p.RegistradoPorID
                            }).ToList();
@@ -308,9 +255,10 @@ namespace GrupoAnkhalInventario
                     .Where(r => r != null)
                     .Select(r =>
                     {
-                        int tot2 = r.CantidadBuena + r.CantidadRechazo;
-                        int pct  = r.MetaDia > 0
-                            ? (int)Math.Round((double)r.CantidadBuena / r.MetaDia * 100)
+                        int     tot2     = r.CantidadBuena + r.CantidadRechazo;
+                        decimal valorReg = r.CantidadBuena * r.PrecioVenta;
+                        int pct = r.MetaDiaria > 0
+                            ? (int)Math.Round((double)valorReg / (double)r.MetaDiaria * 100)
                             : 0;
                         return new ProduccionVM
                         {
@@ -322,9 +270,9 @@ namespace GrupoAnkhalInventario
                             CantidadBuena   = r.CantidadBuena,
                             CantidadRechazo = r.CantidadRechazo,
                             Total           = tot2,
-                            MetaDia         = r.MetaDia,
+                            MetaBase        = r.MetaDiaria,
                             CumplPct        = pct,
-                            Valor           = r.CantidadBuena * r.PrecioVenta,
+                            Valor           = valorReg,
                             RegistradoPor   = nombresUsuario.ContainsKey(r.RegistradoPorID)
                                               ? nombresUsuario[r.RegistradoPorID]
                                               : r.RegistradoPorID.ToString()
@@ -387,19 +335,18 @@ namespace GrupoAnkhalInventario
         {
             gvProduccion.PageIndex = 0;
             CargarDashboard();
-            CargarResumenBases();
             CargarGrid();
         }
 
         protected void btnLimpiar_Click(object sender, EventArgs e)
         {
-            ddlFiltrBase.SelectedIndex = 0;
+            ddlFiltrBase.SelectedIndex    = 0;
+            ddlFiltrProducto.SelectedIndex = 0;
             string hoy = DateTime.Today.ToString("yyyy-MM-dd");
             txtFechaDesde.Text = hoy;
             txtFechaHasta.Text = hoy;
             gvProduccion.PageIndex = 0;
             CargarDashboard();
-            CargarResumenBases();
             CargarGrid();
         }
 
@@ -675,7 +622,6 @@ namespace GrupoAnkhalInventario
                     string.Format("Se registraron {0} unidades buenas y {1} de rechazo.",
                         cantBuena, cantRechazo));
                 CargarDashboard();
-                CargarResumenBases();
                 CargarGrid();
             }
             catch (Exception ex)

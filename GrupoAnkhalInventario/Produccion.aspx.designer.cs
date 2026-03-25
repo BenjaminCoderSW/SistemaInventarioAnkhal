@@ -42,24 +42,6 @@ namespace GrupoAnkhalInventario
         protected global::System.Web.UI.WebControls.Label lblRechazo;
 
         /// <summary>
-        /// Control lblMeta.
-        /// </summary>
-        /// <remarks>
-        /// Campo generado automáticamente.
-        /// Para modificarlo, mueva la declaración del campo del archivo del diseñador al archivo de código subyacente.
-        /// </remarks>
-        protected global::System.Web.UI.WebControls.Label lblMeta;
-
-        /// <summary>
-        /// Control lblCumplimiento.
-        /// </summary>
-        /// <remarks>
-        /// Campo generado automáticamente.
-        /// Para modificarlo, mueva la declaración del campo del archivo del diseñador al archivo de código subyacente.
-        /// </remarks>
-        protected global::System.Web.UI.WebControls.Label lblCumplimiento;
-
-        /// <summary>
         /// Control lblValorProd.
         /// </summary>
         /// <remarks>
@@ -76,6 +58,15 @@ namespace GrupoAnkhalInventario
         /// Para modificarlo, mueva la declaración del campo del archivo del diseñador al archivo de código subyacente.
         /// </remarks>
         protected global::System.Web.UI.WebControls.DropDownList ddlFiltrBase;
+
+        /// <summary>
+        /// Control ddlFiltrProducto.
+        /// </summary>
+        /// <remarks>
+        /// Campo generado automáticamente.
+        /// Para modificarlo, mueva la declaración del campo del archivo del diseñador al archivo de código subyacente.
+        /// </remarks>
+        protected global::System.Web.UI.WebControls.DropDownList ddlFiltrProducto;
 
         /// <summary>
         /// Control txtFechaDesde.
@@ -132,15 +123,6 @@ namespace GrupoAnkhalInventario
         protected global::System.Web.UI.WebControls.Label lblResultados;
 
         /// <summary>
-        /// Control rptResumenBases.
-        /// </summary>
-        /// <remarks>
-        /// Campo generado automáticamente.
-        /// Para modificarlo, mueva la declaración del campo del archivo del diseñador al archivo de código subyacente.
-        /// </remarks>
-        protected global::System.Web.UI.WebControls.Repeater rptResumenBases;
-
-        /// <summary>
         /// Control gvProduccion.
         /// </summary>
         /// <remarks>
@@ -166,6 +148,15 @@ namespace GrupoAnkhalInventario
         /// Para modificarlo, mueva la declaración del campo del archivo del diseñador al archivo de código subyacente.
         /// </remarks>
         protected global::System.Web.UI.WebControls.HiddenField hdnProductoSeleccionado;
+
+        /// <summary>
+        /// Control hdnConfirmarSinConsumos.
+        /// </summary>
+        /// <remarks>
+        /// Campo generado automáticamente.
+        /// Para modificarlo, mueva la declaración del campo del archivo del diseñador al archivo de código subyacente.
+        /// </remarks>
+        protected global::System.Web.UI.WebControls.HiddenField hdnConfirmarSinConsumos;
 
         /// <summary>
         /// Control btnCargarConsumos.

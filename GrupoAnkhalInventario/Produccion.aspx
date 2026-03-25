@@ -42,14 +42,6 @@
         .btn-filtro-rapido { border-radius:20px; font-size:.82rem; padding:4px 14px; margin-right:4px; }
         .btn-filtro-rapido.active { background:#003366; color:#fff; }
 
-        /* ── Resumen por base ── */
-        .base-summary-card {
-            background:#f8f9fa; border:1px solid #dee2e6;
-            border-radius:8px; padding:14px 18px; margin-bottom:10px;
-        }
-        .base-summary-card h6 { color:#003366; font-weight:700; margin-bottom:8px; }
-        .base-summary-card .metric { display:inline-block; margin-right:18px; font-size:.88rem; }
-        .base-summary-card .metric strong { color:#003366; }
 
         /* ── Paginador ── */
         .pager-custom span {
@@ -71,9 +63,6 @@
         .badge-noche   { background:#2c3e50; color:#fff; }
         .badge-unico   { background:#8e44ad; color:#fff; }
 
-        /* ── Cumplimiento ── */
-        .cumpl-bar { width:70px; height:8px; background:#e0e0e0; border-radius:4px; display:inline-block; vertical-align:middle; margin-left:5px; }
-        .cumpl-fill { height:100%; border-radius:4px; }
     </style>
 </asp:Content>
 
@@ -102,20 +91,6 @@
                 <div class="lbl">Rechazo</div>
             </div>
         </div>
-        <div class="stock-card meta">
-            <div class="icon"><i class="fas fa-bullseye"></i></div>
-            <div class="info">
-                <div class="num"><asp:Label ID="lblMeta" runat="server" Text="0"></asp:Label></div>
-                <div class="lbl">Meta Diaria</div>
-            </div>
-        </div>
-        <div class="stock-card cumpl">
-            <div class="icon"><i class="fas fa-chart-bar"></i></div>
-            <div class="info">
-                <div class="num"><asp:Label ID="lblCumplimiento" runat="server" Text="0%"></asp:Label></div>
-                <div class="lbl">Cumplimiento</div>
-            </div>
-        </div>
     </div>
 
     <!-- ══ DASHBOARD — Fila 2: valor producido (ancho completo) ══ -->
@@ -126,7 +101,7 @@
                 <div class="num" style="font-size:2.4rem;">
                     <asp:Label ID="lblValorProd" runat="server" Text="$0.00"></asp:Label>
                 </div>
-                <div class="lbl">Valor Producido — Σ (Unidades Buenas × Precio Venta) del período</div>
+                <div class="lbl">Valor Producido (Unidades Buenas × Precio Venta) del período</div>
             </div>
         </div>
     </div>
@@ -139,8 +114,13 @@
                 <asp:DropDownList ID="ddlFiltrBase" runat="server" CssClass="form-control form-control-sm">
                 </asp:DropDownList>
             </div>
-            <div class="col-md-4">
-                <label>Período rápido</label><br />
+            <div class="col-md-2">
+                <label>Producto</label>
+                <asp:DropDownList ID="ddlFiltrProducto" runat="server" CssClass="form-control form-control-sm">
+                </asp:DropDownList>
+            </div>
+            <div class="col-md-3">
+                <label>Per&iacute;odo r&aacute;pido</label><br />
                 <button type="button" class="btn btn-outline-secondary btn-filtro-rapido" onclick="setFiltroRapido('hoy')">Hoy</button>
                 <button type="button" class="btn btn-outline-secondary btn-filtro-rapido" onclick="setFiltroRapido('semana')">Esta Semana</button>
                 <button type="button" class="btn btn-outline-secondary btn-filtro-rapido" onclick="setFiltroRapido('mes')">Este Mes</button>
@@ -153,11 +133,11 @@
                 <label>Hasta</label>
                 <asp:TextBox ID="txtFechaHasta" runat="server" CssClass="form-control form-control-sm" TextMode="Date"></asp:TextBox>
             </div>
-            <div class="col-md-2 text-right">
+            <div class="col-md-1">
                 <asp:Button ID="btnBuscar" runat="server" Text="Buscar"
-                    CssClass="btn btn-sm btn-primary mr-1" OnClick="btnBuscar_Click" />
+                    CssClass="btn btn-sm btn-primary btn-block mb-1" OnClick="btnBuscar_Click" />
                 <asp:Button ID="btnLimpiar" runat="server" Text="Limpiar"
-                    CssClass="btn btn-sm btn-outline-secondary" OnClick="btnLimpiar_Click" />
+                    CssClass="btn btn-sm btn-outline-secondary btn-block" OnClick="btnLimpiar_Click" />
             </div>
         </div>
     </div>
@@ -174,30 +154,20 @@
         <asp:Label ID="lblResultados" runat="server" CssClass="text-muted small"></asp:Label>
     </div>
 
-    <!-- ══ RESUMEN POR BASE ══ -->
-    <asp:Repeater ID="rptResumenBases" runat="server">
-        <ItemTemplate>
-            <div class="base-summary-card">
-                <h6><%# Eval("BaseNombre") %></h6>
-                <span class="metric">Producidos: <strong><%# Eval("TotalProducido") %></strong></span>
-                <span class="metric">Buenos: <strong><%# Eval("Buenos") %></strong></span>
-                <span class="metric">Rechazo: <strong><%# Eval("Rechazo") %></strong></span>
-                <span class="metric">Meta: <strong><%# Eval("Meta") %></strong></span>
-                <span class="metric">Cumplimiento: <strong><%# Eval("CumplimientoPct") %>%</strong></span>
-                <span class="metric">Valor: <strong><%# Eval("Valor", "{0:C2}") %></strong></span>
-            </div>
-        </ItemTemplate>
-    </asp:Repeater>
 
     <!-- ══ GRID ══ -->
     <div class="table-responsive">
         <asp:GridView ID="gvProduccion" runat="server" AutoGenerateColumns="False"
-            CssClass="table table-bordered table-hover table-sm"
+            CssClass="table table-bordered table-striped custom-grid"
             AllowCustomPaging="True" AllowPaging="True" PageSize="15"
             OnPageIndexChanging="gvProduccion_PageIndexChanging"
             OnRowDataBound="gvProduccion_RowDataBound"
-            EmptyDataText="No se encontraron registros de producción.">
-            <PagerStyle CssClass="pager-custom text-center" />
+            EmptyDataText="No se encontraron registros de producción."
+            PagerStyle-CssClass="pager-custom"
+            PagerSettings-Mode="NumericFirstLast"
+            PagerSettings-FirstPageText="«"
+            PagerSettings-LastPageText="»"
+            PagerSettings-PageButtonCount="5">
             <Columns>
                 <asp:BoundField DataField="ProduccionID" HeaderText="ID" ItemStyle-Width="50px" />
                 <asp:BoundField DataField="Fecha" HeaderText="Fecha" DataFormatString="{0:dd/MM/yyyy}" />
@@ -213,16 +183,20 @@
                 <asp:BoundField DataField="CantidadBuena" HeaderText="Buenos" ItemStyle-CssClass="text-right" />
                 <asp:BoundField DataField="CantidadRechazo" HeaderText="Rechazo" ItemStyle-CssClass="text-right" />
                 <asp:BoundField DataField="Total" HeaderText="Total" ItemStyle-CssClass="text-right font-weight-bold" />
-                <asp:BoundField DataField="MetaDia" HeaderText="Meta" ItemStyle-CssClass="text-right" />
-                <asp:TemplateField HeaderText="Cumpl%">
+                <asp:BoundField DataField="Valor" HeaderText="Valor ($)" DataFormatString="{0:C2}" ItemStyle-CssClass="text-right" />
+                <asp:TemplateField HeaderText="Porcentaje de Valor (%)">
+                    <HeaderStyle CssClass="text-center" />
+                    <ItemStyle CssClass="text-right" Width="140px" />
                     <ItemTemplate>
-                        <%# Eval("CumplPct") %>%
-                        <div class="cumpl-bar">
-                            <div class="cumpl-fill" style='width:<%# Math.Min(Convert.ToInt32(Eval("CumplPct")), 100) %>%; background:<%# Convert.ToInt32(Eval("CumplPct")) >= 80 ? "#27ae60" : Convert.ToInt32(Eval("CumplPct")) >= 50 ? "#f39c12" : "#e74c3c" %>'></div>
+                        <div class="progress" style="height:18px;">
+                            <div class="progress-bar <%# Convert.ToInt32(Eval("CumplPct")) >= 100 ? "bg-success" : Convert.ToInt32(Eval("CumplPct")) >= 70 ? "bg-warning" : "bg-danger" %>"
+                                 style="width:<%# Math.Min(Convert.ToInt32(Eval("CumplPct")), 100) %>%">
+                                <%# Eval("CumplPct") %>%
+                            </div>
                         </div>
                     </ItemTemplate>
                 </asp:TemplateField>
-                <asp:BoundField DataField="Valor" HeaderText="Valor ($)" DataFormatString="{0:C2}" ItemStyle-CssClass="text-right" />
+                <asp:BoundField DataField="MetaBase" HeaderText="Meta ($)" DataFormatString="{0:C2}" ItemStyle-CssClass="text-right" />
                 <asp:BoundField DataField="RegistradoPor" HeaderText="Registrado Por" />
                 <asp:TemplateField HeaderText="Consumo de Materiales">
                     <HeaderStyle CssClass="text-center" Width="280px" />
@@ -317,7 +291,7 @@
                         </asp:DropDownList>
                     </div>
                     <div class="col-md-6">
-                        <label class="font-weight-bold">Meta del día</label>
+                        <label class="font-weight-bold">Tu meta de unidades buenas</label>
                         <asp:TextBox ID="txtMetaDia" runat="server" CssClass="form-control" TextMode="Number" placeholder="0"></asp:TextBox>
                     </div>
                 </div>
@@ -534,26 +508,30 @@
         }
     }
 
+    // Formatea una fecha local como YYYY-MM-DD (sin conversión UTC)
+    function fmtFecha(d) {
+        var mm = String(d.getMonth() + 1).padStart(2, '0');
+        var dd = String(d.getDate()).padStart(2, '0');
+        return d.getFullYear() + '-' + mm + '-' + dd;
+    }
+
     // Filtros rápidos de fecha
     function setFiltroRapido(tipo) {
         var desde = document.getElementById('<%= txtFechaDesde.ClientID %>');
         var hasta = document.getElementById('<%= txtFechaHasta.ClientID %>');
         var hoy = new Date();
-        var fmt = function (d) { return d.toISOString().split('T')[0]; };
 
         if (tipo === 'hoy') {
-            desde.value = fmt(hoy);
-            hasta.value = fmt(hoy);
+            desde.value = fmtFecha(hoy);
+            hasta.value = fmtFecha(hoy);
         } else if (tipo === 'semana') {
             var lunes = new Date(hoy);
             lunes.setDate(hoy.getDate() - ((hoy.getDay() + 6) % 7));
-            var domingo = new Date(lunes);
-            domingo.setDate(lunes.getDate() + 6);
-            desde.value = fmt(lunes);
-            hasta.value = fmt(domingo);
+            desde.value = fmtFecha(lunes);
+            hasta.value = fmtFecha(hoy);
         } else if (tipo === 'mes') {
-            desde.value = fmt(new Date(hoy.getFullYear(), hoy.getMonth(), 1));
-            hasta.value = fmt(new Date(hoy.getFullYear(), hoy.getMonth() + 1, 0));
+            desde.value = fmtFecha(new Date(hoy.getFullYear(), hoy.getMonth(), 1));
+            hasta.value = fmtFecha(hoy);
         }
 
         document.querySelectorAll('.btn-filtro-rapido').forEach(function (b) { b.classList.remove('active'); });

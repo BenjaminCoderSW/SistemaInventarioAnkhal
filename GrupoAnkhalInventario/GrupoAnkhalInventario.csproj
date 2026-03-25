@@ -152,6 +152,7 @@
     <Content Include="Inventario.aspx" />
     <Content Include="Login.aspx" />
     <Content Include="Materiales.aspx" />
+    <Content Include="MetasProduccion.aspx" />
     <Content Include="Movimientos.aspx" />
     <Content Include="plugins\bootstrap-colorpicker\css\bootstrap-colorpicker.css" />
     <Content Include="plugins\bootstrap-colorpicker\css\bootstrap-colorpicker.min.css" />
@@ -2073,6 +2074,13 @@
     </Compile>
     <Compile Include="Materiales.aspx.designer.cs">
       <DependentUpon>Materiales.aspx</DependentUpon>
+    </Compile>
+    <Compile Include="MetasProduccion.aspx.cs">
+      <DependentUpon>MetasProduccion.aspx</DependentUpon>
+      <SubType>ASPXCodeBehind</SubType>
+    </Compile>
+    <Compile Include="MetasProduccion.aspx.designer.cs">
+      <DependentUpon>MetasProduccion.aspx</DependentUpon>
     </Compile>
     <Compile Include="Modelo\InventarioAnkhalDB.designer.cs">
       <AutoGen>True</AutoGen>
