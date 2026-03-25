@@ -1,9 +1,9 @@
-<%@ Page Title="Produccion" Language="C#" MasterPageFile="~/Site.Master" AutoEventWireup="true" CodeBehind="Produccion.aspx.cs" Inherits="GrupoAnkhalInventario.Produccion" %>
+﻿<%@ Page Title="Producción" Language="C#" MasterPageFile="~/Site.Master" AutoEventWireup="true" CodeBehind="Produccion.aspx.cs" Inherits="GrupoAnkhalInventario.ProduccionPage" %>
 
 <asp:Content ID="Content1" ContentPlaceHolderID="head" runat="server">
     <link href="css/gridviewPantalla.css" rel="stylesheet" />
     <style>
-        /* -- Dashboard de produccion -- */
+        /* ── Dashboard de producción ── */
         .stock-dashboard {
             display: flex;
             gap: 14px;
@@ -12,7 +12,7 @@
         }
         .stock-card {
             flex: 1;
-            min-width: 160px;
+            min-width: 140px;
             border-radius: 10px;
             padding: 16px 20px;
             color: #fff;
@@ -23,402 +23,541 @@
             transition: transform .15s, box-shadow .15s;
         }
         .stock-card:hover { transform: translateY(-3px); box-shadow: 0 6px 16px rgba(0,0,0,0.2); }
-        .stock-card.registros  { background: linear-gradient(135deg,#1a5276,#2980b9); }
-        .stock-card.buenas     { background: linear-gradient(135deg,#1e8449,#27ae60); }
+        .stock-card.produccion { background: linear-gradient(135deg,#1a5276,#2980b9); }
+        .stock-card.buenos     { background: linear-gradient(135deg,#1e8449,#27ae60); }
         .stock-card.rechazo    { background: linear-gradient(135deg,#922b21,#e74c3c); }
+        .stock-card.meta       { background: linear-gradient(135deg,#6c3483,#8e44ad); }
+        .stock-card.cumpl      { background: linear-gradient(135deg,#d35400,#e67e22); }
+        .stock-card.valor      { background: linear-gradient(135deg,#1c2833,#2c3e50); }
         .stock-card .icon      { font-size: 2.2rem; opacity: .9; }
-        .stock-card .info .num { font-size: 2rem; font-weight: 700; line-height:1; }
+        .stock-card .info .num { font-size: 1.8rem; font-weight: 700; line-height:1; }
         .stock-card .info .lbl { font-size: .78rem; opacity: .9; text-transform: uppercase; letter-spacing:.5px; }
 
-        /* -- Filtros -- */
+        /* ── Filtros ── */
         .filtros-bar {
             background:#f8f9fa; border:1px solid #dee2e6;
             border-radius:8px; padding:14px 18px; margin-bottom:14px;
         }
         .filtros-bar label { font-weight:600; font-size:.84rem; color:#003366; margin-bottom:2px; }
+        .btn-filtro-rapido { border-radius:20px; font-size:.82rem; padding:4px 14px; margin-right:4px; }
+        .btn-filtro-rapido.active { background:#003366; color:#fff; }
 
-        /* -- Paginador -- */
+        /* ── Resumen por base ── */
+        .base-summary-card {
+            background:#f8f9fa; border:1px solid #dee2e6;
+            border-radius:8px; padding:14px 18px; margin-bottom:10px;
+        }
+        .base-summary-card h6 { color:#003366; font-weight:700; margin-bottom:8px; }
+        .base-summary-card .metric { display:inline-block; margin-right:18px; font-size:.88rem; }
+        .base-summary-card .metric strong { color:#003366; }
+
+        /* ── Paginador ── */
         .pager-custom span {
             background:#003366; color:#fff; font-weight:700;
             border-radius:4px; padding:4px 9px;
         }
         .pager-custom a { padding:4px 9px; border-radius:4px; }
 
-        /* -- Tabla BOM dinamica -- */
-        #tblBOM { width:100%; }
-        #tblBOM th { background:#003366; color:#fff; padding:6px 10px; font-size:.85rem; }
-        #tblBOM td { padding:6px 10px; font-size:.85rem; border-bottom:1px solid #dee2e6; }
-        #tblBOM input[type="number"] { width:120px; }
-        #divBOM { display:none; margin-top:10px; }
+        /* ── Consumo de materiales en modal ── */
+        .consumo-table th { background:#003366; color:#fff; font-size:.82rem; padding:6px 10px; }
+        .consumo-table td { font-size:.85rem; padding:5px 10px; vertical-align:middle; }
+        .consumo-table input[type=number] { width:100px; }
+        .stock-ok { color:#27ae60; font-weight:600; }
+        .stock-warn { color:#e74c3c; font-weight:600; }
+
+        /* ── Badges turno ── */
+        .badge-manana  { background:#f39c12; color:#fff; }
+        .badge-tarde   { background:#2980b9; color:#fff; }
+        .badge-noche   { background:#2c3e50; color:#fff; }
+        .badge-unico   { background:#8e44ad; color:#fff; }
+
+        /* ── Cumplimiento ── */
+        .cumpl-bar { width:70px; height:8px; background:#e0e0e0; border-radius:4px; display:inline-block; vertical-align:middle; margin-left:5px; }
+        .cumpl-fill { height:100%; border-radius:4px; }
     </style>
 </asp:Content>
 
 <asp:Content ID="Content2" ContentPlaceHolderID="ContentPlaceHolder1" runat="server">
-<div class="container-fluid">
-<div class="row">
-<div class="col-12">
 
-    <!-- == DASHBOARD == -->
+    <!-- ══ DASHBOARD — Fila 1: contadores ══ -->
     <div class="stock-dashboard">
-        <div class="stock-card registros">
-            <div class="icon"><i class="fas fa-clipboard-list"></i></div>
+        <div class="stock-card produccion">
+            <div class="icon"><i class="fas fa-industry"></i></div>
             <div class="info">
-                <div class="num"><asp:Label ID="lblRegistrosHoy" runat="server" Text="0"></asp:Label></div>
-                <div class="lbl">Registros Hoy</div>
+                <div class="num"><asp:Label ID="lblTotalProd" runat="server" Text="0"></asp:Label></div>
+                <div class="lbl">Producción Hoy</div>
             </div>
         </div>
-        <div class="stock-card buenas">
+        <div class="stock-card buenos">
             <div class="icon"><i class="fas fa-check-circle"></i></div>
             <div class="info">
-                <div class="num"><asp:Label ID="lblUnidadesBuenas" runat="server" Text="0"></asp:Label></div>
-                <div class="lbl">Unidades Buenas</div>
+                <div class="num"><asp:Label ID="lblBuenos" runat="server" Text="0"></asp:Label></div>
+                <div class="lbl">Buenos</div>
             </div>
         </div>
         <div class="stock-card rechazo">
             <div class="icon"><i class="fas fa-times-circle"></i></div>
             <div class="info">
-                <div class="num"><asp:Label ID="lblUnidadesRechazo" runat="server" Text="0"></asp:Label></div>
-                <div class="lbl">Unidades Rechazo</div>
+                <div class="num"><asp:Label ID="lblRechazo" runat="server" Text="0"></asp:Label></div>
+                <div class="lbl">Rechazo</div>
+            </div>
+        </div>
+        <div class="stock-card meta">
+            <div class="icon"><i class="fas fa-bullseye"></i></div>
+            <div class="info">
+                <div class="num"><asp:Label ID="lblMeta" runat="server" Text="0"></asp:Label></div>
+                <div class="lbl">Meta Diaria</div>
+            </div>
+        </div>
+        <div class="stock-card cumpl">
+            <div class="icon"><i class="fas fa-chart-bar"></i></div>
+            <div class="info">
+                <div class="num"><asp:Label ID="lblCumplimiento" runat="server" Text="0%"></asp:Label></div>
+                <div class="lbl">Cumplimiento</div>
             </div>
         </div>
     </div>
 
-    <div class="card">
-        <div class="card-header" style="background-color:#003366;color:white;">
-            <h3 class="card-title"><i class="fas fa-industry"></i> Registro de Produccion</h3>
-        </div>
-        <div class="card-body">
-
-            <div class="mb-3">
-                <asp:Button ID="btnNuevo" runat="server" Text="+ Nuevo Registro"
-                    CssClass="btn btn-success"
-                    OnClientClick="abrirModalNuevo(); return false;" />
+    <!-- ══ DASHBOARD — Fila 2: valor producido (ancho completo) ══ -->
+    <div class="stock-dashboard" style="margin-bottom:18px;">
+        <div class="stock-card valor" style="flex:0 0 100%;">
+            <div class="icon"><i class="fas fa-dollar-sign"></i></div>
+            <div class="info">
+                <div class="num" style="font-size:2.4rem;">
+                    <asp:Label ID="lblValorProd" runat="server" Text="$0.00"></asp:Label>
+                </div>
+                <div class="lbl">Valor Producido — Σ (Unidades Buenas × Precio Venta) del período</div>
             </div>
+        </div>
+    </div>
 
-            <!-- -- FILTROS -- -->
-            <div class="filtros-bar">
-                <div class="row align-items-end">
-                    <div class="col-md-2">
-                        <label>Base</label>
-                        <asp:DropDownList ID="ddlFiltrBase" runat="server" CssClass="form-control form-control-sm">
-                            <asp:ListItem Value="">-- Todas --</asp:ListItem>
+    <!-- ══ BARRA DE FILTROS ══ -->
+    <div class="filtros-bar">
+        <div class="row align-items-end">
+            <div class="col-md-2">
+                <label>Base</label>
+                <asp:DropDownList ID="ddlFiltrBase" runat="server" CssClass="form-control form-control-sm">
+                </asp:DropDownList>
+            </div>
+            <div class="col-md-4">
+                <label>Período rápido</label><br />
+                <button type="button" class="btn btn-outline-secondary btn-filtro-rapido" onclick="setFiltroRapido('hoy')">Hoy</button>
+                <button type="button" class="btn btn-outline-secondary btn-filtro-rapido" onclick="setFiltroRapido('semana')">Esta Semana</button>
+                <button type="button" class="btn btn-outline-secondary btn-filtro-rapido" onclick="setFiltroRapido('mes')">Este Mes</button>
+            </div>
+            <div class="col-md-2">
+                <label>Desde</label>
+                <asp:TextBox ID="txtFechaDesde" runat="server" CssClass="form-control form-control-sm" TextMode="Date"></asp:TextBox>
+            </div>
+            <div class="col-md-2">
+                <label>Hasta</label>
+                <asp:TextBox ID="txtFechaHasta" runat="server" CssClass="form-control form-control-sm" TextMode="Date"></asp:TextBox>
+            </div>
+            <div class="col-md-2 text-right">
+                <asp:Button ID="btnBuscar" runat="server" Text="Buscar"
+                    CssClass="btn btn-sm btn-primary mr-1" OnClick="btnBuscar_Click" />
+                <asp:Button ID="btnLimpiar" runat="server" Text="Limpiar"
+                    CssClass="btn btn-sm btn-outline-secondary" OnClick="btnLimpiar_Click" />
+            </div>
+        </div>
+    </div>
+
+    <!-- ══ ACCIONES ══ -->
+    <div class="d-flex justify-content-between align-items-center mb-2">
+        <div>
+            <asp:Button ID="btnNuevo" runat="server" Text="+ Registrar Produccion"
+                CssClass="btn btn-primary" OnClick="btnNuevo_Click" />
+            <button type="button" class="btn btn-outline-info ml-2" data-toggle="modal" data-target="#modalHoja">
+                <i class="fas fa-file-alt"></i> Hoja de Fabricacion
+            </button>
+        </div>
+        <asp:Label ID="lblResultados" runat="server" CssClass="text-muted small"></asp:Label>
+    </div>
+
+    <!-- ══ RESUMEN POR BASE ══ -->
+    <asp:Repeater ID="rptResumenBases" runat="server">
+        <ItemTemplate>
+            <div class="base-summary-card">
+                <h6><%# Eval("BaseNombre") %></h6>
+                <span class="metric">Producidos: <strong><%# Eval("TotalProducido") %></strong></span>
+                <span class="metric">Buenos: <strong><%# Eval("Buenos") %></strong></span>
+                <span class="metric">Rechazo: <strong><%# Eval("Rechazo") %></strong></span>
+                <span class="metric">Meta: <strong><%# Eval("Meta") %></strong></span>
+                <span class="metric">Cumplimiento: <strong><%# Eval("CumplimientoPct") %>%</strong></span>
+                <span class="metric">Valor: <strong><%# Eval("Valor", "{0:C2}") %></strong></span>
+            </div>
+        </ItemTemplate>
+    </asp:Repeater>
+
+    <!-- ══ GRID ══ -->
+    <div class="table-responsive">
+        <asp:GridView ID="gvProduccion" runat="server" AutoGenerateColumns="False"
+            CssClass="table table-bordered table-hover table-sm"
+            AllowCustomPaging="True" AllowPaging="True" PageSize="15"
+            OnPageIndexChanging="gvProduccion_PageIndexChanging"
+            OnRowDataBound="gvProduccion_RowDataBound"
+            EmptyDataText="No se encontraron registros de producción.">
+            <PagerStyle CssClass="pager-custom text-center" />
+            <Columns>
+                <asp:BoundField DataField="ProduccionID" HeaderText="ID" ItemStyle-Width="50px" />
+                <asp:BoundField DataField="Fecha" HeaderText="Fecha" DataFormatString="{0:dd/MM/yyyy}" />
+                <asp:BoundField DataField="BaseNombre" HeaderText="Base" />
+                <asp:TemplateField HeaderText="Turno">
+                    <ItemTemplate>
+                        <span class='badge <%# GetBadgeTurno(Eval("Turno").ToString()) %>'>
+                            <%# Eval("Turno") %>
+                        </span>
+                    </ItemTemplate>
+                </asp:TemplateField>
+                <asp:BoundField DataField="ProductoNombre" HeaderText="Producto" />
+                <asp:BoundField DataField="CantidadBuena" HeaderText="Buenos" ItemStyle-CssClass="text-right" />
+                <asp:BoundField DataField="CantidadRechazo" HeaderText="Rechazo" ItemStyle-CssClass="text-right" />
+                <asp:BoundField DataField="Total" HeaderText="Total" ItemStyle-CssClass="text-right font-weight-bold" />
+                <asp:BoundField DataField="MetaDia" HeaderText="Meta" ItemStyle-CssClass="text-right" />
+                <asp:TemplateField HeaderText="Cumpl%">
+                    <ItemTemplate>
+                        <%# Eval("CumplPct") %>%
+                        <div class="cumpl-bar">
+                            <div class="cumpl-fill" style='width:<%# Math.Min(Convert.ToInt32(Eval("CumplPct")), 100) %>%; background:<%# Convert.ToInt32(Eval("CumplPct")) >= 80 ? "#27ae60" : Convert.ToInt32(Eval("CumplPct")) >= 50 ? "#f39c12" : "#e74c3c" %>'></div>
+                        </div>
+                    </ItemTemplate>
+                </asp:TemplateField>
+                <asp:BoundField DataField="Valor" HeaderText="Valor ($)" DataFormatString="{0:C2}" ItemStyle-CssClass="text-right" />
+                <asp:BoundField DataField="RegistradoPor" HeaderText="Registrado Por" />
+                <asp:TemplateField HeaderText="Consumo de Materiales">
+                    <HeaderStyle CssClass="text-center" Width="280px" />
+                    <ItemTemplate>
+                        <asp:Repeater ID="rptDetalleConsumos" runat="server">
+                            <HeaderTemplate>
+                                <table class="table table-sm mb-0" style="font-size:0.76rem;">
+                                    <thead>
+                                        <tr class="bg-light">
+                                            <th>Material</th>
+                                            <th class="text-right">Rango</th>
+                                            <th class="text-right">Real</th>
+                                            <th class="text-right">Excedente</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                            </HeaderTemplate>
+                            <ItemTemplate>
+                                <tr>
+                                    <td style="white-space:nowrap"><%# Eval("MaterialCodigo") %> - <%# Eval("MaterialNombre") %></td>
+                                    <td class="text-right text-muted" style="white-space:nowrap">
+                                        <%# string.Format("{0:N0}–{1:N0}", Eval("TeoMin"), Eval("TeoMax")) %>
+                                        <small><%# Eval("Unidad") %></small>
+                                    </td>
+                                    <td class="text-right <%# (bool)Eval("EsMerma") ? "text-danger font-weight-bold" : "" %>">
+                                        <%# string.Format("{0:N2}", Eval("Real")) %>
+                                    </td>
+                                    <td class="text-right">
+                                        <%# (decimal)Eval("Excedente") > 0
+                                            ? string.Format("<span class='text-danger font-weight-bold'>+{0:N2}</span>", Eval("Excedente"))
+                                            : "<span class='text-success'>—</span>" %>
+                                    </td>
+                                </tr>
+                            </ItemTemplate>
+                            <FooterTemplate>
+                                    </tbody>
+                                </table>
+                            </FooterTemplate>
+                        </asp:Repeater>
+                    </ItemTemplate>
+                </asp:TemplateField>
+            </Columns>
+        </asp:GridView>
+    </div>
+
+<!-- ══════════════════════════════════════════════════════════════════ -->
+<!-- HIDDEN FIELDS + POSTBACK TRIGGERS                                -->
+<!-- ══════════════════════════════════════════════════════════════════ -->
+<asp:HiddenField ID="hdnMensajePendiente" runat="server" Value="" />
+<asp:HiddenField ID="hdnProductoSeleccionado" runat="server" Value="" />
+<asp:HiddenField ID="hdnConfirmarSinConsumos" runat="server" Value="" />
+<asp:Button ID="btnCargarConsumos" runat="server" style="display:none" OnClick="btnCargarConsumos_Click" />
+
+<!-- ══════════════════════════════════════════════════════════════════ -->
+<!-- MODAL: REGISTRAR PRODUCCIÓN                                      -->
+<!-- ══════════════════════════════════════════════════════════════════ -->
+<div class="modal fade" id="modalRegistrar" tabindex="-1" data-backdrop="static">
+    <div class="modal-dialog modal-lg">
+        <div class="modal-content">
+            <div class="modal-header bg-primary text-white">
+                <h5 class="modal-title">Registrar Producción</h5>
+                <button type="button" class="close text-white" data-dismiss="modal">&times;</button>
+            </div>
+            <div class="modal-body">
+                <div class="row mb-3">
+                    <div class="col-md-4">
+                        <label class="font-weight-bold">Base <span class="text-danger">*</span></label>
+                        <asp:DropDownList ID="ddlBase" runat="server" CssClass="form-control">
                         </asp:DropDownList>
                     </div>
-                    <div class="col-md-2">
-                        <label>Producto</label>
-                        <asp:DropDownList ID="ddlFiltrProducto" runat="server" CssClass="form-control form-control-sm">
-                            <asp:ListItem Value="">-- Todos --</asp:ListItem>
+                    <div class="col-md-4">
+                        <label class="font-weight-bold">Fecha <span class="text-danger">*</span></label>
+                        <asp:TextBox ID="txtFecha" runat="server" CssClass="form-control" TextMode="Date"></asp:TextBox>
+                    </div>
+                    <div class="col-md-4">
+                        <label class="font-weight-bold">Turno <span class="text-danger">*</span></label>
+                        <asp:DropDownList ID="ddlTurno" runat="server" CssClass="form-control">
+                            <asp:ListItem Text="-- Seleccione --" Value="" />
+                            <asp:ListItem Text="MAÑANA" Value="MAÑANA" />
+                            <asp:ListItem Text="TARDE" Value="TARDE" />
+                            <asp:ListItem Text="NOCHE" Value="NOCHE" />
+                            <asp:ListItem Text="UNICO" Value="UNICO" />
                         </asp:DropDownList>
-                    </div>
-                    <div class="col-md-2">
-                        <label>Turno</label>
-                        <asp:DropDownList ID="ddlFiltrTurno" runat="server" CssClass="form-control form-control-sm">
-                            <asp:ListItem Value="">-- Todos --</asp:ListItem>
-                            <asp:ListItem Value="MANANA">Manana</asp:ListItem>
-                            <asp:ListItem Value="TARDE">Tarde</asp:ListItem>
-                            <asp:ListItem Value="NOCHE">Noche</asp:ListItem>
-                            <asp:ListItem Value="UNICO">Unico</asp:ListItem>
-                        </asp:DropDownList>
-                    </div>
-                    <div class="col-md-2">
-                        <label>Fecha desde</label>
-                        <asp:TextBox ID="txtFechaDesde" runat="server" CssClass="form-control form-control-sm" TextMode="Date"></asp:TextBox>
-                    </div>
-                    <div class="col-md-2">
-                        <label>Fecha hasta</label>
-                        <asp:TextBox ID="txtFechaHasta" runat="server" CssClass="form-control form-control-sm" TextMode="Date"></asp:TextBox>
-                    </div>
-                    <div class="col-md-2 mt-1">
-                        <asp:Button ID="btnBuscar" runat="server" Text="Buscar"
-                            CssClass="btn btn-primary btn-sm mr-1" OnClick="btnBuscar_Click" />
-                        <asp:Button ID="btnLimpiar" runat="server" Text="Limpiar"
-                            CssClass="btn btn-secondary btn-sm" OnClick="btnLimpiar_Click" />
                     </div>
                 </div>
-            </div>
 
-            <div class="mb-2">
-                <small class="text-muted">
-                    <asp:Label ID="lblResultados" runat="server"></asp:Label>
-                </small>
-            </div>
+                <div class="row mb-3">
+                    <div class="col-md-6">
+                        <label class="font-weight-bold">Producto <span class="text-danger">*</span></label>
+                        <asp:DropDownList ID="ddlProducto" runat="server" CssClass="form-control"
+                            onchange="onProductoChange()">
+                        </asp:DropDownList>
+                    </div>
+                    <div class="col-md-6">
+                        <label class="font-weight-bold">Meta del día</label>
+                        <asp:TextBox ID="txtMetaDia" runat="server" CssClass="form-control" TextMode="Number" placeholder="0"></asp:TextBox>
+                    </div>
+                </div>
 
-            <!-- -- GRID -- -->
-            <div class="table-responsive">
-                <asp:GridView ID="gvProduccion" runat="server" AutoGenerateColumns="False"
-                    CssClass="table table-bordered table-striped custom-grid"
-                    AllowPaging="True" AllowCustomPaging="True" PageSize="15"
-                    OnPageIndexChanging="gvProduccion_PageIndexChanging"
-                    DataKeyNames="ProduccionID"
-                    PagerStyle-CssClass="pager-custom"
-                    PagerSettings-Mode="NumericFirstLast"
-                    PagerSettings-FirstPageText="&laquo;"
-                    PagerSettings-LastPageText="&raquo;"
-                    PagerSettings-PageButtonCount="5">
-                    <Columns>
-                        <asp:BoundField DataField="ProduccionID" HeaderText="ID" Visible="false" />
-                        <asp:BoundField DataField="Fecha" HeaderText="Fecha" DataFormatString="{0:dd/MM/yyyy}" />
-                        <asp:BoundField DataField="BaseNombre" HeaderText="Base" />
-                        <asp:BoundField DataField="ProductoNombre" HeaderText="Producto" />
-                        <asp:BoundField DataField="Turno" HeaderText="Turno" />
-                        <asp:BoundField DataField="CantidadBuena" HeaderText="Buenas" />
-                        <asp:BoundField DataField="CantidadRechazo" HeaderText="Rechazo" />
-                        <asp:BoundField DataField="Total" HeaderText="Total" />
-                        <asp:BoundField DataField="MetaDia" HeaderText="Meta" />
-                        <asp:BoundField DataField="Observaciones" HeaderText="Observaciones" />
-                        <asp:BoundField DataField="RegistradoPor" HeaderText="Registrado Por" />
-                    </Columns>
-                </asp:GridView>
-            </div>
+                <div class="row mb-3">
+                    <div class="col-md-4">
+                        <label class="font-weight-bold">Cantidad buena <span class="text-danger">*</span></label>
+                        <asp:TextBox ID="txtCantBuena" runat="server" CssClass="form-control" TextMode="Number"
+                            min="0" placeholder="0" onchange="recalcConsumosTeoricos()"></asp:TextBox>
+                    </div>
+                    <div class="col-md-4">
+                        <label class="font-weight-bold">Cantidad rechazo</label>
+                        <asp:TextBox ID="txtCantRechazo" runat="server" CssClass="form-control" TextMode="Number"
+                            min="0" placeholder="0" onchange="recalcConsumosTeoricos()"></asp:TextBox>
+                    </div>
+                    <div class="col-md-4">
+                        <label class="font-weight-bold">Total producido</label>
+                        <div class="form-control bg-light" id="divTotalProd">0</div>
+                    </div>
+                </div>
 
-        </div><!-- /card-body -->
-    </div><!-- /card -->
-</div>
-</div>
-</div>
+                <!-- Consumo de materiales -->
+                <h6 class="text-primary font-weight-bold mt-3 mb-2">Consumo de Materiales</h6>
+                <asp:Panel ID="pnlConsumos" runat="server">
+                    <div class="table-responsive">
+                        <table class="table table-sm table-bordered consumo-table" id="tblConsumos">
+                            <thead>
+                                <tr>
+                                    <th>Material</th>
+                                    <th>Unidad</th>
+                                    <th>Teórico Mín</th>
+                                    <th>Teórico Máx</th>
+                                    <th>Consumo Real</th>
+                                    <th>Stock Actual</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <asp:Repeater ID="rptConsumos" runat="server">
+                                    <ItemTemplate>
+                                        <tr>
+                                            <td>
+                                                <%# Eval("MaterialCodigo") %> - <%# Eval("MaterialNombre") %>
+                                                <input type="hidden" name="matID" value='<%# Eval("MaterialID") %>' />
+                                                <input type="hidden" name="cantMin" value='<%# Eval("CantidadMin") %>' />
+                                                <input type="hidden" name="cantMax" value='<%# Eval("CantidadMax") %>' />
+                                            </td>
+                                            <td><%# Eval("Unidad") %></td>
+                                            <td class="text-right teorico-min"><%# Eval("TeoricoMin", "{0:N2}") %></td>
+                                            <td class="text-right teorico-max"><%# Eval("TeoricoMax", "{0:N2}") %></td>
+                                            <td>
+                                                <input type="number" name="consumoReal" step="0.01" min="0"
+                                                    class="form-control form-control-sm consumo-input"
+                                                    value='<%# Eval("ConsumoReal", "{0:0.##}") %>'
+                                                    data-stock='<%# Eval("StockActual") %>'
+                                                    onchange="validarConsumoStock(this)" />
+                                            </td>
+                                            <td class="text-right stock-cell <%# Convert.ToDecimal(Eval("StockActual")) > 0 ? "stock-ok" : "stock-warn" %>">
+                                                <%# Eval("StockActual", "{0:N2}") %>
+                                            </td>
+                                        </tr>
+                                    </ItemTemplate>
+                                </asp:Repeater>
+                            </tbody>
+                        </table>
+                    </div>
+                    <div id="divAlertaStock" class="alert alert-warning d-none">
+                        <i class="fas fa-exclamation-triangle"></i> Algunos consumos exceden el stock disponible.
+                    </div>
+                </asp:Panel>
+                <asp:Label ID="lblSinConsumos" runat="server" Text="Seleccione un producto para cargar los consumos de materiales."
+                    CssClass="text-muted" Visible="true"></asp:Label>
 
-<!-- -- HIDDEN FIELDS -- -->
-<asp:HiddenField ID="hdnMensajePendiente" runat="server" Value="" />
-<asp:HiddenField ID="hdnConsumosJson" runat="server" Value="" />
-
-<!-- == MODAL NUEVO REGISTRO == -->
-<div class="modal fade" id="modalNuevo" tabindex="-1" role="dialog" data-backdrop="static">
-  <div class="modal-dialog modal-lg" role="document">
-    <div class="modal-content">
-      <div class="modal-header" style="background-color:#003366;color:white;">
-        <h5 class="modal-title"><i class="fas fa-industry"></i> Nuevo Registro de Produccion</h5>
-        <button type="button" class="close text-white" data-dismiss="modal"><span>&times;</span></button>
-      </div>
-      <div class="modal-body">
-        <!-- Fila 1: Base, Fecha, Turno -->
-        <div class="row">
-          <div class="col-md-4">
-            <div class="form-group">
-              <label>Base <span style="color:red">*</span></label>
-              <asp:DropDownList ID="ddlBase" runat="server" CssClass="form-control">
-                <asp:ListItem Value="">-- Seleccione --</asp:ListItem>
-              </asp:DropDownList>
+                <div class="form-group mt-3">
+                    <label class="font-weight-bold">Observaciones</label>
+                    <asp:TextBox ID="txtObservaciones" runat="server" CssClass="form-control" TextMode="MultiLine"
+                        Rows="2" MaxLength="500"></asp:TextBox>
+                </div>
             </div>
-          </div>
-          <div class="col-md-4">
-            <div class="form-group">
-              <label>Fecha <span style="color:red">*</span></label>
-              <asp:TextBox ID="txtFecha" runat="server" CssClass="form-control" TextMode="Date"></asp:TextBox>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-dismiss="modal">Cancelar</button>
+                <asp:Button ID="btnGuardar" runat="server" Text="Guardar Producción"
+                    CssClass="btn btn-primary" OnClick="btnGuardar_Click"
+                    OnClientClick="return validarAntesDeGuardar();" />
             </div>
-          </div>
-          <div class="col-md-4">
-            <div class="form-group">
-              <label>Turno <span style="color:red">*</span></label>
-              <asp:DropDownList ID="ddlTurno" runat="server" CssClass="form-control">
-                <asp:ListItem Value="">-- Seleccione --</asp:ListItem>
-                <asp:ListItem Value="MANANA">Manana</asp:ListItem>
-                <asp:ListItem Value="TARDE">Tarde</asp:ListItem>
-                <asp:ListItem Value="NOCHE">Noche</asp:ListItem>
-                <asp:ListItem Value="UNICO">Unico</asp:ListItem>
-              </asp:DropDownList>
-            </div>
-          </div>
         </div>
-
-        <!-- Fila 2: Producto -->
-        <div class="row">
-          <div class="col-md-12">
-            <div class="form-group">
-              <label>Producto <span style="color:red">*</span></label>
-              <asp:DropDownList ID="ddlProducto" runat="server" CssClass="form-control"
-                  onchange="onProductoChange();">
-                <asp:ListItem Value="">-- Seleccione un producto --</asp:ListItem>
-              </asp:DropDownList>
-            </div>
-          </div>
-        </div>
-
-        <!-- Fila 3: Cantidad Buena, Cantidad Rechazo -->
-        <div class="row">
-          <div class="col-md-6">
-            <div class="form-group">
-              <label>Cantidad Buena <span style="color:red">*</span></label>
-              <asp:TextBox ID="txtCantidadBuena" runat="server" CssClass="form-control" TextMode="Number"
-                  Placeholder="0" min="0" step="1"
-                  onkeyup="onCantidadBuenaChange();" onchange="onCantidadBuenaChange();"></asp:TextBox>
-            </div>
-          </div>
-          <div class="col-md-6">
-            <div class="form-group">
-              <label>Cantidad Rechazo</label>
-              <asp:TextBox ID="txtCantidadRechazo" runat="server" CssClass="form-control" TextMode="Number"
-                  Placeholder="0" min="0" step="1"></asp:TextBox>
-            </div>
-          </div>
-        </div>
-
-        <!-- Fila 4: Tabla BOM -->
-        <div id="divBOM">
-          <h6 style="color:#003366; font-weight:700; margin-bottom:8px;">
-            <i class="fas fa-cogs"></i> Consumo de Materiales (BOM)
-          </h6>
-          <div class="table-responsive">
-            <table id="tblBOM" class="table table-sm">
-              <thead>
-                <tr>
-                  <th>Material</th>
-                  <th>Unidad</th>
-                  <th>Min/Unidad</th>
-                  <th>Max/Unidad</th>
-                  <th>Cantidad Real <span style="color:#ffd700">*</span></th>
-                </tr>
-              </thead>
-              <tbody id="tbodyBOM"></tbody>
-            </table>
-          </div>
-        </div>
-
-        <!-- Fila 5: Observaciones -->
-        <div class="row">
-          <div class="col-md-12">
-            <div class="form-group">
-              <label>Observaciones</label>
-              <asp:TextBox ID="txtObservaciones" runat="server" CssClass="form-control" TextMode="MultiLine"
-                  Rows="3" Placeholder="Observaciones opcionales..." MaxLength="500"></asp:TextBox>
-            </div>
-          </div>
-        </div>
-      </div>
-      <div class="modal-footer">
-        <asp:Button ID="btnGuardar" runat="server" Text="Guardar Registro"
-            CssClass="btn btn-success"
-            OnClientClick="return prepararGuardar();"
-            OnClick="btnGuardar_Click" />
-        <button type="button" class="btn btn-secondary" data-dismiss="modal">Cancelar</button>
-      </div>
     </div>
-  </div>
 </div>
 
-<asp:Literal ID="litJsData" runat="server"></asp:Literal>
+<!-- ══════════════════════════════════════════════════════════════════ -->
+<!-- MODAL: HOJA DE FABRICACIÓN                                        -->
+<!-- ══════════════════════════════════════════════════════════════════ -->
+<div class="modal fade" id="modalHoja" tabindex="-1" data-backdrop="static">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header bg-info text-white">
+                <h5 class="modal-title"><i class="fas fa-file-alt"></i> Hoja de Fabricacion</h5>
+                <button type="button" class="close text-white" data-dismiss="modal">&times;</button>
+            </div>
+            <div class="modal-body">
+                <div class="form-group">
+                    <label class="font-weight-bold">Producto</label>
+                    <asp:DropDownList ID="ddlProductoHoja" runat="server" CssClass="form-control">
+                    </asp:DropDownList>
+                </div>
+                <div class="form-group">
+                    <label class="font-weight-bold">Cantidad a fabricar</label>
+                    <asp:TextBox ID="txtCantidadHoja" runat="server" CssClass="form-control" TextMode="Number" min="1" placeholder="0"></asp:TextBox>
+                </div>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-dismiss="modal">Cancelar</button>
+                <asp:Button ID="btnGenerarHoja" runat="server" Text="Generar Hoja"
+                    CssClass="btn btn-info" OnClick="btnGenerarHoja_Click" />
+            </div>
+        </div>
+    </div>
+</div>
 
+<!-- ══ SCRIPTS ══ -->
 <script>
-    // -- Mensaje pendiente (SweetAlert) --
+    // SweetAlert mensajes
     window.addEventListener('load', function () {
-        var hdnMsg = document.getElementById('<%= hdnMensajePendiente.ClientID %>');
-        if (!hdnMsg || !hdnMsg.value) return;
-        try {
-            var msg = JSON.parse(hdnMsg.value);
-            hdnMsg.value = '';
-            var opts = { icon: msg.icon, title: msg.title, text: msg.text, confirmButtonColor: '#003366' };
-            if (msg.icon === 'success') { opts.showConfirmButton = false; opts.timer = 2000; }
-            if (msg.modal) {
-                opts.showConfirmButton = true;
-                Swal.fire(opts).then(function () { $('#' + msg.modal).modal('show'); });
-            } else { Swal.fire(opts); }
-        } catch (e) { }
+        var h = document.getElementById('<%= hdnMensajePendiente.ClientID %>');
+        if (h && h.value) {
+            try {
+                var m = JSON.parse(h.value);
+                h.value = '';
+                Swal.fire({ icon: m.icon, title: m.title, text: m.text, confirmButtonColor: '#003366' }).then(function () {
+                    if (m.modal) $('#' + m.modal).modal('show');
+                });
+            } catch (e) { }
+        }
     });
 
-    // -- Abrir modal nuevo --
-    function abrirModalNuevo() {
-        document.getElementById('<%= ddlBase.ClientID %>').value = '';
-        document.getElementById('<%= txtFecha.ClientID %>').value = new Date().toISOString().split('T')[0];
-        document.getElementById('<%= ddlTurno.ClientID %>').value = '';
-        document.getElementById('<%= ddlProducto.ClientID %>').value = '';
-        document.getElementById('<%= txtCantidadBuena.ClientID %>').value = '';
-        document.getElementById('<%= txtCantidadRechazo.ClientID %>').value = '';
-        document.getElementById('<%= txtObservaciones.ClientID %>').value = '';
-        document.getElementById('<%= hdnConsumosJson.ClientID %>').value = '';
-        document.getElementById('divBOM').style.display = 'none';
-        document.getElementById('tbodyBOM').innerHTML = '';
-        $('#modalNuevo').modal('show');
-    }
-
-    // -- Al seleccionar producto: renderizar tabla BOM --
+    // Al cambiar producto, hacer postback para cargar consumos
     function onProductoChange() {
-        var prodID = document.getElementById('<%= ddlProducto.ClientID %>').value;
-        var tbody = document.getElementById('tbodyBOM');
-        var divBOM = document.getElementById('divBOM');
-        tbody.innerHTML = '';
-
-        if (!prodID || !window._bomData || !window._bomData[prodID]) {
-            divBOM.style.display = 'none';
-            return;
-        }
-
-        var bom = window._bomData[prodID];
-        var cantBuena = parseInt(document.getElementById('<%= txtCantidadBuena.ClientID %>').value) || 0;
-
-        bom.forEach(function (item) {
-            var tr = document.createElement('tr');
-            var cantReal = cantBuena > 0 ? (cantBuena * item.cantidadMin).toFixed(4) : '';
-            tr.innerHTML =
-                '<td>' + item.nombre + '</td>' +
-                '<td>' + (item.unidad || '') + '</td>' +
-                '<td>' + item.cantidadMin.toFixed(4) + '</td>' +
-                '<td>' + item.cantidadMax.toFixed(4) + '</td>' +
-                '<td><input type="number" class="form-control form-control-sm bom-cant-real" ' +
-                    'data-material-id="' + item.materialID + '" ' +
-                    'data-cant-min="' + item.cantidadMin + '" ' +
-                    'data-cant-max="' + item.cantidadMax + '" ' +
-                    'value="' + cantReal + '" min="0" step="0.0001" /></td>';
-            tbody.appendChild(tr);
-        });
-
-        divBOM.style.display = 'block';
+        var ddl = document.getElementById('<%= ddlProducto.ClientID %>');
+        document.getElementById('<%= hdnProductoSeleccionado.ClientID %>').value = ddl.value;
+        document.getElementById('<%= btnCargarConsumos.ClientID %>').click();
     }
 
-    // -- Al cambiar cantidad buena: recalcular cantidades reales --
-    function onCantidadBuenaChange() {
-        var cantBuena = parseInt(document.getElementById('<%= txtCantidadBuena.ClientID %>').value) || 0;
-        var inputs = document.querySelectorAll('.bom-cant-real');
-        inputs.forEach(function (inp) {
-            var cantMin = parseFloat(inp.getAttribute('data-cant-min')) || 0;
-            inp.value = (cantBuena * cantMin).toFixed(4);
+    // Recalcular teóricos con la cantidad total
+    function recalcConsumosTeoricos() {
+        var buena = parseInt(document.getElementById('<%= txtCantBuena.ClientID %>').value) || 0;
+        var rechazo = parseInt(document.getElementById('<%= txtCantRechazo.ClientID %>').value) || 0;
+        var total = buena + rechazo;
+        document.getElementById('divTotalProd').innerText = total;
+
+        var rows = document.querySelectorAll('#tblConsumos tbody tr');
+        rows.forEach(function (row) {
+            var cantMin = parseFloat(row.querySelector('input[name="cantMin"]').value) || 0;
+            var cantMax = parseFloat(row.querySelector('input[name="cantMax"]').value) || 0;
+            row.querySelector('.teorico-min').innerText = (cantMin * total).toFixed(2);
+            row.querySelector('.teorico-max').innerText = (cantMax * total).toFixed(2);
         });
     }
 
-    // -- Preparar guardar: recopilar consumos BOM en JSON --
-    function prepararGuardar() {
-        var base    = document.getElementById('<%= ddlBase.ClientID %>').value;
-        var fecha   = document.getElementById('<%= txtFecha.ClientID %>').value;
-        var turno   = document.getElementById('<%= ddlTurno.ClientID %>').value;
-        var prodID  = document.getElementById('<%= ddlProducto.ClientID %>').value;
-        var cantB   = parseInt(document.getElementById('<%= txtCantidadBuena.ClientID %>').value);
+    // Confirmar si todos los consumos reales están en cero antes de guardar
+    function validarAntesDeGuardar() {
+        var hdnConfirmar = document.getElementById('<%= hdnConfirmarSinConsumos.ClientID %>');
 
-        function warn(txt) {
-            Swal.fire({ icon: 'warning', title: 'Campo requerido', text: txt, confirmButtonColor: '#003366' })
-                .then(function () { $('#modalNuevo').modal('show'); });
-            return false;
+        // Si el usuario ya confirmó en el diálogo anterior, permitir el postback y limpiar la bandera
+        if (hdnConfirmar.value === '1') {
+            hdnConfirmar.value = '';
+            return true;
         }
 
-        if (!base)                return warn('Seleccione una base.');
-        if (!fecha)               return warn('Seleccione una fecha.');
-        if (!turno)               return warn('Seleccione un turno.');
-        if (!prodID)              return warn('Seleccione un producto.');
-        if (isNaN(cantB) || cantB < 0) return warn('La cantidad buena debe ser mayor o igual a cero.');
+        var inputs = document.querySelectorAll('input.consumo-input');
+        if (inputs.length === 0) return true; // Sin materiales → dejar pasar
 
-        // Recopilar consumos de la tabla BOM
-        var consumos = [];
-        var inputs = document.querySelectorAll('.bom-cant-real');
-        var hayError = false;
+        var todosEnCero = true;
         inputs.forEach(function (inp) {
-            var cantReal = parseFloat(inp.value);
-            if (isNaN(cantReal) || cantReal < 0) {
-                hayError = true;
-                return;
-            }
-            var cantMin = parseFloat(inp.getAttribute('data-cant-min')) || 0;
-            var cantMax = parseFloat(inp.getAttribute('data-cant-max')) || 0;
-            consumos.push({
-                materialID: parseInt(inp.getAttribute('data-material-id')),
-                cantidadReal: cantReal,
-                cantidadTeoricaMin: cantB * cantMin,
-                cantidadTeoricaMax: cantB * cantMax,
-                esMerma: false,
-                notas: ''
+            if ((parseFloat(inp.value) || 0) > 0) todosEnCero = false;
+        });
+
+        if (todosEnCero) {
+            Swal.fire({
+                title: '¿Registrar sin consumos de materiales?',
+                text: 'No capturaste la cantidad real de ningún material. El sistema no descontará materiales del inventario. ¿Deseas continuar de todas formas?',
+                icon: 'warning',
+                showCancelButton: true,
+                confirmButtonColor: '#e08e0b',
+                cancelButtonColor: '#6c757d',
+                confirmButtonText: '<i class="fas fa-check mr-1"></i> Sí, registrar así',
+                cancelButtonText: 'Cancelar, voy a capturar'
+            }).then(function (result) {
+                if (result.isConfirmed) {
+                    hdnConfirmar.value = '1';
+                    document.getElementById('<%= btnGuardar.ClientID %>').click();
+                }
             });
-        });
+            return false; // Detener postback hasta que el usuario confirme
+        }
 
-        if (hayError) return warn('Revise las cantidades reales de materiales. No pueden ser negativas.');
-
-        document.getElementById('<%= hdnConsumosJson.ClientID %>').value = JSON.stringify(consumos);
         return true;
+    }
+
+    // Validar consumo vs stock
+    function validarConsumoStock(input) {
+        var stock = parseFloat(input.dataset.stock) || 0;
+        var consumo = parseFloat(input.value) || 0;
+        var cell = input.closest('tr').querySelector('.stock-cell');
+        if (consumo > stock) {
+            cell.className = 'text-right stock-cell stock-warn';
+            document.getElementById('divAlertaStock').classList.remove('d-none');
+        } else {
+            cell.className = 'text-right stock-cell stock-ok';
+            // Verificar si queda alguna alerta
+            var hayAlerta = false;
+            document.querySelectorAll('.consumo-input').forEach(function (inp) {
+                if (parseFloat(inp.value) > parseFloat(inp.dataset.stock)) hayAlerta = true;
+            });
+            if (!hayAlerta) document.getElementById('divAlertaStock').classList.add('d-none');
+        }
+    }
+
+    // Filtros rápidos de fecha
+    function setFiltroRapido(tipo) {
+        var desde = document.getElementById('<%= txtFechaDesde.ClientID %>');
+        var hasta = document.getElementById('<%= txtFechaHasta.ClientID %>');
+        var hoy = new Date();
+        var fmt = function (d) { return d.toISOString().split('T')[0]; };
+
+        if (tipo === 'hoy') {
+            desde.value = fmt(hoy);
+            hasta.value = fmt(hoy);
+        } else if (tipo === 'semana') {
+            var lunes = new Date(hoy);
+            lunes.setDate(hoy.getDate() - ((hoy.getDay() + 6) % 7));
+            var domingo = new Date(lunes);
+            domingo.setDate(lunes.getDate() + 6);
+            desde.value = fmt(lunes);
+            hasta.value = fmt(domingo);
+        } else if (tipo === 'mes') {
+            desde.value = fmt(new Date(hoy.getFullYear(), hoy.getMonth(), 1));
+            hasta.value = fmt(new Date(hoy.getFullYear(), hoy.getMonth() + 1, 0));
+        }
+
+        document.querySelectorAll('.btn-filtro-rapido').forEach(function (b) { b.classList.remove('active'); });
+        event.target.classList.add('active');
     }
 </script>
 
