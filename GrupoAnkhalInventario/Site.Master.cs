@@ -24,6 +24,9 @@ namespace GrupoAnkhalInventario
                 { "productos.aspx",  new List<string> { "Administrador", "Compras", "Ventas" } },
                 { "paquetes.aspx",   new List<string> { "Administrador", "Compras", "Ventas" } },
 
+                // ── Clientes ──
+                { "registrarclientes.aspx", new List<string> { "Administrador", "Ventas", "Compras" } },
+
                 // ── Operaciones ──
                 { "produccion.aspx",  new List<string> { "Administrador", "Produccion", "Almacen" } },
                 { "entregas.aspx",    new List<string> { "Administrador", "Ventas",     "Almacen" } },
