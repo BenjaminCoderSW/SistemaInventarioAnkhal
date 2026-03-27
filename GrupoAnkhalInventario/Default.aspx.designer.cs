@@ -1,107 +1,66 @@
-﻿//------------------------------------------------------------------------------
+//------------------------------------------------------------------------------
 // <generado automáticamente>
 //     Este código fue generado por una herramienta.
 //
 //     Los cambios en este archivo podrían causar un comportamiento incorrecto y se perderán si
-//     se vuelve a generar el código. 
+//     se vuelve a generar el código.
 // </generado automáticamente>
 //------------------------------------------------------------------------------
 
 namespace GrupoAnkhalInventario
 {
-
-
     public partial class Default
     {
+        protected global::System.Web.UI.WebControls.HiddenField hdnMensajePendiente;
 
-        /// <summary>
-        /// Control lblNombreUsuario.
-        /// </summary>
-        /// <remarks>
-        /// Campo generado automáticamente.
-        /// Para modificarlo, mueva la declaración del campo del archivo del diseñador al archivo de código subyacente.
-        /// </remarks>
+        // Header
         protected global::System.Web.UI.WebControls.Label lblNombreUsuario;
-
-        /// <summary>
-        /// Control lblRol.
-        /// </summary>
-        /// <remarks>
-        /// Campo generado automáticamente.
-        /// Para modificarlo, mueva la declaración del campo del archivo del diseñador al archivo de código subyacente.
-        /// </remarks>
         protected global::System.Web.UI.WebControls.Label lblRol;
-
-        /// <summary>
-        /// Control lblFechaHora.
-        /// </summary>
-        /// <remarks>
-        /// Campo generado automáticamente.
-        /// Para modificarlo, mueva la declaración del campo del archivo del diseñador al archivo de código subyacente.
-        /// </remarks>
         protected global::System.Web.UI.WebControls.Label lblFechaHora;
 
-        /// <summary>
-        /// Control divInventario.
-        /// </summary>
-        /// <remarks>
-        /// Campo generado automáticamente.
-        /// Para modificarlo, mueva la declaración del campo del archivo del diseñador al archivo de código subyacente.
-        /// </remarks>
-        protected global::System.Web.UI.HtmlControls.HtmlGenericControl divInventario;
+        // Filtros
+        protected global::System.Web.UI.WebControls.DropDownList ddlBase;
+        protected global::System.Web.UI.WebControls.DropDownList ddlPeriodo;
+        protected global::System.Web.UI.WebControls.Button btnFiltrar;
 
-        /// <summary>
-        /// Control divProduccion.
-        /// </summary>
-        /// <remarks>
-        /// Campo generado automáticamente.
-        /// Para modificarlo, mueva la declaración del campo del archivo del diseñador al archivo de código subyacente.
-        /// </remarks>
-        protected global::System.Web.UI.HtmlControls.HtmlGenericControl divProduccion;
+        // KPI Row 1 — Inventario / Produccion / Entregas
+        protected global::System.Web.UI.WebControls.Label lblValorInventario;
+        protected global::System.Web.UI.WebControls.Label lblInvSub;
+        protected global::System.Web.UI.WebControls.Label lblPeriodoA;
 
-        /// <summary>
-        /// Control divEntregas.
-        /// </summary>
-        /// <remarks>
-        /// Campo generado automáticamente.
-        /// Para modificarlo, mueva la declaración del campo del archivo del diseñador al archivo de código subyacente.
-        /// </remarks>
-        protected global::System.Web.UI.HtmlControls.HtmlGenericControl divEntregas;
+        protected global::System.Web.UI.WebControls.Label lblValorProducido;
+        protected global::System.Web.UI.WebControls.Label lblProdSub;
+        protected global::System.Web.UI.WebControls.Label lblPeriodoB;
 
-        /// <summary>
-        /// Control divCatalogos.
-        /// </summary>
-        /// <remarks>
-        /// Campo generado automáticamente.
-        /// Para modificarlo, mueva la declaración del campo del archivo del diseñador al archivo de código subyacente.
-        /// </remarks>
-        protected global::System.Web.UI.HtmlControls.HtmlGenericControl divCatalogos;
+        protected global::System.Web.UI.WebControls.Label lblValorEntregado;
+        protected global::System.Web.UI.WebControls.Label lblEntSub;
+        protected global::System.Web.UI.WebControls.Label lblPeriodoC;
 
-        /// <summary>
-        /// Control lblUsuarioInfo.
-        /// </summary>
-        /// <remarks>
-        /// Campo generado automáticamente.
-        /// Para modificarlo, mueva la declaración del campo del archivo del diseñador al archivo de código subyacente.
-        /// </remarks>
-        protected global::System.Web.UI.WebControls.Label lblUsuarioInfo;
+        // KPI Row 2 — Costo / Margen / Alertas
+        protected global::System.Web.UI.WebControls.Label lblCostoMaterial;
+        protected global::System.Web.UI.WebControls.Label lblPeriodoD;
 
-        /// <summary>
-        /// Control lblRolInfo.
-        /// </summary>
-        /// <remarks>
-        /// Campo generado automáticamente.
-        /// Para modificarlo, mueva la declaración del campo del archivo del diseñador al archivo de código subyacente.
-        /// </remarks>
-        protected global::System.Web.UI.WebControls.Label lblRolInfo;
+        protected global::System.Web.UI.WebControls.Panel pnlMargenCard;
+        protected global::System.Web.UI.WebControls.Label lblMargenDia;
+        protected global::System.Web.UI.WebControls.Label lblMargenPct;
 
-        /// <summary>
-        /// Control lblUltimoAcceso.
-        /// </summary>
-        /// <remarks>
-        /// Campo generado automáticamente.
-        /// Para modificarlo, mueva la declaración del campo del archivo del diseñador al archivo de código subyacente.
-        /// </remarks>
-        protected global::System.Web.UI.WebControls.Label lblUltimoAcceso;
+        protected global::System.Web.UI.WebControls.Panel pnlAlertasCard;
+        protected global::System.Web.UI.WebControls.Label lblCriticosCount;
+        protected global::System.Web.UI.WebControls.Label lblCriticosSub;
+
+        // Tabla Produccion
+        protected global::System.Web.UI.WebControls.Label lblTituloProd;
+        protected global::System.Web.UI.WebControls.Label lblTotalProdRows;
+        protected global::System.Web.UI.WebControls.GridView gvProduccion;
+
+        // Panel Criticos
+        protected global::System.Web.UI.WebControls.Label lblCountCriticosPanel;
+        protected global::System.Web.UI.WebControls.Literal litCriticos;
+
+        // Ultimas Entregas
+        protected global::System.Web.UI.WebControls.GridView gvUltimasEntregas;
+
+        // Valor por Base
+        protected global::System.Web.UI.WebControls.GridView gvValorPorBase;
     }
 }

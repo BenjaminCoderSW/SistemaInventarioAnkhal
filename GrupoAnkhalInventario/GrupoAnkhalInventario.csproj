@@ -150,6 +150,7 @@
     <Content Include="img\GrupoAnkhalPapeleta.jpeg" />
     <Content Include="img\mapa.png" />
     <Content Include="Inventario.aspx" />
+    <Content Include="ImprimirInventario.ashx" />
     <Content Include="Login.aspx" />
     <Content Include="Materiales.aspx" />
     <Content Include="MetasProduccion.aspx" />
@@ -2054,6 +2055,10 @@
     </Compile>
     <Compile Include="Global.asax.cs">
       <DependentUpon>Global.asax</DependentUpon>
+    </Compile>
+    <Compile Include="Helpers\AppHelper.cs" />
+    <Compile Include="ImprimirInventario.ashx.cs">
+      <DependentUpon>ImprimirInventario.ashx</DependentUpon>
     </Compile>
     <Compile Include="Inventario.aspx.cs">
       <DependentUpon>Inventario.aspx</DependentUpon>
