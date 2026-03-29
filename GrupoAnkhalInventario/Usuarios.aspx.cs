@@ -6,6 +6,7 @@ using System.Data.SqlClient;
 using System.Web.Script.Serialization;
 using System.Web.UI;
 using System.Web.UI.WebControls;
+using GrupoAnkhalInventario.Helpers;
 
 namespace GrupoAnkhalInventario
 {
@@ -25,6 +26,7 @@ namespace GrupoAnkhalInventario
             if (!IsPostBack)
             {
                 CargarRoles();
+                CargarBasesChecklist();
                 CargarEmpleadosDisponibles();
                 CargarGrid();
             }
@@ -59,12 +61,14 @@ namespace GrupoAnkhalInventario
 
             string sqlCount = "SELECT COUNT(*) FROM DatosUsuario" + where;
             string sqlData = @"
-                SELECT ClaveID, UsuarioID, Nombre, ApellidoPaterno, ApellidoMaterno,
-                       NumeroEmpleado, Telefono, TelefonoFamiliar, Email,
-                       Usuario, Rol, RolID, Activo, Foto,
-                       (Nombre + ' ' + ApellidoPaterno +
-                        ISNULL(' ' + NULLIF(ApellidoMaterno,''), '')) AS NombreCompleto
-                FROM DatosUsuario" + where +
+                SELECT du.ClaveID, du.UsuarioID, du.Nombre, du.ApellidoPaterno, du.ApellidoMaterno,
+                       du.NumeroEmpleado, du.Telefono, du.TelefonoFamiliar, du.Email,
+                       du.Usuario, du.Rol, du.RolID, du.Activo, du.Foto,
+                       (du.Nombre + ' ' + du.ApellidoPaterno +
+                        ISNULL(' ' + NULLIF(du.ApellidoMaterno,''), '')) AS NombreCompleto,
+                       ISNULL((SELECT STRING_AGG(CAST(ub.BaseID AS VARCHAR(10)), ',')
+                               FROM dbo.UsuarioBases ub WHERE ub.ClaveID = du.ClaveID), '') AS BaseIDs
+                FROM DatosUsuario du" + where +
                 @" ORDER BY ApellidoPaterno, Nombre
                 OFFSET @offset ROWS FETCH NEXT @pageSize ROWS ONLY";
 
@@ -146,6 +150,59 @@ namespace GrupoAnkhalInventario
         }
 
         // ══ CATÁLOGOS ══════════════════════════════════════════════════════════
+
+        private void CargarBasesChecklist()
+        {
+            const string sql = "SELECT BaseID, Codigo, Nombre FROM dbo.Bases WHERE Activo = 1 ORDER BY Nombre";
+            var dt = EjecutarQuery(sql, null);
+
+            foreach (var cbl in new CheckBoxList[] { cblBasesAgregar, cblBasesEditar })
+            {
+                cbl.Items.Clear();
+                foreach (DataRow row in dt.Rows)
+                {
+                    string etiqueta = row["Nombre"].ToString() + " (" + row["Codigo"].ToString() + ")";
+                    cbl.Items.Add(new ListItem(etiqueta, row["BaseID"].ToString()));
+                }
+            }
+        }
+
+        private void GuardarAsignacionBases(SqlConnection cn, int claveID, CheckBoxList cbl, int rolID)
+        {
+            // Borrar asignaciones actuales
+            using (var cmd = new SqlCommand("DELETE FROM dbo.UsuarioBases WHERE ClaveID = @cid", cn))
+            {
+                cmd.Parameters.AddWithValue("@cid", claveID);
+                cmd.ExecuteNonQuery();
+            }
+
+            // Si es Administrador, no insertar registros (AppHelper retorna null y ve todo)
+            string rolNombre = "";
+            using (var cmd = new SqlCommand("SELECT Nombre FROM dbo.Roles WHERE RolID = @rid", cn))
+            {
+                cmd.Parameters.AddWithValue("@rid", rolID);
+                var res = cmd.ExecuteScalar();
+                if (res != null) rolNombre = res.ToString();
+            }
+            if (rolNombre == "Administrador") return;
+
+            int asigPor = Convert.ToInt32(Session["ClaveID"]);
+            const string sqlIns = @"
+                INSERT INTO dbo.UsuarioBases (ClaveID, BaseID, FechaAsignacion, AsignadoPorID)
+                VALUES (@cid, @bid, GETDATE(), @asigPor)";
+
+            foreach (ListItem item in cbl.Items)
+            {
+                if (!item.Selected) continue;
+                using (var cmd = new SqlCommand(sqlIns, cn))
+                {
+                    cmd.Parameters.AddWithValue("@cid", claveID);
+                    cmd.Parameters.AddWithValue("@bid", int.Parse(item.Value));
+                    cmd.Parameters.AddWithValue("@asigPor", asigPor);
+                    cmd.ExecuteNonQuery();
+                }
+            }
+        }
 
         private void CargarRoles()
         {
@@ -302,6 +359,9 @@ namespace GrupoAnkhalInventario
                         cmd.Parameters.AddWithValue("@asigPor", Convert.ToInt32(Session["ClaveID"]));
                         cmd.ExecuteNonQuery();
                     }
+
+                    // Asignar bases seleccionadas
+                    GuardarAsignacionBases(cn, nuevoClaveID, cblBasesAgregar, idRol);
                 }
 
                 LimpiarFormularioAgregar();
@@ -404,6 +464,9 @@ namespace GrupoAnkhalInventario
                             cmd.ExecuteNonQuery();
                         }
                     }
+
+                    // Actualizar bases asignadas
+                    GuardarAsignacionBases(cn, claveID, cblBasesEditar, idRol);
                 }
 
                 CargarGrid();

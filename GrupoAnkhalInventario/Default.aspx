@@ -147,10 +147,21 @@
                 <div>
                     <label>Periodo</label>
                     <asp:DropDownList ID="ddlPeriodo" runat="server" CssClass="form-control form-control-sm">
-                        <asp:ListItem Text="Hoy" Value="hoy" Selected="True" />
-                        <asp:ListItem Text="Esta Semana" Value="semana" />
-                        <asp:ListItem Text="Este Mes" Value="mes" />
+                        <asp:ListItem Text="Hoy"          Value="hoy"          Selected="True" />
+                        <asp:ListItem Text="Esta Semana"  Value="semana" />
+                        <asp:ListItem Text="Este Mes"     Value="mes" />
+                        <asp:ListItem Text="Personalizado" Value="personalizado" />
                     </asp:DropDownList>
+                </div>
+                <div>
+                    <label>Desde</label>
+                    <asp:TextBox ID="txtDesde" runat="server" TextMode="Date"
+                        CssClass="form-control form-control-sm" Style="min-width:130px;" />
+                </div>
+                <div>
+                    <label>Hasta</label>
+                    <asp:TextBox ID="txtHasta" runat="server" TextMode="Date"
+                        CssClass="form-control form-control-sm" Style="min-width:130px;" />
                 </div>
                 <div style="padding-top:17px;">
                     <asp:Button ID="btnFiltrar" runat="server" Text="Actualizar"
@@ -364,7 +375,38 @@
     </div><!-- /container-fluid -->
 
     <script>
+        var _ddlPeriodoId = '<%= ddlPeriodo.ClientID %>';
+        var _txtDesdeId   = '<%= txtDesde.ClientID %>';
+        var _txtHastaId   = '<%= txtHasta.ClientID %>';
+
+        // Calcula el rango de fechas para un período dado (devuelve {desde, hasta} en formato yyyy-MM-dd)
+        function calcularRangoPeriodo(periodo) {
+            var hoy = new Date();
+            var yyyy = hoy.getFullYear();
+            var mm   = String(hoy.getMonth() + 1).padStart(2, '0');
+            var dd   = String(hoy.getDate()).padStart(2, '0');
+            var hoyStr = yyyy + '-' + mm + '-' + dd;
+
+            if (periodo === 'hoy') {
+                return { desde: hoyStr, hasta: hoyStr };
+            }
+            if (periodo === 'semana') {
+                var dow   = hoy.getDay() === 0 ? 6 : hoy.getDay() - 1; // 0 = lunes
+                var lunes = new Date(hoy);
+                lunes.setDate(hoy.getDate() - dow);
+                var lStr = lunes.getFullYear() + '-' +
+                           String(lunes.getMonth() + 1).padStart(2, '0') + '-' +
+                           String(lunes.getDate()).padStart(2, '0');
+                return { desde: lStr, hasta: hoyStr };
+            }
+            if (periodo === 'mes') {
+                return { desde: yyyy + '-' + mm + '-01', hasta: hoyStr };
+            }
+            return null; // personalizado: no tocar los campos
+        }
+
         window.addEventListener('DOMContentLoaded', function () {
+            // SweetAlert mensajes pendientes
             var h = document.getElementById('<%= hdnMensajePendiente.ClientID %>');
             if (h && h.value) {
                 try {
@@ -375,6 +417,22 @@
                     }
                 } catch(e) {}
             }
+
+            // Al cambiar el dropdown → actualizar los date pickers
+            document.getElementById(_ddlPeriodoId).addEventListener('change', function () {
+                var rango = calcularRangoPeriodo(this.value);
+                if (rango) {
+                    document.getElementById(_txtDesdeId).value = rango.desde;
+                    document.getElementById(_txtHastaId).value = rango.hasta;
+                }
+            });
+
+            // Al editar manualmente cualquier fecha → cambiar dropdown a "personalizado"
+            [_txtDesdeId, _txtHastaId].forEach(function (id) {
+                document.getElementById(id).addEventListener('change', function () {
+                    document.getElementById(_ddlPeriodoId).value = 'personalizado';
+                });
+            });
         });
     </script>
 

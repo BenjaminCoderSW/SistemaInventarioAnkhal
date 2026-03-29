@@ -5,6 +5,7 @@ using System.Linq;
 using System.Text;
 using System.Web.Script.Serialization;
 using System.Web.UI.WebControls;
+using GrupoAnkhalInventario.Helpers;
 using GrupoAnkhalInventario.Modelo;
 
 namespace GrupoAnkhalInventario
@@ -93,11 +94,7 @@ namespace GrupoAnkhalInventario
         {
             using (var db = NuevoDb(false))
             {
-                var bases = db.Bases
-                    .Where(b => b.Activo)
-                    .OrderBy(b => b.Nombre)
-                    .Select(b => new { b.BaseID, b.Nombre })
-                    .ToList();
+                var bases = AppHelper.ObtenerBasesActivasParaUsuario(Session);
 
                 ddlFiltrBase.Items.Clear();
                 ddlFiltrBase.Items.Add(new ListItem("-- Todas --", ""));
@@ -133,6 +130,11 @@ namespace GrupoAnkhalInventario
         // ══ Filtros ══════════════════════════════════════════════════════════
         private IQueryable<Produccion> AplicarFiltros(IQueryable<Produccion> q)
         {
+            // Restringir por las bases del usuario (null = Administrador, ve todo)
+            var basesUsuario = AppHelper.ObtenerBasesUsuario(Session);
+            if (basesUsuario != null)
+                q = q.Where(p => basesUsuario.Contains(p.BaseID));
+
             if (!string.IsNullOrEmpty(ddlFiltrBase.SelectedValue))
             {
                 int id = int.Parse(ddlFiltrBase.SelectedValue);

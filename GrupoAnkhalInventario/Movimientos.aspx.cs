@@ -4,6 +4,7 @@ using System.Configuration;
 using System.Linq;
 using System.Web.Script.Serialization;
 using System.Web.UI.WebControls;
+using GrupoAnkhalInventario.Helpers;
 using GrupoAnkhalInventario.Modelo;
 
 namespace GrupoAnkhalInventario
@@ -63,28 +64,32 @@ namespace GrupoAnkhalInventario
         {
             using (var db = NuevoDb(false))
             {
-                var bases = db.Bases
+                // Bases del usuario (filtradas por permisos)
+                var basesUsuario = AppHelper.ObtenerBasesActivasParaUsuario(Session);
+
+                // Todas las bases activas (para destino de transferencias)
+                var todasLasBases = db.Bases
                     .Where(b => b.Activo)
                     .OrderBy(b => b.Nombre)
                     .Select(b => new { b.BaseID, b.Nombre })
                     .ToList();
 
-                // Filtro barra superior
+                // Filtro barra superior — solo bases del usuario
                 ddlFiltrBase.Items.Clear();
                 ddlFiltrBase.Items.Add(new ListItem("-- Todas --", ""));
-                foreach (var b in bases)
+                foreach (var b in basesUsuario)
                     ddlFiltrBase.Items.Add(new ListItem(b.Nombre, b.BaseID.ToString()));
 
-                // Modal: Base Origen
+                // Modal: Base Origen — solo bases del usuario
                 ddlBaseOrigen.Items.Clear();
                 ddlBaseOrigen.Items.Add(new ListItem("-- Seleccione --", ""));
-                foreach (var b in bases)
+                foreach (var b in basesUsuario)
                     ddlBaseOrigen.Items.Add(new ListItem(b.Nombre, b.BaseID.ToString()));
 
-                // Modal: Base Destino
+                // Modal: Base Destino — todas las bases (se puede transferir a cualquier base)
                 ddlBaseDestino.Items.Clear();
                 ddlBaseDestino.Items.Add(new ListItem("-- Seleccione --", ""));
-                foreach (var b in bases)
+                foreach (var b in todasLasBases)
                     ddlBaseDestino.Items.Add(new ListItem(b.Nombre, b.BaseID.ToString()));
 
                 // ddlItem: materiales por defecto (el JS lo reemplaza al cambiar el radio)
@@ -158,6 +163,12 @@ namespace GrupoAnkhalInventario
             IQueryable<Modelo.Movimientos> q, out bool hayFiltroFecha)
         {
             hayFiltroFecha = false;
+
+            // Restringir siempre por las bases del usuario (null = Administrador, ve todo)
+            var basesUsuario = AppHelper.ObtenerBasesUsuario(Session);
+            if (basesUsuario != null)
+                q = q.Where(mv => basesUsuario.Contains(mv.BaseOrigenID ?? 0) ||
+                                  basesUsuario.Contains(mv.BaseDestinoID ?? 0));
 
             var selTipos = cblFiltrTipo.Items.Cast<ListItem>()
                 .Where(li => li.Selected)

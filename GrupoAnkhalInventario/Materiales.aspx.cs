@@ -300,16 +300,17 @@ namespace GrupoAnkhalInventario
         // ── Dashboard: cuenta niveles sobre lista de VMs ─────────────────────
         private void ActualizarDashboard(List<MaterialVM> vms)
         {
-            lblTotal.Text = vms.Count.ToString();
+            lblTotal.Text   = vms.Count.ToString();
             lblCritico.Text = vms.Count(m => GetNivel(m.StockGlobal, m.StockMinimo, m.StockMaximo, m.StockOptimo) == "critico").ToString();
-            lblBajo.Text = vms.Count(m => GetNivel(m.StockGlobal, m.StockMinimo, m.StockMaximo, m.StockOptimo) == "bajo").ToString();
-            lblOptimo.Text = vms.Count(m => GetNivel(m.StockGlobal, m.StockMinimo, m.StockMaximo, m.StockOptimo) == "optimo").ToString();
+            lblBajo.Text    = vms.Count(m => GetNivel(m.StockGlobal, m.StockMinimo, m.StockMaximo, m.StockOptimo) == "bajo").ToString();
+            lblOptimo.Text  = vms.Count(m => GetNivel(m.StockGlobal, m.StockMinimo, m.StockMaximo, m.StockOptimo) == "optimo").ToString();
+            lblSin.Text     = vms.Count(m => GetNivel(m.StockGlobal, m.StockMinimo, m.StockMaximo, m.StockOptimo) == "sin").ToString();
         }
 
         // ── Dashboard: desde query ligera ────────────────────────────────────
         private void ActualizarDashboardDesdeQuery(IEnumerable<dynamic> lista)
         {
-            int total = 0, critico = 0, bajo = 0, optimo = 0;
+            int total = 0, critico = 0, bajo = 0, optimo = 0, sin = 0;
             foreach (dynamic item in lista)
             {
                 total++;
@@ -318,14 +319,16 @@ namespace GrupoAnkhalInventario
                     (decimal)item.StockMinimo,
                     (decimal)item.StockMaximo,
                     (decimal)item.StockOptimo);
-                if (nivel == "critico") critico++;
-                else if (nivel == "bajo") bajo++;
-                else if (nivel == "optimo") optimo++;
+                if      (nivel == "critico") critico++;
+                else if (nivel == "bajo")    bajo++;
+                else if (nivel == "optimo")  optimo++;
+                else if (nivel == "sin")     sin++;
             }
-            lblTotal.Text = total.ToString();
+            lblTotal.Text   = total.ToString();
             lblCritico.Text = critico.ToString();
-            lblBajo.Text = bajo.ToString();
-            lblOptimo.Text = optimo.ToString();
+            lblBajo.Text    = bajo.ToString();
+            lblOptimo.Text  = optimo.ToString();
+            lblSin.Text     = sin.ToString();
         }
 
         // ── RowDataBound: inyectar fila acordeón de bases ────────────────────

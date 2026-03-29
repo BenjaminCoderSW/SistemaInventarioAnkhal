@@ -28,6 +28,7 @@
         .stock-card.bajo     { background: linear-gradient(135deg,#d35400,#e67e22); }
         .stock-card.optimo   { background: linear-gradient(135deg,#1e8449,#27ae60); }
         .stock-card.total    { background: linear-gradient(135deg,#1a5276,#2980b9); }
+        .stock-card.sin      { background: linear-gradient(135deg,#4a4a4a,#717171); }
         .stock-card .icon    { font-size: 2.2rem; opacity: .9; }
         .stock-card .info .num  { font-size: 2rem; font-weight: 700; line-height:1; }
         .stock-card .info .lbl  { font-size: .78rem; opacity: .9; text-transform: uppercase; letter-spacing:.5px; }
@@ -110,6 +111,13 @@
             <div class="info">
                 <div class="num"><asp:Label ID="lblOptimo"  runat="server" Text="0"></asp:Label></div>
                 <div class="lbl">🟢 Stock óptimo</div>
+            </div>
+        </div>
+        <div class="stock-card sin" onclick="filtrarNivel('sin')" id="cardSin">
+            <div class="icon"><i class="fas fa-box-open"></i></div>
+            <div class="info">
+                <div class="num"><asp:Label ID="lblSin" runat="server" Text="0"></asp:Label></div>
+                <div class="lbl">⚪ Sin stock</div>
             </div>
         </div>
     </div>

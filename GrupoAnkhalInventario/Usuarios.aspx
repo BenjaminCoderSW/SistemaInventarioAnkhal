@@ -39,6 +39,10 @@
         }
         .emp-dato { font-size: .88rem; margin-bottom: 3px; }
         .emp-dato strong { color: #003366; }
+        /* ── Checklist de bases ──────────────────────────────── */
+        .bases-checklist table { width: 100%; }
+        .bases-checklist td    { padding: 2px 8px; font-size: .88rem; white-space: nowrap; }
+        .bases-checklist input[type=checkbox] { margin-right: 5px; cursor: pointer; }
     </style>
 </asp:Content>
 
@@ -140,7 +144,8 @@
                                 '<%# Server.HtmlEncode((Eval("Telefono")         ?? "").ToString()) %>',
                                 '<%# Server.HtmlEncode((Eval("TelefonoFamiliar") ?? "").ToString()) %>',
                                 '<%# Server.HtmlEncode((Eval("Email")            ?? "").ToString()) %>',
-                                '<%# Server.HtmlEncode((Eval("Usuario")          ?? "").ToString()) %>')">
+                                '<%# Server.HtmlEncode((Eval("Usuario")          ?? "").ToString()) %>',
+                                '<%# Eval("BaseIDs") %>')">
                             <i class="fas fa-edit"></i> Editar
                         </button>
                         <asp:Button runat="server"
@@ -256,6 +261,22 @@
                         </div>
                     </div>
 
+                    <%-- Paso 3: acceso a bases --%>
+                    <h6 class="text-primary font-weight-bold border-bottom pb-1 mt-2">
+                        <i class="fas fa-building mr-1"></i> Paso 3 — Acceso a Bases
+                    </h6>
+                    <div id="pnlBasesAgregar">
+                        <p class="text-muted mb-2" style="font-size:.85rem;">
+                            Seleccione las bases a las que tendrá acceso este usuario.
+                        </p>
+                        <asp:CheckBoxList ID="cblBasesAgregar" runat="server"
+                            RepeatColumns="3" CssClass="bases-checklist w-100" />
+                    </div>
+                    <div id="msgAdminAgregar" class="alert alert-info py-2 mb-0" style="display:none; font-size:.85rem;">
+                        <i class="fas fa-info-circle mr-1"></i>
+                        Los administradores tienen acceso automático a todas las bases automáticamente.
+                    </div>
+
                 </div>
                 <div class="modal-footer bg-light">
                     <asp:Button ID="btnGuardarAgregar" runat="server" Text="Guardar Usuario"
@@ -355,6 +376,22 @@
                             </div>
                         </div>
                     </div>
+
+                    <hr class="mt-2 mb-2" />
+                    <h6 class="text-muted font-weight-bold border-bottom pb-1">
+                        <i class="fas fa-building mr-1"></i> Acceso a Bases
+                    </h6>
+                    <div id="pnlBasesEditar">
+                        <p class="text-muted mb-2" style="font-size:.85rem;">
+                            Seleccione las bases a las que tendrá acceso este usuario.
+                        </p>
+                        <asp:CheckBoxList ID="cblBasesEditar" runat="server"
+                            RepeatColumns="3" CssClass="bases-checklist w-100" />
+                    </div>
+                    <div id="msgAdminEditar" class="alert alert-info py-2 mb-0" style="display:none; font-size:.85rem;">
+                        <i class="fas fa-info-circle mr-1"></i>
+                        Los administradores tienen acceso automático a todas las bases.
+                    </div>
                 </div>
                 <div class="modal-footer">
                     <asp:Button ID="btnGuardarEditar" runat="server" Text="Guardar Cambios"
@@ -411,6 +448,12 @@
     <script src="https://cdnjs.cloudflare.com/ajax/libs/qrcodejs/1.0.0/qrcode.min.js"></script>
     <script type="text/javascript">
 
+        // IDs de controles de servidor para acceso dinámico
+        var _cblBasesAgregarId = '<%= cblBasesAgregar.ClientID %>';
+        var _cblBasesEditarId  = '<%= cblBasesEditar.ClientID %>';
+        var _ddlRolAgregarId   = '<%= ddlRolAgregar.ClientID %>';
+        var _ddlRolEditarId    = '<%= ddlRolEditar.ClientID %>';
+
         window.addEventListener('load', function () {
             var hdn = document.getElementById('<%= hdnMensajePendiente.ClientID %>');
             if (hdn && hdn.value) {
@@ -427,9 +470,35 @@
                 hdnReabrir.value = '0';
                 $('#modalAgregar').modal('show');
             }
+            // Cambio de rol en modal Agregar: mostrar/ocultar panel de bases
+            var ddlA = document.getElementById(_ddlRolAgregarId);
+            if (ddlA) ddlA.addEventListener('change', function () {
+                toggleBasesPanel(_ddlRolAgregarId, 'pnlBasesAgregar', 'msgAdminAgregar');
+            });
+            // Cambio de rol en modal Editar
+            var ddlE = document.getElementById(_ddlRolEditarId);
+            if (ddlE) ddlE.addEventListener('change', function () {
+                toggleBasesPanel(_ddlRolEditarId, 'pnlBasesEditar', 'msgAdminEditar');
+            });
         });
 
-        function abrirModalAgregar() { $('#modalAgregar').modal('show'); }
+        // Muestra u oculta el panel de bases según si el rol seleccionado es Administrador
+        function toggleBasesPanel(ddlId, panelId, msgId) {
+            var ddl    = document.getElementById(ddlId);
+            var esAdmin = ddl && ddl.selectedIndex >= 0 &&
+                          ddl.options[ddl.selectedIndex].text === 'Administrador';
+            document.getElementById(panelId).style.display = esAdmin ? 'none'  : 'block';
+            document.getElementById(msgId).style.display   = esAdmin ? 'block' : 'none';
+        }
+
+        function abrirModalAgregar() {
+            // Desmarcar todas las bases y aplicar regla de admin
+            document.querySelectorAll('[id^="' + _cblBasesAgregarId + '_"]').forEach(function (chk) {
+                chk.checked = false;
+            });
+            toggleBasesPanel(_ddlRolAgregarId, 'pnlBasesAgregar', 'msgAdminAgregar');
+            $('#modalAgregar').modal('show');
+        }
 
         function togglePwd(id, btn) {
             var i = document.getElementById(id);
@@ -439,8 +508,8 @@
             ic.classList.toggle('fa-eye-slash');
         }
 
-        // Orden parámetros: claveID, rolId, nombre, apPat, apMat, numEmp, tel, telFam, email, usuario
-        function abrirModalEditar(claveID, rolId, nombre, apPat, apMat, numEmp, tel, telFam, email, usuario) {
+        // Orden parámetros: claveID, rolId, nombre, apPat, apMat, numEmp, tel, telFam, email, usuario, basesIds
+        function abrirModalEditar(claveID, rolId, nombre, apPat, apMat, numEmp, tel, telFam, email, usuario, basesIds) {
             document.getElementById('<%= hfClaveID.ClientID %>').value                 = claveID;
             document.getElementById('<%= ddlRolEditar.ClientID %>').value              = rolId;
             document.getElementById('<%= txtNombreEditarRO.ClientID %>').value         = (nombre + ' ' + apPat + ' ' + apMat).trim();
@@ -448,9 +517,15 @@
             document.getElementById('<%= txtTelEditarRO.ClientID %>').value            = tel;
             document.getElementById('<%= txtTelFamiliarEditarRO.ClientID %>').value    = telFam;
             document.getElementById('<%= txtEmailEditarRO.ClientID %>').value          = email;
-            document.getElementById('<%= txtUsuarioEditar.ClientID %>').value = usuario;
-            document.getElementById('<%= txtNuevaClaveEditar.ClientID %>').value = '';
-            document.getElementById('<%= txtConfirmarClaveEditar.ClientID %>').value = '';
+            document.getElementById('<%= txtUsuarioEditar.ClientID %>').value          = usuario;
+            document.getElementById('<%= txtNuevaClaveEditar.ClientID %>').value       = '';
+            document.getElementById('<%= txtConfirmarClaveEditar.ClientID %>').value   = '';
+            // Marcar las bases asignadas al usuario
+            var ids = basesIds ? basesIds.toString().split(',').filter(function (x) { return x.trim(); }) : [];
+            document.querySelectorAll('[id^="' + _cblBasesEditarId + '_"]').forEach(function (chk) {
+                chk.checked = ids.indexOf(chk.value) >= 0;
+            });
+            toggleBasesPanel(_ddlRolEditarId, 'pnlBasesEditar', 'msgAdminEditar');
             $('#modalEditar').modal('show');
         }
 

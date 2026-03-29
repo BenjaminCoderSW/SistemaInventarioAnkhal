@@ -1,6 +1,7 @@
 using System;
 using System.Configuration;
 using System.Linq;
+using GrupoAnkhalInventario.Helpers;
 using GrupoAnkhalInventario.Modelo;
 
 namespace GrupoAnkhalInventario
@@ -104,8 +105,11 @@ namespace GrupoAnkhalInventario
         {
             using (var db = NuevoDb(false))
             {
-                // Bases activas aplicando filtro de tipo
+                // Bases activas aplicando filtro de tipo y permisos del usuario
+                var basesUsuario = AppHelper.ObtenerBasesUsuario(Session);
                 var basesQ = db.Bases.Where(b => b.Activo);
+                if (basesUsuario != null)
+                    basesQ = basesQ.Where(b => basesUsuario.Contains(b.BaseID));
                 if (selTipos.Any())
                     basesQ = basesQ.Where(b => selTipos.Contains(b.Tipo));
 
@@ -138,8 +142,11 @@ namespace GrupoAnkhalInventario
         {
             using (var db = NuevoDb(false))
             {
-                // Bases activas aplicando filtro de tipo
+                // Bases activas aplicando filtro de tipo y permisos del usuario
+                var basesUsuario = AppHelper.ObtenerBasesUsuario(Session);
                 var basesQ = db.Bases.Where(b => b.Activo);
+                if (basesUsuario != null)
+                    basesQ = basesQ.Where(b => basesUsuario.Contains(b.BaseID));
                 if (selTipos.Any())
                     basesQ = basesQ.Where(b => selTipos.Contains(b.Tipo));
                 var bases = basesQ.OrderBy(b => b.Nombre).ToList();

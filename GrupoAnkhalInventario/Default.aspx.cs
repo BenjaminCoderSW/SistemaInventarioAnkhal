@@ -107,31 +107,55 @@ namespace GrupoAnkhalInventario
                 : int.Parse(ddlBase.SelectedValue);
 
             DateTime hoy = DateTime.Today;
+
+            // En la primera carga: pre-llenar los TextBox según el período del dropdown
+            if (!IsPostBack)
+            {
+                switch (ddlPeriodo.SelectedValue)
+                {
+                    case "semana":
+                        int dow = (int)hoy.DayOfWeek == 0 ? 7 : (int)hoy.DayOfWeek;
+                        txtDesde.Text = hoy.AddDays(-(dow - 1)).ToString("yyyy-MM-dd");
+                        txtHasta.Text = hoy.ToString("yyyy-MM-dd");
+                        break;
+                    case "mes":
+                        txtDesde.Text = new DateTime(hoy.Year, hoy.Month, 1).ToString("yyyy-MM-dd");
+                        txtHasta.Text = hoy.ToString("yyyy-MM-dd");
+                        break;
+                    default: // hoy
+                        txtDesde.Text = hoy.ToString("yyyy-MM-dd");
+                        txtHasta.Text = hoy.ToString("yyyy-MM-dd");
+                        break;
+                }
+            }
+
+            // Siempre: leer el rango real desde los TextBox
+            DateTime desde, hasta;
+            if (!DateTime.TryParse(txtDesde.Text, out desde)) desde = hoy;
+            if (!DateTime.TryParse(txtHasta.Text,  out hasta)) hasta = hoy;
+            if (hasta < desde) hasta = desde;
+
+            _desde     = desde;
+            _hastaExcl = hasta.AddDays(1);
+
+            // Label del período para los KPI cards
             switch (ddlPeriodo.SelectedValue)
             {
-                case "semana":
-                    int dow = (int)hoy.DayOfWeek == 0 ? 7 : (int)hoy.DayOfWeek;
-                    _desde       = hoy.AddDays(-(dow - 1)); // lunes
-                    _hastaExcl   = hoy.AddDays(1);
-                    _periodoLabel = "Esta Semana";
+                case "semana":      _periodoLabel = "Esta Semana"; break;
+                case "mes":        _periodoLabel = "Este Mes";    break;
+                case "personalizado":
+                    _periodoLabel = desde == hasta
+                        ? desde.ToString("dd/MM/yyyy")
+                        : desde.ToString("dd/MM/yyyy") + " – " + hasta.ToString("dd/MM/yyyy");
                     break;
-                case "mes":
-                    _desde       = new DateTime(hoy.Year, hoy.Month, 1);
-                    _hastaExcl   = hoy.AddDays(1);
-                    _periodoLabel = "Este Mes";
-                    break;
-                default: // hoy
-                    _desde       = hoy;
-                    _hastaExcl   = hoy.AddDays(1);
-                    _periodoLabel = "Hoy";
-                    break;
+                default: _periodoLabel = "Hoy"; break;
             }
 
             // Etiquetas de período en los KPI
-            lblPeriodoA.Text  = _periodoLabel;
-            lblPeriodoB.Text  = _periodoLabel;
-            lblPeriodoC.Text  = _periodoLabel;
-            lblPeriodoD.Text  = _periodoLabel;
+            lblPeriodoA.Text   = _periodoLabel;
+            lblPeriodoB.Text   = _periodoLabel;
+            lblPeriodoC.Text   = _periodoLabel;
+            lblPeriodoD.Text   = _periodoLabel;
             lblTituloProd.Text = _periodoLabel;
         }
 

@@ -21,6 +21,8 @@ namespace GrupoAnkhalInventario
         // Filtros
         protected global::System.Web.UI.WebControls.DropDownList ddlBase;
         protected global::System.Web.UI.WebControls.DropDownList ddlPeriodo;
+        protected global::System.Web.UI.WebControls.TextBox txtDesde;
+        protected global::System.Web.UI.WebControls.TextBox txtHasta;
         protected global::System.Web.UI.WebControls.Button btnFiltrar;
 
         // KPI Row 1 — Inventario / Produccion / Entregas
