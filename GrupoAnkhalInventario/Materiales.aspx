@@ -185,7 +185,7 @@
             <div class="table-responsive">
                 <asp:GridView ID="gvMateriales" runat="server" AutoGenerateColumns="False"
                     CssClass="table table-bordered table-striped custom-grid"
-                    AllowPaging="True" AllowCustomPaging="True" PageSize="2"
+                    AllowPaging="True" AllowCustomPaging="True" PageSize="15"
                     OnPageIndexChanging="gvMateriales_PageIndexChanging"
                     OnRowDataBound="gvMateriales_RowDataBound"
                     DataKeyNames="MaterialID"

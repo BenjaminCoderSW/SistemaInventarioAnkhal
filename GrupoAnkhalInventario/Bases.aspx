@@ -92,7 +92,7 @@
                         <div class="table-responsive">
                             <asp:GridView ID="gvBases" runat="server" AutoGenerateColumns="False"
                                 CssClass="table table-bordered table-striped custom-grid"
-                                AllowPaging="True" AllowCustomPaging="True" PageSize="2"
+                                AllowPaging="True" AllowCustomPaging="True" PageSize="15"
                                 OnPageIndexChanging="gvBases_PageIndexChanging"
                                 PagerStyle-CssClass="pager-custom"
                                 PagerSettings-Mode="NumericFirstLast"
