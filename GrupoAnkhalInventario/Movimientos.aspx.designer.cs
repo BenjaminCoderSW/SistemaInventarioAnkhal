@@ -278,5 +278,15 @@ namespace GrupoAnkhalInventario
         /// Control lblDescValor — descripción dinámica del card de valor total.
         /// </summary>
         protected global::System.Web.UI.WebControls.Label lblDescValor;
+
+        /// <summary>
+        /// Control lblConsumos — contador de movimientos tipo CONSUMO.
+        /// </summary>
+        protected global::System.Web.UI.WebControls.Label lblConsumos;
+
+        /// <summary>
+        /// Control lblSalidas — contador de movimientos tipo SALIDA.
+        /// </summary>
+        protected global::System.Web.UI.WebControls.Label lblSalidas;
     }
 }

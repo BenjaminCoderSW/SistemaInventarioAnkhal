@@ -220,6 +220,8 @@ namespace GrupoAnkhalInventario
                 lblAjustes.Text   = movData.Count(m =>
                     m.Clave == "AJUSTE_POS" || m.Clave == "AJUSTE_NEG").ToString();
                 lblMermas.Text    = movData.Count(m => m.Clave == "MERMA").ToString();
+                lblConsumos.Text  = movData.Count(m => m.Clave == "CONSUMO").ToString();
+                lblSalidas.Text   = movData.Count(m => m.Clave == "SALIDA").ToString();
 
                 // AJUSTE_NEG y MERMA restan; TRANSFERENCIA tiene costo=0 y no afecta
                 decimal valorTotal = movData.Sum(m =>

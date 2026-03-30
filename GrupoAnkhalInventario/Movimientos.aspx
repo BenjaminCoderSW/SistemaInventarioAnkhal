@@ -28,6 +28,8 @@
         .stock-card.traspasos  { background: linear-gradient(135deg,#d35400,#e67e22); }
         .stock-card.ajustes    { background: linear-gradient(135deg,#7d6608,#d4ac0d); }
         .stock-card.mermas     { background: linear-gradient(135deg,#922b21,#e74c3c); }
+        .stock-card.consumos   { background: linear-gradient(135deg,#6c3483,#8e44ad); }
+        .stock-card.salidas    { background: linear-gradient(135deg,#7b241c,#c0392b); }
         .stock-card.valor      { background: linear-gradient(135deg,#1c2833,#2c3e50); }
         .stock-card .icon      { font-size: 2.2rem; opacity: .9; }
         .stock-card .info .num { font-size: 2rem; font-weight: 700; line-height:1; }
@@ -117,6 +119,20 @@
             <div class="info">
                 <div class="num"><asp:Label ID="lblMermas" runat="server" Text="0"></asp:Label></div>
                 <div class="lbl">Mermas</div>
+            </div>
+        </div>
+        <div class="stock-card consumos">
+            <div class="icon"><i class="fas fa-industry"></i></div>
+            <div class="info">
+                <div class="num"><asp:Label ID="lblConsumos" runat="server" Text="0"></asp:Label></div>
+                <div class="lbl">Consumos</div>
+            </div>
+        </div>
+        <div class="stock-card salidas">
+            <div class="icon"><i class="fas fa-sign-out-alt"></i></div>
+            <div class="info">
+                <div class="num"><asp:Label ID="lblSalidas" runat="server" Text="0"></asp:Label></div>
+                <div class="lbl">Salidas</div>
             </div>
         </div>
     </div>
