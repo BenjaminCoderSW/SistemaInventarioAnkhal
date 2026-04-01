@@ -7,6 +7,7 @@ using System.Web.Script.Serialization;
 using System.Web.UI.WebControls;
 using GrupoAnkhalInventario.Helpers;
 using GrupoAnkhalInventario.Modelo;
+using GrupoAnkhalInventario.Services;
 
 namespace GrupoAnkhalInventario
 {
@@ -735,12 +736,16 @@ namespace GrupoAnkhalInventario
                     if (cli != null) clienteNombre = cli.Nombre;
                 }
 
-                // Nombre del usuario que registró
+                // Nombre del usuario que registró (via API de Asistencia, cacheado)
                 string registradoPor = entrega.RegistradoPorID.ToString();
                 try
                 {
                     var du = db.DatosUsuario.FirstOrDefault(u => u.ClaveID == entrega.RegistradoPorID);
-                    if (du != null) registradoPor = (du.Nombre + " " + du.ApellidoPaterno).Trim();
+                    if (du?.UsuarioID != null)
+                    {
+                        var emp = UsuarioService.ObtenerEmpleado(du.UsuarioID.Value);
+                        registradoPor = emp.NombreCompleto;
+                    }
                 }
                 catch { }
 

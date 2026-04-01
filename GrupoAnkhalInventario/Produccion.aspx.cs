@@ -7,6 +7,7 @@ using System.Web.Script.Serialization;
 using System.Web.UI.WebControls;
 using GrupoAnkhalInventario.Helpers;
 using GrupoAnkhalInventario.Modelo;
+using GrupoAnkhalInventario.Services;
 
 namespace GrupoAnkhalInventario
 {
@@ -238,18 +239,29 @@ namespace GrupoAnkhalInventario
                                p.RegistradoPorID
                            }).ToList();
 
-                // ── Nombres de usuario (lookup separado)
+                // ── Nombres de usuario via API de Asistencia ─────────────────
                 var nombresUsuario = new Dictionary<int, string>();
                 try
                 {
-                    var uids = raw.Select(r => r.RegistradoPorID).Distinct().ToList();
-                    nombresUsuario = db.DatosUsuario
-                        .Where(du => uids.Contains(du.ClaveID))
-                        .ToDictionary(
-                            du => du.ClaveID,
-                            du => (du.Nombre + " " + du.ApellidoPaterno).Trim());
+                    var claveIds = raw.Select(r => r.RegistradoPorID).Distinct().ToList();
+                    var claveToUsuario = db.DatosUsuario
+                        .Where(du => claveIds.Contains(du.ClaveID))
+                        .Select(du => new { du.ClaveID, du.UsuarioID })
+                        .ToList();
+
+                    var usuarioIds = claveToUsuario
+                        .Where(x => x.UsuarioID.HasValue)
+                        .Select(x => x.UsuarioID.Value).ToList();
+                    var apiNombres = UsuarioService.ObtenerEmpleadosBulk(usuarioIds)
+                        .ToDictionary(e => e.IdUsuario, e => e.NombreCompleto);
+
+                    nombresUsuario = claveToUsuario.ToDictionary(
+                        x => x.ClaveID,
+                        x => x.UsuarioID.HasValue && apiNombres.ContainsKey(x.UsuarioID.Value)
+                             ? apiNombres[x.UsuarioID.Value]
+                             : $"Usuario {x.ClaveID}");
                 }
-                catch { /* si la vista no responde, mostramos el ID */ }
+                catch { /* si falla la API mostramos el ID */ }
 
                 // ── Proyectar ViewModel respetando el orden de los IDs
                 var pagina = ids

@@ -84,8 +84,10 @@ namespace GrupoAnkhalInventario
         {
             lblNombreUsuario.Text = Session["NombreCompleto"]?.ToString() ?? "Usuario";
             lblRol.Text           = Session["Rol"]?.ToString() ?? "";
-            lblFechaHora.Text     = DateTime.Now.ToString("dddd dd/MM/yyyy  HH:mm",
-                                        new CultureInfo("es-MX"));
+            var zonaMexico = TimeZoneInfo.FindSystemTimeZoneById("Central Standard Time");
+            var ahoraMexico = TimeZoneInfo.ConvertTimeFromUtc(DateTime.UtcNow, zonaMexico);
+            lblFechaHora.Text = ahoraMexico.ToString("dddd dd/MM/yyyy  HH:mm",
+                                    new CultureInfo("es-MX"));
         }
 
         // ── Dropdown bases ────────────────────────────────────────────────────

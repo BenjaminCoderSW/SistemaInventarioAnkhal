@@ -103,7 +103,7 @@
                 <asp:TemplateField HeaderText="Foto">
                     <ItemTemplate>
                         <asp:Image ID="imgFotoGrid" runat="server"
-                            ImageUrl='<%# ObtenerFotoBase64(Eval("Foto")) %>'
+                            ImageUrl='<%# ObtenerFotoBase64(Eval("UsuarioID")) %>'
                             Width="42" Height="42"
                             CssClass="rounded-circle border"
                             style="object-fit:cover;" />

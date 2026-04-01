@@ -6,6 +6,7 @@ using System.Web.Script.Serialization;
 using System.Web.UI.WebControls;
 using GrupoAnkhalInventario.Helpers;
 using GrupoAnkhalInventario.Modelo;
+using GrupoAnkhalInventario.Services;
 
 namespace GrupoAnkhalInventario
 {
@@ -312,18 +313,33 @@ namespace GrupoAnkhalInventario
                                mv.Observaciones
                            }).ToList();
 
-                // ── Paso 4: Nombres de usuarios (lookup separado, robustez cross-DB) ──
+                // ── Paso 4: Nombres de usuarios via API de Asistencia ────────────
                 Dictionary<int, string> nombresUsuario = new Dictionary<int, string>();
                 try
                 {
-                    var uids = raw.Select(r => r.RegistradoPorID).Distinct().ToList();
-                    nombresUsuario = db.DatosUsuario
-                        .Where(du => uids.Contains(du.ClaveID))
-                        .ToDictionary(
-                            du => du.ClaveID,
-                            du => (du.Nombre + " " + du.ApellidoPaterno).Trim());
+                    // ClaveID → UsuarioID (local, sin cross-DB)
+                    var claveIds = raw.Select(r => r.RegistradoPorID).Distinct().ToList();
+                    var claveToUsuario = db.DatosUsuario
+                        .Where(du => claveIds.Contains(du.ClaveID))
+                        .Select(du => new { du.ClaveID, du.UsuarioID })
+                        .ToList();
+
+                    // UsuarioID → NombreCompleto (API, cacheado)
+                    var usuarioIds = claveToUsuario
+                        .Where(x => x.UsuarioID.HasValue)
+                        .Select(x => x.UsuarioID.Value)
+                        .ToList();
+                    var apiNombres = UsuarioService.ObtenerEmpleadosBulk(usuarioIds)
+                        .ToDictionary(e => e.IdUsuario, e => e.NombreCompleto);
+
+                    // Construir mapa final ClaveID → Nombre
+                    nombresUsuario = claveToUsuario.ToDictionary(
+                        x => x.ClaveID,
+                        x => x.UsuarioID.HasValue && apiNombres.ContainsKey(x.UsuarioID.Value)
+                             ? apiNombres[x.UsuarioID.Value]
+                             : $"Usuario {x.ClaveID}");
                 }
-                catch { /* Si DatosUsuario no responde, mostramos el ClaveID */ }
+                catch { /* Si falla la API mostramos el ClaveID */ }
 
                 // ── Paso 5: Proyectar a ViewModel respetando el orden de los IDs ─
                 var pagina = ids

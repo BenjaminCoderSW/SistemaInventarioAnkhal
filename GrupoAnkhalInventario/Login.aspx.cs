@@ -1,4 +1,5 @@
-﻿using System;
+﻿using GrupoAnkhalInventario.Services;
+using System;
 using System.Configuration;
 using System.Data.SqlClient;
 using System.Web.UI;
@@ -38,7 +39,7 @@ namespace GrupoAnkhalInventario
                     return;
                 }
 
-                // ── Paso 1: buscar el registro del usuario ────────────────────
+                // ── Paso 1: buscar el registro del usuario (solo BD local) ───────
                 const string sqlSelect = @"
                     SELECT
                         u.ClaveID,
@@ -49,15 +50,12 @@ namespace GrupoAnkhalInventario
                         u.IntentosFallidos,
                         u.BloqueadoHasta,
                         u.UltimoIntento,
-                        tu.Nombre,
-                        tu.ApellidoPaterno,
-                        tu.Email,
-                        dv.Rol
+                        r.Nombre AS Rol
                     FROM dbo.Usuario u
-                    INNER JOIN AsistenciaAnkhal.dbo.tUsuario tu
-                        ON u.UsuarioID = tu.IdUsuario
-                    LEFT JOIN dbo.DatosUsuario dv
-                        ON dv.ClaveID = u.ClaveID
+                    LEFT JOIN dbo.UsuarioRoles ur
+                        ON ur.UsuarioID = u.ClaveID AND ur.FechaRevocacion IS NULL
+                    LEFT JOIN dbo.Roles r
+                        ON r.RolID = ur.RolID AND r.Activo = 1
                     WHERE u.Usuario = @usuario";
 
                 int claveID = 0;
@@ -100,10 +98,6 @@ namespace GrupoAnkhalInventario
                                 ultimoIntento = rdr["UltimoIntento"] != DBNull.Value
                                                     ? (DateTime?)Convert.ToDateTime(rdr["UltimoIntento"])
                                                     : null;
-                                nombre = rdr["Nombre"].ToString();
-                                apellido = rdr["ApellidoPaterno"].ToString();
-                                email = rdr["Email"] != DBNull.Value
-                                                    ? rdr["Email"].ToString() : "";
                                 rol = rdr["Rol"] != DBNull.Value
                                                     ? rdr["Rol"].ToString() : "Reporte";
                             }
@@ -226,6 +220,12 @@ namespace GrupoAnkhalInventario
                     }
 
                     // ── Paso 8: Login exitoso — limpiar contadores + sesión ───
+                    // Obtener nombre y email desde la API de Asistencia
+                    var empleado = UsuarioService.ObtenerEmpleado(usuarioID);
+                    nombre  = empleado.Nombre;
+                    apellido = empleado.ApellidoPaterno;
+                    email   = empleado.Email;
+
                     Session.Clear();
 
                     Session["ClaveID"] = claveID;

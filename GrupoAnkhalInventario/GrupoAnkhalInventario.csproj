@@ -61,6 +61,8 @@
     <Reference Include="System.Numerics.Vectors, Version=4.1.6.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a, processorArchitecture=MSIL">
       <HintPath>..\packages\System.Numerics.Vectors.4.6.1\lib\net462\System.Numerics.Vectors.dll</HintPath>
     </Reference>
+    <Reference Include="System.Net.Http" />
+    <Reference Include="System.Runtime.Caching" />
     <Reference Include="System.Runtime.CompilerServices.Unsafe, Version=6.0.3.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a, processorArchitecture=MSIL">
       <HintPath>..\packages\System.Runtime.CompilerServices.Unsafe.6.1.2\lib\net462\System.Runtime.CompilerServices.Unsafe.dll</HintPath>
     </Reference>
@@ -2057,6 +2059,7 @@
       <DependentUpon>Global.asax</DependentUpon>
     </Compile>
     <Compile Include="Helpers\AppHelper.cs" />
+    <Compile Include="Services\UsuarioService.cs" />
     <Compile Include="ImprimirInventario.ashx.cs">
       <DependentUpon>ImprimirInventario.ashx</DependentUpon>
     </Compile>
@@ -2100,7 +2103,6 @@
     <Compile Include="Movimientos.aspx.designer.cs">
       <DependentUpon>Movimientos.aspx</DependentUpon>
     </Compile>
-    <Compile Include="obj\Debug\.NETFramework,Version=v4.7.2.AssemblyAttributes.cs" />
     <Compile Include="Produccion.aspx.cs">
       <DependentUpon>Produccion.aspx</DependentUpon>
       <SubType>ASPXCodeBehind</SubType>
