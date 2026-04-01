@@ -79,7 +79,7 @@ namespace GrupoAnkhalInventario
             if (!IsPostBack)
             {
                 CargarCatalogos();
-                string hoy = DateTime.Today.ToString("yyyy-MM-dd");
+                string hoy = AppHelper.Hoy.ToString("yyyy-MM-dd");
                 txtFechaDesde.Text      = hoy;
                 txtFechaHasta.Text      = hoy;
                 txtFecha.Text           = hoy;
@@ -356,7 +356,7 @@ namespace GrupoAnkhalInventario
         {
             ddlFiltrBase.SelectedIndex    = 0;
             ddlFiltrProducto.SelectedIndex = 0;
-            string hoy = DateTime.Today.ToString("yyyy-MM-dd");
+            string hoy = AppHelper.Hoy.ToString("yyyy-MM-dd");
             txtFechaDesde.Text = hoy;
             txtFechaHasta.Text = hoy;
             gvProduccion.PageIndex = 0;
@@ -567,7 +567,7 @@ namespace GrupoAnkhalInventario
                                 MetaDia         = metaDia,
                                 Observaciones   = string.IsNullOrEmpty(obs) ? null : obs,
                                 RegistradoPorID = claveID,
-                                FechaRegistro   = DateTime.Now
+                                FechaRegistro   = AppHelper.Ahora
                             };
                             db.Produccion.InsertOnSubmit(prod);
                             db.SubmitChanges(); // ← primer commit para obtener ProduccionID
@@ -616,7 +616,7 @@ namespace GrupoAnkhalInventario
                                         EntregaID        = null,
                                         Observaciones    = string.Format("Producción #{0}", prod.ProduccionID),
                                         RegistradoPorID  = claveID,
-                                        FechaMovimiento  = DateTime.Now
+                                        FechaMovimiento  = AppHelper.Ahora
                                     });
 
                                     // Descontar stock del material en la base
@@ -734,7 +734,7 @@ namespace GrupoAnkhalInventario
 
                 sb.Append("<div class='meta'>");
                 sb.AppendFormat("<div><label>Cantidad a fabricar:</label> <strong>{0:N0}</strong></div>", cantidad);
-                sb.AppendFormat("<div><label>Fecha:</label> <strong>{0:dd/MM/yyyy}</strong></div>", DateTime.Today);
+                sb.AppendFormat("<div><label>Fecha:</label> <strong>{0:dd/MM/yyyy}</strong></div>", AppHelper.Hoy);
                 sb.Append("<div><label>Responsable:</label> ________________________</div>");
                 sb.Append("</div>");
 
@@ -791,13 +791,13 @@ namespace GrupoAnkhalInventario
                     BaseID           = baseID,
                     MaterialID       = materialID,
                     CantidadActual   = delta,
-                    FechaUltimaModif = DateTime.Now
+                    FechaUltimaModif = AppHelper.Ahora
                 });
             }
             else
             {
                 s.CantidadActual   += delta;
-                s.FechaUltimaModif  = DateTime.Now;
+                s.FechaUltimaModif  = AppHelper.Ahora;
             }
         }
 
@@ -815,14 +815,14 @@ namespace GrupoAnkhalInventario
                     ProductoID       = productoID,
                     CantidadBuenas   = cantBuena   > 0 ? cantBuena   : 0,
                     CantidadRechazo  = cantRechazo > 0 ? cantRechazo : 0,
-                    FechaUltimaModif = DateTime.Now
+                    FechaUltimaModif = AppHelper.Ahora
                 });
             }
             else
             {
                 s.CantidadBuenas  += cantBuena;
                 s.CantidadRechazo += cantRechazo;
-                s.FechaUltimaModif = DateTime.Now;
+                s.FechaUltimaModif = AppHelper.Ahora;
             }
         }
 
@@ -875,7 +875,7 @@ namespace GrupoAnkhalInventario
         private void LimpiarModal()
         {
             ddlBase.SelectedIndex         = 0;
-            txtFecha.Text                 = DateTime.Today.ToString("yyyy-MM-dd");
+            txtFecha.Text                 = AppHelper.Hoy.ToString("yyyy-MM-dd");
             ddlTurno.SelectedIndex        = 0;
             ddlProducto.SelectedIndex     = 0;
             hdnProductoSeleccionado.Value = "";

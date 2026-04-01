@@ -1,3 +1,4 @@
+using GrupoAnkhalInventario.Helpers;
 ﻿using GrupoAnkhalInventario.Modelo;
 using System;
 using System.Collections.Generic;
@@ -447,7 +448,7 @@ namespace GrupoAnkhalInventario
                         StockMaximo = maximo,
                         StockOptimo = optimo,
                         Activo = true,
-                        FechaAlta = DateTime.Now,
+                        FechaAlta = AppHelper.Ahora,
                         UsuarioAltaID = Convert.ToInt32(Session["ClaveID"])
                     };
                     db.Materiales.InsertOnSubmit(nuevo);
@@ -524,7 +525,7 @@ namespace GrupoAnkhalInventario
                     mat.StockMinimo = minimo;
                     mat.StockMaximo = maximo;
                     mat.StockOptimo = optimo;
-                    mat.FechaModif = DateTime.Now;
+                    mat.FechaModif = AppHelper.Ahora;
                     mat.UsuarioModifID = Convert.ToInt32(Session["ClaveID"]);
 
                     db.SubmitChanges(System.Data.Linq.ConflictMode.FailOnFirstConflict);
@@ -563,7 +564,7 @@ namespace GrupoAnkhalInventario
                     var m = db.Materiales.FirstOrDefault(x => x.MaterialID == matID);
                     if (m == null) return;
                     m.Activo = !m.Activo;
-                    m.FechaModif = DateTime.Now;
+                    m.FechaModif = AppHelper.Ahora;
                     m.UsuarioModifID = Convert.ToInt32(Session["ClaveID"]);
                     db.SubmitChanges();
 

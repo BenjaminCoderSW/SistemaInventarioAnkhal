@@ -1,3 +1,4 @@
+using GrupoAnkhalInventario.Helpers;
 ﻿using GrupoAnkhalInventario.Modelo;
 using System;
 using System.Collections.Generic;
@@ -160,7 +161,7 @@ namespace GrupoAnkhalInventario
                         MetaSemanal = ParseMeta(txtMetaSemanal.Text),
                         MetaMensual = ParseMeta(txtMetaMensual.Text),
                         Activo = true,
-                        FechaCreacion = DateTime.Now,
+                        FechaCreacion = AppHelper.Ahora,
                         UsuarioAltaID = Convert.ToInt32(Session["ClaveID"])
                     };
 
@@ -248,7 +249,7 @@ namespace GrupoAnkhalInventario
                     base_.MetaDiaria = ParseMeta(txtMetaDiariaEdit.Text);
                     base_.MetaSemanal = ParseMeta(txtMetaSemanalEdit.Text);
                     base_.MetaMensual = ParseMeta(txtMetaMensualEdit.Text);
-                    base_.FechaModif = DateTime.Now;
+                    base_.FechaModif = AppHelper.Ahora;
                     base_.UsuarioModifID = Convert.ToInt32(Session["ClaveID"]);
 
                     db.SubmitChanges(System.Data.Linq.ConflictMode.FailOnFirstConflict);
@@ -291,7 +292,7 @@ namespace GrupoAnkhalInventario
                     if (b == null) return;
 
                     b.Activo = !b.Activo;
-                    b.FechaModif = DateTime.Now;
+                    b.FechaModif = AppHelper.Ahora;
                     b.UsuarioModifID = Convert.ToInt32(Session["ClaveID"]);
                     db.SubmitChanges();
 

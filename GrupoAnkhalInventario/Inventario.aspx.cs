@@ -576,7 +576,7 @@ namespace GrupoAnkhalInventario
                 var sb = new StringBuilder();
                 sb.Append("<html><head><meta charset='utf-8'></head><body>");
                 sb.Append("<h2>Inventario General — Grupo ANKHAL</h2>");
-                sb.Append("<p>Fecha: " + DateTime.Now.ToString("dd/MM/yyyy HH:mm") + "</p>");
+                sb.Append("<p>Fecha: " + AppHelper.Ahora.ToString("dd/MM/yyyy HH:mm") + "</p>");
 
                 if (tipoFiltro == "" || tipoFiltro == "MAT")
                 {
@@ -630,7 +630,7 @@ namespace GrupoAnkhalInventario
 
                 Response.Clear();
                 Response.ContentType = "application/vnd.ms-excel";
-                Response.AddHeader("Content-Disposition", "attachment;filename=Inventario_" + DateTime.Now.ToString("yyyyMMdd") + ".xls");
+                Response.AddHeader("Content-Disposition", "attachment;filename=Inventario_" + AppHelper.Ahora.ToString("yyyyMMdd") + ".xls");
                 Response.ContentEncoding = Encoding.UTF8;
                 Response.Write(sb.ToString());
                 Response.End();

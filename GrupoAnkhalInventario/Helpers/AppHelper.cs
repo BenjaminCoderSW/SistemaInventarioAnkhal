@@ -11,6 +11,18 @@ namespace GrupoAnkhalInventario.Helpers
         private static readonly string _connStr =
             ConfigurationManager.ConnectionStrings["InventarioAnkhalDBConnectionString"].ConnectionString;
 
+        // UTC-6 fijo — México abolió el horario de verano en 2022, no usa DST
+        private static readonly TimeZoneInfo _zonaMexico =
+            TimeZoneInfo.CreateCustomTimeZone("MexicoCentro", TimeSpan.FromHours(-6),
+                "México Centro", "México Centro");
+
+        /// <summary>DateTime.Now en zona horaria de México (Centro, UTC-6). Usar en todo el sistema.</summary>
+        public static DateTime Ahora =>
+            TimeZoneInfo.ConvertTimeFromUtc(DateTime.UtcNow, _zonaMexico);
+
+        /// <summary>Fecha de hoy (sin hora) en zona horaria de México.</summary>
+        public static DateTime Hoy => Ahora.Date;
+
         /// <summary>
         /// Retorna los BaseIDs a los que tiene acceso el usuario actual.
         /// Si es Administrador retorna null (sin filtro, ve todo).

@@ -48,7 +48,7 @@ namespace GrupoAnkhalInventario
                         cblFiltrTipo.Items.Add(new System.Web.UI.WebControls.ListItem(t, t));
                 }
 
-                string hoy = DateTime.Today.ToString("yyyy-MM-dd");
+                string hoy = AppHelper.Hoy.ToString("yyyy-MM-dd");
                 txtDesde.Text = hoy;
                 txtHasta.Text = hoy;
                 Cargar();
@@ -64,7 +64,7 @@ namespace GrupoAnkhalInventario
         protected void btnLimpiar_Click(object sender, EventArgs e)
         {
             foreach (System.Web.UI.WebControls.ListItem li in cblFiltrTipo.Items) li.Selected = false;
-            string hoy = DateTime.Today.ToString("yyyy-MM-dd");
+            string hoy = AppHelper.Hoy.ToString("yyyy-MM-dd");
             txtDesde.Text = hoy;
             txtHasta.Text = hoy;
             Cargar();
@@ -74,8 +74,8 @@ namespace GrupoAnkhalInventario
         private void Cargar()
         {
             DateTime desde, hasta;
-            if (!DateTime.TryParse(txtDesde.Text, out desde)) desde = DateTime.Today;
-            if (!DateTime.TryParse(txtHasta.Text, out hasta)) hasta = DateTime.Today;
+            if (!DateTime.TryParse(txtDesde.Text, out desde)) desde = AppHelper.Hoy;
+            if (!DateTime.TryParse(txtHasta.Text, out hasta)) hasta = AppHelper.Hoy;
             if (hasta < desde) hasta = desde;
 
             int numDias = (hasta - desde).Days + 1;

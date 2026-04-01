@@ -1,3 +1,4 @@
+using GrupoAnkhalInventario.Helpers;
 ﻿using GrupoAnkhalInventario.Modelo;
 using System;
 using System.Collections.Generic;
@@ -381,7 +382,7 @@ namespace GrupoAnkhalInventario
                         TipoProductoID = int.Parse(ddlTipo.SelectedValue),
                         PrecioVenta = ParseDec(txtPrecio.Text),
                         Activo = true,
-                        FechaAlta = DateTime.Now,                          // ← corrige 0001-01-01
+                        FechaAlta = AppHelper.Ahora,                          // ← corrige 0001-01-01
                         UsuarioAltaID = Convert.ToInt32(Session["ClaveID"])
                     };
                     db.Productos.InsertOnSubmit(nuevo);
@@ -464,7 +465,7 @@ namespace GrupoAnkhalInventario
                     prod.Descripcion = descripTrim;           // antes: prod.Nombre
                     prod.TipoProductoID = int.Parse(ddlTipoEdit.SelectedValue);
                     prod.PrecioVenta = ParseDec(txtPrecioEdit.Text);
-                    prod.FechaModif = DateTime.Now;
+                    prod.FechaModif = AppHelper.Ahora;
                     prod.UsuarioModifID = Convert.ToInt32(Session["ClaveID"]);
 
                     db.SubmitChanges(System.Data.Linq.ConflictMode.FailOnFirstConflict);
@@ -571,7 +572,7 @@ namespace GrupoAnkhalInventario
                     var p = db.Productos.FirstOrDefault(x => x.ProductoID == prodID);
                     if (p == null) return;
                     p.Activo = !p.Activo;
-                    p.FechaModif = DateTime.Now;
+                    p.FechaModif = AppHelper.Ahora;
                     p.UsuarioModifID = Convert.ToInt32(Session["ClaveID"]);
                     db.SubmitChanges();
 

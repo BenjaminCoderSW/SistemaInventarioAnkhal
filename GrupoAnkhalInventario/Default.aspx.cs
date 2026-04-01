@@ -84,9 +84,7 @@ namespace GrupoAnkhalInventario
         {
             lblNombreUsuario.Text = Session["NombreCompleto"]?.ToString() ?? "Usuario";
             lblRol.Text           = Session["Rol"]?.ToString() ?? "";
-            var zonaMexico = TimeZoneInfo.FindSystemTimeZoneById("Central Standard Time");
-            var ahoraMexico = TimeZoneInfo.ConvertTimeFromUtc(DateTime.UtcNow, zonaMexico);
-            lblFechaHora.Text = ahoraMexico.ToString("dddd dd/MM/yyyy  HH:mm",
+            lblFechaHora.Text = AppHelper.Ahora.ToString("dddd dd/MM/yyyy  HH:mm",
                                     new CultureInfo("es-MX"));
         }
 
@@ -108,7 +106,7 @@ namespace GrupoAnkhalInventario
                 ? (int?)null
                 : int.Parse(ddlBase.SelectedValue);
 
-            DateTime hoy = DateTime.Today;
+            DateTime hoy = AppHelper.Hoy;
 
             // En la primera carga: pre-llenar los TextBox según el período del dropdown
             if (!IsPostBack)

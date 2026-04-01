@@ -1,3 +1,4 @@
+using GrupoAnkhalInventario.Helpers;
 ﻿using GrupoAnkhalInventario.Services;
 using System;
 using System.Configuration;
@@ -115,9 +116,9 @@ namespace GrupoAnkhalInventario
                     }
 
                     // ── Paso 3: verificar si está bloqueado ───────────────────
-                    if (bloqueadoHasta.HasValue && bloqueadoHasta.Value > DateTime.Now)
+                    if (bloqueadoHasta.HasValue && bloqueadoHasta.Value > AppHelper.Ahora)
                     {
-                        TimeSpan restante = bloqueadoHasta.Value - DateTime.Now;
+                        TimeSpan restante = bloqueadoHasta.Value - AppHelper.Ahora;
                         string tiempoMsg = restante.TotalMinutes >= 1
                             ? $"{(int)Math.Ceiling(restante.TotalMinutes)} minuto(s)"
                             : $"{(int)Math.Ceiling(restante.TotalSeconds)} segundo(s)";
@@ -129,7 +130,7 @@ namespace GrupoAnkhalInventario
                     }
 
                     // ── Paso 4: si el bloqueo ya expiró → limpiar contadores ──
-                    if (bloqueadoHasta.HasValue && bloqueadoHasta.Value <= DateTime.Now)
+                    if (bloqueadoHasta.HasValue && bloqueadoHasta.Value <= AppHelper.Ahora)
                     {
                         EjecutarNonQuery(cn,
                             @"UPDATE dbo.Usuario
@@ -150,7 +151,7 @@ namespace GrupoAnkhalInventario
                     // Esto evita que alguien acumule 4 intentos, espere y vuelva
                     // a tener 5 intentos frescos indefinidamente sin ser bloqueado.
                     if (ultimoIntento.HasValue &&
-                        (DateTime.Now - ultimoIntento.Value).TotalMinutes > VENTANA_INTENTOS)
+                        (AppHelper.Ahora - ultimoIntento.Value).TotalMinutes > VENTANA_INTENTOS)
                     {
                         EjecutarNonQuery(cn,
                             @"UPDATE dbo.Usuario

@@ -178,7 +178,7 @@ namespace GrupoAnkhalInventario
             decimal valMat, decimal valBuenos, decimal valRechazo)
         {
             var sb = new StringBuilder();
-            string fecha = DateTime.Now.ToString("dd/MM/yyyy HH:mm");
+            string fecha = AppHelper.Ahora.ToString("dd/MM/yyyy HH:mm");
             decimal total = valMat + valBuenos + valRechazo;
 
             sb.Append(@"<!DOCTYPE html>

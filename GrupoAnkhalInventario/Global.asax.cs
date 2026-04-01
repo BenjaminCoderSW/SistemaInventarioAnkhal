@@ -13,7 +13,7 @@ namespace GrupoAnkhalInventario
         protected void Application_Start(object sender, EventArgs e)
         {
             // Configuraciones globales de la aplicación
-            System.Diagnostics.Debug.WriteLine($"[{DateTime.Now}] Sistema de Inventario Ankhal iniciado");
+            System.Diagnostics.Debug.WriteLine($"[{GrupoAnkhalInventario.Helpers.AppHelper.Ahora}] Sistema de Inventario Ankhal iniciado");
         }
 
         /// <summary>
@@ -24,7 +24,7 @@ namespace GrupoAnkhalInventario
             // Configurar timeout de sesión (60 minutos)
             Session.Timeout = 60;
 
-            System.Diagnostics.Debug.WriteLine($"[{DateTime.Now}] Nueva sesión iniciada: {Session.SessionID}");
+            System.Diagnostics.Debug.WriteLine($"[{GrupoAnkhalInventario.Helpers.AppHelper.Ahora}] Nueva sesión iniciada: {Session.SessionID}");
         }
 
         /// <summary>
@@ -53,7 +53,7 @@ namespace GrupoAnkhalInventario
             if (ex != null)
             {
                 // Log del error para debugging
-                System.Diagnostics.Debug.WriteLine($"[{DateTime.Now}] ERROR en aplicación: {ex.Message}");
+                System.Diagnostics.Debug.WriteLine($"[{GrupoAnkhalInventario.Helpers.AppHelper.Ahora}] ERROR en aplicación: {ex.Message}");
                 System.Diagnostics.Debug.WriteLine($"StackTrace: {ex.StackTrace}");
 
                 // En producción, aquí podrías enviar el error a un sistema de logging
@@ -66,7 +66,7 @@ namespace GrupoAnkhalInventario
         /// </summary>
         protected void Session_End(object sender, EventArgs e)
         {
-            System.Diagnostics.Debug.WriteLine($"[{DateTime.Now}] Sesión finalizada: {Session.SessionID}");
+            System.Diagnostics.Debug.WriteLine($"[{GrupoAnkhalInventario.Helpers.AppHelper.Ahora}] Sesión finalizada: {Session.SessionID}");
 
             // Limpiar recursos de la sesión si es necesario
         }
@@ -76,7 +76,7 @@ namespace GrupoAnkhalInventario
         /// </summary>
         protected void Application_End(object sender, EventArgs e)
         {
-            System.Diagnostics.Debug.WriteLine($"[{DateTime.Now}] Sistema de Inventario Ankhal detenido");
+            System.Diagnostics.Debug.WriteLine($"[{GrupoAnkhalInventario.Helpers.AppHelper.Ahora}] Sistema de Inventario Ankhal detenido");
 
             // Limpiar recursos globales aquí si fuera necesario
         }

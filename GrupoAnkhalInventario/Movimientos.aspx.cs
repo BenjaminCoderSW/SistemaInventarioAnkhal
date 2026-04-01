@@ -52,7 +52,7 @@ namespace GrupoAnkhalInventario
                 CargarCatalogos();
                 InjectJsData();
                 // Por defecto mostrar solo hoy en grid y cards
-                string hoy = DateTime.Today.ToString("yyyy-MM-dd");
+                string hoy = AppHelper.Hoy.ToString("yyyy-MM-dd");
                 txtFechaDesde.Text = hoy;
                 txtFechaHasta.Text = hoy;
                 CargarDashboard();
@@ -512,7 +512,7 @@ namespace GrupoAnkhalInventario
                         Costo            = costo,
                         Observaciones    = string.IsNullOrEmpty(obs) ? null : obs,
                         RegistradoPorID  = claveID,
-                        FechaMovimiento  = DateTime.Now
+                        FechaMovimiento  = AppHelper.Ahora
                     };
                     db.Movimientos.InsertOnSubmit(mov);
 
@@ -559,13 +559,13 @@ namespace GrupoAnkhalInventario
                         BaseID           = baseID.Value,
                         MaterialID       = itemID,
                         CantidadActual   = delta,
-                        FechaUltimaModif = DateTime.Now
+                        FechaUltimaModif = AppHelper.Ahora
                     });
                 }
                 else
                 {
                     s.CantidadActual   += delta;
-                    s.FechaUltimaModif  = DateTime.Now;
+                    s.FechaUltimaModif  = AppHelper.Ahora;
                 }
             }
             else if (tipoItem == "Producto") // CantidadBuenas es int
@@ -583,13 +583,13 @@ namespace GrupoAnkhalInventario
                         ProductoID       = itemID,
                         CantidadBuenas   = deltaInt > 0 ? deltaInt : 0,
                         CantidadRechazo  = 0,
-                        FechaUltimaModif = DateTime.Now
+                        FechaUltimaModif = AppHelper.Ahora
                     });
                 }
                 else
                 {
                     s.CantidadBuenas   += deltaInt;
-                    s.FechaUltimaModif  = DateTime.Now;
+                    s.FechaUltimaModif  = AppHelper.Ahora;
                 }
             }
         }

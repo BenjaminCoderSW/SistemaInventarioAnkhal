@@ -1,3 +1,4 @@
+using GrupoAnkhalInventario.Helpers;
 using GrupoAnkhalInventario.Modelo;
 using System;
 using System.Configuration;
@@ -135,7 +136,7 @@ namespace GrupoAnkhalInventario
                         Email        = NullIfEmpty(txtEmail.Text),
                         Direccion    = NullIfEmpty(txtDireccion.Text),
                         Activo       = true,
-                        FechaAlta    = DateTime.Now,
+                        FechaAlta    = AppHelper.Ahora,
                         UsuarioAltaID = Convert.ToInt32(Session["ClaveID"])
                     };
 

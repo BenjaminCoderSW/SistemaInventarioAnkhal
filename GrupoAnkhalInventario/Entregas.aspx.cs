@@ -81,7 +81,7 @@ namespace GrupoAnkhalInventario
             if (!IsPostBack)
             {
                 CargarCatalogos();
-                string hoy = DateTime.Today.ToString("yyyy-MM-dd");
+                string hoy = AppHelper.Hoy.ToString("yyyy-MM-dd");
                 txtFiltrDesde.Text = hoy;
                 txtFiltrHasta.Text = hoy;
                 txtNuevoFecha.Text = hoy;
@@ -403,7 +403,7 @@ namespace GrupoAnkhalInventario
             ddlFiltrEstado.SelectedIndex = 0;
             txtFiltrCliente.Text         = "";
             txtFiltrFolio.Text           = "";
-            string hoy = DateTime.Today.ToString("yyyy-MM-dd");
+            string hoy = AppHelper.Hoy.ToString("yyyy-MM-dd");
             txtFiltrDesde.Text = hoy;
             txtFiltrHasta.Text = hoy;
             gvEntregas.PageIndex = 0;
@@ -432,10 +432,10 @@ namespace GrupoAnkhalInventario
             using (var db = NuevoDb(false))
             {
                 // Contar las entregas del día de hoy (sin importar estado)
-                DateTime hoy = DateTime.Today;
+                DateTime hoy = AppHelper.Hoy;
                 int count = db.Entregas
                     .Count(e => e.FechaEntrega >= hoy && e.FechaEntrega < hoy.AddDays(1));
-                return string.Format("ENT-{0}-{1:D3}", DateTime.Today.ToString("yyyyMMdd"), count + 1);
+                return string.Format("ENT-{0}-{1:D3}", AppHelper.Hoy.ToString("yyyyMMdd"), count + 1);
             }
         }
 
@@ -597,7 +597,7 @@ namespace GrupoAnkhalInventario
                         {
                             var ent2 = db2.Entregas.First(e => e.EntregaID == entregaID);
                             ent2.Estado     = "PENDIENTE_STOCK";
-                            ent2.FechaModif = DateTime.Now;
+                            ent2.FechaModif = AppHelper.Ahora;
                             db2.SubmitChanges();
                         }
                     }
@@ -626,7 +626,7 @@ namespace GrupoAnkhalInventario
                             DescontarStockYRegistrarMovimientos(db, entregaID, entrega.BaseOrigenID, items, tipoSalidaID);
 
                             entrega.Estado     = "ENTREGADA";
-                            entrega.FechaModif = DateTime.Now;
+                            entrega.FechaModif = AppHelper.Ahora;
 
                             db.SubmitChanges();
                             tx.Commit();
@@ -682,7 +682,7 @@ namespace GrupoAnkhalInventario
                             }
 
                             entrega.Estado     = "CANCELADA";
-                            entrega.FechaModif = DateTime.Now;
+                            entrega.FechaModif = AppHelper.Ahora;
                             db.SubmitChanges();
                             tx.Commit();
 
@@ -968,7 +968,7 @@ namespace GrupoAnkhalInventario
         {
             baseID    = 0;
             clienteID = 0;
-            fecha     = DateTime.Today;
+            fecha     = AppHelper.Hoy;
 
             if (string.IsNullOrEmpty(ddlNuevoBase.SelectedValue) || !int.TryParse(ddlNuevoBase.SelectedValue, out baseID))
             {
@@ -1019,7 +1019,7 @@ namespace GrupoAnkhalInventario
                                     ? null
                                     : txtNuevoObservaciones.Text.Trim(),
                 RegistradoPorID = Convert.ToInt32(Session["ClaveID"]),
-                FechaRegistro   = DateTime.Now
+                FechaRegistro   = AppHelper.Ahora
             };
         }
 
@@ -1111,7 +1111,7 @@ namespace GrupoAnkhalInventario
                     if (stock != null)
                     {
                         stock.CantidadBuenas  -= it.Cantidad;
-                        stock.FechaUltimaModif = DateTime.Now;
+                        stock.FechaUltimaModif = AppHelper.Ahora;
                     }
 
                     // Movimiento SALIDA vinculado a la entrega
@@ -1129,7 +1129,7 @@ namespace GrupoAnkhalInventario
                         ProduccionID     = null,
                         Observaciones    = string.Format("Entrega #{0}", entregaID),
                         RegistradoPorID  = claveID,
-                        FechaMovimiento  = DateTime.Now
+                        FechaMovimiento  = AppHelper.Ahora
                     });
                 }
                 else if (it.TipoItem == "MATERIAL")
@@ -1140,7 +1140,7 @@ namespace GrupoAnkhalInventario
                     if (stock != null)
                     {
                         stock.CantidadActual  -= it.Cantidad;
-                        stock.FechaUltimaModif = DateTime.Now;
+                        stock.FechaUltimaModif = AppHelper.Ahora;
                     }
 
                     db.Movimientos.InsertOnSubmit(new Modelo.Movimientos
@@ -1157,7 +1157,7 @@ namespace GrupoAnkhalInventario
                         ProduccionID     = null,
                         Observaciones    = string.Format("Entrega #{0}", entregaID),
                         RegistradoPorID  = claveID,
-                        FechaMovimiento  = DateTime.Now
+                        FechaMovimiento  = AppHelper.Ahora
                     });
                 }
             }
@@ -1177,7 +1177,7 @@ namespace GrupoAnkhalInventario
                     if (stock != null)
                     {
                         stock.CantidadBuenas  += it.Cantidad;
-                        stock.FechaUltimaModif = DateTime.Now;
+                        stock.FechaUltimaModif = AppHelper.Ahora;
                     }
                     else
                     {
@@ -1187,7 +1187,7 @@ namespace GrupoAnkhalInventario
                             ProductoID       = it.ItemID,
                             CantidadBuenas   = it.Cantidad,
                             CantidadRechazo  = 0,
-                            FechaUltimaModif = DateTime.Now
+                            FechaUltimaModif = AppHelper.Ahora
                         });
                     }
 
@@ -1205,7 +1205,7 @@ namespace GrupoAnkhalInventario
                         ProduccionID     = null,
                         Observaciones    = string.Format("Devolución por cancelación entrega #{0}", entregaID),
                         RegistradoPorID  = claveID,
-                        FechaMovimiento  = DateTime.Now
+                        FechaMovimiento  = AppHelper.Ahora
                     });
                 }
                 else if (it.TipoItem == "MATERIAL")
@@ -1215,7 +1215,7 @@ namespace GrupoAnkhalInventario
                     if (stock != null)
                     {
                         stock.CantidadActual  += it.Cantidad;
-                        stock.FechaUltimaModif = DateTime.Now;
+                        stock.FechaUltimaModif = AppHelper.Ahora;
                     }
                     else
                     {
@@ -1224,7 +1224,7 @@ namespace GrupoAnkhalInventario
                             BaseID           = baseID,
                             MaterialID       = it.ItemID,
                             CantidadActual   = it.Cantidad,
-                            FechaUltimaModif = DateTime.Now
+                            FechaUltimaModif = AppHelper.Ahora
                         });
                     }
 
@@ -1242,7 +1242,7 @@ namespace GrupoAnkhalInventario
                         ProduccionID     = null,
                         Observaciones    = string.Format("Devolución por cancelación entrega #{0}", entregaID),
                         RegistradoPorID  = claveID,
-                        FechaMovimiento  = DateTime.Now
+                        FechaMovimiento  = AppHelper.Ahora
                     });
                 }
             }
@@ -1252,7 +1252,7 @@ namespace GrupoAnkhalInventario
         private void LimpiarModalNuevo()
         {
             txtNuevoFolio.Text           = "";
-            txtNuevoFecha.Text           = DateTime.Today.ToString("yyyy-MM-dd");
+            txtNuevoFecha.Text           = AppHelper.Hoy.ToString("yyyy-MM-dd");
             ddlNuevoBase.SelectedIndex   = 0;
             ddlNuevoCliente.SelectedIndex= 0;
             txtNuevoObservaciones.Text   = "";
