@@ -303,7 +303,7 @@ namespace GrupoAnkhalInventario
         {
             lblTotal.Text   = vms.Count.ToString();
             lblCritico.Text = vms.Count(m => GetNivel(m.StockGlobal, m.StockMinimo, m.StockMaximo, m.StockOptimo) == "critico").ToString();
-            lblBajo.Text    = vms.Count(m => GetNivel(m.StockGlobal, m.StockMinimo, m.StockMaximo, m.StockOptimo) == "bajo").ToString();
+            lblBajo.Text    = vms.Count(m => GetNivel(m.StockGlobal, m.StockMinimo, m.StockMaximo, m.StockOptimo) == "exceso").ToString();
             lblOptimo.Text  = vms.Count(m => GetNivel(m.StockGlobal, m.StockMinimo, m.StockMaximo, m.StockOptimo) == "optimo").ToString();
             lblSin.Text     = vms.Count(m => GetNivel(m.StockGlobal, m.StockMinimo, m.StockMaximo, m.StockOptimo) == "sin").ToString();
         }
@@ -311,7 +311,7 @@ namespace GrupoAnkhalInventario
         // ── Dashboard: desde query ligera ────────────────────────────────────
         private void ActualizarDashboardDesdeQuery(IEnumerable<dynamic> lista)
         {
-            int total = 0, critico = 0, bajo = 0, optimo = 0, sin = 0;
+            int total = 0, critico = 0, exceso = 0, optimo = 0, sin = 0;
             foreach (dynamic item in lista)
             {
                 total++;
@@ -321,13 +321,13 @@ namespace GrupoAnkhalInventario
                     (decimal)item.StockMaximo,
                     (decimal)item.StockOptimo);
                 if      (nivel == "critico") critico++;
-                else if (nivel == "bajo")    bajo++;
+                else if (nivel == "exceso")  exceso++;
                 else if (nivel == "optimo")  optimo++;
                 else if (nivel == "sin")     sin++;
             }
             lblTotal.Text   = total.ToString();
             lblCritico.Text = critico.ToString();
-            lblBajo.Text    = bajo.ToString();
+            lblBajo.Text    = exceso.ToString();
             lblOptimo.Text  = optimo.ToString();
             lblSin.Text     = sin.ToString();
         }
@@ -431,8 +431,12 @@ namespace GrupoAnkhalInventario
                 decimal maximo = ParseDec(txtStockMaximo.Text);
                 decimal optimo = ParseDec(txtStockOptimo.Text);
 
-                if (minimo > maximo || maximo > optimo)
-                { SetMsg("warning", "Niveles inválidos", "Debe cumplirse: Mínimo ≤ Máximo ≤ Óptimo.", "modalNuevo"); return; }
+                if (minimo < 0 || optimo < 0 || maximo < 0)
+                { SetMsg("warning", "Niveles inválidos", "Los niveles de stock no pueden ser negativos.", "modalNuevo"); return; }
+                if (minimo >= optimo)
+                { SetMsg("warning", "Niveles inválidos", "El Mínimo debe ser menor al Óptimo.", "modalNuevo"); return; }
+                if (optimo >= maximo)
+                { SetMsg("warning", "Niveles inválidos", "El Óptimo debe ser menor al Máximo.", "modalNuevo"); return; }
 
                 try
                 {
@@ -491,8 +495,12 @@ namespace GrupoAnkhalInventario
                 decimal maximo = ParseDec(txtStockMaximoEdit.Text);
                 decimal optimo = ParseDec(txtStockOptimoEdit.Text);
 
-                if (minimo > maximo || maximo > optimo)
-                { SetMsg("warning", "Niveles inválidos", "Debe cumplirse: Mínimo ≤ Máximo ≤ Óptimo.", "modalEditar"); return; }
+                if (minimo < 0 || optimo < 0 || maximo < 0)
+                { SetMsg("warning", "Niveles inválidos", "Los niveles de stock no pueden ser negativos.", "modalEditar"); return; }
+                if (minimo >= optimo)
+                { SetMsg("warning", "Niveles inválidos", "El Mínimo debe ser menor al Óptimo.", "modalEditar"); return; }
+                if (optimo >= maximo)
+                { SetMsg("warning", "Niveles inválidos", "El Óptimo debe ser menor al Máximo.", "modalEditar"); return; }
 
                 try
                 {
@@ -590,9 +598,9 @@ namespace GrupoAnkhalInventario
         public string GetNivel(decimal stock, decimal minimo, decimal maximo, decimal optimo)
         {
             if (stock == 0)        return "sin";
-            if (stock < minimo)    return "critico";
-            if (stock < maximo)    return "bajo";
-            return "optimo";   // stock >= maximo → verde (optimo se usa solo para la barra %)
+            if (stock < minimo)    return "critico";   // Rojo: bajo el mínimo
+            if (stock <= maximo)   return "optimo";    // Verde: zona saludable
+            return "exceso";                           // Amarillo: sobre el máximo
         }
 
         public string GetNivelCss(decimal stock, decimal minimo, decimal maximo, decimal optimo)
@@ -600,9 +608,9 @@ namespace GrupoAnkhalInventario
             switch (GetNivel(stock, minimo, maximo, optimo))
             {
                 case "critico": return "nivel-critico";
-                case "bajo": return "nivel-bajo";
-                case "optimo": return "nivel-optimo";
-                default: return "nivel-sin";
+                case "exceso":  return "nivel-exceso";
+                case "optimo":  return "nivel-optimo";
+                default:        return "nivel-sin";
             }
         }
 
@@ -611,9 +619,9 @@ namespace GrupoAnkhalInventario
             switch (GetNivel(stock, minimo, maximo, optimo))
             {
                 case "critico": return "🔴";
-                case "bajo": return "🟡";
-                case "optimo": return "🟢";
-                default: return "⚪";
+                case "exceso":  return "🟡";
+                case "optimo":  return "🟢";
+                default:        return "⚪";
             }
         }
 
@@ -627,9 +635,9 @@ namespace GrupoAnkhalInventario
             switch (GetNivel(stock, minimo, maximo, optimo))
             {
                 case "critico": return "#e74c3c";
-                case "bajo": return "#e67e22";
-                case "optimo": return "#27ae60";
-                default: return "#bdc3c7";
+                case "exceso":  return "#e67e22";
+                case "optimo":  return "#27ae60";
+                default:        return "#bdc3c7";
             }
         }
 
@@ -645,9 +653,9 @@ namespace GrupoAnkhalInventario
             switch (css)
             {
                 case "nivel-critico": return "Bajo mínimo";
-                case "nivel-bajo": return "Bajo máximo";
-                case "nivel-optimo": return "Óptimo";
-                default: return "Sin stock";
+                case "nivel-optimo":  return "Nivel saludable";
+                case "nivel-exceso":  return "Exceso de inventario";
+                default:              return "Sin stock";
             }
         }
 

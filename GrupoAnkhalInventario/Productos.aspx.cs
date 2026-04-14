@@ -506,9 +506,6 @@ namespace GrupoAnkhalInventario
                             decimal cmi = ParseDec(hdnCompCantMin.Value);
                             decimal cma = ParseDec(hdnCompCantMax.Value);
 
-                            if (db.ProductoMateriales.Any(pm => pm.ProductoID == prodID && pm.MaterialID == matID))
-                            { SetMsg("error", "Duplicado", "Ese material ya es componente de este producto.", null, true); break; }
-
                             var nuevo = new GrupoAnkhalInventario.Modelo.ProductoMateriales
                             {
                                 ProductoID = prodID,

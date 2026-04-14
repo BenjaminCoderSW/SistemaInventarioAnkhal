@@ -45,7 +45,7 @@
             white-space: nowrap;
         }
         .nivel-critico { background:#fdecea; color:#c0392b; border:1px solid #e74c3c; }
-        .nivel-bajo    { background:#fef3e2; color:#d35400; border:1px solid #e67e22; }
+        .nivel-exceso  { background:#fef3e2; color:#d35400; border:1px solid #e67e22; }
         .nivel-optimo  { background:#eafaf1; color:#1e8449; border:1px solid #27ae60; }
         .nivel-sin     { background:#f2f3f4; color:#7f8c8d; border:1px solid #bdc3c7; }
 
@@ -92,6 +92,13 @@
                 <div class="lbl">Total materiales</div>
             </div>
         </div>
+        <div class="stock-card sin" onclick="filtrarNivel('sin')" id="cardSin">
+            <div class="icon"><i class="fas fa-box-open"></i></div>
+            <div class="info">
+                <div class="num"><asp:Label ID="lblSin" runat="server" Text="0"></asp:Label></div>
+                <div class="lbl">⚪ Sin stock</div>
+            </div>
+        </div>
         <div class="stock-card critico" onclick="filtrarNivel('critico')" id="cardCritico">
             <div class="icon"><i class="fas fa-exclamation-circle"></i></div>
             <div class="info">
@@ -99,25 +106,18 @@
                 <div class="lbl">🔴 Stock bajo mínimo</div>
             </div>
         </div>
-        <div class="stock-card bajo" onclick="filtrarNivel('bajo')" id="cardBajo">
-            <div class="icon"><i class="fas fa-exclamation-triangle"></i></div>
-            <div class="info">
-                <div class="num"><asp:Label ID="lblBajo"    runat="server" Text="0"></asp:Label></div>
-                <div class="lbl">🟡 Stock bajo máximo</div>
-            </div>
-        </div>
         <div class="stock-card optimo" onclick="filtrarNivel('optimo')" id="cardOptimo">
             <div class="icon"><i class="fas fa-check-circle"></i></div>
             <div class="info">
                 <div class="num"><asp:Label ID="lblOptimo"  runat="server" Text="0"></asp:Label></div>
-                <div class="lbl">🟢 Stock óptimo</div>
+                <div class="lbl">🟢 Nivel saludable</div>
             </div>
         </div>
-        <div class="stock-card sin" onclick="filtrarNivel('sin')" id="cardSin">
-            <div class="icon"><i class="fas fa-box-open"></i></div>
+        <div class="stock-card bajo" onclick="filtrarNivel('exceso')" id="cardBajo">
+            <div class="icon"><i class="fas fa-exclamation-triangle"></i></div>
             <div class="info">
-                <div class="num"><asp:Label ID="lblSin" runat="server" Text="0"></asp:Label></div>
-                <div class="lbl">⚪ Sin stock</div>
+                <div class="num"><asp:Label ID="lblBajo"    runat="server" Text="0"></asp:Label></div>
+                <div class="lbl">🟡 Exceso de inventario</div>
             </div>
         </div>
     </div>
@@ -152,10 +152,10 @@
                         <label>Nivel de stock</label>
                         <asp:DropDownList ID="ddlFiltrNivel" runat="server" CssClass="form-control form-control-sm">
                             <asp:ListItem Value="">-- Todos --</asp:ListItem>
-                            <asp:ListItem Value="critico">🔴 Bajo mínimo</asp:ListItem>
-                            <asp:ListItem Value="bajo">🟡 Bajo máximo</asp:ListItem>
-                            <asp:ListItem Value="optimo">🟢 Óptimo</asp:ListItem>
                             <asp:ListItem Value="sin">⚪ Sin stock</asp:ListItem>
+                            <asp:ListItem Value="critico">🔴 Bajo mínimo</asp:ListItem>
+                            <asp:ListItem Value="optimo">🟢 Nivel saludable</asp:ListItem>
+                            <asp:ListItem Value="exceso">🟡 Exceso de inventario</asp:ListItem>
                         </asp:DropDownList>
                     </div>
                     <div class="col-md-2">
@@ -217,9 +217,10 @@
                                     </div>
                                 </div>
                                 <small class="text-muted" style="font-size:.72rem;">
+                                    ⚪ Sin stock &nbsp;
                                     🔴&lt;<%# string.Format("{0:N2}", Eval("StockMinimo")) %> &nbsp;
-                                    🟡&lt;<%# string.Format("{0:N2}", Eval("StockMaximo")) %> &nbsp;
-                                    🟢≥<%# string.Format("{0:N2}", Eval("StockOptimo")) %>
+                                    🟢≤<%# string.Format("{0:N2}", Eval("StockMaximo")) %> &nbsp;
+                                    🟡&gt;<%# string.Format("{0:N2}", Eval("StockMaximo")) %>
                                 </small>
                             </ItemTemplate>
                         </asp:TemplateField>
@@ -600,9 +601,9 @@
         if (!tipo) return warn('Debe seleccionar el tipo de material.');
         if (!uni) return warn('La unidad de medida es obligatoria.');
         if (pre < 0) return warn('El precio no puede ser negativo.');
-        if (min < 0) return warn('El stock mínimo no puede ser negativo.');
-        if (max < min) return warn('El stock máximo debe ser ≥ stock mínimo.');
-        if (opt < max) return warn('El stock óptimo debe ser ≥ stock máximo.');
+        if (min < 0 || max < 0 || opt < 0) return warn('Los niveles de stock no pueden ser negativos.');
+        if (min >= opt) return warn('El Mínimo debe ser menor al Óptimo.');
+        if (opt >= max) return warn('El Óptimo debe ser menor al Máximo.');
         return true;
     }
 </script>

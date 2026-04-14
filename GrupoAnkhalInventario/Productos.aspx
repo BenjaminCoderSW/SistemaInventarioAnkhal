@@ -660,12 +660,8 @@
                 .then(function () { $('#modalComponentes').modal('show'); });
             return;
         }
-        if (_compModal.find(function (c) { return c.materialID == matID; })) {
-            Swal.fire({ icon: 'warning', title: 'Duplicado',
-                text: 'Ese material ya está como componente de este producto.', confirmButtonColor: '#003366' })
-                .then(function () { $('#modalComponentes').modal('show'); });
-            return;
-        }
+        // Validación de duplicado eliminada: se permite el mismo material
+        // más de una vez con diferentes notas/medidas (ej: cortes distintos)
 
         document.getElementById('<%= hdnCompAccion.ClientID %>').value     = 'INSERT';
         document.getElementById('<%= hdnCompMaterialID.ClientID %>').value = matID;
@@ -721,14 +717,8 @@
                     confirmButtonColor: '#003366' }).then(function () { $('#modalNuevo').modal('show'); });
                 return false;
             }
-            for (var j = i + 1; j < _compNuevo.length; j++) {
-                if (_compNuevo[j].materialID === c.materialID) {
-                    Swal.fire({ icon: 'warning', title: 'Componente duplicado',
-                        text: 'El mismo material aparece más de una vez.',
-                        confirmButtonColor: '#003366' }).then(function () { $('#modalNuevo').modal('show'); });
-                    return false;
-                }
-            }
+            // Validación de duplicado eliminada: se permite el mismo material
+            // más de una vez con diferentes notas/medidas (ej: cortes distintos)
         }
 
         document.getElementById('<%= hdnComponentesNuevo.ClientID %>').value = JSON.stringify(_compNuevo);
