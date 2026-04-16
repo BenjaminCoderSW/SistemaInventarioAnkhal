@@ -497,7 +497,7 @@
             var opts = '<option value="">-- Material --</option>';
             _materiales.forEach(function (m) {
                 var sel = (m.id == c.materialID) ? 'selected' : '';
-                opts += '<option value="' + m.id + '" ' + sel + '>' + escHtml(m.nombre) + ' (' + escHtml(m.unidad) + ')</option>';
+                opts += '<option value="' + m.id + '" ' + sel + '>[' + escHtml(m.codigo) + '] ' + escHtml(m.nombre) + ' (' + escHtml(m.unidad) + ')</option>';
             });
 
             var row = document.createElement('div');
@@ -568,7 +568,7 @@
         var sel = document.getElementById('ddlMaterialComp');
         sel.innerHTML = '<option value="">-- Seleccione --</option>';
         _materiales.forEach(function (m) {
-            sel.innerHTML += '<option value="' + m.id + '">' + escHtml(m.nombre) + ' (' + escHtml(m.unidad) + ')</option>';
+            sel.innerHTML += '<option value="' + m.id + '">[' + escHtml(m.codigo) + '] ' + escHtml(m.nombre) + ' (' + escHtml(m.unidad) + ')</option>';
         });
 
         renderTablaComp();
@@ -592,7 +592,7 @@
         _compModal.forEach(function (c) {
             var tr = document.createElement('tr');
             tr.innerHTML =
-                '<td><strong>' + escHtml(c.materialNombre) + '</strong><br><small class="text-muted">' + escHtml(c.unidad) + '</small></td>' +
+                '<td><strong>[' + escHtml(c.materialCodigo) + '] ' + escHtml(c.materialNombre) + '</strong><br><small class="text-muted">' + escHtml(c.unidad) + '</small></td>' +
                 '<td><input type="number" class="form-control form-control-sm comp-edit-row" value="' + c.cantMin + '" min="0" step="0.01" id="cmin_' + c.pmID + '" /></td>' +
                 '<td><input type="number" class="form-control form-control-sm comp-edit-row" value="' + c.cantMax + '" min="0" step="0.01" id="cmax_' + c.pmID + '" /></td>' +
                 '<td><input type="text"   class="form-control form-control-sm comp-edit-row" value="' + escHtml(c.notas) + '" maxlength="200" id="cnot_' + c.pmID + '" /></td>' +

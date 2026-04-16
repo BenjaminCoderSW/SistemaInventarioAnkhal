@@ -33,6 +33,7 @@ namespace GrupoAnkhalInventario
             public string   TipoClave     { get; set; }   // ENTRADA, TRANSFERENCIA…
             public string   Tipo          { get; set; }   // Nombre legible
             public string   TipoItem      { get; set; }   // Material | Producto
+            public string   ItemCodigo    { get; set; }
             public string   ItemNombre    { get; set; }
             public string   BaseOrigen    { get; set; }
             public string   BaseDestino   { get; set; }
@@ -107,24 +108,24 @@ namespace GrupoAnkhalInventario
             {
                 var prods = db.Productos
                     .Where(p => p.Activo)
-                    .OrderBy(p => p.Descripcion)
-                    .Select(p => new { p.ProductoID, p.Descripcion })
+                    .OrderBy(p => p.Codigo)
+                    .Select(p => new { p.ProductoID, p.Descripcion, p.Codigo })
                     .ToList();
                 foreach (var p in prods)
-                    ddlItem.Items.Add(new ListItem(p.Descripcion, p.ProductoID.ToString()));
+                    ddlItem.Items.Add(new ListItem(string.Format("[{0}] {1}", p.Codigo, p.Descripcion), p.ProductoID.ToString()));
             }
             else
             {
                 var mats = db.Materiales
                     .Where(m => m.Activo)
-                    .OrderBy(m => m.Descripcion)
-                    .Select(m => new { m.MaterialID, m.Descripcion, m.Unidad })
+                    .OrderBy(m => m.Codigo)
+                    .Select(m => new { m.MaterialID, m.Descripcion, m.Unidad, m.Codigo })
                     .ToList();
                 foreach (var m in mats)
                 {
                     string texto = string.IsNullOrEmpty(m.Unidad)
-                        ? m.Descripcion
-                        : string.Format("{0} ({1})", m.Descripcion, m.Unidad);
+                        ? string.Format("[{0}] {1}", m.Codigo, m.Descripcion)
+                        : string.Format("[{0}] {1} ({2})", m.Codigo, m.Descripcion, m.Unidad);
                     ddlItem.Items.Add(new ListItem(texto, m.MaterialID.ToString()));
                 }
             }
@@ -137,16 +138,16 @@ namespace GrupoAnkhalInventario
             {
                 var mats = db.Materiales
                     .Where(m => m.Activo)
-                    .OrderBy(m => m.Descripcion)
+                    .OrderBy(m => m.Codigo)
                     .Select(m => new { id = m.MaterialID, nombre = m.Descripcion,
-                                       unidad = m.Unidad, costo = m.PrecioUnitario })
+                                       unidad = m.Unidad, costo = m.PrecioUnitario, codigo = m.Codigo })
                     .ToList();
 
                 var prods = db.Productos
                     .Where(p => p.Activo)
-                    .OrderBy(p => p.Descripcion)
+                    .OrderBy(p => p.Codigo)
                     .Select(p => new { id = p.ProductoID, nombre = p.Descripcion,
-                                       unidad = "", costo = p.PrecioVenta })
+                                       unidad = "", costo = p.PrecioVenta, codigo = p.Codigo })
                     .ToList();
 
                 litJsData.Text = string.Format(
@@ -302,8 +303,10 @@ namespace GrupoAnkhalInventario
                                TipoClave     = tm.Clave,
                                TipoNombre    = tm.Nombre,
                                TipoItem      = mv.TipoItem,
+                               MatCodigo     = mat.Codigo,
                                MatNombre     = mat.Descripcion,
                                MatUnidad     = mat.Unidad,
+                               PrdCodigo     = prd.Codigo,
                                PrdNombre     = prd.Descripcion,
                                BaseOrig      = bo.Nombre,
                                BaseDest      = bd.Nombre,
@@ -352,6 +355,8 @@ namespace GrupoAnkhalInventario
                         TipoClave     = r.TipoClave  ?? "",
                         Tipo          = r.TipoNombre ?? "",
                         TipoItem      = r.TipoItem   ?? "",
+                        ItemCodigo    = r.TipoItem == "Material" ? (r.MatCodigo ?? "")
+                                      : (r.PrdCodigo ?? ""),
                         ItemNombre    = r.TipoItem == "Material" ? (r.MatNombre ?? "")
                                       : (r.PrdNombre ?? ""),
                         BaseOrigen    = r.BaseOrig  ?? "",

@@ -179,7 +179,12 @@
                         </span>
                     </ItemTemplate>
                 </asp:TemplateField>
-                <asp:BoundField DataField="ProductoNombre" HeaderText="Producto" />
+                <asp:TemplateField HeaderText="Producto">
+                    <ItemTemplate>
+                        <strong style="color:#003366;"><%# Eval("ProductoCodigo") %></strong>
+                        <%# Eval("ProductoNombre") %>
+                    </ItemTemplate>
+                </asp:TemplateField>
                 <asp:BoundField DataField="CantidadBuena" HeaderText="Buenos" ItemStyle-CssClass="text-right" />
                 <asp:BoundField DataField="CantidadRechazo" HeaderText="Rechazo" ItemStyle-CssClass="text-right" />
                 <asp:BoundField DataField="Total" HeaderText="Total" ItemStyle-CssClass="text-right font-weight-bold" />

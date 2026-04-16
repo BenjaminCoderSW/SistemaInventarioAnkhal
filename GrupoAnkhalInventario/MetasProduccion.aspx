@@ -88,8 +88,14 @@
                 <small class="text-muted">(Sin selecci&oacute;n = todos los tipos)</small>
             </div>
         </div>
-        <!-- Fila 2: período -->
+        <!-- Fila 2: base específica + período -->
         <div class="row align-items-end">
+            <div class="col-auto">
+                <label>Base</label>
+                <asp:DropDownList ID="ddlFiltrBase" runat="server" CssClass="form-control form-control-sm">
+                    <asp:ListItem Text="-- Todas --" Value="" />
+                </asp:DropDownList>
+            </div>
             <div class="col-auto">
                 <label>Per&iacute;odo r&aacute;pido</label><br />
                 <button type="button" class="btn btn-outline-secondary btn-sm btn-filtro-rapido" onclick="setFiltroRapido('hoy')">Hoy</button>

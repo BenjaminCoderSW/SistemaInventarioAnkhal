@@ -130,15 +130,15 @@ namespace GrupoAnkhalInventario
                 // Productos para item selector (con precio como data-attribute)
                 var productos = db.Productos
                     .Where(p => p.Activo)
-                    .OrderBy(p => p.Descripcion)
-                    .Select(p => new { p.ProductoID, p.Descripcion, p.PrecioVenta })
+                    .OrderBy(p => p.Codigo)
+                    .Select(p => new { p.ProductoID, p.Descripcion, p.PrecioVenta, p.Codigo })
                     .ToList();
 
                 ddlItemProducto.Items.Clear();
                 ddlItemProducto.Items.Add(new ListItem("-- Seleccione --", ""));
                 foreach (var p in productos)
                 {
-                    var li = new ListItem(p.Descripcion, p.ProductoID.ToString());
+                    var li = new ListItem(string.Format("[{0}] {1}", p.Codigo, p.Descripcion), p.ProductoID.ToString());
                     li.Attributes["data-precio"] = p.PrecioVenta.ToString("F2", System.Globalization.CultureInfo.InvariantCulture);
                     ddlItemProducto.Items.Add(li);
                 }
@@ -146,15 +146,15 @@ namespace GrupoAnkhalInventario
                 // Materiales para item selector
                 var materiales = db.Materiales
                     .Where(m => m.Activo)
-                    .OrderBy(m => m.Descripcion)
-                    .Select(m => new { m.MaterialID, m.Descripcion, m.PrecioUnitario })
+                    .OrderBy(m => m.Codigo)
+                    .Select(m => new { m.MaterialID, m.Descripcion, m.PrecioUnitario, m.Codigo })
                     .ToList();
 
                 ddlItemMaterial.Items.Clear();
                 ddlItemMaterial.Items.Add(new ListItem("-- Seleccione --", ""));
                 foreach (var m in materiales)
                 {
-                    var li = new ListItem(m.Descripcion, m.MaterialID.ToString());
+                    var li = new ListItem(string.Format("[{0}] {1}", m.Codigo, m.Descripcion), m.MaterialID.ToString());
                     li.Attributes["data-precio"] = m.PrecioUnitario.ToString("F2", System.Globalization.CultureInfo.InvariantCulture);
                     ddlItemMaterial.Items.Add(li);
                 }
@@ -761,12 +761,12 @@ namespace GrupoAnkhalInventario
                     if (d.TipoItem == "PRODUCTO" && d.ProductoID.HasValue)
                     {
                         var p = db.Productos.FirstOrDefault(x => x.ProductoID == d.ProductoID.Value);
-                        if (p != null) nombre = p.Descripcion;
+                        if (p != null) nombre = string.Format("[{0}] {1}", p.Codigo, p.Descripcion);
                     }
                     else if (d.TipoItem == "MATERIAL" && d.MaterialID.HasValue)
                     {
                         var m = db.Materiales.FirstOrDefault(x => x.MaterialID == d.MaterialID.Value);
-                        if (m != null) nombre = m.Descripcion;
+                        if (m != null) nombre = string.Format("[{0}] {1}", m.Codigo, m.Descripcion);
                     }
 
                     itemsJson.Add(new ItemDetalleJson
@@ -879,12 +879,12 @@ namespace GrupoAnkhalInventario
                     if (d.TipoItem == "PRODUCTO" && d.ProductoID.HasValue)
                     {
                         var p = db.Productos.FirstOrDefault(x => x.ProductoID == d.ProductoID.Value);
-                        if (p != null) nombre = p.Descripcion;
+                        if (p != null) nombre = string.Format("[{0}] {1}", p.Codigo, p.Descripcion);
                     }
                     else if (d.TipoItem == "MATERIAL" && d.MaterialID.HasValue)
                     {
                         var m = db.Materiales.FirstOrDefault(x => x.MaterialID == d.MaterialID.Value);
-                        if (m != null) nombre = m.Descripcion;
+                        if (m != null) nombre = string.Format("[{0}] {1}", m.Codigo, m.Descripcion);
                     }
                     decimal sub = d.Cantidad * d.PrecioUnitario;
                     totalGeneral += sub;

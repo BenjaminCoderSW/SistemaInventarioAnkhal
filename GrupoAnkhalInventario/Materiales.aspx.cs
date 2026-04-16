@@ -44,10 +44,25 @@ namespace GrupoAnkhalInventario
 
         public class StockBaseVM
         {
-            public string BaseNombre { get; set; }
-            public string BaseCodigo { get; set; }
-            public decimal Cantidad { get; set; }
-            public string NivelCss { get; set; }
+            public int    BaseID           { get; set; }
+            public string BaseNombre       { get; set; }
+            public string BaseCodigo       { get; set; }
+            public decimal Cantidad        { get; set; }
+            public string NivelCss         { get; set; }
+            // Umbrales efectivos para esta base (null = usa globales del material)
+            public decimal? NivelMinimo    { get; set; }
+            public decimal? NivelOptimo    { get; set; }
+            public decimal? NivelMaximo    { get; set; }
+            public bool TieneNivelPropio   { get; set; }
+        }
+
+        private class NivelBaseDto
+        {
+            public int     MaterialID  { get; set; }
+            public int     BaseID      { get; set; }
+            public decimal StockMinimo { get; set; }
+            public decimal StockOptimo { get; set; }
+            public decimal StockMaximo { get; set; }
         }
 
         // ─────────────────────────────────────────────────────────────────────
@@ -159,22 +174,39 @@ namespace GrupoAnkhalInventario
                                            select new
                                            {
                                                sm.MaterialID,
+                                               sm.BaseID,
                                                b.Nombre,
                                                b.Codigo,
                                                sm.CantidadActual
                                            }).ToList();
+
+                    var nivelesCompleta = CargarNivelesBase(materialIDsCompleta);
 
                     var vmsFiltradas = new List<MaterialVM>();
                     foreach (var m in listaCompleta)
                     {
                         var bases = stockTodasBases
                             .Where(s => s.MaterialID == m.MaterialID)
-                            .Select(s => new StockBaseVM
+                            .Select(s =>
                             {
-                                BaseNombre = s.Nombre,
-                                BaseCodigo = s.Codigo,
-                                Cantidad = s.CantidadActual,
-                                NivelCss = GetNivelCss(s.CantidadActual, m.StockMinimo, m.StockMaximo, m.StockOptimo)
+                                var nb = nivelesCompleta.FirstOrDefault(
+                                    x => x.MaterialID == m.MaterialID && x.BaseID == s.BaseID);
+                                bool tienePropio = nb != null;
+                                decimal minimo = tienePropio ? nb.StockMinimo : m.StockMinimo;
+                                decimal optimo = tienePropio ? nb.StockOptimo : m.StockOptimo;
+                                decimal maximo = tienePropio ? nb.StockMaximo : m.StockMaximo;
+                                return new StockBaseVM
+                                {
+                                    BaseID          = s.BaseID,
+                                    BaseNombre      = s.Nombre,
+                                    BaseCodigo      = s.Codigo,
+                                    Cantidad        = s.CantidadActual,
+                                    NivelCss        = GetNivelCss(s.CantidadActual, minimo, maximo, optimo),
+                                    NivelMinimo     = tienePropio ? (decimal?)nb.StockMinimo : null,
+                                    NivelOptimo     = tienePropio ? (decimal?)nb.StockOptimo : null,
+                                    NivelMaximo     = tienePropio ? (decimal?)nb.StockMaximo : null,
+                                    TieneNivelPropio = tienePropio
+                                };
                             }).ToList();
 
                         decimal global = bases.Sum(s => s.Cantidad);
@@ -235,22 +267,39 @@ namespace GrupoAnkhalInventario
                                        select new
                                        {
                                            sm.MaterialID,
+                                           sm.BaseID,
                                            b.Nombre,
                                            b.Codigo,
                                            sm.CantidadActual
                                        }).ToList();
+
+                    var nivelesPagina = CargarNivelesBase(materialIDsPagina);
 
                     vms = new List<MaterialVM>();
                     foreach (var m in pagina)
                     {
                         var bases = stockPagina
                             .Where(s => s.MaterialID == m.MaterialID)
-                            .Select(s => new StockBaseVM
+                            .Select(s =>
                             {
-                                BaseNombre = s.Nombre,
-                                BaseCodigo = s.Codigo,
-                                Cantidad = s.CantidadActual,
-                                NivelCss = GetNivelCss(s.CantidadActual, m.StockMinimo, m.StockMaximo, m.StockOptimo)
+                                var nb = nivelesPagina.FirstOrDefault(
+                                    x => x.MaterialID == m.MaterialID && x.BaseID == s.BaseID);
+                                bool tienePropio = nb != null;
+                                decimal minimo = tienePropio ? nb.StockMinimo : m.StockMinimo;
+                                decimal optimo = tienePropio ? nb.StockOptimo : m.StockOptimo;
+                                decimal maximo = tienePropio ? nb.StockMaximo : m.StockMaximo;
+                                return new StockBaseVM
+                                {
+                                    BaseID          = s.BaseID,
+                                    BaseNombre      = s.Nombre,
+                                    BaseCodigo      = s.Codigo,
+                                    Cantidad        = s.CantidadActual,
+                                    NivelCss        = GetNivelCss(s.CantidadActual, minimo, maximo, optimo),
+                                    NivelMinimo     = tienePropio ? (decimal?)nb.StockMinimo : null,
+                                    NivelOptimo     = tienePropio ? (decimal?)nb.StockOptimo : null,
+                                    NivelMaximo     = tienePropio ? (decimal?)nb.StockMaximo : null,
+                                    TieneNivelPropio = tienePropio
+                                };
                             }).ToList();
 
                         decimal global = bases.Sum(s => s.Cantidad);
@@ -363,20 +412,61 @@ namespace GrupoAnkhalInventario
                 return "<p class='text-muted mt-1 mb-0'>Sin registros de stock en ninguna base.</p>";
 
             var sb = new System.Text.StringBuilder();
-            sb.Append("<table class='table table-sm mb-0 mt-1'>");
-            sb.Append("<thead><tr><th>Base</th><th>Código</th><th>Cantidad</th><th>Nivel</th></tr></thead><tbody>");
+            sb.Append("<table class='table table-sm mb-0 mt-1 table-niveles-base'>");
+            sb.Append("<thead><tr>" +
+                      "<th>Base</th>" +
+                      "<th>Código</th>" +
+                      "<th>Cantidad</th>" +
+                      "<th>Nivel</th>" +
+                      "<th>Mín / Ópt / Máx</th>" +
+                      "<th>Configurar</th>" +
+                      "</tr></thead><tbody>");
 
             foreach (var b in vm.StockBases)
             {
                 string icon = b.NivelCss == "nivel-critico" ? "🔴"
-                            : b.NivelCss == "nivel-bajo" ? "🟡"
-                            : b.NivelCss == "nivel-optimo" ? "🟢" : "⚪";
+                            : b.NivelCss == "nivel-exceso"  ? "🟡"
+                            : b.NivelCss == "nivel-optimo"  ? "🟢" : "⚪";
+
+                // Valores efectivos a mostrar
+                decimal dispMin = b.NivelMinimo ?? vm.StockMinimo;
+                decimal dispOpt = b.NivelOptimo ?? vm.StockOptimo;
+                decimal dispMax = b.NivelMaximo ?? vm.StockMaximo;
+                string etiqueta = b.TieneNivelPropio
+                    ? ""
+                    : " <small class='text-muted'>(global)</small>";
+
+                string nivelesHtml = string.Format(
+                    "<span class='text-danger' title='Mínimo'>🔴 {0:N2}</span> / " +
+                    "<span class='text-success' title='Óptimo'>🟢 {1:N2}</span> / " +
+                    "<span style='color:#d35400' title='Máximo'>🟡 {2:N2}</span>{3}",
+                    dispMin, dispOpt, dispMax, etiqueta);
+
+                // Botón editar: pasa valores con InvariantCulture para evitar coma/punto
+                var ic = System.Globalization.CultureInfo.InvariantCulture;
+                string btnEditar = string.Format(
+                    "<button type='button' class='btn btn-xs btn-outline-primary btn-editar-nivel' " +
+                    "onclick=\"abrirEditorNivel({0},{1},'{2}',{3},{4},{5},{6},{7},{8})\"> " +
+                    "<i class='fas fa-sliders-h'></i> Editar</button>",
+                    vm.MaterialID,
+                    b.BaseID,
+                    System.Web.HttpUtility.JavaScriptStringEncode(b.BaseNombre),
+                    dispMin.ToString(ic),
+                    dispOpt.ToString(ic),
+                    dispMax.ToString(ic),
+                    b.TieneNivelPropio ? "true" : "false",
+                    vm.StockMinimo.ToString(ic),
+                    vm.StockMaximo.ToString(ic));
 
                 sb.Append("<tr>");
                 sb.Append("<td>" + System.Web.HttpUtility.HtmlEncode(b.BaseNombre) + "</td>");
                 sb.Append("<td>" + System.Web.HttpUtility.HtmlEncode(b.BaseCodigo) + "</td>");
-                sb.Append("<td><strong>" + b.Cantidad + "</strong> " + System.Web.HttpUtility.HtmlEncode(vm.Unidad) + "</td>");
-                sb.Append("<td><span class='nivel-badge " + b.NivelCss + "'>" + icon + " " + GetNivelTexto(b.NivelCss) + "</span></td>");
+                sb.Append("<td><strong>" + b.Cantidad.ToString("N2") + "</strong> " +
+                          System.Web.HttpUtility.HtmlEncode(vm.Unidad) + "</td>");
+                sb.Append("<td><span class='nivel-badge " + b.NivelCss + "'>" +
+                          icon + " " + GetNivelTexto(b.NivelCss) + "</span></td>");
+                sb.Append("<td style='white-space:nowrap;font-size:.78rem;'>" + nivelesHtml + "</td>");
+                sb.Append("<td>" + btnEditar + "</td>");
                 sb.Append("</tr>");
             }
 
@@ -557,6 +647,74 @@ namespace GrupoAnkhalInventario
             }
         }
 
+        // ══ GUARDAR NIVELES POR BASE ══════════════════════════════════════════
+        protected void btnGuardarNivelBase_Click(object sender, EventArgs e)
+        {
+            int materialID, baseID;
+            if (!int.TryParse(hdnNivelBaseMaterialID.Value, out materialID) || materialID <= 0) return;
+            if (!int.TryParse(hdnNivelBaseBaseID.Value,     out baseID)     || baseID     <= 0) return;
+
+            decimal minimo = ParseDec(hdnNivelBaseMinimo.Value);
+            decimal optimo = ParseDec(hdnNivelBaseOptimo.Value);
+            decimal maximo = ParseDec(hdnNivelBaseMaximo.Value);
+
+            if (minimo < 0 || optimo < 0 || maximo < 0)
+            { SetMsg("warning", "Niveles inválidos", "Los niveles no pueden ser negativos."); return; }
+            if (minimo >= optimo)
+            { SetMsg("warning", "Niveles inválidos", "El Mínimo debe ser menor al Óptimo."); return; }
+            if (optimo >= maximo)
+            { SetMsg("warning", "Niveles inválidos", "El Óptimo debe ser menor al Máximo."); return; }
+
+            // Verificar que el par (MaterialID, BaseID) existe en StockMateriales
+            using (var db = NuevoDb(tracking: false))
+            {
+                bool existe = db.StockMateriales.Any(
+                    s => s.MaterialID == materialID && s.BaseID == baseID);
+                if (!existe)
+                { SetMsg("error", "Combinación inválida",
+                         "No existe registro de stock para ese material en esa base."); return; }
+            }
+
+            const string sql = @"
+                MERGE dbo.NivelesMaterialBase AS target
+                USING (SELECT @matID AS MaterialID, @baseID AS BaseID) AS source
+                    ON target.MaterialID = source.MaterialID AND target.BaseID = source.BaseID
+                WHEN MATCHED THEN
+                    UPDATE SET StockMinimo    = @minimo,
+                               StockOptimo    = @optimo,
+                               StockMaximo    = @maximo,
+                               FechaModif     = @ahora,
+                               UsuarioModifID = @usuID
+                WHEN NOT MATCHED THEN
+                    INSERT (MaterialID, BaseID, StockMinimo, StockOptimo, StockMaximo,
+                            FechaModif, UsuarioModifID)
+                    VALUES (@matID, @baseID, @minimo, @optimo, @maximo, @ahora, @usuID);";
+
+            try
+            {
+                using (var cn = new System.Data.SqlClient.SqlConnection(_connStr))
+                using (var cmd = new System.Data.SqlClient.SqlCommand(sql, cn))
+                {
+                    cmd.Parameters.AddWithValue("@matID",  materialID);
+                    cmd.Parameters.AddWithValue("@baseID", baseID);
+                    cmd.Parameters.AddWithValue("@minimo", minimo);
+                    cmd.Parameters.AddWithValue("@optimo", optimo);
+                    cmd.Parameters.AddWithValue("@maximo", maximo);
+                    cmd.Parameters.AddWithValue("@ahora",  AppHelper.Ahora);
+                    cmd.Parameters.AddWithValue("@usuID",  Convert.ToInt32(Session["ClaveID"]));
+                    cn.Open();
+                    cmd.ExecuteNonQuery();
+                }
+                CargarMateriales();
+                SetMsg("success", "¡Guardado!", "Los niveles por base fueron configurados correctamente.");
+            }
+            catch (Exception ex)
+            {
+                System.Diagnostics.Debug.WriteLine("Error al guardar nivel base: " + ex.Message);
+                SetMsg("error", "Error del sistema", "No se pudieron guardar los niveles por base.");
+            }
+        }
+
         // ══ TOGGLE ════════════════════════════════════════════════════════════
         protected void btnToggle_Click(object sender, EventArgs e) { }
 
@@ -681,6 +839,41 @@ namespace GrupoAnkhalInventario
             if (string.IsNullOrWhiteSpace(uni))
             { SetMsg("warning", "Unidad obligatoria", "La unidad de medida es obligatoria.", modal); return false; }
             return true;
+        }
+
+        // ══ HELPER: cargar umbrales por base desde NivelesMaterialBase ══════════
+        private List<NivelBaseDto> CargarNivelesBase(List<int> materialIDs)
+        {
+            var result = new List<NivelBaseDto>();
+            if (materialIDs == null || materialIDs.Count == 0) return result;
+
+            var paramNames = materialIDs.Select((id, i) => "@m" + i).ToList();
+            string sql = "SELECT MaterialID, BaseID, StockMinimo, StockOptimo, StockMaximo " +
+                         "FROM dbo.NivelesMaterialBase " +
+                         "WHERE MaterialID IN (" + string.Join(",", paramNames) + ")";
+
+            using (var cn = new System.Data.SqlClient.SqlConnection(_connStr))
+            using (var cmd = new System.Data.SqlClient.SqlCommand(sql, cn))
+            {
+                for (int i = 0; i < materialIDs.Count; i++)
+                    cmd.Parameters.AddWithValue("@m" + i, materialIDs[i]);
+                cn.Open();
+                using (var rdr = cmd.ExecuteReader())
+                {
+                    while (rdr.Read())
+                    {
+                        result.Add(new NivelBaseDto
+                        {
+                            MaterialID  = rdr.GetInt32(0),
+                            BaseID      = rdr.GetInt32(1),
+                            StockMinimo = rdr.GetDecimal(2),
+                            StockOptimo = rdr.GetDecimal(3),
+                            StockMaximo = rdr.GetDecimal(4)
+                        });
+                    }
+                }
+            }
+            return result;
         }
 
         private void SetMsg(string icon, string title, string text, string modal = null)

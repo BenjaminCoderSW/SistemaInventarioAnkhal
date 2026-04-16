@@ -35,17 +35,29 @@ namespace GrupoAnkhalInventario
             if (Session["ClaveID"] == null) { Response.Redirect("~/Login.aspx"); return; }
             if (!IsPostBack)
             {
-                // Poblar checkboxes con los tipos distintos de bases activas
                 using (var db = NuevoDb(false))
                 {
-                    var tipos = db.Bases
-                        .Where(b => b.Activo && b.Tipo != null)
+                    var basesUsuario = AppHelper.ObtenerBasesUsuario(Session);
+                    var basesQ = db.Bases.Where(b => b.Activo);
+                    if (basesUsuario != null)
+                        basesQ = basesQ.Where(b => basesUsuario.Contains(b.BaseID));
+
+                    // Poblar checkboxes con los tipos distintos de bases activas
+                    var tipos = basesQ
+                        .Where(b => b.Tipo != null)
                         .Select(b => b.Tipo)
                         .Distinct()
                         .OrderBy(t => t)
                         .ToList();
                     foreach (var t in tipos)
                         cblFiltrTipo.Items.Add(new System.Web.UI.WebControls.ListItem(t, t));
+
+                    // Poblar dropdown de base específica
+                    var bases = basesQ.OrderBy(b => b.Nombre)
+                        .Select(b => new { b.BaseID, b.Nombre })
+                        .ToList();
+                    foreach (var b in bases)
+                        ddlFiltrBase.Items.Add(new System.Web.UI.WebControls.ListItem(b.Nombre, b.BaseID.ToString()));
                 }
 
                 string hoy = AppHelper.Hoy.ToString("yyyy-MM-dd");
@@ -64,6 +76,7 @@ namespace GrupoAnkhalInventario
         protected void btnLimpiar_Click(object sender, EventArgs e)
         {
             foreach (System.Web.UI.WebControls.ListItem li in cblFiltrTipo.Items) li.Selected = false;
+            ddlFiltrBase.SelectedIndex = 0;
             string hoy = AppHelper.Hoy.ToString("yyyy-MM-dd");
             txtDesde.Text = hoy;
             txtHasta.Text = hoy;
@@ -85,6 +98,10 @@ namespace GrupoAnkhalInventario
                 .Select(li => li.Value)
                 .ToList();
 
+            int? selBase = null;
+            if (!string.IsNullOrEmpty(ddlFiltrBase.SelectedValue))
+                selBase = int.Parse(ddlFiltrBase.SelectedValue);
+
             // Etiquetas del período
             string periodoStr = desde == hasta
                 ? desde.ToString("dd/MM/yyyy")
@@ -95,22 +112,24 @@ namespace GrupoAnkhalInventario
                 ? "META DIARIA &mdash; ANKHAL"
                 : "META DEL PER&Iacute;ODO &mdash; ANKHAL (" + numDias + " d&iacute;as)";
 
-            CargarDashboard(desde, hasta, numDias, selTipos);
-            CargarMetaBases(desde, hasta, numDias, selTipos);
+            CargarDashboard(desde, hasta, numDias, selTipos, selBase);
+            CargarMetaBases(desde, hasta, numDias, selTipos, selBase);
         }
 
         // ══ Dashboard ════════════════════════════════════════════════════════
         private void CargarDashboard(DateTime desde, DateTime hasta, int numDias,
-            System.Collections.Generic.List<string> selTipos)
+            System.Collections.Generic.List<string> selTipos, int? selBase)
         {
             using (var db = NuevoDb(false))
             {
-                // Bases activas aplicando filtro de tipo y permisos del usuario
+                // Bases activas aplicando filtro de tipo, base específica y permisos del usuario
                 var basesUsuario = AppHelper.ObtenerBasesUsuario(Session);
                 var basesQ = db.Bases.Where(b => b.Activo);
                 if (basesUsuario != null)
                     basesQ = basesQ.Where(b => basesUsuario.Contains(b.BaseID));
-                if (selTipos.Any())
+                if (selBase.HasValue)
+                    basesQ = basesQ.Where(b => b.BaseID == selBase.Value);
+                else if (selTipos.Any())
                     basesQ = basesQ.Where(b => selTipos.Contains(b.Tipo));
 
                 var baseIds = basesQ.Select(b => b.BaseID).ToList();
@@ -138,16 +157,18 @@ namespace GrupoAnkhalInventario
 
         // ══ Tabla por base ═══════════════════════════════════════════════════
         private void CargarMetaBases(DateTime desde, DateTime hasta, int numDias,
-            System.Collections.Generic.List<string> selTipos)
+            System.Collections.Generic.List<string> selTipos, int? selBase)
         {
             using (var db = NuevoDb(false))
             {
-                // Bases activas aplicando filtro de tipo y permisos del usuario
+                // Bases activas aplicando filtro de tipo, base específica y permisos del usuario
                 var basesUsuario = AppHelper.ObtenerBasesUsuario(Session);
                 var basesQ = db.Bases.Where(b => b.Activo);
                 if (basesUsuario != null)
                     basesQ = basesQ.Where(b => basesUsuario.Contains(b.BaseID));
-                if (selTipos.Any())
+                if (selBase.HasValue)
+                    basesQ = basesQ.Where(b => b.BaseID == selBase.Value);
+                else if (selTipos.Any())
                     basesQ = basesQ.Where(b => selTipos.Contains(b.Tipo));
                 var bases = basesQ.OrderBy(b => b.Nombre).ToList();
 

@@ -24,6 +24,15 @@ namespace GrupoAnkhalInventario
         protected global::System.Web.UI.WebControls.Label lblTotal;
 
         /// <summary>
+        /// Control lblSin.
+        /// </summary>
+        /// <remarks>
+        /// Campo generado automáticamente.
+        /// Para modificarlo, mueva la declaración del campo del archivo del diseñador al archivo de código subyacente.
+        /// </remarks>
+        protected global::System.Web.UI.WebControls.Label lblSin;
+
+        /// <summary>
         /// Control lblCritico.
         /// </summary>
         /// <remarks>
@@ -31,15 +40,6 @@ namespace GrupoAnkhalInventario
         /// Para modificarlo, mueva la declaración del campo del archivo del diseñador al archivo de código subyacente.
         /// </remarks>
         protected global::System.Web.UI.WebControls.Label lblCritico;
-
-        /// <summary>
-        /// Control lblBajo.
-        /// </summary>
-        /// <remarks>
-        /// Campo generado automáticamente.
-        /// Para modificarlo, mueva la declaración del campo del archivo del diseñador al archivo de código subyacente.
-        /// </remarks>
-        protected global::System.Web.UI.WebControls.Label lblBajo;
 
         /// <summary>
         /// Control lblOptimo.
@@ -51,13 +51,13 @@ namespace GrupoAnkhalInventario
         protected global::System.Web.UI.WebControls.Label lblOptimo;
 
         /// <summary>
-        /// Control lblSin.
+        /// Control lblBajo.
         /// </summary>
         /// <remarks>
         /// Campo generado automáticamente.
         /// Para modificarlo, mueva la declaración del campo del archivo del diseñador al archivo de código subyacente.
         /// </remarks>
-        protected global::System.Web.UI.WebControls.Label lblSin;
+        protected global::System.Web.UI.WebControls.Label lblBajo;
 
         /// <summary>
         /// Control btnNuevo.
@@ -175,6 +175,60 @@ namespace GrupoAnkhalInventario
         /// Para modificarlo, mueva la declaración del campo del archivo del diseñador al archivo de código subyacente.
         /// </remarks>
         protected global::System.Web.UI.WebControls.HiddenField hdnNivelFiltro;
+
+        /// <summary>
+        /// Control hdnNivelBaseMaterialID.
+        /// </summary>
+        /// <remarks>
+        /// Campo generado automáticamente.
+        /// Para modificarlo, mueva la declaración del campo del archivo del diseñador al archivo de código subyacente.
+        /// </remarks>
+        protected global::System.Web.UI.WebControls.HiddenField hdnNivelBaseMaterialID;
+
+        /// <summary>
+        /// Control hdnNivelBaseBaseID.
+        /// </summary>
+        /// <remarks>
+        /// Campo generado automáticamente.
+        /// Para modificarlo, mueva la declaración del campo del archivo del diseñador al archivo de código subyacente.
+        /// </remarks>
+        protected global::System.Web.UI.WebControls.HiddenField hdnNivelBaseBaseID;
+
+        /// <summary>
+        /// Control hdnNivelBaseMinimo.
+        /// </summary>
+        /// <remarks>
+        /// Campo generado automáticamente.
+        /// Para modificarlo, mueva la declaración del campo del archivo del diseñador al archivo de código subyacente.
+        /// </remarks>
+        protected global::System.Web.UI.WebControls.HiddenField hdnNivelBaseMinimo;
+
+        /// <summary>
+        /// Control hdnNivelBaseOptimo.
+        /// </summary>
+        /// <remarks>
+        /// Campo generado automáticamente.
+        /// Para modificarlo, mueva la declaración del campo del archivo del diseñador al archivo de código subyacente.
+        /// </remarks>
+        protected global::System.Web.UI.WebControls.HiddenField hdnNivelBaseOptimo;
+
+        /// <summary>
+        /// Control hdnNivelBaseMaximo.
+        /// </summary>
+        /// <remarks>
+        /// Campo generado automáticamente.
+        /// Para modificarlo, mueva la declaración del campo del archivo del diseñador al archivo de código subyacente.
+        /// </remarks>
+        protected global::System.Web.UI.WebControls.HiddenField hdnNivelBaseMaximo;
+
+        /// <summary>
+        /// Control btnGuardarNivelBase.
+        /// </summary>
+        /// <remarks>
+        /// Campo generado automáticamente.
+        /// Para modificarlo, mueva la declaración del campo del archivo del diseñador al archivo de código subyacente.
+        /// </remarks>
+        protected global::System.Web.UI.WebControls.Button btnGuardarNivelBase;
 
         /// <summary>
         /// Control txtCodigo.

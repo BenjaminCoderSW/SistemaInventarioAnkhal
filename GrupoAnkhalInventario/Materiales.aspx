@@ -75,6 +75,10 @@
         .pager-custom a { padding:4px 9px; border-radius:4px; }
 
         .stock-card.activo-filtro { outline: 3px solid #fff; outline-offset: 2px; }
+
+        /* ── Niveles por base ── */
+        .btn-xs { padding: 2px 7px; font-size: .75rem; line-height: 1.4; border-radius: 3px; }
+        .btn-editar-nivel { white-space: nowrap; }
     </style>
 </asp:Content>
 
@@ -283,6 +287,59 @@
 <asp:Button    ID="btnToggleHidden"       runat="server" CssClass="d-none" OnClick="btnToggleHidden_Click" />
 <asp:HiddenField ID="hdnMensajePendiente" runat="server" Value="" />
 <asp:HiddenField ID="hdnNivelFiltro"      runat="server" Value="" />
+<asp:HiddenField ID="hdnNivelBaseMaterialID" runat="server" Value="" />
+<asp:HiddenField ID="hdnNivelBaseBaseID"     runat="server" Value="" />
+<asp:HiddenField ID="hdnNivelBaseMinimo"     runat="server" Value="" />
+<asp:HiddenField ID="hdnNivelBaseOptimo"     runat="server" Value="" />
+<asp:HiddenField ID="hdnNivelBaseMaximo"     runat="server" Value="" />
+<asp:Button ID="btnGuardarNivelBase" runat="server" CssClass="d-none"
+    OnClick="btnGuardarNivelBase_Click" />
+
+<!-- ══ PANEL FLOTANTE: Editar niveles por base ══════════════════════════════ -->
+<div id="overlayEditorNivel" style="display:none;position:fixed;top:0;left:0;
+     width:100%;height:100%;background:rgba(0,0,0,0.45);z-index:9998;"
+     onclick="cerrarEditorNivel()"></div>
+<div id="panelEditorNivel" style="display:none;position:fixed;top:50%;left:50%;
+     transform:translate(-50%,-50%);z-index:9999;background:#fff;
+     border:1px solid #003366;border-radius:10px;
+     box-shadow:0 8px 30px rgba(0,0,0,0.25);padding:24px 28px;min-width:340px;">
+    <h6 style="color:#003366;font-weight:700;margin-bottom:4px;">
+        <i class="fas fa-sliders-h"></i> Niveles de stock por base
+    </h6>
+    <small id="spanNombreBaseEditor" class="text-muted d-block mb-3"></small>
+    <div class="form-group mb-2">
+        <label style="font-size:.82rem;font-weight:600;">
+            Stock mínimo <span class="text-danger">(🔴 por debajo = crítico)</span>
+        </label>
+        <input type="number" id="inpNivelMin" class="form-control form-control-sm"
+               min="0" step="0.01" />
+    </div>
+    <div class="form-group mb-2">
+        <label style="font-size:.82rem;font-weight:600;">
+            Stock óptimo <span class="text-success">(🟢 nivel ideal)</span>
+        </label>
+        <input type="number" id="inpNivelOpt" class="form-control form-control-sm"
+               min="0" step="0.01" />
+    </div>
+    <div class="form-group mb-2">
+        <label style="font-size:.82rem;font-weight:600;">
+            Stock máximo <span style="color:#d35400">(🟡 por encima = exceso)</span>
+        </label>
+        <input type="number" id="inpNivelMax" class="form-control form-control-sm"
+               min="0" step="0.01" />
+    </div>
+    <small id="spanNivelHint" class="text-muted d-block mb-3" style="font-size:.76rem;"></small>
+    <div class="d-flex justify-content-between">
+        <button type="button" class="btn btn-success btn-sm"
+                onclick="confirmarGuardarNivel()">
+            <i class="fas fa-save"></i> Guardar
+        </button>
+        <button type="button" class="btn btn-secondary btn-sm"
+                onclick="cerrarEditorNivel()">
+            Cancelar
+        </button>
+    </div>
+</div>
 
 <!-- ══ MODAL NUEVO MATERIAL ═════════════════════════ -->
 <div class="modal fade" id="modalNuevo" tabindex="-1" role="dialog" data-backdrop="static">
@@ -343,7 +400,7 @@
           </div>
         </div>
         <hr />
-        <h6 style="color:#003366;font-weight:600;"><i class="fas fa-layer-group"></i> Niveles de stock</h6>
+        <h6 style="color:#003366;font-weight:600;"><i class="fas fa-layer-group"></i> Niveles de stock General en Ankhal</h6>
         <small class="text-muted d-block mb-2">
             Definen el semáforo: <span style="color:#c0392b">🔴 Bajo mínimo</span> si stock &lt; Mínimo &nbsp;|&nbsp;
             <span style="color:#d35400">🟡 Bajo máximo</span> si stock &lt; Máximo &nbsp;|&nbsp;
@@ -605,6 +662,69 @@
         if (min >= opt) return warn('El Mínimo debe ser menor al Óptimo.');
         if (opt >= max) return warn('El Óptimo debe ser menor al Máximo.');
         return true;
+    }
+
+    // ── Editor de niveles por base ────────────────────────────────────────────
+    var _editorNivel = { matID: 0, baseID: 0 };
+
+    function abrirEditorNivel(matID, baseID, baseNombre, minActual, optActual, maxActual,
+                               tienePropio, globalMin, globalMax) {
+        _editorNivel.matID  = matID;
+        _editorNivel.baseID = baseID;
+
+        document.getElementById('spanNombreBaseEditor').textContent = baseNombre;
+        document.getElementById('inpNivelMin').value = minActual;
+        document.getElementById('inpNivelOpt').value = optActual;
+        document.getElementById('inpNivelMax').value = maxActual;
+
+        var hint = tienePropio
+            ? 'Esta base tiene umbrales propios configurados.'
+            : 'Actualmente usa los umbrales globales del material ' +
+              '(Mín=' + globalMin + ' / Máx=' + globalMax + '). ' +
+              'Guarda para crear umbrales específicos para esta base.';
+        document.getElementById('spanNivelHint').textContent = hint;
+
+        document.getElementById('overlayEditorNivel').style.display = 'block';
+        document.getElementById('panelEditorNivel').style.display   = 'block';
+        document.getElementById('inpNivelMin').focus();
+    }
+
+    function cerrarEditorNivel() {
+        document.getElementById('overlayEditorNivel').style.display = 'none';
+        document.getElementById('panelEditorNivel').style.display   = 'none';
+        _editorNivel.matID  = 0;
+        _editorNivel.baseID = 0;
+    }
+
+    function confirmarGuardarNivel() {
+        var min = parseFloat(document.getElementById('inpNivelMin').value) || 0;
+        var opt = parseFloat(document.getElementById('inpNivelOpt').value) || 0;
+        var max = parseFloat(document.getElementById('inpNivelMax').value) || 0;
+
+        if (min < 0 || opt < 0 || max < 0) {
+            Swal.fire({ icon: 'warning', title: 'Campo inválido',
+                text: 'Los niveles no pueden ser negativos.', confirmButtonColor: '#003366' });
+            return;
+        }
+        if (min >= opt) {
+            Swal.fire({ icon: 'warning', title: 'Campo inválido',
+                text: 'El Mínimo debe ser menor al Óptimo.', confirmButtonColor: '#003366' });
+            return;
+        }
+        if (opt >= max) {
+            Swal.fire({ icon: 'warning', title: 'Campo inválido',
+                text: 'El Óptimo debe ser menor al Máximo.', confirmButtonColor: '#003366' });
+            return;
+        }
+
+        document.getElementById('<%= hdnNivelBaseMaterialID.ClientID %>').value = _editorNivel.matID;
+        document.getElementById('<%= hdnNivelBaseBaseID.ClientID %>').value     = _editorNivel.baseID;
+        document.getElementById('<%= hdnNivelBaseMinimo.ClientID %>').value     = min;
+        document.getElementById('<%= hdnNivelBaseOptimo.ClientID %>').value     = opt;
+        document.getElementById('<%= hdnNivelBaseMaximo.ClientID %>').value     = max;
+
+        cerrarEditorNivel();
+        __doPostBack('<%= btnGuardarNivelBase.UniqueID %>', '');
     }
 </script>
 

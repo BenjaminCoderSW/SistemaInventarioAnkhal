@@ -33,6 +33,7 @@ namespace GrupoAnkhalInventario
             public DateTime Fecha           { get; set; }
             public string   BaseNombre      { get; set; }
             public string   Turno           { get; set; }
+            public string   ProductoCodigo  { get; set; }
             public string   ProductoNombre  { get; set; }
             public int      CantidadBuena   { get; set; }
             public int      CantidadRechazo { get; set; }
@@ -109,8 +110,8 @@ namespace GrupoAnkhalInventario
 
                 var productos = db.Productos
                     .Where(p => p.Activo)
-                    .OrderBy(p => p.Descripcion)
-                    .Select(p => new { p.ProductoID, p.Descripcion })
+                    .OrderBy(p => p.Codigo)
+                    .Select(p => new { p.ProductoID, p.Descripcion, p.Codigo })
                     .ToList();
 
                 ddlProducto.Items.Clear();
@@ -121,9 +122,10 @@ namespace GrupoAnkhalInventario
                 ddlFiltrProducto.Items.Add(new ListItem("-- Todos --", ""));
                 foreach (var p in productos)
                 {
-                    ddlProducto.Items.Add(new ListItem(p.Descripcion, p.ProductoID.ToString()));
-                    ddlProductoHoja.Items.Add(new ListItem(p.Descripcion, p.ProductoID.ToString()));
-                    ddlFiltrProducto.Items.Add(new ListItem(p.Descripcion, p.ProductoID.ToString()));
+                    string textoProducto = string.Format("[{0}] {1}", p.Codigo, p.Descripcion);
+                    ddlProducto.Items.Add(new ListItem(textoProducto, p.ProductoID.ToString()));
+                    ddlProductoHoja.Items.Add(new ListItem(textoProducto, p.ProductoID.ToString()));
+                    ddlFiltrProducto.Items.Add(new ListItem(textoProducto, p.ProductoID.ToString()));
                 }
             }
         }
@@ -232,6 +234,7 @@ namespace GrupoAnkhalInventario
                                BaseNombre      = b.Nombre,
                                MetaDiaria      = b.MetaDiaria,
                                p.Turno,
+                               ProductoCodigo  = pr.Codigo,
                                ProductoNombre  = pr.Descripcion,
                                p.CantidadBuena,
                                p.CantidadRechazo,
@@ -280,6 +283,7 @@ namespace GrupoAnkhalInventario
                             Fecha           = r.Fecha,
                             BaseNombre      = r.BaseNombre,
                             Turno           = r.Turno,
+                            ProductoCodigo  = r.ProductoCodigo,
                             ProductoNombre  = r.ProductoNombre,
                             CantidadBuena   = r.CantidadBuena,
                             CantidadRechazo = r.CantidadRechazo,

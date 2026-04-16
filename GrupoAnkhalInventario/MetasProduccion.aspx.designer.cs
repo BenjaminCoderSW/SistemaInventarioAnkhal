@@ -26,6 +26,9 @@ namespace GrupoAnkhalInventario
         /// <summary>Control cblFiltrTipo.</summary>
         protected global::System.Web.UI.WebControls.CheckBoxList cblFiltrTipo;
 
+        /// <summary>Control ddlFiltrBase.</summary>
+        protected global::System.Web.UI.WebControls.DropDownList ddlFiltrBase;
+
         /// <summary>Control txtDesde.</summary>
         protected global::System.Web.UI.WebControls.TextBox txtDesde;
 

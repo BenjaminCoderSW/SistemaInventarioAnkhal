@@ -245,7 +245,12 @@
                             </ItemTemplate>
                         </asp:TemplateField>
 
-                        <asp:BoundField DataField="ItemNombre" HeaderText="Item" />
+                        <asp:TemplateField HeaderText="Item">
+                            <ItemTemplate>
+                                <strong style="color:#003366;"><%# Eval("ItemCodigo") %></strong>
+                                <%# Eval("ItemNombre") %>
+                            </ItemTemplate>
+                        </asp:TemplateField>
 
                         <asp:BoundField DataField="BaseOrigen" HeaderText="Base Origen" />
 
@@ -491,7 +496,7 @@
             lista.forEach(function (item) {
                 var opt = document.createElement('option');
                 opt.value = item.id;
-                opt.text  = item.nombre + (item.unidad ? ' (' + item.unidad + ')' : '');
+                opt.text  = '[' + item.codigo + '] ' + item.nombre + (item.unidad ? ' (' + item.unidad + ')' : '');
                 ddl.appendChild(opt);
             });
         }
