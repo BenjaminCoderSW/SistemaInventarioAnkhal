@@ -232,7 +232,15 @@ namespace GrupoAnkhalInventario.Modelo
 				return this.GetTable<TiposMovimiento>();
 			}
 		}
-		
+
+		public System.Data.Linq.Table<UnidadesMedida> UnidadesMedida
+		{
+			get
+			{
+				return this.GetTable<UnidadesMedida>();
+			}
+		}
+
 		public System.Data.Linq.Table<TiposProducto> TiposProducto
 		{
 			get
@@ -2504,21 +2512,25 @@ namespace GrupoAnkhalInventario.Modelo
 		private System.Nullable<int> _UsuarioModifID;
 		
 		private System.Data.Linq.Binary _RowVersion;
-		
+
+		private System.Nullable<int> _UnidadMedidaID;
+
 		private EntitySet<ConsumosProduccion> _ConsumosProduccion;
-		
+
 		private EntitySet<DetalleEntregas> _DetalleEntregas;
-		
+
 		private EntitySet<Movimientos> _Movimientos;
-		
+
 		private EntitySet<ProductoMateriales> _ProductoMateriales;
-		
+
 		private EntitySet<StockMateriales> _StockMateriales;
-		
+
 		private EntityRef<TiposMaterial> _TiposMaterial;
-		
+
+		private EntityRef<UnidadesMedida> _UnidadesMedida;
+
 		private EntityRef<Usuario> _Usuario;
-		
+
 		private EntityRef<Usuario> _Usuario1;
 		
     #region Definiciones de métodos de extensibilidad
@@ -2557,8 +2569,10 @@ namespace GrupoAnkhalInventario.Modelo
     partial void OnUsuarioModifIDChanged();
     partial void OnRowVersionChanging(System.Data.Linq.Binary value);
     partial void OnRowVersionChanged();
+    partial void OnUnidadMedidaIDChanging(System.Nullable<int> value);
+    partial void OnUnidadMedidaIDChanged();
     #endregion
-		
+
 		public Materiales()
 		{
 			this._ConsumosProduccion = new EntitySet<ConsumosProduccion>(new Action<ConsumosProduccion>(this.attach_ConsumosProduccion), new Action<ConsumosProduccion>(this.detach_ConsumosProduccion));
@@ -2567,6 +2581,7 @@ namespace GrupoAnkhalInventario.Modelo
 			this._ProductoMateriales = new EntitySet<ProductoMateriales>(new Action<ProductoMateriales>(this.attach_ProductoMateriales), new Action<ProductoMateriales>(this.detach_ProductoMateriales));
 			this._StockMateriales = new EntitySet<StockMateriales>(new Action<StockMateriales>(this.attach_StockMateriales), new Action<StockMateriales>(this.detach_StockMateriales));
 			this._TiposMaterial = default(EntityRef<TiposMaterial>);
+			this._UnidadesMedida = default(EntityRef<UnidadesMedida>);
 			this._Usuario = default(EntityRef<Usuario>);
 			this._Usuario1 = default(EntityRef<Usuario>);
 			OnCreated();
@@ -2904,6 +2919,64 @@ namespace GrupoAnkhalInventario.Modelo
 			}
 		}
 		
+		[global::System.Data.Linq.Mapping.ColumnAttribute(Storage="_UnidadMedidaID", DbType="Int", UpdateCheck=UpdateCheck.Never)]
+		public System.Nullable<int> UnidadMedidaID
+		{
+			get
+			{
+				return this._UnidadMedidaID;
+			}
+			set
+			{
+				if ((this._UnidadMedidaID != value))
+				{
+					if (this._UnidadesMedida.HasLoadedOrAssignedValue)
+					{
+						throw new System.Data.Linq.ForeignKeyReferenceAlreadyHasValueException();
+					}
+					this.OnUnidadMedidaIDChanging(value);
+					this.SendPropertyChanging();
+					this._UnidadMedidaID = value;
+					this.SendPropertyChanged("UnidadMedidaID");
+					this.OnUnidadMedidaIDChanged();
+				}
+			}
+		}
+
+		[global::System.Data.Linq.Mapping.AssociationAttribute(Name="UnidadesMedida_Materiales", Storage="_UnidadesMedida", ThisKey="UnidadMedidaID", OtherKey="UnidadMedidaID", IsForeignKey=true)]
+		public UnidadesMedida UnidadesMedida
+		{
+			get
+			{
+				return this._UnidadesMedida.Entity;
+			}
+			set
+			{
+				UnidadesMedida previousValue = this._UnidadesMedida.Entity;
+				if (((previousValue != value)
+							|| (this._UnidadesMedida.HasLoadedOrAssignedValue == false)))
+				{
+					this.SendPropertyChanging();
+					if ((previousValue != null))
+					{
+						this._UnidadesMedida.Entity = null;
+						previousValue.Materiales.Remove(this);
+					}
+					this._UnidadesMedida.Entity = value;
+					if ((value != null))
+					{
+						value.Materiales.Add(this);
+						this._UnidadMedidaID = value.UnidadMedidaID;
+					}
+					else
+					{
+						this._UnidadMedidaID = default(Nullable<int>);
+					}
+					this.SendPropertyChanged("UnidadesMedida");
+				}
+			}
+		}
+
 		[global::System.Data.Linq.Mapping.AssociationAttribute(Name="Materiales_ConsumosProduccion", Storage="_ConsumosProduccion", ThisKey="MaterialID", OtherKey="MaterialID")]
 		public EntitySet<ConsumosProduccion> ConsumosProduccion
 		{
@@ -8151,6 +8224,168 @@ namespace GrupoAnkhalInventario.Modelo
 					this._RowVersion = value;
 				}
 			}
+		}
+	}
+
+	[global::System.Data.Linq.Mapping.TableAttribute(Name="dbo.UnidadesMedida")]
+	public partial class UnidadesMedida : INotifyPropertyChanging, INotifyPropertyChanged
+	{
+
+		private static PropertyChangingEventArgs emptyChangingEventArgs = new PropertyChangingEventArgs(String.Empty);
+
+		private int _UnidadMedidaID;
+
+		private string _Clave;
+
+		private string _Nombre;
+
+		private bool _Activo;
+
+		private EntitySet<Materiales> _Materiales;
+
+    #region Definiciones de métodos de extensibilidad
+    partial void OnLoaded();
+    partial void OnValidate(System.Data.Linq.ChangeAction action);
+    partial void OnCreated();
+    partial void OnUnidadMedidaIDChanging(int value);
+    partial void OnUnidadMedidaIDChanged();
+    partial void OnClaveChanging(string value);
+    partial void OnClaveChanged();
+    partial void OnNombreChanging(string value);
+    partial void OnNombreChanged();
+    partial void OnActivoChanging(bool value);
+    partial void OnActivoChanged();
+    #endregion
+
+		public UnidadesMedida()
+		{
+			this._Materiales = new EntitySet<Materiales>(new Action<Materiales>(this.attach_Materiales), new Action<Materiales>(this.detach_Materiales));
+			OnCreated();
+		}
+
+		[global::System.Data.Linq.Mapping.ColumnAttribute(Storage="_UnidadMedidaID", AutoSync=AutoSync.OnInsert, DbType="Int NOT NULL IDENTITY", IsPrimaryKey=true, IsDbGenerated=true)]
+		public int UnidadMedidaID
+		{
+			get
+			{
+				return this._UnidadMedidaID;
+			}
+			set
+			{
+				if ((this._UnidadMedidaID != value))
+				{
+					this.OnUnidadMedidaIDChanging(value);
+					this.SendPropertyChanging();
+					this._UnidadMedidaID = value;
+					this.SendPropertyChanged("UnidadMedidaID");
+					this.OnUnidadMedidaIDChanged();
+				}
+			}
+		}
+
+		[global::System.Data.Linq.Mapping.ColumnAttribute(Storage="_Clave", DbType="VarChar(20) NOT NULL", CanBeNull=false)]
+		public string Clave
+		{
+			get
+			{
+				return this._Clave;
+			}
+			set
+			{
+				if ((this._Clave != value))
+				{
+					this.OnClaveChanging(value);
+					this.SendPropertyChanging();
+					this._Clave = value;
+					this.SendPropertyChanged("Clave");
+					this.OnClaveChanged();
+				}
+			}
+		}
+
+		[global::System.Data.Linq.Mapping.ColumnAttribute(Storage="_Nombre", DbType="VarChar(100) NOT NULL", CanBeNull=false)]
+		public string Nombre
+		{
+			get
+			{
+				return this._Nombre;
+			}
+			set
+			{
+				if ((this._Nombre != value))
+				{
+					this.OnNombreChanging(value);
+					this.SendPropertyChanging();
+					this._Nombre = value;
+					this.SendPropertyChanged("Nombre");
+					this.OnNombreChanged();
+				}
+			}
+		}
+
+		[global::System.Data.Linq.Mapping.ColumnAttribute(Storage="_Activo", DbType="Bit NOT NULL")]
+		public bool Activo
+		{
+			get
+			{
+				return this._Activo;
+			}
+			set
+			{
+				if ((this._Activo != value))
+				{
+					this.OnActivoChanging(value);
+					this.SendPropertyChanging();
+					this._Activo = value;
+					this.SendPropertyChanged("Activo");
+					this.OnActivoChanged();
+				}
+			}
+		}
+
+		[global::System.Data.Linq.Mapping.AssociationAttribute(Name="UnidadesMedida_Materiales", Storage="_Materiales", ThisKey="UnidadMedidaID", OtherKey="UnidadMedidaID")]
+		public EntitySet<Materiales> Materiales
+		{
+			get
+			{
+				return this._Materiales;
+			}
+			set
+			{
+				this._Materiales.Assign(value);
+			}
+		}
+
+		public event PropertyChangingEventHandler PropertyChanging;
+
+		public event PropertyChangedEventHandler PropertyChanged;
+
+		protected virtual void SendPropertyChanging()
+		{
+			if ((this.PropertyChanging != null))
+			{
+				this.PropertyChanging(this, emptyChangingEventArgs);
+			}
+		}
+
+		protected virtual void SendPropertyChanged(String propertyName)
+		{
+			if ((this.PropertyChanged != null))
+			{
+				this.PropertyChanged(this, new PropertyChangedEventArgs(propertyName));
+			}
+		}
+
+		private void attach_Materiales(Materiales entity)
+		{
+			this.SendPropertyChanging();
+			entity.UnidadesMedida = this;
+		}
+
+		private void detach_Materiales(Materiales entity)
+		{
+			this.SendPropertyChanging();
+			entity.UnidadesMedida = null;
 		}
 	}
 }

@@ -267,13 +267,13 @@ namespace GrupoAnkhalInventario
         protected global::System.Web.UI.WebControls.TextBox txtSubtipo;
 
         /// <summary>
-        /// Control txtUnidad.
+        /// Control ddlUnidad.
         /// </summary>
         /// <remarks>
         /// Campo generado automáticamente.
         /// Para modificarlo, mueva la declaración del campo del archivo del diseñador al archivo de código subyacente.
         /// </remarks>
-        protected global::System.Web.UI.WebControls.TextBox txtUnidad;
+        protected global::System.Web.UI.WebControls.DropDownList ddlUnidad;
 
         /// <summary>
         /// Control txtPrecio.
@@ -375,13 +375,13 @@ namespace GrupoAnkhalInventario
         protected global::System.Web.UI.WebControls.TextBox txtSubtipoEdit;
 
         /// <summary>
-        /// Control txtUnidadEdit.
+        /// Control ddlUnidadEdit.
         /// </summary>
         /// <remarks>
         /// Campo generado automáticamente.
         /// Para modificarlo, mueva la declaración del campo del archivo del diseñador al archivo de código subyacente.
         /// </remarks>
-        protected global::System.Web.UI.WebControls.TextBox txtUnidadEdit;
+        protected global::System.Web.UI.WebControls.DropDownList ddlUnidadEdit;
 
         /// <summary>
         /// Control txtPrecioEdit.

@@ -32,6 +32,9 @@ namespace GrupoAnkhalInventario
             public string TipoNombre { get; set; }
             public string Subtipo { get; set; }
             public string Unidad { get; set; }
+            public int? UnidadMedidaID { get; set; }
+            public string UnidadNombre { get; set; }
+            public string UnidadClave { get; set; }
             public decimal PrecioUnitario { get; set; }
             public decimal StockMinimo { get; set; }   // antes: StockCritico
             public decimal StockMaximo { get; set; }   // antes: StockMinimo
@@ -73,6 +76,7 @@ namespace GrupoAnkhalInventario
             if (!IsPostBack)
             {
                 CargarTipos();
+                CargarUnidades();
                 CargarMateriales();
             }
             else
@@ -109,6 +113,31 @@ namespace GrupoAnkhalInventario
             }
         }
 
+        // ── Catálogo unidades de medida ───────────────────────────────────────
+        private void CargarUnidades()
+        {
+            using (var db = NuevoDb(tracking: false))
+            {
+                var unidades = db.UnidadesMedida
+                                 .Where(u => u.Activo)
+                                 .OrderBy(u => u.Nombre)
+                                 .ToList();
+
+                ddlUnidad.Items.Clear();
+                ddlUnidad.Items.Add(new ListItem("-- Seleccione --", "0"));
+                ddlUnidadEdit.Items.Clear();
+                ddlUnidadEdit.Items.Add(new ListItem("-- Seleccione --", "0"));
+
+                foreach (var u in unidades)
+                {
+                    string texto = u.Nombre + " (" + u.Clave + ")";
+                    string valor = u.UnidadMedidaID.ToString();
+                    ddlUnidad.Items.Add(new ListItem(texto, valor));
+                    ddlUnidadEdit.Items.Add(new ListItem(texto, valor));
+                }
+            }
+        }
+
         // ══ CARGA PRINCIPAL CON PAGINACIÓN EN SQL ════════════════════════════
         private void CargarMateriales()
         {
@@ -121,6 +150,9 @@ namespace GrupoAnkhalInventario
 
             using (var db = NuevoDb(tracking: false))
             {
+                var dicUnidades = db.UnidadesMedida
+                    .ToDictionary(u => u.UnidadMedidaID);
+
                 // ── JOIN Materiales + TiposMaterial ──────────────────────────
                 var query =
                     from m in db.Materiales
@@ -129,14 +161,15 @@ namespace GrupoAnkhalInventario
                     {
                         m.MaterialID,
                         m.Codigo,
-                        Descripcion = m.Descripcion,   // columna renombrada
+                        Descripcion = m.Descripcion,
                         m.TipoMaterialID,
                         TipoNombre = tp.Nombre,
                         m.Subtipo,
                         m.Unidad,
+                        m.UnidadMedidaID,
                         m.PrecioUnitario,
-                        StockMinimo = m.StockMinimo,   // columna renombrada (antes StockCritico)
-                        StockMaximo = m.StockMaximo,   // columna renombrada (antes StockMinimo)
+                        StockMinimo = m.StockMinimo,
+                        StockMaximo = m.StockMaximo,
                         m.StockOptimo,
                         m.Activo,
                         m.RowVersion
@@ -222,6 +255,13 @@ namespace GrupoAnkhalInventario
                             TipoNombre = m.TipoNombre,
                             Subtipo = m.Subtipo,
                             Unidad = m.Unidad,
+                            UnidadMedidaID = m.UnidadMedidaID,
+                            UnidadNombre = (m.UnidadMedidaID.HasValue && dicUnidades.ContainsKey(m.UnidadMedidaID.Value))
+                                ? dicUnidades[m.UnidadMedidaID.Value].Nombre
+                                : m.Unidad,
+                            UnidadClave = (m.UnidadMedidaID.HasValue && dicUnidades.ContainsKey(m.UnidadMedidaID.Value))
+                                ? dicUnidades[m.UnidadMedidaID.Value].Clave
+                                : m.Unidad,
                             PrecioUnitario = m.PrecioUnitario,
                             StockMinimo = m.StockMinimo,
                             StockMaximo = m.StockMaximo,
@@ -313,6 +353,13 @@ namespace GrupoAnkhalInventario
                             TipoNombre = m.TipoNombre,
                             Subtipo = m.Subtipo,
                             Unidad = m.Unidad,
+                            UnidadMedidaID = m.UnidadMedidaID,
+                            UnidadNombre = (m.UnidadMedidaID.HasValue && dicUnidades.ContainsKey(m.UnidadMedidaID.Value))
+                                ? dicUnidades[m.UnidadMedidaID.Value].Nombre
+                                : m.Unidad,
+                            UnidadClave = (m.UnidadMedidaID.HasValue && dicUnidades.ContainsKey(m.UnidadMedidaID.Value))
+                                ? dicUnidades[m.UnidadMedidaID.Value].Clave
+                                : m.Unidad,
                             PrecioUnitario = m.PrecioUnitario,
                             StockMinimo = m.StockMinimo,
                             StockMaximo = m.StockMaximo,
@@ -503,7 +550,7 @@ namespace GrupoAnkhalInventario
         protected void btnGuardar_Click(object sender, EventArgs e)
         {
             if (!ValidarCampos(txtCodigo.Text, txtDescripcion.Text,
-                               ddlTipo.SelectedValue, txtUnidad.Text,
+                               ddlTipo.SelectedValue, ddlUnidad.SelectedValue,
                                txtPrecio.Text, "modalNuevo")) return;
 
             string codigoUpper = txtCodigo.Text.Trim().ToUpper();
@@ -536,7 +583,8 @@ namespace GrupoAnkhalInventario
                         Descripcion = descripTrim,
                         TipoMaterialID = int.Parse(ddlTipo.SelectedValue),
                         Subtipo = txtSubtipo.Text.Trim(),
-                        Unidad = txtUnidad.Text.Trim(),
+                        UnidadMedidaID = int.Parse(ddlUnidad.SelectedValue),
+                        Unidad = ddlUnidad.SelectedItem.Text,
                         PrecioUnitario = ParseDec(txtPrecio.Text),
                         StockMinimo = minimo,
                         StockMaximo = maximo,
@@ -566,7 +614,7 @@ namespace GrupoAnkhalInventario
             if (string.IsNullOrWhiteSpace(hdnMaterialID.Value)) return;
 
             if (!ValidarCampos(txtCodigoEdit.Text, txtDescripcionEdit.Text,
-                               ddlTipoEdit.SelectedValue, txtUnidadEdit.Text,
+                               ddlTipoEdit.SelectedValue, ddlUnidadEdit.SelectedValue,
                                txtPrecioEdit.Text, "modalEditar")) return;
 
             int matID = int.Parse(hdnMaterialID.Value);
@@ -618,7 +666,8 @@ namespace GrupoAnkhalInventario
                     mat.Descripcion = descripTrim;
                     mat.TipoMaterialID = int.Parse(ddlTipoEdit.SelectedValue);
                     mat.Subtipo = txtSubtipoEdit.Text.Trim();
-                    mat.Unidad = txtUnidadEdit.Text.Trim();
+                    mat.UnidadMedidaID = int.Parse(ddlUnidadEdit.SelectedValue);
+                    mat.Unidad = ddlUnidadEdit.SelectedItem.Text;
                     mat.PrecioUnitario = ParseDec(txtPrecioEdit.Text);
                     mat.StockMinimo = minimo;
                     mat.StockMaximo = maximo;
@@ -836,8 +885,8 @@ namespace GrupoAnkhalInventario
             { SetMsg("warning", "Descripción inválida", "La descripción es obligatoria y debe tener al menos 3 caracteres.", modal); return false; }
             if (string.IsNullOrWhiteSpace(tipo))
             { SetMsg("warning", "Tipo obligatorio", "Debe seleccionar el tipo de material.", modal); return false; }
-            if (string.IsNullOrWhiteSpace(uni))
-            { SetMsg("warning", "Unidad obligatoria", "La unidad de medida es obligatoria.", modal); return false; }
+            if (string.IsNullOrWhiteSpace(uni) || uni == "0")
+            { SetMsg("warning", "Unidad obligatoria", "Debe seleccionar la unidad de medida.", modal); return false; }
             return true;
         }
 
@@ -888,7 +937,7 @@ namespace GrupoAnkhalInventario
             txtDescripcion.Text = "";
             ddlTipo.SelectedIndex = 0;
             txtSubtipo.Text = "";
-            txtUnidad.Text = "";
+            ddlUnidad.SelectedIndex = 0;
             txtPrecio.Text = "0";
             txtStockMinimo.Text = "0";
             txtStockMaximo.Text = "0";

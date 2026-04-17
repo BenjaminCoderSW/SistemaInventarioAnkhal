@@ -111,12 +111,14 @@
       <Column Name="StockMinimo" Type="System.Decimal" DbType="Decimal(12,4) NOT NULL" CanBeNull="false" />
       <Column Name="UsuarioModifID" Type="System.Int32" DbType="Int" CanBeNull="true" />
       <Column Name="RowVersion" Type="System.Data.Linq.Binary" DbType="rowversion NOT NULL" CanBeNull="false" IsVersion="true" />
+      <Column Name="UnidadMedidaID" Type="System.Int32" DbType="Int" CanBeNull="true" />
       <Association Name="Materiales_ConsumosProduccion" Member="ConsumosProduccion" ThisKey="MaterialID" OtherKey="MaterialID" Type="ConsumosProduccion" />
       <Association Name="Materiales_DetalleEntregas" Member="DetalleEntregas" ThisKey="MaterialID" OtherKey="MaterialID" Type="DetalleEntregas" />
       <Association Name="Materiales_Movimientos" Member="Movimientos" ThisKey="MaterialID" OtherKey="MaterialID" Type="Movimientos" />
       <Association Name="Materiales_ProductoMateriales" Member="ProductoMateriales" ThisKey="MaterialID" OtherKey="MaterialID" Type="ProductoMateriales" />
       <Association Name="Materiales_StockMateriales" Member="StockMateriales" ThisKey="MaterialID" OtherKey="MaterialID" Type="StockMateriales" />
       <Association Name="TiposMaterial_Materiales" Member="TiposMaterial" ThisKey="TipoMaterialID" OtherKey="TipoMaterialID" Type="TiposMaterial" IsForeignKey="true" />
+      <Association Name="UnidadesMedida_Materiales" Member="UnidadesMedida" ThisKey="UnidadMedidaID" OtherKey="UnidadMedidaID" Type="UnidadesMedida" IsForeignKey="true" />
       <Association Name="Usuario_Materiales" Member="Usuario" ThisKey="UsuarioAltaID" OtherKey="ClaveID" Type="Usuario" IsForeignKey="true" />
       <Association Name="Usuario_Materiales1" Member="Usuario1" ThisKey="UsuarioModifID" OtherKey="ClaveID" Type="Usuario" IsForeignKey="true" />
     </Type>
@@ -261,6 +263,15 @@
       <Column Name="Nombre" Type="System.String" DbType="VarChar(100) NOT NULL" CanBeNull="false" />
       <Column Name="Activo" Type="System.Boolean" DbType="Bit NOT NULL" CanBeNull="false" />
       <Association Name="TiposProducto_Productos" Member="Productos" ThisKey="TipoProductoID" OtherKey="TipoProductoID" Type="Productos" />
+    </Type>
+  </Table>
+  <Table Name="dbo.UnidadesMedida" Member="UnidadesMedida">
+    <Type Name="UnidadesMedida">
+      <Column Name="UnidadMedidaID" Type="System.Int32" DbType="Int NOT NULL IDENTITY" IsPrimaryKey="true" IsDbGenerated="true" CanBeNull="false" />
+      <Column Name="Clave" Type="System.String" DbType="VarChar(20) NOT NULL" CanBeNull="false" />
+      <Column Name="Nombre" Type="System.String" DbType="VarChar(100) NOT NULL" CanBeNull="false" />
+      <Column Name="Activo" Type="System.Boolean" DbType="Bit NOT NULL" CanBeNull="false" />
+      <Association Name="UnidadesMedida_Materiales" Member="Materiales" ThisKey="UnidadMedidaID" OtherKey="UnidadMedidaID" Type="Materiales" />
     </Type>
   </Table>
   <Table Name="dbo.Usuario" Member="Usuario">

@@ -204,7 +204,7 @@
                         <asp:BoundField DataField="Descripcion"  HeaderText="Descripción" />
                         <asp:BoundField DataField="TipoNombre"   HeaderText="Tipo" />
                         <asp:BoundField DataField="Subtipo"      HeaderText="Subtipo" />
-                        <asp:BoundField DataField="Unidad"       HeaderText="Unidad" />
+                        <asp:BoundField DataField="UnidadNombre" HeaderText="Unidad" />
                         <asp:BoundField DataField="PrecioUnitario" HeaderText="Precio" DataFormatString="{0:C2}" />
 
                         <asp:TemplateField HeaderText="Stock Global">
@@ -212,7 +212,7 @@
                                 <div>
                                     <span class='nivel-badge <%# GetNivelCss((decimal)Eval("StockGlobal"), (decimal)Eval("StockMinimo"), (decimal)Eval("StockMaximo"), (decimal)Eval("StockOptimo")) %>'>
                                         <%# GetNivelIcon((decimal)Eval("StockGlobal"), (decimal)Eval("StockMinimo"), (decimal)Eval("StockMaximo"), (decimal)Eval("StockOptimo")) %>
-                                        <%# string.Format("{0:N2}", Eval("StockGlobal")) %> <%# Eval("Unidad") %>
+                                        <%# string.Format("{0:N2}", Eval("StockGlobal")) %> <%# Eval("UnidadClave") %>
                                     </span>
                                     <div class="stock-bar-wrap">
                                         <div class="stock-bar-fill <%# GetBarCss((decimal)Eval("StockGlobal"), (decimal)Eval("StockMinimo"), (decimal)Eval("StockMaximo"), (decimal)Eval("StockOptimo")) %>"
@@ -255,7 +255,7 @@
                                         '<%# Server.HtmlEncode((Eval("Descripcion") ?? "").ToString()) %>',
                                         '<%# Eval("TipoMaterialID") %>',
                                         '<%# Server.HtmlEncode((Eval("Subtipo") ?? "").ToString()) %>',
-                                        '<%# Server.HtmlEncode((Eval("Unidad") ?? "").ToString()) %>',
+                                        '<%# Eval("UnidadMedidaID") ?? 0 %>',
                                         '<%# Eval("PrecioUnitario") %>',
                                         '<%# Eval("StockMinimo") %>',
                                         '<%# Eval("StockMaximo") %>',
@@ -383,7 +383,7 @@
           <div class="col-md-4">
             <div class="form-group">
               <label>Unidad de medida <span style="color:red">*</span></label>
-              <asp:TextBox ID="txtUnidad" runat="server" CssClass="form-control" Placeholder="Ej: kg, lt, pza" MaxLength="30"></asp:TextBox>
+              <asp:DropDownList ID="ddlUnidad" runat="server" CssClass="form-control"></asp:DropDownList>
             </div>
           </div>
         </div>
@@ -480,7 +480,7 @@
           <div class="col-md-4">
             <div class="form-group">
               <label>Unidad de medida <span style="color:red">*</span></label>
-              <asp:TextBox ID="txtUnidadEdit" runat="server" CssClass="form-control" MaxLength="30"></asp:TextBox>
+              <asp:DropDownList ID="ddlUnidadEdit" runat="server" CssClass="form-control"></asp:DropDownList>
             </div>
           </div>
         </div>
@@ -573,14 +573,14 @@
     // ── Abrir modales ─────────────────────────────────────────────
     function abrirModalNuevo() { $('#modalNuevo').modal('show'); }
 
-    function abrirModalEditar(id, codigo, descripcion, tipoID, subtipo, unidad, precio, minimo, maximo, optimo, rowVersion) {
+    function abrirModalEditar(id, codigo, descripcion, tipoID, subtipo, unidadMedidaID, precio, minimo, maximo, optimo, rowVersion) {
         document.getElementById('<%= hdnMaterialID.ClientID %>').value          = id;
         document.getElementById('<%= hdnRowVersion.ClientID %>').value          = rowVersion;
         document.getElementById('<%= txtCodigoEdit.ClientID %>').value          = codigo;
         document.getElementById('<%= txtDescripcionEdit.ClientID %>').value     = descripcion;
         document.getElementById('<%= ddlTipoEdit.ClientID %>').value            = tipoID;
         document.getElementById('<%= txtSubtipoEdit.ClientID %>').value         = subtipo;
-        document.getElementById('<%= txtUnidadEdit.ClientID %>').value          = unidad;
+        document.getElementById('<%= ddlUnidadEdit.ClientID %>').value          = unidadMedidaID;
         document.getElementById('<%= txtPrecioEdit.ClientID %>').value          = precio;
         document.getElementById('<%= txtStockMinimoEdit.ClientID %>').value     = minimo;
         document.getElementById('<%= txtStockMaximoEdit.ClientID %>').value     = maximo;
@@ -615,7 +615,7 @@
             '<%= txtCodigo.ClientID %>',
             '<%= txtDescripcion.ClientID %>',
             '<%= ddlTipo.ClientID %>',
-            '<%= txtUnidad.ClientID %>',
+            '<%= ddlUnidad.ClientID %>',
             '<%= txtPrecio.ClientID %>',
             '<%= txtStockMinimo.ClientID %>',
             '<%= txtStockMaximo.ClientID %>',
@@ -628,7 +628,7 @@
             '<%= txtCodigoEdit.ClientID %>',
             '<%= txtDescripcionEdit.ClientID %>',
             '<%= ddlTipoEdit.ClientID %>',
-            '<%= txtUnidadEdit.ClientID %>',
+            '<%= ddlUnidadEdit.ClientID %>',
             '<%= txtPrecioEdit.ClientID %>',
             '<%= txtStockMinimoEdit.ClientID %>',
             '<%= txtStockMaximoEdit.ClientID %>',
@@ -640,7 +640,7 @@
         var cod = document.getElementById(idCod).value.trim();
         var desc = document.getElementById(idDesc).value.trim();
         var tipo = document.getElementById(idTipo).value;
-        var uni = document.getElementById(idUni).value.trim();
+        var uni = document.getElementById(idUni).value;
         var pre = parseFloat(document.getElementById(idPre).value) || 0;
         var min = parseFloat(document.getElementById(idMin).value) || 0;
         var max = parseFloat(document.getElementById(idMax).value) || 0;
@@ -656,7 +656,7 @@
         if (!desc) return warn('La descripción es obligatoria.');
         if (desc.length < 3) return warn('La descripción debe tener al menos 3 caracteres.');
         if (!tipo) return warn('Debe seleccionar el tipo de material.');
-        if (!uni) return warn('La unidad de medida es obligatoria.');
+        if (!uni || uni === '0') return warn('La unidad de medida es obligatoria.');
         if (pre < 0) return warn('El precio no puede ser negativo.');
         if (min < 0 || max < 0 || opt < 0) return warn('Los niveles de stock no pueden ser negativos.');
         if (min >= opt) return warn('El Mínimo debe ser menor al Óptimo.');
