@@ -24,6 +24,15 @@ namespace GrupoAnkhalInventario
         protected global::System.Web.UI.WebControls.Label lblTotalHoy;
 
         /// <summary>
+        /// Control lblTituloTotal.
+        /// </summary>
+        /// <remarks>
+        /// Campo generado automáticamente.
+        /// Para modificarlo, mueva la declaración del campo del archivo del diseñador al archivo de código subyacente.
+        /// </remarks>
+        protected global::System.Web.UI.WebControls.Label lblTituloTotal;
+
+        /// <summary>
         /// Control lblEntradas.
         /// </summary>
         /// <remarks>
@@ -41,7 +50,41 @@ namespace GrupoAnkhalInventario
         /// </remarks>
         protected global::System.Web.UI.WebControls.Label lblTraspasos;
 
-        // lblAjustesMermas fue dividido en lblAjustes y lblMermas (ver al final del archivo)
+        /// <summary>
+        /// Control lblAjustes.
+        /// </summary>
+        /// <remarks>
+        /// Campo generado automáticamente.
+        /// Para modificarlo, mueva la declaración del campo del archivo del diseñador al archivo de código subyacente.
+        /// </remarks>
+        protected global::System.Web.UI.WebControls.Label lblAjustes;
+
+        /// <summary>
+        /// Control lblMermas.
+        /// </summary>
+        /// <remarks>
+        /// Campo generado automáticamente.
+        /// Para modificarlo, mueva la declaración del campo del archivo del diseñador al archivo de código subyacente.
+        /// </remarks>
+        protected global::System.Web.UI.WebControls.Label lblMermas;
+
+        /// <summary>
+        /// Control lblConsumos.
+        /// </summary>
+        /// <remarks>
+        /// Campo generado automáticamente.
+        /// Para modificarlo, mueva la declaración del campo del archivo del diseñador al archivo de código subyacente.
+        /// </remarks>
+        protected global::System.Web.UI.WebControls.Label lblConsumos;
+
+        /// <summary>
+        /// Control lblSalidas.
+        /// </summary>
+        /// <remarks>
+        /// Campo generado automáticamente.
+        /// Para modificarlo, mueva la declaración del campo del archivo del diseñador al archivo de código subyacente.
+        /// </remarks>
+        protected global::System.Web.UI.WebControls.Label lblSalidas;
 
         /// <summary>
         /// Control lblValorHoy.
@@ -51,6 +94,15 @@ namespace GrupoAnkhalInventario
         /// Para modificarlo, mueva la declaración del campo del archivo del diseñador al archivo de código subyacente.
         /// </remarks>
         protected global::System.Web.UI.WebControls.Label lblValorHoy;
+
+        /// <summary>
+        /// Control lblDescValor.
+        /// </summary>
+        /// <remarks>
+        /// Campo generado automáticamente.
+        /// Para modificarlo, mueva la declaración del campo del archivo del diseñador al archivo de código subyacente.
+        /// </remarks>
+        protected global::System.Web.UI.WebControls.Label lblDescValor;
 
         /// <summary>
         /// Control btnNuevo.
@@ -215,6 +267,24 @@ namespace GrupoAnkhalInventario
         protected global::System.Web.UI.WebControls.TextBox txtCantidad;
 
         /// <summary>
+        /// Control ddlUnidadCaptura.
+        /// </summary>
+        /// <remarks>
+        /// Campo generado automáticamente.
+        /// Para modificarlo, mueva la declaración del campo del archivo del diseñador al archivo de código subyacente.
+        /// </remarks>
+        protected global::System.Web.UI.WebControls.DropDownList ddlUnidadCaptura;
+
+        /// <summary>
+        /// Control lblConversionInfo.
+        /// </summary>
+        /// <remarks>
+        /// Campo generado automáticamente.
+        /// Para modificarlo, mueva la declaración del campo del archivo del diseñador al archivo de código subyacente.
+        /// </remarks>
+        protected global::System.Web.UI.WebControls.Label lblConversionInfo;
+
+        /// <summary>
         /// Control txtCosto.
         /// </summary>
         /// <remarks>
@@ -258,35 +328,5 @@ namespace GrupoAnkhalInventario
         /// Para modificarlo, mueva la declaración del campo del archivo del diseñador al archivo de código subyacente.
         /// </remarks>
         protected global::System.Web.UI.WebControls.Literal litJsData;
-
-        /// <summary>
-        /// Control lblAjustes (antes lblAjustesMermas, separado en Cambio 5).
-        /// </summary>
-        protected global::System.Web.UI.WebControls.Label lblAjustes;
-
-        /// <summary>
-        /// Control lblMermas (nuevo, separado de lblAjustes en Cambio 5).
-        /// </summary>
-        protected global::System.Web.UI.WebControls.Label lblMermas;
-
-        /// <summary>
-        /// Control lblTituloTotal — muestra "TOTAL HOY" o "TOTAL FILTRADO" según contexto.
-        /// </summary>
-        protected global::System.Web.UI.WebControls.Label lblTituloTotal;
-
-        /// <summary>
-        /// Control lblDescValor — descripción dinámica del card de valor total.
-        /// </summary>
-        protected global::System.Web.UI.WebControls.Label lblDescValor;
-
-        /// <summary>
-        /// Control lblConsumos — contador de movimientos tipo CONSUMO.
-        /// </summary>
-        protected global::System.Web.UI.WebControls.Label lblConsumos;
-
-        /// <summary>
-        /// Control lblSalidas — contador de movimientos tipo SALIDA.
-        /// </summary>
-        protected global::System.Web.UI.WebControls.Label lblSalidas;
     }
 }

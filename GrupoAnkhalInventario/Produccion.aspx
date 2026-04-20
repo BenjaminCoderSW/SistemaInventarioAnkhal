@@ -326,7 +326,8 @@
                             <thead>
                                 <tr>
                                     <th>Material</th>
-                                    <th>Unidad</th>
+                                    <th>Unidad base</th>
+                                    <th>Unidad captura</th>
                                     <th>Teórico Mín</th>
                                     <th>Teórico Máx</th>
                                     <th>Consumo Real</th>
@@ -334,7 +335,8 @@
                                 </tr>
                             </thead>
                             <tbody>
-                                <asp:Repeater ID="rptConsumos" runat="server">
+                                <asp:Repeater ID="rptConsumos" runat="server"
+                                    OnItemDataBound="rptConsumos_ItemDataBound">
                                     <ItemTemplate>
                                         <tr>
                                             <td>
@@ -344,6 +346,11 @@
                                                 <input type="hidden" name="cantMax" value='<%# Eval("CantidadMax") %>' />
                                             </td>
                                             <td><%# Eval("Unidad") %></td>
+                                            <td>
+                                                <asp:DropDownList ID="ddlUnidadConsumo" runat="server"
+                                                    CssClass="form-control form-control-sm">
+                                                </asp:DropDownList>
+                                            </td>
                                             <td class="text-right teorico-min"><%# Eval("TeoricoMin", "{0:N2}") %></td>
                                             <td class="text-right teorico-max"><%# Eval("TeoricoMax", "{0:N2}") %></td>
                                             <td>

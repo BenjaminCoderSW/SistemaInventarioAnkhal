@@ -678,7 +678,8 @@ namespace GrupoAnkhalInventario
                     db.SubmitChanges(System.Data.Linq.ConflictMode.FailOnFirstConflict);
 
                     CargarMateriales();
-                    SetMsg("success", "¡Actualizado!", "El material fue actualizado correctamente.");
+                    CargarConversiones(matID);
+                    SetMsg("success", "¡Actualizado!", "El material fue actualizado correctamente.", "modalEditar");
                 }
                 catch (System.Data.Linq.ChangeConflictException)
                 {
@@ -923,6 +924,164 @@ namespace GrupoAnkhalInventario
                 }
             }
             return result;
+        }
+
+        // ══ Conversiones de unidad ════════════════════════════════════════════
+
+        /// <summary>
+        /// Postback oculto disparado desde abrirModalEditar JS para cargar conversiones.
+        /// </summary>
+        protected void btnCargarConversiones_Click(object sender, EventArgs e)
+        {
+            int materialID;
+            if (int.TryParse(hdnConvMaterialID.Value, out materialID) && materialID > 0)
+                CargarConversiones(materialID);
+
+            // Re-abrir el modal (mismo patrón que Produccion.aspx)
+            ClientScript.RegisterStartupScript(GetType(), "abrirModalEditar",
+                "window.addEventListener('load',function(){$('#modalEditar').modal('show');});", true);
+        }
+
+        /// <summary>
+        /// Carga el GridView de conversiones para el material indicado.
+        /// También llena ddlUnidadOrigenConv excluyendo la unidad base del material.
+        /// </summary>
+        private void CargarConversiones(int materialID)
+        {
+            hdnConvMaterialID.Value = materialID.ToString();
+
+            using (var db = NuevoDb(false))
+            {
+                // Obtener la unidad base del material
+                var mat = db.Materiales.FirstOrDefault(m => m.MaterialID == materialID);
+                int? unidadBaseID = mat?.UnidadMedidaID;
+
+                // Lista de conversiones activas
+                var convs = (from c in db.ConversionesMaterial
+                             where c.MaterialID == materialID && c.Activo
+                             join u in db.UnidadesMedida on c.UnidadOrigenID equals u.UnidadMedidaID
+                             select new
+                             {
+                                 c.ConversionID,
+                                 UnidadNombre = u.Nombre + " (" + u.Clave + ")",
+                                 c.Factor,
+                                 c.Descripcion
+                             }).ToList();
+
+                gvConversiones.DataSource = convs;
+                gvConversiones.DataBind();
+
+                // Llenar dropdown excluyendo la unidad base
+                var todasUnidades = db.UnidadesMedida
+                    .Where(u => u.Activo && (!unidadBaseID.HasValue || u.UnidadMedidaID != unidadBaseID.Value))
+                    .OrderBy(u => u.Nombre)
+                    .ToList();
+
+                // También excluir las que ya tienen conversión activa
+                var yaUsadas = convs.Select(c => c.ConversionID).ToList();
+                var yaUsadasIDs = db.ConversionesMaterial
+                    .Where(c => c.MaterialID == materialID && c.Activo)
+                    .Select(c => c.UnidadOrigenID)
+                    .ToList();
+
+                ddlUnidadOrigenConv.Items.Clear();
+                ddlUnidadOrigenConv.Items.Add(new ListItem("-- Seleccione unidad --", "0"));
+                foreach (var u in todasUnidades.Where(u => !yaUsadasIDs.Contains(u.UnidadMedidaID)))
+                    ddlUnidadOrigenConv.Items.Add(new ListItem(u.Nombre + " (" + u.Clave + ")", u.UnidadMedidaID.ToString()));
+            }
+        }
+
+        protected void btnAgregarConversion_Click(object sender, EventArgs e)
+        {
+            int materialID;
+            if (!int.TryParse(hdnConvMaterialID.Value, out materialID) || materialID == 0)
+            {
+                SetMsg("warning", "Sin material", "Guarde primero el material antes de agregar conversiones.", "modalEditar");
+                return;
+            }
+
+            // Validación 1: unidad origen seleccionada
+            int unidadOrigenID;
+            if (!int.TryParse(ddlUnidadOrigenConv.SelectedValue, out unidadOrigenID) || unidadOrigenID == 0)
+            {
+                SetMsg("warning", "Campo requerido", "Seleccione la unidad de origen.", "modalEditar");
+                return;
+            }
+
+            // Validación 2: factor > 0
+            decimal factor;
+            if (!decimal.TryParse(txtFactorConv.Text, System.Globalization.NumberStyles.Any,
+                    System.Globalization.CultureInfo.InvariantCulture, out factor) || factor <= 0)
+            {
+                SetMsg("warning", "Factor inválido", "El factor debe ser mayor a cero.", "modalEditar");
+                return;
+            }
+
+            using (var db = NuevoDb(true))
+            {
+                var mat = db.Materiales.FirstOrDefault(m => m.MaterialID == materialID);
+
+                // Validación 3: no puede ser la misma unidad base del material
+                if (mat != null && mat.UnidadMedidaID.HasValue && unidadOrigenID == mat.UnidadMedidaID.Value)
+                {
+                    SetMsg("warning", "Unidad inválida",
+                        "No puedes usar la misma unidad base del material como conversión.", "modalEditar");
+                    return;
+                }
+
+                // Validación 4: no duplicar conversión activa
+                bool yaExiste = db.ConversionesMaterial.Any(c =>
+                    c.MaterialID == materialID && c.UnidadOrigenID == unidadOrigenID && c.Activo);
+                if (yaExiste)
+                {
+                    SetMsg("warning", "Conversión duplicada",
+                        "Ya existe una conversión activa para esa unidad en este material.", "modalEditar");
+                    return;
+                }
+
+                string desc = txtDescConversion.Text.Trim();
+                db.ConversionesMaterial.InsertOnSubmit(new Modelo.ConversionesMaterial
+                {
+                    MaterialID    = materialID,
+                    UnidadOrigenID = unidadOrigenID,
+                    Factor        = factor,
+                    Descripcion   = string.IsNullOrEmpty(desc) ? null : desc,
+                    Activo        = true,
+                    FechaAlta     = AppHelper.Ahora,
+                    UsuarioAltaID = Convert.ToInt32(Session["ClaveID"])
+                });
+                db.SubmitChanges();
+            }
+
+            // Limpiar campos de agregar y recargar
+            txtFactorConv.Text = "";
+            txtDescConversion.Text = "";
+            CargarConversiones(materialID);
+            SetMsg("success", "Conversión agregada", "La conversión se registró correctamente.", "modalEditar");
+        }
+
+        protected void gvConversiones_RowCommand(object sender, GridViewCommandEventArgs e)
+        {
+            if (e.CommandName != "EliminarConv") return;
+
+            int convID;
+            if (!int.TryParse(e.CommandArgument.ToString(), out convID)) return;
+
+            int materialID;
+            int.TryParse(hdnConvMaterialID.Value, out materialID);
+
+            using (var db = NuevoDb(true))
+            {
+                var conv = db.ConversionesMaterial.FirstOrDefault(c => c.ConversionID == convID);
+                if (conv != null)
+                {
+                    conv.Activo = false; // Soft delete — nunca DELETE (preserva historial)
+                    db.SubmitChanges();
+                }
+            }
+
+            CargarConversiones(materialID);
+            SetMsg("success", "Conversión eliminada", "La conversión se desactivó correctamente.", "modalEditar");
         }
 
         private void SetMsg(string icon, string title, string text, string modal = null)

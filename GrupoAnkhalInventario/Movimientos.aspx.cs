@@ -131,7 +131,7 @@ namespace GrupoAnkhalInventario
             }
         }
 
-        // ══ Inyección JS — materiales y productos ════════════════════════════
+        // ══ Inyección JS — materiales, productos y conversiones ═════════════
         private void InjectJsData()
         {
             using (var db = NuevoDb(false))
@@ -140,19 +140,79 @@ namespace GrupoAnkhalInventario
                     .Where(m => m.Activo)
                     .OrderBy(m => m.Codigo)
                     .Select(m => new { id = m.MaterialID, nombre = m.Descripcion,
-                                       unidad = m.Unidad, costo = m.PrecioUnitario, codigo = m.Codigo })
+                                       unidad = m.Unidad, costo = m.PrecioUnitario, codigo = m.Codigo,
+                                       unidadBaseID = m.UnidadMedidaID })
                     .ToList();
 
                 var prods = db.Productos
                     .Where(p => p.Activo)
                     .OrderBy(p => p.Codigo)
                     .Select(p => new { id = p.ProductoID, nombre = p.Descripcion,
-                                       unidad = "", costo = p.PrecioVenta, codigo = p.Codigo })
+                                       unidad = "", costo = p.PrecioVenta, codigo = p.Codigo,
+                                       unidadBaseID = (int?)null })
                     .ToList();
 
+                // Conversiones activas por material, con nombre de la unidad origen
+                var convs = (from c in db.ConversionesMaterial
+                             where c.Activo
+                             join u in db.UnidadesMedida on c.UnidadOrigenID equals u.UnidadMedidaID
+                             select new
+                             {
+                                 materialID = c.MaterialID,
+                                 convID     = c.ConversionID,
+                                 factor     = c.Factor,
+                                 unidNombre = u.Nombre,
+                                 unidClave  = u.Clave
+                             }).ToList();
+
+                // Agrupar conversiones por materialID
+                var convsByMat = convs.GroupBy(c => c.materialID)
+                    .ToDictionary(g => g.Key, g => g.Select(c => new
+                    {
+                        convID     = c.convID,
+                        factor     = c.factor,
+                        unidNombre = c.unidNombre,
+                        unidClave  = c.unidClave
+                    }).ToList());
+
+                // Unidades base (para el primer item del dropdown)
+                var unidades = db.UnidadesMedida.ToDictionary(u => u.UnidadMedidaID);
+
+                // Generar datos JS: para cada material, lista de opciones de unidad
+                // Clave como string porque JavaScriptSerializer no admite Dictionary<int,object>
+                var unidadesCapturaPorMat = new Dictionary<string, object>();
+                foreach (var m in mats)
+                {
+                    var opciones = new List<object>();
+
+                    // Opción 1: unidad base
+                    string baseNombre = m.unidad ?? "";
+                    if (m.unidadBaseID.HasValue && unidades.ContainsKey(m.unidadBaseID.Value))
+                    {
+                        var ub = unidades[m.unidadBaseID.Value];
+                        baseNombre = ub.Nombre + " (" + ub.Clave + ")";
+                    }
+                    opciones.Add(new { val = m.unidadBaseID.HasValue ? m.unidadBaseID.Value.ToString() : "base",
+                                       txt = baseNombre + " — base",
+                                       factor = 1.0 });
+
+                    // Opciones adicionales: conversiones configuradas
+                    if (convsByMat.ContainsKey(m.id))
+                    {
+                        foreach (var c in convsByMat[m.id])
+                        {
+                            opciones.Add(new { val = c.convID.ToString(),
+                                               txt = c.unidNombre + " (" + c.unidClave + ")  [×" + c.factor.ToString("N6") + "]",
+                                               factor = (double)c.factor });
+                        }
+                    }
+
+                    unidadesCapturaPorMat[m.id.ToString()] = opciones;
+                }
+
                 litJsData.Text = string.Format(
-                    "<script>window._materialesData={0}; window._productosData={1};</script>",
-                    _json.Serialize(mats), _json.Serialize(prods));
+                    "<script>window._materialesData={0}; window._productosData={1}; window._conversionesMat={2};</script>",
+                    _json.Serialize(mats), _json.Serialize(prods), _json.Serialize(unidadesCapturaPorMat));
             }
         }
 
@@ -430,8 +490,8 @@ namespace GrupoAnkhalInventario
             int    itemID   = int.Parse(ddlItem.SelectedValue);
 
             // ── Validar cantidad y costo ──────────────────────────────────────
-            decimal cantidad;
-            if (!decimal.TryParse(txtCantidad.Text, out cantidad) || cantidad <= 0)
+            decimal cantidadCapturada;
+            if (!decimal.TryParse(txtCantidad.Text, out cantidadCapturada) || cantidadCapturada <= 0)
             {
                 SetMsg("warning", "Campo inválido",
                     "La cantidad debe ser mayor a cero.", "modalNuevo");
@@ -497,39 +557,90 @@ namespace GrupoAnkhalInventario
             // ── Ejecutar en un solo contexto (atómico con SubmitChanges) ──────
             using (var db = NuevoDb(true))
             {
+                // ── Conversión de unidades ────────────────────────────────────
+                // Invariante: CantidadCapturada × FactorAplicado = Cantidad (en unidad base)
+                // FactorAplicado = 1m siempre (nunca null), incluso para unidad base o productos
+                decimal cantidadBase;
+                int?    unidadCapturaID = null;
+                decimal factorAplicado  = 1m;
+
+                if (tipoItem == "Material")
+                {
+                    var mat = db.Materiales.FirstOrDefault(m => m.MaterialID == itemID);
+                    // El dropdown se llenó en JS (client-side), así que leemos el valor via Request.Form
+                    string unidadVal = Request.Form[ddlUnidadCaptura.UniqueID] ?? "";
+                    int parsedVal;
+
+                    bool esUnidadBase = !int.TryParse(unidadVal, out parsedVal) ||
+                                        (mat != null && mat.UnidadMedidaID.HasValue &&
+                                         parsedVal == mat.UnidadMedidaID.Value);
+
+                    if (esUnidadBase)
+                    {
+                        cantidadBase    = cantidadCapturada;
+                        unidadCapturaID = mat != null ? mat.UnidadMedidaID : null;
+                        factorAplicado  = 1m;
+                    }
+                    else
+                    {
+                        // Es un ConversionID
+                        var conv = db.ConversionesMaterial
+                            .FirstOrDefault(c => c.ConversionID == parsedVal &&
+                                                 c.MaterialID   == itemID    &&
+                                                 c.Activo);
+                        if (conv == null)
+                        {
+                            SetMsg("error", "Conversión inválida",
+                                "No existe conversión activa para esa unidad en este material. " +
+                                "No se puede registrar el movimiento.", "modalNuevo");
+                            return;
+                        }
+                        cantidadBase    = cantidadCapturada * conv.Factor;
+                        unidadCapturaID = conv.UnidadOrigenID;
+                        factorAplicado  = conv.Factor;
+                    }
+                }
+                else
+                {
+                    // Productos: sin conversión
+                    cantidadBase    = cantidadCapturada;
+                    unidadCapturaID = null;   // productos no tienen UnidadMedidaID
+                    factorAplicado  = 1m;
+                }
+
                 bool restaStock = tipoMovID == 3 || tipoMovID == 5 || tipoMovID == 7;
 
-                // ── Validación y actualización de stock por tipo de item ───────
+                // Validar stock usando la cantidad en unidad base
+                if (restaStock && !ValidarStockSuficiente(db, tipoItem, itemID, baseOrigenID, cantidadBase))
+                    return;
+
+                var mov = new Modelo.Movimientos
                 {
-                    // Material o Producto
-                    if (restaStock && !ValidarStockSuficiente(db, tipoItem, itemID, baseOrigenID, cantidad))
-                        return;
+                    TipoMovimientoID  = tipoMovID,
+                    TipoItem          = tipoItem,
+                    MaterialID        = tipoItem == "Material" ? (int?)itemID : null,
+                    ProductoID        = tipoItem == "Producto" ? (int?)itemID : null,
+                    BaseOrigenID      = baseOrigenID,
+                    BaseDestinoID     = baseDestinoID,
+                    Cantidad          = cantidadBase,         // siempre en unidad base
+                    CantidadCapturada = cantidadCapturada,    // original capturado por el usuario
+                    UnidadCapturaID   = unidadCapturaID,      // unidad usada (null para productos)
+                    FactorAplicado    = factorAplicado,        // factor congelado (1 si no hubo conversión)
+                    Costo             = costo,
+                    Observaciones     = string.IsNullOrEmpty(obs) ? null : obs,
+                    RegistradoPorID   = claveID,
+                    FechaMovimiento   = AppHelper.Ahora
+                };
+                db.Movimientos.InsertOnSubmit(mov);
 
-                    var mov = new Modelo.Movimientos
-                    {
-                        TipoMovimientoID = tipoMovID,
-                        TipoItem         = tipoItem,
-                        MaterialID       = tipoItem == "Material" ? (int?)itemID : null,
-                        ProductoID       = tipoItem == "Producto" ? (int?)itemID : null,
-                        BaseOrigenID     = baseOrigenID,
-                        BaseDestinoID    = baseDestinoID,
-                        Cantidad         = cantidad,
-                        Costo            = costo,
-                        Observaciones    = string.IsNullOrEmpty(obs) ? null : obs,
-                        RegistradoPorID  = claveID,
-                        FechaMovimiento  = AppHelper.Ahora
-                    };
-                    db.Movimientos.InsertOnSubmit(mov);
-
-                    switch (tipoMovID)
-                    {
-                        case 1: UpsertStock(db, tipoItem, itemID, baseDestinoID, +cantidad); break;
-                        case 3: UpsertStock(db, tipoItem, itemID, baseOrigenID,  -cantidad);
-                                UpsertStock(db, tipoItem, itemID, baseDestinoID, +cantidad); break;
-                        case 5: UpsertStock(db, tipoItem, itemID, baseOrigenID,  -cantidad); break;
-                        case 6: UpsertStock(db, tipoItem, itemID, baseDestinoID, +cantidad); break;
-                        case 7: UpsertStock(db, tipoItem, itemID, baseOrigenID,  -cantidad); break;
-                    }
+                switch (tipoMovID)
+                {
+                    case 1: UpsertStock(db, tipoItem, itemID, baseDestinoID, +cantidadBase); break;
+                    case 3: UpsertStock(db, tipoItem, itemID, baseOrigenID,  -cantidadBase);
+                            UpsertStock(db, tipoItem, itemID, baseDestinoID, +cantidadBase); break;
+                    case 5: UpsertStock(db, tipoItem, itemID, baseOrigenID,  -cantidadBase); break;
+                    case 6: UpsertStock(db, tipoItem, itemID, baseDestinoID, +cantidadBase); break;
+                    case 7: UpsertStock(db, tipoItem, itemID, baseOrigenID,  -cantidadBase); break;
                 }
 
                 db.SubmitChanges();

@@ -427,5 +427,40 @@ namespace GrupoAnkhalInventario
         /// Para modificarlo, mueva la declaración del campo del archivo del diseñador al archivo de código subyacente.
         /// </remarks>
         protected global::System.Web.UI.WebControls.Button btnGuardarEdit;
+
+        /// <summary>
+        /// Control hdnConvMaterialID.
+        /// </summary>
+        protected global::System.Web.UI.WebControls.HiddenField hdnConvMaterialID;
+
+        /// <summary>
+        /// Control gvConversiones.
+        /// </summary>
+        protected global::System.Web.UI.WebControls.GridView gvConversiones;
+
+        /// <summary>
+        /// Control ddlUnidadOrigenConv.
+        /// </summary>
+        protected global::System.Web.UI.WebControls.DropDownList ddlUnidadOrigenConv;
+
+        /// <summary>
+        /// Control txtFactorConv.
+        /// </summary>
+        protected global::System.Web.UI.WebControls.TextBox txtFactorConv;
+
+        /// <summary>
+        /// Control txtDescConversion.
+        /// </summary>
+        protected global::System.Web.UI.WebControls.TextBox txtDescConversion;
+
+        /// <summary>
+        /// Control btnAgregarConversion.
+        /// </summary>
+        protected global::System.Web.UI.WebControls.Button btnAgregarConversion;
+
+        /// <summary>
+        /// Control btnCargarConversiones.
+        /// </summary>
+        protected global::System.Web.UI.WebControls.Button btnCargarConversiones;
     }
 }

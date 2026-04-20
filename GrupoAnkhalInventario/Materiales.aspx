@@ -285,6 +285,7 @@
 <!-- ── HIDDEN FIELDS ────────────────────────────── -->
 <asp:HiddenField ID="hdnToggleMaterialID" runat="server" Value="" />
 <asp:Button    ID="btnToggleHidden"       runat="server" CssClass="d-none" OnClick="btnToggleHidden_Click" />
+<asp:Button    ID="btnCargarConversiones" runat="server" CssClass="d-none" OnClick="btnCargarConversiones_Click" />
 <asp:HiddenField ID="hdnMensajePendiente" runat="server" Value="" />
 <asp:HiddenField ID="hdnNivelFiltro"      runat="server" Value="" />
 <asp:HiddenField ID="hdnNivelBaseMaterialID" runat="server" Value="" />
@@ -517,6 +518,66 @@
             </div>
           </div>
         </div>
+
+        <!-- ── Conversiones de unidad ───────────────────────────── -->
+        <hr />
+        <h6 style="color:#003366;font-weight:600;"><i class="fas fa-exchange-alt"></i> Conversiones de unidad</h6>
+        <p class="text-muted small">Permite registrar movimientos en unidades alternativas (ej. cajas, sacos). La cantidad se convierte automáticamente a la unidad base antes de afectar el stock.</p>
+
+        <!-- Lista de conversiones activas -->
+        <asp:HiddenField ID="hdnConvMaterialID" runat="server" />
+        <div class="table-responsive mb-2">
+          <asp:GridView ID="gvConversiones" runat="server" AutoGenerateColumns="False"
+              CssClass="table table-bordered table-sm"
+              EmptyDataText="Sin conversiones configuradas para este material."
+              DataKeyNames="ConversionID"
+              OnRowCommand="gvConversiones_RowCommand">
+            <Columns>
+              <asp:BoundField DataField="UnidadNombre" HeaderText="Unidad origen" />
+              <asp:BoundField DataField="Factor" HeaderText="Factor" DataFormatString="{0:N6}" />
+              <asp:BoundField DataField="Descripcion" HeaderText="Descripción" />
+              <asp:TemplateField HeaderText="">
+                <ItemTemplate>
+                  <asp:LinkButton ID="lnkEliminarConv" runat="server"
+                      CommandName="EliminarConv"
+                      CommandArgument='<%# Eval("ConversionID") %>'
+                      CssClass="btn btn-sm btn-outline-danger"
+                      OnClientClick="return confirm('¿Eliminar esta conversión?');">
+                    <i class="fas fa-times"></i>
+                  </asp:LinkButton>
+                </ItemTemplate>
+              </asp:TemplateField>
+            </Columns>
+          </asp:GridView>
+        </div>
+
+        <!-- Agregar nueva conversión -->
+        <div class="card card-body bg-light mb-2 p-2">
+          <div class="row align-items-end">
+            <div class="col-md-4">
+              <label class="small font-weight-bold">Unidad origen <span class="text-danger">*</span></label>
+              <asp:DropDownList ID="ddlUnidadOrigenConv" runat="server" CssClass="form-control form-control-sm">
+              </asp:DropDownList>
+            </div>
+            <div class="col-md-2">
+              <label class="small font-weight-bold">Factor <span class="text-danger">*</span></label>
+              <asp:TextBox ID="txtFactorConv" runat="server" CssClass="form-control form-control-sm"
+                  TextMode="Number" min="0.000001" step="0.000001" Placeholder="ej: 25"></asp:TextBox>
+            </div>
+            <div class="col-md-4">
+              <label class="small font-weight-bold">Descripción</label>
+              <asp:TextBox ID="txtDescConversion" runat="server" CssClass="form-control form-control-sm"
+                  Placeholder="ej: 1 caja = 25 kg" MaxLength="200"></asp:TextBox>
+            </div>
+            <div class="col-md-2">
+              <asp:Button ID="btnAgregarConversion" runat="server" Text="+ Agregar"
+                  CssClass="btn btn-primary btn-sm btn-block"
+                  OnClick="btnAgregarConversion_Click" />
+            </div>
+          </div>
+          <small class="text-muted mt-1 d-block"><strong>Fórmula:</strong> Cantidad capturada &times; Factor = Cantidad en unidad base</small>
+        </div>
+
       </div>
       <div class="modal-footer">
         <asp:Button ID="btnGuardarEdit" runat="server" Text="Guardar Cambios"
@@ -576,6 +637,7 @@
     function abrirModalEditar(id, codigo, descripcion, tipoID, subtipo, unidadMedidaID, precio, minimo, maximo, optimo, rowVersion) {
         document.getElementById('<%= hdnMaterialID.ClientID %>').value          = id;
         document.getElementById('<%= hdnRowVersion.ClientID %>').value          = rowVersion;
+        document.getElementById('<%= hdnConvMaterialID.ClientID %>').value      = id;
         document.getElementById('<%= txtCodigoEdit.ClientID %>').value          = codigo;
         document.getElementById('<%= txtDescripcionEdit.ClientID %>').value     = descripcion;
         document.getElementById('<%= ddlTipoEdit.ClientID %>').value            = tipoID;
@@ -585,7 +647,8 @@
         document.getElementById('<%= txtStockMinimoEdit.ClientID %>').value     = minimo;
         document.getElementById('<%= txtStockMaximoEdit.ClientID %>').value     = maximo;
         document.getElementById('<%= txtStockOptimoEdit.ClientID %>').value     = optimo;
-        $('#modalEditar').modal('show');
+        // Cargar conversiones via postback (recarga la tabla y el dropdown de unidades)
+        document.getElementById('<%= btnCargarConversiones.ClientID %>').click();
     }
 
     // ── Toggle ────────────────────────────────────────────────────

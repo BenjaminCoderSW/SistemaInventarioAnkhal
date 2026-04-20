@@ -2,7 +2,9 @@ using System;
 using System.Collections.Generic;
 using System.Configuration;
 using System.Data.SqlClient;
+using System.Linq;
 using System.Web.SessionState;
+using GrupoAnkhalInventario.Modelo;
 
 namespace GrupoAnkhalInventario.Helpers
 {
@@ -90,6 +92,48 @@ namespace GrupoAnkhalInventario.Helpers
             public int BaseID { get; set; }
             public string Codigo { get; set; }
             public string Nombre { get; set; }
+        }
+
+        /// <summary>
+        /// Convierte una cantidad capturada a la unidad base del material.
+        /// <para>
+        /// Si unidadSeleccionadaID coincide con unidadBaseID → factor = 1, sin consulta a BD.
+        /// Si difieren → busca la conversión activa por conversionID; lanza si no existe.
+        /// </para>
+        /// <para>
+        /// Invariante de auditoría: CantidadCapturada × FactorAplicado = Cantidad (unidad base).
+        /// </para>
+        /// </summary>
+        /// <param name="cantidadCapturada">Lo que el usuario capturó.</param>
+        /// <param name="conversionID">ID en ConversionesMaterial (null si es la unidad base).</param>
+        /// <param name="unidadBaseID">UnidadMedidaID del material.</param>
+        /// <param name="unidadSeleccionadaID">ID de la unidad que escogió el usuario.</param>
+        /// <param name="db">DataContext LINQ to SQL activo.</param>
+        /// <returns>Cantidad equivalente en la unidad base.</returns>
+        /// <exception cref="InvalidOperationException">
+        /// Cuando no existe conversión activa para la combinación material/unidad.
+        /// </exception>
+        public static decimal AplicarConversion(
+            decimal cantidadCapturada,
+            int?    conversionID,
+            int     unidadBaseID,
+            int     unidadSeleccionadaID,
+            InventarioAnkhalDBDataContext db)
+        {
+            // Caso 1: el usuario capturó en la unidad base → factor = 1
+            if (unidadSeleccionadaID == unidadBaseID)
+                return cantidadCapturada;
+
+            // Caso 2: conversión requerida
+            var conv = db.ConversionesMaterial
+                .FirstOrDefault(c => c.ConversionID == conversionID && c.Activo);
+
+            if (conv == null)
+                throw new InvalidOperationException(
+                    "No existe conversión activa para la unidad seleccionada. " +
+                    "No se puede registrar el movimiento.");
+
+            return cantidadCapturada * conv.Factor;
         }
     }
 }

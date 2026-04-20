@@ -1,4 +1,4 @@
-﻿<%@ Page Title="Movimientos" Language="C#" MasterPageFile="~/Site.Master" AutoEventWireup="true" CodeBehind="Movimientos.aspx.cs" Inherits="GrupoAnkhalInventario.Movimientos" %>
+﻿<%@ Page Title="Movimientos" Language="C#" MasterPageFile="~/Site.Master" AutoEventWireup="true" CodeBehind="Movimientos.aspx.cs" Inherits="GrupoAnkhalInventario.Movimientos" EnableEventValidation="false" %>
 
 <asp:Content ID="Content1" ContentPlaceHolderID="head" runat="server">
     <link href="css/gridviewPantalla.css" rel="stylesheet" />
@@ -359,17 +359,27 @@
           </div>
         </div>
 
-        <!-- Fila 4: Cantidad + Costo -->
+        <!-- Fila 4: Cantidad + Unidad captura + Costo -->
         <div class="row">
-          <div class="col-md-4">
+          <div class="col-md-3">
             <div class="form-group">
               <label>Cantidad <span style="color:red">*</span></label>
               <asp:TextBox ID="txtCantidad" runat="server" CssClass="form-control" TextMode="Number"
                   Placeholder="0" min="0.01" step="0.01"
-                  onkeyup="calcularTotal();" onchange="calcularTotal();"></asp:TextBox>
+                  onkeyup="calcularTotal(); actualizarInfoConversion();"
+                  onchange="calcularTotal(); actualizarInfoConversion();"></asp:TextBox>
             </div>
           </div>
-          <div class="col-md-4">
+          <div class="col-md-3" id="divUnidadCaptura" style="display:none;">
+            <div class="form-group">
+              <label>Unidad de captura</label>
+              <asp:DropDownList ID="ddlUnidadCaptura" runat="server" CssClass="form-control"
+                  onchange="actualizarInfoConversion();"></asp:DropDownList>
+              <asp:Label ID="lblConversionInfo" runat="server" CssClass="text-muted small mt-1 d-block"
+                  Text=""></asp:Label>
+            </div>
+          </div>
+          <div class="col-md-2" id="divCosto">
             <div class="form-group">
               <label>Costo unitario <span style="color:red">*</span></label>
               <div class="input-group">
@@ -453,6 +463,10 @@
         document.getElementById('<%= txtObservaciones.ClientID %>').value = '';
         document.getElementById('divBaseOrigen').style.display = 'none';
         document.getElementById('divBaseDestino').style.display = 'none';
+        document.getElementById('divUnidadCaptura').style.display = 'none';
+        document.getElementById('<%= lblConversionInfo.ClientID %>').innerText = '';
+        var ddlUC = document.getElementById('<%= ddlUnidadCaptura.ClientID %>');
+        if (ddlUC) ddlUC.innerHTML = '';
         $('#modalNuevo').modal('show');
     }
 
@@ -500,6 +514,9 @@
                 ddl.appendChild(opt);
             });
         }
+        // Ocultar unidad de captura al cambiar tipo de item
+        document.getElementById('divUnidadCaptura').style.display = 'none';
+        document.getElementById('<%= lblConversionInfo.ClientID %>').innerText = '';
     }
 
     // ── Auto-llenar costo al seleccionar item ───────────────────────
@@ -508,7 +525,15 @@
         if (txtCosto.disabled) return; // Transferencia: no modificar
         var ddl  = document.getElementById('<%= ddlItem.ClientID %>');
         var id   = parseInt(ddl.value);
-        if (!id) return;
+        var divUC = document.getElementById('divUnidadCaptura');
+        var ddlUC = document.getElementById('<%= ddlUnidadCaptura.ClientID %>');
+        var lblCI = document.getElementById('<%= lblConversionInfo.ClientID %>');
+
+        if (!id) {
+            divUC.style.display = 'none';
+            lblCI.innerText = '';
+            return;
+        }
         var tipo  = document.getElementById('<%= hdnTipoItemSeleccionado.ClientID %>').value;
         var lista = tipo === 'Producto' ? window._productosData
                   : window._materialesData;
@@ -516,6 +541,49 @@
         if (item) {
             txtCosto.value = (item.costo || 0).toFixed(2);
             calcularTotal();
+        }
+
+        // Poblar unidades de captura (solo para materiales con conversiones)
+        var convKey = id.toString();
+        if (tipo === 'Material' && window._conversionesMat &&
+            window._conversionesMat[convKey] && window._conversionesMat[convKey].length > 1) {
+            ddlUC.innerHTML = '';
+            window._conversionesMat[convKey].forEach(function (op) {
+                var opt = document.createElement('option');
+                opt.value = op.val;
+                opt.text  = op.txt;
+                opt.setAttribute('data-factor', op.factor);
+                ddlUC.appendChild(opt);
+            });
+            divUC.style.display = 'block';
+            actualizarInfoConversion();
+        } else {
+            divUC.style.display = 'none';
+            lblCI.innerText = '';
+        }
+    }
+
+    // ── Actualizar label de conversión en tiempo real ───────────────
+    function actualizarInfoConversion() {
+        var divUC = document.getElementById('divUnidadCaptura');
+        var lblCI = document.getElementById('<%= lblConversionInfo.ClientID %>');
+        if (!divUC || divUC.style.display === 'none') return;
+
+        var ddlUC = document.getElementById('<%= ddlUnidadCaptura.ClientID %>');
+        if (!ddlUC || ddlUC.options.length === 0) { lblCI.innerText = ''; return; }
+
+        var selectedOpt = ddlUC.options[ddlUC.selectedIndex];
+        var factor   = parseFloat(selectedOpt.getAttribute('data-factor')) || 1;
+        var cantidad = parseFloat(document.getElementById('<%= txtCantidad.ClientID %>').value) || 0;
+
+        if (factor === 1) {
+            lblCI.innerText = 'Cantidad en unidad base. Sin conversión.';
+        } else {
+            var cantBase   = cantidad * factor;
+            // Nombre de la unidad base = primer item del dropdown (strip " — base")
+            var baseNombre = ddlUC.options[0].text.replace(/\s*[—\-]\s*base\s*$/i, '').trim();
+            var cantStr    = (cantBase % 1 === 0) ? cantBase.toString() : cantBase.toFixed(4).replace(/\.?0+$/, '');
+            lblCI.innerText = 'Captura: ' + cantidad + ' → ' + cantStr + ' ' + baseNombre + ' en stock';
         }
     }
 

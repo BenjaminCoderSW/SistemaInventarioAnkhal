@@ -58,18 +58,27 @@ namespace GrupoAnkhalInventario
         }
 
 
+        public class OpcionUnidadVM
+        {
+            public string  Valor  { get; set; }   // "base:{UnidadMedidaID}" o "conv:{ConversionID}"
+            public string  Texto  { get; set; }
+            public decimal Factor { get; set; }
+        }
+
         public class ConsumoVM
         {
-            public int     MaterialID     { get; set; }
-            public string  MaterialCodigo { get; set; }
-            public string  MaterialNombre { get; set; }
-            public string  Unidad         { get; set; }
-            public decimal CantidadMin    { get; set; }
-            public decimal CantidadMax    { get; set; }
-            public decimal TeoricoMin     { get; set; }
-            public decimal TeoricoMax     { get; set; }
-            public decimal ConsumoReal    { get; set; }
-            public decimal StockActual    { get; set; }
+            public int     MaterialID           { get; set; }
+            public int?    UnidadBaseID         { get; set; }   // UnidadMedidaID del material
+            public string  MaterialCodigo       { get; set; }
+            public string  MaterialNombre       { get; set; }
+            public string  Unidad               { get; set; }
+            public decimal CantidadMin          { get; set; }
+            public decimal CantidadMax          { get; set; }
+            public decimal TeoricoMin           { get; set; }
+            public decimal TeoricoMax           { get; set; }
+            public decimal ConsumoReal          { get; set; }
+            public decimal StockActual          { get; set; }
+            public List<OpcionUnidadVM> UnidadesDisponibles { get; set; } = new List<OpcionUnidadVM>();
         }
 
         // ══ Page_Load ════════════════════════════════════════════════════════
@@ -414,6 +423,7 @@ namespace GrupoAnkhalInventario
                            select new ConsumoVM
                            {
                                MaterialID     = m.MaterialID,
+                               UnidadBaseID   = m.UnidadMedidaID,
                                MaterialCodigo = m.Codigo,
                                MaterialNombre = m.Descripcion,
                                Unidad         = m.Unidad,
@@ -440,6 +450,52 @@ namespace GrupoAnkhalInventario
                                            : 0m;
                 }
 
+                // Poblar unidades de captura por material
+                if (bom.Any())
+                {
+                    var matIDsList = bom.Select(x => x.MaterialID).ToList();
+                    var conversiones = (from c in db.ConversionesMaterial
+                                        where c.Activo && matIDsList.Contains(c.MaterialID)
+                                        join u in db.UnidadesMedida
+                                            on c.UnidadOrigenID equals u.UnidadMedidaID
+                                        select new { c.MaterialID, c.ConversionID, c.Factor,
+                                                     u.Nombre, u.Clave }).ToList();
+
+                    var unidades = db.UnidadesMedida
+                        .ToDictionary(u => u.UnidadMedidaID);
+
+                    foreach (var item in bom)
+                    {
+                        item.UnidadesDisponibles = new List<OpcionUnidadVM>();
+
+                        // Opción base
+                        string baseTexto = item.Unidad ?? "";
+                        if (item.UnidadBaseID.HasValue && unidades.ContainsKey(item.UnidadBaseID.Value))
+                        {
+                            var ub = unidades[item.UnidadBaseID.Value];
+                            baseTexto = ub.Nombre + " (" + ub.Clave + ")";
+                        }
+                        item.UnidadesDisponibles.Add(new OpcionUnidadVM
+                        {
+                            Valor  = "base:" + (item.UnidadBaseID.HasValue
+                                        ? item.UnidadBaseID.Value.ToString() : "0"),
+                            Texto  = baseTexto + " — base",
+                            Factor = 1m
+                        });
+
+                        // Opciones de conversión
+                        foreach (var c in conversiones.Where(x => x.MaterialID == item.MaterialID))
+                        {
+                            item.UnidadesDisponibles.Add(new OpcionUnidadVM
+                            {
+                                Valor  = "conv:" + c.ConversionID,
+                                Texto  = c.Nombre + " (" + c.Clave + ")  [×" + c.Factor.ToString("N6") + "]",
+                                Factor = c.Factor
+                            });
+                        }
+                    }
+                }
+
                 if (!bom.Any())
                 {
                     pnlConsumos.Visible    = false;
@@ -457,6 +513,29 @@ namespace GrupoAnkhalInventario
 
             ClientScript.RegisterStartupScript(GetType(), "abrirModal",
                 "window.addEventListener('load',function(){$('#modalRegistrar').modal('show');});", true);
+        }
+
+        // ══ ItemDataBound del repeater de consumos ═══════════════════════════
+        protected void rptConsumos_ItemDataBound(object sender, RepeaterItemEventArgs e)
+        {
+            if (e.Item.ItemType != ListItemType.Item &&
+                e.Item.ItemType != ListItemType.AlternatingItem) return;
+
+            var vm  = e.Item.DataItem as ConsumoVM;
+            var ddl = e.Item.FindControl("ddlUnidadConsumo") as System.Web.UI.WebControls.DropDownList;
+            if (ddl == null || vm == null) return;
+
+            ddl.Items.Clear();
+            if (vm.UnidadesDisponibles != null)
+            {
+                foreach (var op in vm.UnidadesDisponibles)
+                    ddl.Items.Add(new ListItem(op.Texto, op.Valor));
+            }
+            ddl.DataBind();
+
+            // Si solo hay una opción (unidad base, sin conversiones), deshabilitar el dropdown
+            if (ddl.Items.Count <= 1)
+                ddl.Enabled = false;
         }
 
         // ══ Guardar producción ═══════════════════════════════════════════════
@@ -513,26 +592,43 @@ namespace GrupoAnkhalInventario
             string[] arrConsumos = Request.Form.GetValues("consumoReal") ?? new string[0];
             string[] arrCantMins = Request.Form.GetValues("cantMin")     ?? new string[0];
             string[] arrCantMaxs = Request.Form.GetValues("cantMax")     ?? new string[0];
+            // Unidades de captura: server controls dentro del Repeater → leer via Request.Form.AllKeys
+            string[] arrUnidades = Request.Form.AllKeys
+                .Where(k => k != null && k.EndsWith("$ddlUnidadConsumo"))
+                .OrderBy(k => k)
+                .Select(k => Request.Form[k])
+                .ToArray();
 
-            var listaConsumos = new List<(int MatID, decimal CantReal, decimal CantMin, decimal CantMax)>();
+            var listaConsumos = new List<(int MatID, decimal CantCapturada, string UnidadVal, decimal CantMin, decimal CantMax)>();
             for (int i = 0; i < arrMatIDs.Length; i++)
             {
                 int matID;
                 if (!int.TryParse(arrMatIDs[i], out matID)) continue;
-                decimal cantReal = ParseDecimal(i < arrConsumos.Length ? arrConsumos[i] : "0");
-                decimal cantMin  = ParseDecimal(i < arrCantMins.Length ? arrCantMins[i]  : "0");
-                decimal cantMax  = ParseDecimal(i < arrCantMaxs.Length ? arrCantMaxs[i]  : "0");
-                listaConsumos.Add((matID, cantReal, cantMin, cantMax));
+                decimal cantCapturada = ParseDecimal(i < arrConsumos.Length ? arrConsumos[i] : "0");
+                decimal cantMin       = ParseDecimal(i < arrCantMins.Length ? arrCantMins[i]  : "0");
+                decimal cantMax       = ParseDecimal(i < arrCantMaxs.Length ? arrCantMaxs[i]  : "0");
+                string  unidadVal     = i < arrUnidades.Length ? (arrUnidades[i] ?? "") : "";
+                listaConsumos.Add((matID, cantCapturada, unidadVal, cantMin, cantMax));
             }
 
-            // ── Pre-validar stock de materiales antes de tocar la BD
-            using (var dbVal = NuevoDb(false))
+            // ── Pre-validar stock con la cantidad ya convertida a unidad base
+            try
             {
-                foreach (var c in listaConsumos.Where(c => c.CantReal > 0))
+                using (var dbVal = NuevoDb(false))
                 {
-                    if (!ValidarStockSuficiente(dbVal, c.MatID, baseID, c.CantReal))
-                        return;
+                    foreach (var c in listaConsumos.Where(c => c.CantCapturada > 0))
+                    {
+                        decimal factor   = ObtenerFactor(c.MatID, c.UnidadVal, dbVal);
+                        decimal cantBase = c.CantCapturada * factor;
+                        if (!ValidarStockSuficiente(dbVal, c.MatID, baseID, cantBase))
+                            return;
+                    }
                 }
+            }
+            catch (InvalidOperationException ex)
+            {
+                SetMsg("error", "Conversión inválida", ex.Message, "modalRegistrar");
+                return;
             }
 
             // ── Guardar todo en una transacción explícita del DataContext
@@ -579,52 +675,58 @@ namespace GrupoAnkhalInventario
                             // 2. Consumos de materiales del BOM
                             foreach (var c in listaConsumos)
                             {
+                                // Resolver conversión: cantBase = lo que afecta inventario
+                                decimal factor        = ObtenerFactor(c.MatID, c.UnidadVal, db);
+                                decimal cantBase      = c.CantCapturada * factor;
+                                int?    unidCapturaID = ObtenerUnidadCapturaID(c.MatID, c.UnidadVal, db);
+
                                 decimal tMin = c.CantMin * totalProd;
                                 decimal tMax = c.CantMax * totalProd;
-                                string notaConsumo = c.CantReal > tMax
-                                    ? string.Format("Merma: real {0:N2} > m\u00e1x {1:N2}", c.CantReal, tMax)
-                                    : c.CantReal < tMin
-                                        ? string.Format("Bajo m\u00ednimo: real {0:N2} < m\u00edn {1:N2}", c.CantReal, tMin)
+                                string notaConsumo = cantBase > tMax
+                                    ? string.Format("Merma: real {0:N2} > m\u00e1x {1:N2}", cantBase, tMax)
+                                    : cantBase < tMin
+                                        ? string.Format("Bajo m\u00ednimo: real {0:N2} < m\u00edn {1:N2}", cantBase, tMin)
                                         : string.Format("Dentro de rango ({0:N2}\u2013{1:N2})", tMin, tMax);
 
                                 db.ConsumosProduccion.InsertOnSubmit(new ConsumosProduccion
                                 {
                                     ProduccionID       = prod.ProduccionID,
                                     MaterialID         = c.MatID,
-                                    CantidadReal       = c.CantReal,
+                                    CantidadReal       = cantBase,          // en unidad base
                                     CantidadTeoricaMin = tMin,
                                     CantidadTeoricaMax = tMax,
-                                    EsMerma            = (c.CantReal > tMax),
+                                    EsMerma            = (cantBase > tMax),
                                     Notas              = notaConsumo
                                 });
 
-                                if (c.CantReal > 0)
+                                if (cantBase > 0)
                                 {
                                     decimal costoMat = precios.ContainsKey(c.MatID)
                                                        ? precios[c.MatID] : 0m;
 
                                     // Movimiento tipo CONSUMO vinculado a esta producción
-                                    // Nota: usamos Modelo.Movimientos para evitar ambigüedad
-                                    // con la clase de página GrupoAnkhalInventario.Movimientos
                                     db.Movimientos.InsertOnSubmit(new Modelo.Movimientos
                                     {
-                                        TipoMovimientoID = tipoConsumoID,
-                                        TipoItem         = "Material",
-                                        MaterialID       = c.MatID,
-                                        ProductoID       = null,
-                                        BaseOrigenID     = baseID,
-                                        BaseDestinoID    = null,
-                                        Cantidad         = c.CantReal,
-                                        Costo            = costoMat,
-                                        ProduccionID     = prod.ProduccionID,
-                                        EntregaID        = null,
-                                        Observaciones    = string.Format("Producción #{0}", prod.ProduccionID),
-                                        RegistradoPorID  = claveID,
-                                        FechaMovimiento  = AppHelper.Ahora
+                                        TipoMovimientoID  = tipoConsumoID,
+                                        TipoItem          = "Material",
+                                        MaterialID        = c.MatID,
+                                        ProductoID        = null,
+                                        BaseOrigenID      = baseID,
+                                        BaseDestinoID     = null,
+                                        Cantidad          = cantBase,            // en unidad base → afecta stock
+                                        CantidadCapturada = c.CantCapturada,     // original capturado
+                                        UnidadCapturaID   = unidCapturaID,       // null si se capturó en unidad base
+                                        FactorAplicado    = factor,               // factor congelado (1 si no hubo conversión)
+                                        Costo             = costoMat,
+                                        ProduccionID      = prod.ProduccionID,
+                                        EntregaID         = null,
+                                        Observaciones     = string.Format("Producción #{0}", prod.ProduccionID),
+                                        RegistradoPorID   = claveID,
+                                        FechaMovimiento   = AppHelper.Ahora
                                     });
 
-                                    // Descontar stock del material en la base
-                                    UpsertStockMaterial(db, c.MatID, baseID, -c.CantReal);
+                                    // Descontar stock del material en la base (en unidad base)
+                                    UpsertStockMaterial(db, c.MatID, baseID, -cantBase);
                                 }
                             }
 
@@ -864,6 +966,65 @@ namespace GrupoAnkhalInventario
                 case "UNICO":  return "badge badge-unico";
                 default:       return "badge badge-secondary";
             }
+        }
+
+        // ══ Conversión de unidades ════════════════════════════════════════════
+        /// <summary>
+        /// Retorna el factor de conversión para el valor seleccionado en ddlUnidadConsumo.
+        /// selectedVal: "base:{UnidadMedidaID}" o "conv:{ConversionID}"
+        /// Throws InvalidOperationException si la conversión no existe o está inactiva.
+        /// </summary>
+        private decimal ObtenerFactor(int matID, string selectedVal,
+            InventarioAnkhalDBDataContext db)
+        {
+            if (string.IsNullOrEmpty(selectedVal) || selectedVal.StartsWith("base:"))
+                return 1m;   // unidad base → factor = 1
+
+            if (selectedVal.StartsWith("conv:"))
+            {
+                int convID;
+                if (!int.TryParse(selectedVal.Substring(5), out convID))
+                    return 1m;
+
+                var conv = db.ConversionesMaterial
+                    .FirstOrDefault(c => c.ConversionID == convID &&
+                                         c.MaterialID   == matID  &&
+                                         c.Activo);
+                if (conv == null)
+                    throw new InvalidOperationException(
+                        string.Format(
+                            "No existe conversión activa (ConversionID={0}) para el material ID={1}. " +
+                            "No se puede registrar la producción.", convID, matID));
+
+                return conv.Factor;
+            }
+
+            return 1m;   // fallback
+        }
+
+        /// <summary>
+        /// Retorna el UnidadMedidaID de la unidad en que se capturó.
+        /// null si se capturó directamente en la unidad base del material.
+        /// </summary>
+        private int? ObtenerUnidadCapturaID(int matID, string selectedVal,
+            InventarioAnkhalDBDataContext db)
+        {
+            if (string.IsNullOrEmpty(selectedVal) || selectedVal.StartsWith("base:"))
+                return null;   // capturado en unidad base → no hay "unidad de captura alternativa"
+
+            if (selectedVal.StartsWith("conv:"))
+            {
+                int convID;
+                if (!int.TryParse(selectedVal.Substring(5), out convID)) return null;
+
+                var conv = db.ConversionesMaterial
+                    .FirstOrDefault(c => c.ConversionID == convID &&
+                                         c.MaterialID   == matID  &&
+                                         c.Activo);
+                return conv?.UnidadOrigenID;
+            }
+
+            return null;
         }
 
         // ══ Utilidades ════════════════════════════════════════════════════════
