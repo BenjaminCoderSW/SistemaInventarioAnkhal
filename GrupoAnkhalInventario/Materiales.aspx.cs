@@ -937,6 +937,11 @@ namespace GrupoAnkhalInventario
             if (int.TryParse(hdnConvMaterialID.Value, out materialID) && materialID > 0)
                 CargarConversiones(materialID);
 
+            // Recargar el grid para que RowDataBound inyecte los divs acc_XXX.
+            // Sin esto, después del postback los botones "Ver bases" no encuentran
+            // sus elementos en el DOM y no hacen nada.
+            CargarMateriales();
+
             // Re-abrir el modal (mismo patrón que Produccion.aspx)
             ClientScript.RegisterStartupScript(GetType(), "abrirModalEditar",
                 "window.addEventListener('load',function(){$('#modalEditar').modal('show');});", true);

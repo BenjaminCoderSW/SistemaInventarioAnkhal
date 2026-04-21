@@ -631,6 +631,23 @@
         document.getElementById('<%= btnBuscar.ClientID %>').click();
     }
 
+    // ── Limpieza de modal al cerrar (evita backdrop fantasma y bug aria-hidden) ──
+    window.addEventListener('load', function () {
+        // Mover el foco fuera ANTES de que Bootstrap ponga aria-hidden="true"
+        // (sin esto el navegador bloquea aria-hidden y el backdrop queda atrapado)
+        $('#modalEditar, #modalNuevo').on('hide.bs.modal', function () {
+            if (document.activeElement && $.contains(this, document.activeElement)) {
+                document.activeElement.blur();
+            }
+        });
+
+        // Limpiar forzadamente cualquier residuo una vez que el modal terminó de cerrarse
+        $('#modalEditar, #modalNuevo').on('hidden.bs.modal', function () {
+            $('body').removeClass('modal-open').css('padding-right', '');
+            $('.modal-backdrop').remove();
+        });
+    });
+
     // ── Abrir modales ─────────────────────────────────────────────
     function abrirModalNuevo() { $('#modalNuevo').modal('show'); }
 

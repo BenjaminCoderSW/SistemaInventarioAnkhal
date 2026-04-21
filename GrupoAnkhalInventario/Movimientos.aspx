@@ -256,9 +256,16 @@
 
                         <asp:BoundField DataField="BaseDestino" HeaderText="Base Destino" />
 
-                        <asp:BoundField DataField="Cantidad" HeaderText="Cantidad" DataFormatString="{0:N2}" />
-
-                        <asp:BoundField DataField="Unidad" HeaderText="Unidad" />
+                        <asp:TemplateField HeaderText="Cantidad / Unidad">
+                            <ItemTemplate>
+                                <%# FormatCantidadGrilla(
+                                        Eval("CantidadCapturada"),
+                                        Eval("UnidadCapturaNombre"),
+                                        Eval("Cantidad"),
+                                        Eval("Unidad"),
+                                        Eval("TuvoConversion")) %>
+                            </ItemTemplate>
+                        </asp:TemplateField>
 
                         <asp:BoundField DataField="Costo" HeaderText="Costo Unit." DataFormatString="{0:C2}" />
 
@@ -374,7 +381,7 @@
             <div class="form-group">
               <label>Unidad de captura</label>
               <asp:DropDownList ID="ddlUnidadCaptura" runat="server" CssClass="form-control"
-                  onchange="actualizarInfoConversion();"></asp:DropDownList>
+                  onchange="actualizarInfoConversion(); calcularTotal();"></asp:DropDownList>
               <asp:Label ID="lblConversionInfo" runat="server" CssClass="text-muted small mt-1 d-block"
                   Text=""></asp:Label>
             </div>
@@ -522,7 +529,6 @@
     // ── Auto-llenar costo al seleccionar item ───────────────────────
     function onItemChange() {
         var txtCosto = document.getElementById('<%= txtCosto.ClientID %>');
-        if (txtCosto.disabled) return; // Transferencia: no modificar
         var ddl  = document.getElementById('<%= ddlItem.ClientID %>');
         var id   = parseInt(ddl.value);
         var divUC = document.getElementById('divUnidadCaptura');
@@ -538,7 +544,8 @@
         var lista = tipo === 'Producto' ? window._productosData
                   : window._materialesData;
         var item  = lista && lista.find(function (i) { return i.id === id; });
-        if (item) {
+        // Solo auto-llenar costo si NO es transferencia (campo habilitado)
+        if (item && !txtCosto.disabled) {
             txtCosto.value = (item.costo || 0).toFixed(2);
             calcularTotal();
         }
@@ -589,9 +596,21 @@
 
     // ── Auto-calcular total ─────────────────────────────────────────
     function calcularTotal() {
-        var cantidad = parseFloat(document.getElementById('<%= txtCantidad.ClientID %>').value) || 0;
-        var costo    = parseFloat(document.getElementById('<%= txtCosto.ClientID %>').value) || 0;
-        document.getElementById('<%= lblTotal.ClientID %>').innerText = (cantidad * costo).toFixed(2);
+        var cantCapturada = parseFloat(document.getElementById('<%= txtCantidad.ClientID %>').value) || 0;
+        var costo         = parseFloat(document.getElementById('<%= txtCosto.ClientID %>').value) || 0;
+
+        // Aplicar factor de conversión si el dropdown de unidad está visible
+        var cantBase = cantCapturada;
+        var divUC = document.getElementById('divUnidadCaptura');
+        if (divUC && divUC.style.display !== 'none') {
+            var ddlUC = document.getElementById('<%= ddlUnidadCaptura.ClientID %>');
+            if (ddlUC && ddlUC.options.length > 0) {
+                var factor = parseFloat(ddlUC.options[ddlUC.selectedIndex].getAttribute('data-factor')) || 1;
+                cantBase = cantCapturada * factor;
+            }
+        }
+
+        document.getElementById('<%= lblTotal.ClientID %>').innerText = (cantBase * costo).toFixed(2);
     }
 
     // ── Validación cliente antes de guardar ─────────────────────────

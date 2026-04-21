@@ -215,7 +215,7 @@ namespace GrupoAnkhalInventario
             var mats = db.Materiales
                 .Where(m => m.Activo == true)
                 .OrderBy(m => m.Descripcion)
-                .Select(m => new { id = m.MaterialID, nombre = m.Descripcion, unidad = m.Unidad })
+                .Select(m => new { id = m.MaterialID, nombre = m.Descripcion, unidad = m.Unidad, codigo = m.Codigo })
                 .ToList();
 
             var idsPagina = lista.Select(p => p.ProductoID).ToList();
@@ -237,6 +237,7 @@ namespace GrupoAnkhalInventario
                 {
                     pmID = pm.ProductoMaterialID,
                     materialID = pm.MaterialID,
+                    materialCodigo = mat.Codigo,
                     materialNombre = mat.Descripcion,
                     unidad = mat.Unidad,
                     cantMin = pm.CantidadMin,

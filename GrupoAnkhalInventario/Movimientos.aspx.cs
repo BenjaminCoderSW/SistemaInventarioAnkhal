@@ -39,10 +39,13 @@ namespace GrupoAnkhalInventario
             public string   BaseDestino   { get; set; }
             public decimal  Cantidad      { get; set; }
             public string   Unidad        { get; set; }
-            public decimal  Costo         { get; set; }
-            public decimal  Total         { get; set; }   // Cantidad × Costo
-            public string   RegistradoPor { get; set; }
-            public string   Observaciones { get; set; }
+            public decimal  Costo               { get; set; }
+            public decimal  Total               { get; set; }   // Cantidad × Costo
+            public decimal  CantidadCapturada   { get; set; }   // Lo que el usuario capturó
+            public string   UnidadCapturaNombre { get; set; }   // Nombre de la unidad capturada
+            public bool     TuvoConversion      { get; set; }   // true si se aplicó factor ≠ 1
+            public string   RegistradoPor       { get; set; }
+            public string   Observaciones       { get; set; }
         }
 
         // ══ Page_Load ════════════════════════════════════════════════════════
@@ -359,22 +362,37 @@ namespace GrupoAnkhalInventario
                            select new
                            {
                                mv.MovimientoID,
-                               Fecha         = mv.FechaMovimiento,
-                               TipoClave     = tm.Clave,
-                               TipoNombre    = tm.Nombre,
-                               TipoItem      = mv.TipoItem,
-                               MatCodigo     = mat.Codigo,
-                               MatNombre     = mat.Descripcion,
-                               MatUnidad     = mat.Unidad,
-                               PrdCodigo     = prd.Codigo,
-                               PrdNombre     = prd.Descripcion,
-                               BaseOrig      = bo.Nombre,
-                               BaseDest      = bd.Nombre,
+                               Fecha             = mv.FechaMovimiento,
+                               TipoClave         = tm.Clave,
+                               TipoNombre        = tm.Nombre,
+                               TipoItem          = mv.TipoItem,
+                               MatCodigo         = mat.Codigo,
+                               MatNombre         = mat.Descripcion,
+                               MatUnidad         = mat.Unidad,
+                               PrdCodigo         = prd.Codigo,
+                               PrdNombre         = prd.Descripcion,
+                               BaseOrig          = bo.Nombre,
+                               BaseDest          = bd.Nombre,
                                mv.Cantidad,
+                               mv.CantidadCapturada,
+                               mv.FactorAplicado,
+                               UnidadCapturaID   = mv.UnidadCapturaID,
                                mv.Costo,
                                mv.RegistradoPorID,
                                mv.Observaciones
                            }).ToList();
+
+                // ── Paso 4a: Nombres de unidades de captura ──────────────────────
+                var ucIds = raw
+                    .Where(r => r.UnidadCapturaID.HasValue)
+                    .Select(r => r.UnidadCapturaID.Value)
+                    .Distinct().ToList();
+                var unidadesCaptura = ucIds.Count > 0
+                    ? db.UnidadesMedida
+                          .Where(u => ucIds.Contains(u.UnidadMedidaID))
+                          .ToDictionary(u => u.UnidadMedidaID,
+                                        u => u.Nombre + " (" + u.Clave + ")")
+                    : new Dictionary<int, string>();
 
                 // ── Paso 4: Nombres de usuarios via API de Asistencia ────────────
                 Dictionary<int, string> nombresUsuario = new Dictionary<int, string>();
@@ -421,7 +439,13 @@ namespace GrupoAnkhalInventario
                                       : (r.PrdNombre ?? ""),
                         BaseOrigen    = r.BaseOrig  ?? "",
                         BaseDestino   = r.BaseDest  ?? "",
-                        Cantidad      = r.Cantidad,
+                        Cantidad            = r.Cantidad,
+                        CantidadCapturada   = r.CantidadCapturada ?? r.Cantidad,
+                        UnidadCapturaNombre = r.UnidadCapturaID.HasValue &&
+                                             unidadesCaptura.ContainsKey(r.UnidadCapturaID.Value)
+                                             ? unidadesCaptura[r.UnidadCapturaID.Value] : "",
+                        TuvoConversion      = r.FactorAplicado.HasValue &&
+                                             r.FactorAplicado.Value != 1m,
                         Unidad        = r.TipoItem == "Material"
                                         ? (r.MatUnidad ?? "")
                                         : "Unidad/es",
@@ -755,6 +779,42 @@ namespace GrupoAnkhalInventario
                 return false;
             }
             return true;
+        }
+
+        // ══ Helper para la columna Cantidad/Unidad ═══════════════════════════
+        /// <summary>
+        /// Si hubo conversión, muestra dos líneas:
+        ///   [pequeño] 1,400.00 ml
+        ///   [grande]  1.4 L
+        /// Si no hubo conversión muestra solo:
+        ///   [grande]  250 L
+        /// </summary>
+        public string FormatCantidadGrilla(object cantCapObj, object unidCapObj,
+                                           object cantBaseObj, object unidBaseObj,
+                                           object tuvoConvObj)
+        {
+            decimal cantCap  = Convert.ToDecimal(cantCapObj  ?? 0m);
+            decimal cantBase = Convert.ToDecimal(cantBaseObj ?? 0m);
+            string  unidCap  = (unidCapObj  ?? "").ToString();
+            string  unidBase = (unidBaseObj ?? "").ToString();
+            bool    tuvoConv = Convert.ToBoolean(tuvoConvObj ?? false);
+
+            // Formatea sin ceros finales: 1.4000 → "1.4", 250.0000 → "250"
+            string FmtDec(decimal d) => d.ToString("0.####");
+
+            if (tuvoConv && !string.IsNullOrEmpty(unidCap))
+                return string.Format(
+                    "<small class='text-muted d-block'>{0} {1}</small>" +
+                    "<strong>{2}</strong> <span class='text-muted'>{3}</span>",
+                    FmtDec(cantCap),
+                    System.Web.HttpUtility.HtmlEncode(unidCap),
+                    FmtDec(cantBase),
+                    System.Web.HttpUtility.HtmlEncode(unidBase));
+
+            return string.Format(
+                "<strong>{0}</strong> <span class='text-muted'>{1}</span>",
+                FmtDec(cantBase),
+                System.Web.HttpUtility.HtmlEncode(unidBase));
         }
 
         // ══ Helper para el badge de tipo en el GridView ═══════════════════════
