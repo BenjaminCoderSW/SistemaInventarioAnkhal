@@ -16,6 +16,19 @@ namespace GrupoAnkhalInventario
         private static readonly string _connStr =
             ConfigurationManager.ConnectionStrings["InventarioAnkhalDBConnectionString"].ConnectionString;
 
+        // ── Paleta de colores (dots) para el desglose de tipos ───────────────
+        private static readonly string[] _dotColors =
+        {
+            "#9b59b6", // morado
+            "#27ae60", // verde
+            "#e67e22", // naranja
+            "#c0392b", // rojo
+            "#17a2b8", // teal
+            "#d4ac0d", // dorado
+            "#2980b9", // azul
+            "#6c3483", // morado oscuro
+        };
+
         // ── Helper: crea un DataContext nuevo ─────────────────────────────────
         private InventarioAnkhalDBDataContext NuevoDb(bool tracking = true)
         {
@@ -56,6 +69,7 @@ namespace GrupoAnkhalInventario
             public decimal cantMin { get; set; }
             public decimal cantMax { get; set; }
             public string notas { get; set; }
+            public int conversionID { get; set; }  // 0 = unidad base
         }
 
         // ─────────────────────────────────────────────────────────────────────
@@ -190,6 +204,7 @@ namespace GrupoAnkhalInventario
                         .Sum(s => s.CantidadBuenas)
                 }).ToList();
 
+                // Dashboard: conteo por tipo (todos los productos, sin filtro de página)
                 var dashboard = (from p in db.Productos
                                  join tp in db.TiposProducto on p.TipoProductoID equals tp.TipoProductoID
                                  group tp.Clave by tp.Clave into g
@@ -197,9 +212,33 @@ namespace GrupoAnkhalInventario
                                 .ToList();
 
                 lblTotal.Text = totalRegistros.ToString();
-                lblTarimas.Text = (dashboard.FirstOrDefault(d => d.Clave == "TARIMA")?.Total ?? 0).ToString();
-                lblCajas.Text = (dashboard.FirstOrDefault(d => d.Clave == "CAJA")?.Total ?? 0).ToString();
-                lblAccesorios.Text = (dashboard.FirstOrDefault(d => d.Clave == "ACCESORIO")?.Total ?? 0).ToString();
+
+                // Generar cards dinámicos por tipo
+                var tipos = db.TiposProducto
+                    .Where(t => t.Activo)
+                    .OrderBy(t => t.Nombre)
+                    .Select(t => new { t.Nombre, t.Clave })
+                    .ToList();
+
+                var sbRows = new System.Text.StringBuilder();
+                for (int i = 0; i < tipos.Count; i++)
+                {
+                    var t     = tipos[i];
+                    int count = dashboard.FirstOrDefault(d => d.Clave == t.Clave)?.Total ?? 0;
+                    string dot        = _dotColors[i % _dotColors.Length];
+                    string badgeClass = count == 0 ? "tipo-badge cero" : "tipo-badge";
+                    sbRows.AppendFormat(
+                        "<div class='tipo-row'>" +
+                        "<span class='tipo-dot' style='background:{0};'></span>" +
+                        "<span class='tipo-nombre'>{1}</span>" +
+                        "<span class='{2}'>{3}</span>" +
+                        "</div>",
+                        dot,
+                        System.Web.HttpUtility.HtmlEncode(t.Nombre),
+                        badgeClass,
+                        count);
+                }
+                litTiposCards.Text = sbRows.ToString();
 
                 gvProductos.VirtualItemCount = totalRegistros;
                 gvProductos.DataSource = lista;
@@ -207,6 +246,67 @@ namespace GrupoAnkhalInventario
 
                 InjectJsData(db, lista);
             }
+        }
+
+        // ── Helper: conversiones por material ─────────────────────────────────
+        private Dictionary<string, object> BuildConversionesMat(InventarioAnkhalDBDataContext db,
+            IEnumerable<int> materialIDs = null)
+        {
+            // Carga unidades base de materiales
+            var matBaseQ = db.Materiales
+                .Where(m => m.Activo == true)
+                .Select(m => new { m.MaterialID, m.UnidadMedidaID });
+            if (materialIDs != null)
+                matBaseQ = matBaseQ.Where(m => materialIDs.Contains(m.MaterialID));
+            var matBase = matBaseQ.ToList();
+
+            // Carga conversiones activas con nombre de unidad origen
+            var convQ = (from c in db.ConversionesMaterial
+                         where c.Activo
+                         join u in db.UnidadesMedida on c.UnidadOrigenID equals u.UnidadMedidaID
+                         select new
+                         {
+                             c.MaterialID,
+                             c.ConversionID,
+                             c.Factor,
+                             uNombre = u.Nombre,
+                             uClave  = u.Clave
+                         });
+            if (materialIDs != null)
+                convQ = convQ.Where(c => materialIDs.Contains(c.MaterialID));
+            var convs = convQ.ToList();
+
+            // Unidades base (para el primer option)
+            var unidadesBase = (from m in db.Materiales
+                                where m.UnidadMedidaID != null
+                                join u in db.UnidadesMedida on m.UnidadMedidaID equals u.UnidadMedidaID
+                                select new { m.MaterialID, u.Nombre, u.Clave }).ToList();
+
+            var result = new Dictionary<string, object>();
+            foreach (var mb in matBase)
+            {
+                var ub = unidadesBase.FirstOrDefault(u => u.MaterialID == mb.MaterialID);
+                var opts = new List<object>();
+                // Primera opción: unidad base (val = 0 → sin conversión, factor = 1)
+                opts.Add(new
+                {
+                    val    = 0,
+                    txt    = ub != null ? string.Format("{0} (base)", ub.Nombre) : "(unidad base)",
+                    factor = 1m
+                });
+                // Opciones de conversión
+                foreach (var c in convs.Where(c => c.MaterialID == mb.MaterialID))
+                {
+                    opts.Add(new
+                    {
+                        val    = c.ConversionID,
+                        txt    = string.Format("{0} ({1})", c.uNombre, c.uClave),
+                        factor = c.Factor
+                    });
+                }
+                result[mb.MaterialID.ToString()] = opts;
+            }
+            return result;
         }
 
         // ── Inyectar datos JS ─────────────────────────────────────────────────
@@ -235,20 +335,25 @@ namespace GrupoAnkhalInventario
                     dict[key] = new List<object>();
                 ((List<object>)dict[key]).Add(new
                 {
-                    pmID = pm.ProductoMaterialID,
-                    materialID = pm.MaterialID,
+                    pmID           = pm.ProductoMaterialID,
+                    materialID     = pm.MaterialID,
                     materialCodigo = mat.Codigo,
                     materialNombre = mat.Descripcion,
-                    unidad = mat.Unidad,
-                    cantMin = pm.CantidadMin,
-                    cantMax = pm.CantidadMax,
-                    notas = pm.Notas ?? ""
+                    unidad         = mat.Unidad,
+                    cantMin        = pm.CantidadMin,
+                    cantMax        = pm.CantidadMax,
+                    cantMinCap     = pm.CantMinCapturada ?? pm.CantidadMin,
+                    cantMaxCap     = pm.CantMaxCapturada ?? pm.CantidadMax,
+                    conversionID   = pm.ConversionID ?? 0,
+                    notas          = pm.Notas ?? ""
                 });
             }
 
+            var conversionesMat = BuildConversionesMat(db);
+
             litJsData.Text = string.Format(
-                "<script>window._materialesData = {0}; window._componentesData = {1};</script>",
-                _json.Serialize(mats), _json.Serialize(dict));
+                "<script>window._materialesData = {0}; window._componentesData = {1}; window._conversionesMat = {2};</script>",
+                _json.Serialize(mats), _json.Serialize(dict), _json.Serialize(conversionesMat));
         }
 
         // Sobrecarga para postbacks donde no hay lista disponible
@@ -275,20 +380,25 @@ namespace GrupoAnkhalInventario
                         dict[key] = new List<object>();
                     ((List<object>)dict[key]).Add(new
                     {
-                        pmID = pm.ProductoMaterialID,
-                        materialID = pm.MaterialID,
+                        pmID           = pm.ProductoMaterialID,
+                        materialID     = pm.MaterialID,
                         materialCodigo = mat.Codigo,
                         materialNombre = mat.Descripcion,
-                        unidad = mat.Unidad,
-                        cantMin = pm.CantidadMin,
-                        cantMax = pm.CantidadMax,
-                        notas = pm.Notas ?? ""
+                        unidad         = mat.Unidad,
+                        cantMin        = pm.CantidadMin,
+                        cantMax        = pm.CantidadMax,
+                        cantMinCap     = pm.CantMinCapturada ?? pm.CantidadMin,
+                        cantMaxCap     = pm.CantMaxCapturada ?? pm.CantidadMax,
+                        conversionID   = pm.ConversionID ?? 0,
+                        notas          = pm.Notas ?? ""
                     });
                 }
 
+                var conversionesMat = BuildConversionesMat(db);
+
                 litJsData.Text = string.Format(
-                    "<script>window._materialesData = {0}; window._componentesData = {1};</script>",
-                    _json.Serialize(mats), _json.Serialize(dict));
+                    "<script>window._materialesData = {0}; window._componentesData = {1}; window._conversionesMat = {2};</script>",
+                    _json.Serialize(mats), _json.Serialize(dict), _json.Serialize(conversionesMat));
             }
         }
 
@@ -397,13 +507,34 @@ namespace GrupoAnkhalInventario
                         foreach (var c in comps)
                         {
                             if (string.IsNullOrEmpty(c.materialID)) continue;
+
+                            // Resolver factor de conversión (igual que en btnGuardarComponentes_Click)
+                            decimal factor = 1m;
+                            int? convIDNullable = null;
+                            if (c.conversionID > 0)
+                            {
+                                var conv = db.ConversionesMaterial
+                                    .FirstOrDefault(x => x.ConversionID == c.conversionID);
+                                if (conv != null)
+                                {
+                                    factor = conv.Factor;
+                                    convIDNullable = c.conversionID;
+                                }
+                            }
+
+                            decimal cantMinBase = c.cantMin * factor;
+                            decimal cantMaxBase = c.cantMax * factor;
+
                             var pm = new GrupoAnkhalInventario.Modelo.ProductoMateriales
                             {
-                                ProductoID = nuevo.ProductoID,
-                                MaterialID = int.Parse(c.materialID),
-                                CantidadMin = c.cantMin,
-                                CantidadMax = c.cantMax >= c.cantMin ? c.cantMax : c.cantMin,
-                                Notas = c.notas
+                                ProductoID       = nuevo.ProductoID,
+                                MaterialID       = int.Parse(c.materialID),
+                                CantidadMin      = cantMinBase,
+                                CantidadMax      = cantMaxBase >= cantMinBase ? cantMaxBase : cantMinBase,
+                                CantMinCapturada = c.cantMin,   // valor en la unidad de captura
+                                CantMaxCapturada = c.cantMax,
+                                ConversionID     = convIDNullable,
+                                Notas            = c.notas
                             };
                             db.ProductoMateriales.InsertOnSubmit(pm);
                         }
@@ -501,20 +632,39 @@ namespace GrupoAnkhalInventario
             {
                 try
                 {
+                    // Leer conversión seleccionada y calcular factor
+                    int convID = ParseInt(hdnCompConversionID.Value);
+                    decimal factor = 1m;
+                    int? convIDNullable = null;
+                    if (convID > 0)
+                    {
+                        var conv = db.ConversionesMaterial.FirstOrDefault(c => c.ConversionID == convID);
+                        if (conv != null)
+                        {
+                            factor = conv.Factor;
+                            convIDNullable = convID;
+                        }
+                    }
+
                     switch (accion)
                     {
                         case "INSERT":
                             int matID = ParseInt(hdnCompMaterialID.Value);
-                            decimal cmi = ParseDec(hdnCompCantMin.Value);
-                            decimal cma = ParseDec(hdnCompCantMax.Value);
+                            decimal cmiCap = ParseDec(hdnCompCantMin.Value);
+                            decimal cmaCap = ParseDec(hdnCompCantMax.Value);
+                            decimal cmiBase = cmiCap * factor;
+                            decimal cmaBase = cmaCap * factor;
 
                             var nuevo = new GrupoAnkhalInventario.Modelo.ProductoMateriales
                             {
-                                ProductoID = prodID,
-                                MaterialID = matID,
-                                CantidadMin = cmi,
-                                CantidadMax = cma >= cmi ? cma : cmi,
-                                Notas = hdnCompNotas.Value
+                                ProductoID       = prodID,
+                                MaterialID       = matID,
+                                CantidadMin      = cmiBase,
+                                CantidadMax      = cmaBase >= cmiBase ? cmaBase : cmiBase,
+                                CantMinCapturada = cmiCap,
+                                CantMaxCapturada = cmaCap,
+                                ConversionID     = convIDNullable,
+                                Notas            = hdnCompNotas.Value
                             };
                             db.ProductoMateriales.InsertOnSubmit(nuevo);
                             db.SubmitChanges();
@@ -525,11 +675,16 @@ namespace GrupoAnkhalInventario
                             int pmID = ParseInt(hdnCompPMID.Value);
                             var pm2 = db.ProductoMateriales.FirstOrDefault(x => x.ProductoMaterialID == pmID);
                             if (pm2 == null) break;
-                            decimal cmi2 = ParseDec(hdnCompCantMin.Value);
-                            decimal cma2 = ParseDec(hdnCompCantMax.Value);
-                            pm2.CantidadMin = cmi2;
-                            pm2.CantidadMax = cma2 >= cmi2 ? cma2 : cmi2;
-                            pm2.Notas = hdnCompNotas.Value;
+                            decimal cmi2Cap = ParseDec(hdnCompCantMin.Value);
+                            decimal cma2Cap = ParseDec(hdnCompCantMax.Value);
+                            decimal cmi2Base = cmi2Cap * factor;
+                            decimal cma2Base = cma2Cap * factor;
+                            pm2.CantidadMin      = cmi2Base;
+                            pm2.CantidadMax      = cma2Base >= cmi2Base ? cma2Base : cmi2Base;
+                            pm2.CantMinCapturada = cmi2Cap;
+                            pm2.CantMaxCapturada = cma2Cap;
+                            pm2.ConversionID     = convIDNullable;
+                            pm2.Notas            = hdnCompNotas.Value;
                             db.SubmitChanges();
                             SetMsg("success", "¡Actualizado!", "Componente actualizado.", null, true);
                             break;

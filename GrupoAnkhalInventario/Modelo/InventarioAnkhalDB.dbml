@@ -53,6 +53,10 @@
       <Column Name="CantidadTeoricaMax" Type="System.Decimal" DbType="Decimal(12,4) NOT NULL" CanBeNull="false" />
       <Column Name="EsMerma" Type="System.Boolean" DbType="Bit NOT NULL" CanBeNull="false" />
       <Column Name="Notas" Type="System.String" DbType="VarChar(200)" CanBeNull="true" />
+      <Column Name="CantidadRealCap" Type="System.Decimal" DbType="Decimal(12,4)" CanBeNull="true" />
+      <Column Name="CantidadTeoMinCap" Type="System.Decimal" DbType="Decimal(12,4)" CanBeNull="true" />
+      <Column Name="CantidadTeoMaxCap" Type="System.Decimal" DbType="Decimal(12,4)" CanBeNull="true" />
+      <Column Name="UnidadClaveCap" Type="System.String" DbType="VarChar(20)" CanBeNull="true" />
       <Association Name="Materiales_ConsumosProduccion" Member="Materiales" ThisKey="MaterialID" OtherKey="MaterialID" Type="Materiales" IsForeignKey="true" />
       <Association Name="Produccion_ConsumosProduccion" Member="Produccion" ThisKey="ProduccionID" OtherKey="ProduccionID" Type="Produccion" IsForeignKey="true" />
     </Type>
@@ -182,8 +186,12 @@
       <Column Name="CantidadMin" Type="System.Decimal" DbType="Decimal(12,4) NOT NULL" CanBeNull="false" />
       <Column Name="CantidadMax" Type="System.Decimal" DbType="Decimal(12,4) NOT NULL" CanBeNull="false" />
       <Column Name="Notas" Type="System.String" DbType="VarChar(200)" CanBeNull="true" />
+      <Column Name="ConversionID" Type="System.Int32" DbType="Int" CanBeNull="true" />
+      <Column Name="CantMinCapturada" Type="System.Decimal" DbType="Decimal(12,4)" CanBeNull="true" />
+      <Column Name="CantMaxCapturada" Type="System.Decimal" DbType="Decimal(12,4)" CanBeNull="true" />
       <Association Name="Materiales_ProductoMateriales" Member="Materiales" ThisKey="MaterialID" OtherKey="MaterialID" Type="Materiales" IsForeignKey="true" />
       <Association Name="Productos_ProductoMateriales" Member="Productos" ThisKey="ProductoID" OtherKey="ProductoID" Type="Productos" IsForeignKey="true" />
+      <Association Name="ConversionesMaterial_ProductoMateriales" Member="ConversionesMaterial" ThisKey="ConversionID" OtherKey="ConversionID" Type="ConversionesMaterial" IsForeignKey="true" />
     </Type>
   </Table>
   <Table Name="dbo.Productos" Member="Productos">
@@ -294,6 +302,7 @@
       <Association Name="Materiales_ConversionesMaterial" Member="Materiales" ThisKey="MaterialID" OtherKey="MaterialID" Type="Materiales" IsForeignKey="true" />
       <Association Name="UnidadesMedida_ConversionesMaterial" Member="UnidadesMedida" ThisKey="UnidadOrigenID" OtherKey="UnidadMedidaID" Type="UnidadesMedida" IsForeignKey="true" />
       <Association Name="Usuario_ConversionesMaterial" Member="Usuario" ThisKey="UsuarioAltaID" OtherKey="ClaveID" Type="Usuario" IsForeignKey="true" />
+      <Association Name="ConversionesMaterial_ProductoMateriales" Member="ProductoMateriales" ThisKey="ConversionID" OtherKey="ConversionID" Type="ProductoMateriales" />
     </Type>
   </Table>
   <Table Name="dbo.Usuario" Member="Usuario">

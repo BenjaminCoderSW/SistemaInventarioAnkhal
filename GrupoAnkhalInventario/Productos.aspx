@@ -3,22 +3,58 @@
 <asp:Content ID="Content1" ContentPlaceHolderID="head" runat="server">
     <link href="css/gridviewPantalla.css" rel="stylesheet" />
     <style>
-        /* ── Dashboard cards ── */
-        .prod-dashboard { display:flex; gap:14px; margin-bottom:18px; flex-wrap:wrap; }
-        .prod-card {
-            flex:1; min-width:150px; border-radius:10px; padding:16px 20px;
-            color:#fff; display:flex; align-items:center; gap:14px;
-            box-shadow:0 3px 10px rgba(0,0,0,.15);
-            transition:transform .15s, box-shadow .15s;
+        /* ── Dashboard ── */
+        .prod-dashboard {
+            display: flex; gap: 16px; margin-bottom: 18px; align-items: stretch; flex-wrap: wrap;
         }
-        .prod-card:hover { transform:translateY(-3px); box-shadow:0 6px 16px rgba(0,0,0,.2); }
-        .prod-card.total    { background:linear-gradient(135deg,#1a5276,#2980b9); }
-        .prod-card.tarima   { background:linear-gradient(135deg,#6c3483,#9b59b6); }
-        .prod-card.caja     { background:linear-gradient(135deg,#1e8449,#27ae60); }
-        .prod-card.accesorio{ background:linear-gradient(135deg,#d35400,#e67e22); }
-        .prod-card .icon  { font-size:2.2rem; opacity:.9; }
-        .prod-card .info .num { font-size:2rem; font-weight:700; line-height:1; }
-        .prod-card .info .lbl { font-size:.78rem; opacity:.9; text-transform:uppercase; letter-spacing:.5px; }
+
+        /* Card Total (izquierda) */
+        .prod-card-total {
+            flex: 0 0 200px;
+            border-radius: 10px; padding: 24px 20px;
+            color: #fff; display: flex; align-items: center; gap: 16px;
+            background: linear-gradient(135deg, #1a5276, #2980b9);
+            box-shadow: 0 3px 10px rgba(0,0,0,.18);
+        }
+        .prod-card-total .icon  { font-size: 2.6rem; opacity: .9; }
+        .prod-card-total .num   { font-size: 2.4rem; font-weight: 700; line-height: 1; }
+        .prod-card-total .lbl   { font-size: .78rem; opacity: .88; text-transform: uppercase; letter-spacing: .5px; }
+
+        /* Panel de desglose (derecha) */
+        .prod-breakdown {
+            flex: 1; min-width: 260px;
+            border-radius: 10px; border: 1px solid #dee2e6;
+            background: #fff; box-shadow: 0 2px 8px rgba(0,0,0,.07);
+            overflow: hidden;
+        }
+        .prod-breakdown-header {
+            background: #f0f4f8; border-bottom: 1px solid #dee2e6;
+            padding: 9px 16px; font-size: .8rem; font-weight: 700;
+            color: #003366; text-transform: uppercase; letter-spacing: .5px;
+        }
+        .prod-breakdown-body {
+            display: grid; grid-template-columns: repeat(auto-fill, minmax(160px, 1fr));
+            padding: 10px 12px; gap: 4px 8px;
+        }
+        .tipo-row {
+            display: flex; align-items: center; justify-content: space-between;
+            padding: 5px 8px; border-radius: 6px; gap: 8px;
+        }
+        .tipo-row:hover { background: #f0f4f8; }
+        .tipo-row .tipo-dot {
+            width: 10px; height: 10px; border-radius: 50%; flex-shrink: 0;
+        }
+        .tipo-row .tipo-nombre {
+            flex: 1; font-size: .84rem; color: #333; white-space: nowrap;
+            overflow: hidden; text-overflow: ellipsis;
+        }
+        .tipo-row .tipo-badge {
+            background: #003366; color: #fff; border-radius: 12px;
+            padding: 1px 9px; font-size: .78rem; font-weight: 700; flex-shrink: 0;
+        }
+        .tipo-row .tipo-badge.cero {
+            background: #ced4da; color: #555;
+        }
 
         /* ── Filtros ── */
         .filtros-bar {
@@ -59,34 +95,24 @@
 
     <!-- ══ DASHBOARD ══════════════════════════════════════ -->
     <div class="prod-dashboard">
-        <div class="prod-card total">
+
+        <!-- Card total -->
+        <div class="prod-card-total">
             <div class="icon"><i class="fas fa-boxes"></i></div>
-            <div class="info">
-                <div class="num"><asp:Label ID="lblTotal"     runat="server" Text="0"></asp:Label></div>
-                <div class="lbl">Total productos</div>
+            <div>
+                <div class="num"><asp:Label ID="lblTotal" runat="server" Text="0"></asp:Label></div>
+                <div class="lbl">Total<br>productos</div>
             </div>
         </div>
-        <div class="prod-card tarima">
-            <div class="icon"><i class="fas fa-pallet"></i></div>
-            <div class="info">
-                <div class="num"><asp:Label ID="lblTarimas"   runat="server" Text="0"></asp:Label></div>
-                <div class="lbl">Tarimas</div>
+
+        <!-- Panel desglose por tipo -->
+        <div class="prod-breakdown">
+            <div class="prod-breakdown-header"><i class="fas fa-tag mr-1"></i> Desglose por tipo</div>
+            <div class="prod-breakdown-body">
+                <asp:Literal ID="litTiposCards" runat="server"></asp:Literal>
             </div>
         </div>
-        <div class="prod-card caja">
-            <div class="icon"><i class="fas fa-box"></i></div>
-            <div class="info">
-                <div class="num"><asp:Label ID="lblCajas"     runat="server" Text="0"></asp:Label></div>
-                <div class="lbl">Cajas</div>
-            </div>
-        </div>
-        <div class="prod-card accesorio">
-            <div class="icon"><i class="fas fa-tools"></i></div>
-            <div class="info">
-                <div class="num"><asp:Label ID="lblAccesorios" runat="server" Text="0"></asp:Label></div>
-                <div class="lbl">Accesorios</div>
-            </div>
-        </div>
+
     </div>
 
     <div class="card">
@@ -384,10 +410,16 @@
         <hr />
         <h6 style="color:#003366;font-weight:600;"><i class="fas fa-plus-circle"></i> Agregar componente</h6>
         <div class="row align-items-end">
-          <div class="col-md-4">
+          <div class="col-md-3">
             <label style="font-size:.84rem;">Material <span style="color:red">*</span></label>
-            <select id="ddlMaterialComp" class="form-control form-control-sm">
+            <select id="ddlMaterialComp" class="form-control form-control-sm" onchange="onMaterialCompChange()">
               <option value="">-- Seleccione --</option>
+            </select>
+          </div>
+          <div class="col-md-2">
+            <label style="font-size:.84rem;">Unidad</label>
+            <select id="ddlUnidadComp" class="form-control form-control-sm">
+              <option value="">(base)</option>
             </select>
           </div>
           <div class="col-md-2">
@@ -398,7 +430,7 @@
             <label style="font-size:.84rem;">Cant. Máx <span style="color:red">*</span></label>
             <input type="number" id="txtCantMaxComp" class="form-control form-control-sm" value="0" min="0" step="0.01" />
           </div>
-          <div class="col-md-3">
+          <div class="col-md-2">
             <label style="font-size:.84rem;">Notas</label>
             <input type="text" id="txtNotasComp" class="form-control form-control-sm" placeholder="Opcional" maxlength="200" />
           </div>
@@ -409,13 +441,14 @@
           </div>
         </div>
 
-        <asp:HiddenField ID="hdnCompProductoID"  runat="server" Value="" />
-        <asp:HiddenField ID="hdnCompAccion"      runat="server" Value="" />
-        <asp:HiddenField ID="hdnCompMaterialID"  runat="server" Value="" />
-        <asp:HiddenField ID="hdnCompCantMin"     runat="server" Value="" />
-        <asp:HiddenField ID="hdnCompCantMax"     runat="server" Value="" />
-        <asp:HiddenField ID="hdnCompNotas"       runat="server" Value="" />
-        <asp:HiddenField ID="hdnCompPMID"        runat="server" Value="" />
+        <asp:HiddenField ID="hdnCompProductoID"   runat="server" Value="" />
+        <asp:HiddenField ID="hdnCompAccion"       runat="server" Value="" />
+        <asp:HiddenField ID="hdnCompMaterialID"   runat="server" Value="" />
+        <asp:HiddenField ID="hdnCompCantMin"      runat="server" Value="" />
+        <asp:HiddenField ID="hdnCompCantMax"      runat="server" Value="" />
+        <asp:HiddenField ID="hdnCompNotas"        runat="server" Value="" />
+        <asp:HiddenField ID="hdnCompPMID"         runat="server" Value="" />
+        <asp:HiddenField ID="hdnCompConversionID" runat="server" Value="" />
 
       </div>
       <div class="modal-footer">
@@ -481,8 +514,36 @@
     }
 
     function agregarComponenteNuevo() {
-        _compNuevo.push({ materialID: '', nombre: '', cantMin: 0, cantMax: 0, notas: '' });
+        _compNuevo.push({ materialID: '', nombre: '', cantMin: 0, cantMax: 0, notas: '', conversionID: 0 });
         renderComponentesNuevo();
+    }
+
+    // Construye las <option> del dropdown de unidad para una fila del modal Nuevo Producto.
+    // Si el material no está seleccionado o no tiene conversiones, muestra solo "(base)".
+    function buildUnidadOptsNuevo(materialID, selectedConvID) {
+        var convs = window._conversionesMat && materialID
+            ? window._conversionesMat[materialID.toString()]
+            : null;
+        if (!convs || convs.length === 0) {
+            return '<option value="0">(base)</option>';
+        }
+        var html = '';
+        convs.forEach(function (op) {
+            var sel = String(op.val) === String(selectedConvID || 0) ? ' selected' : '';
+            html += '<option value="' + op.val + '"' + sel + '>' + escHtml(op.txt) + '</option>';
+        });
+        return html;
+    }
+
+    // Se llama al cambiar el material en una fila del modal Nuevo Producto.
+    // Actualiza el array, resetea la unidad a base, y repuebla el dropdown de unidad sin re-renderizar toda la lista.
+    function onMatNuevoChange(sel, idx) {
+        _compNuevo[idx].materialID   = sel.value;
+        _compNuevo[idx].nombre       = sel.options[sel.selectedIndex].text;
+        _compNuevo[idx].conversionID = 0; // resetear a unidad base al cambiar material
+        var row  = sel.closest('.comp-row');
+        var ddlU = row ? row.querySelector('.ddl-unidad-nuevo') : null;
+        if (ddlU) ddlU.innerHTML = buildUnidadOptsNuevo(sel.value, 0);
     }
 
     function renderComponentesNuevo() {
@@ -500,13 +561,20 @@
                 opts += '<option value="' + m.id + '" ' + sel + '>[' + escHtml(m.codigo) + '] ' + escHtml(m.nombre) + ' (' + escHtml(m.unidad) + ')</option>';
             });
 
+            var unidOpts = buildUnidadOptsNuevo(c.materialID, c.conversionID || 0);
+
             var row = document.createElement('div');
             row.className = 'comp-row row align-items-center';
             row.innerHTML =
-                '<div class="col-md-4">' +
+                '<div class="col-md-3">' +
                 '<label style="font-size:.8rem;">Material <span style="color:red">*</span></label>' +
-                '<select class="form-control form-control-sm" onchange="_compNuevo[' + i + '].materialID=this.value; _compNuevo[' + i + '].nombre=this.options[this.selectedIndex].text;">' +
+                '<select class="form-control form-control-sm" onchange="onMatNuevoChange(this,' + i + ')">' +
                 opts + '</select>' +
+                '</div>' +
+                '<div class="col-md-2">' +
+                '<label style="font-size:.8rem;">Unidad</label>' +
+                '<select class="form-control form-control-sm ddl-unidad-nuevo" onchange="_compNuevo[' + i + '].conversionID=parseInt(this.value)||0;">' +
+                unidOpts + '</select>' +
                 '</div>' +
                 '<div class="col-md-2">' +
                 '<label style="font-size:.8rem;">Cant. Mín <span style="color:red">*</span></label>' +
@@ -518,7 +586,7 @@
                 '<input type="number" class="form-control form-control-sm" value="' + c.cantMax + '" min="0" step="0.01" ' +
                 'onchange="_compNuevo[' + i + '].cantMax=parseFloat(this.value)||0;" />' +
                 '</div>' +
-                '<div class="col-md-3">' +
+                '<div class="col-md-2">' +
                 '<label style="font-size:.8rem;">Notas</label>' +
                 '<input type="text" class="form-control form-control-sm" value="' + escHtml(c.notas) + '" maxlength="200" ' +
                 'onchange="_compNuevo[' + i + '].notas=this.value;" />' +
@@ -571,6 +639,9 @@
             sel.innerHTML += '<option value="' + m.id + '">[' + escHtml(m.codigo) + '] ' + escHtml(m.nombre) + ' (' + escHtml(m.unidad) + ')</option>';
         });
 
+        // Resetear dropdown de unidad
+        document.getElementById('ddlUnidadComp').innerHTML = '<option value="">(base)</option>';
+
         renderTablaComp();
         document.getElementById('spanNombreProducto').innerText = descripcion || '';
         document.getElementById('txtCantMinComp').value = '0';
@@ -579,6 +650,37 @@
         document.getElementById('ddlMaterialComp').value = '';
 
         $('#modalComponentes').modal('show');
+    }
+
+    // ── Poblar unidades al cambiar material en modal BOM ────────────
+    function onMaterialCompChange() {
+        var matID = document.getElementById('ddlMaterialComp').value;
+        var ddlU  = document.getElementById('ddlUnidadComp');
+
+        // Texto del primer option: mostrar la unidad base del material seleccionado
+        var mat = _materiales.find(function (m) { return String(m.id) === String(matID); });
+        var baseLabel = mat ? abrevUnidad(mat.unidad) + ' (base)' : '(base)';
+        ddlU.innerHTML = '<option value="">' + escHtml(baseLabel) + '</option>';
+        if (!matID) return;
+
+        var convs = window._conversionesMat && window._conversionesMat[matID.toString()];
+        if (!convs || convs.length <= 1) return; // solo unidad base, sin opciones extra
+
+        // Saltar la primera opción (unidad base, ya está) y agregar conversiones
+        for (var i = 1; i < convs.length; i++) {
+            var op = convs[i];
+            var opt = document.createElement('option');
+            opt.value = op.val;
+            opt.text  = op.txt;
+            opt.setAttribute('data-factor', op.factor);
+            ddlU.appendChild(opt);
+        }
+    }
+
+    // Extrae la abreviatura entre paréntesis: "Litro/s (L)" → "L"
+    function abrevUnidad(unidadStr) {
+        var m = /\(([^)]+)\)\s*$/.exec(unidadStr || '');
+        return m ? m[1] : (unidadStr || '');
     }
 
     function renderTablaComp() {
@@ -590,11 +692,27 @@
         sinDiv.style.display = 'none';
 
         _compModal.forEach(function (c) {
+            var abrev = abrevUnidad(c.unidad); // ej. "kg", "L", "pz"
+            var cantMinDisplay, cantMaxDisplay;
+            if (c.conversionID && c.cantMinCap != null) {
+                // Buscar texto de la unidad capturada en las conversiones del material
+                var convs = window._conversionesMat && window._conversionesMat[c.materialID.toString()];
+                var conv  = convs && convs.find(function (op) { return String(op.val) === String(c.conversionID); });
+                var unidTxt = conv ? conv.txt.replace(/\s*\[.*?\]\s*$/, '').trim() : '';
+                cantMinDisplay = '<small class="text-muted d-block">' + escHtml(String(c.cantMinCap)) + ' ' + escHtml(unidTxt) + '</small>' +
+                                 '<strong>' + escHtml(String(c.cantMin)) + '</strong> <span class="text-muted">' + escHtml(abrev) + '</span>';
+                cantMaxDisplay = '<small class="text-muted d-block">' + escHtml(String(c.cantMaxCap)) + ' ' + escHtml(unidTxt) + '</small>' +
+                                 '<strong>' + escHtml(String(c.cantMax)) + '</strong> <span class="text-muted">' + escHtml(abrev) + '</span>';
+            } else {
+                cantMinDisplay = '<strong>' + escHtml(String(c.cantMin)) + '</strong> <span class="text-muted">' + escHtml(abrev) + '</span>';
+                cantMaxDisplay = '<strong>' + escHtml(String(c.cantMax)) + '</strong> <span class="text-muted">' + escHtml(abrev) + '</span>';
+            }
+
             var tr = document.createElement('tr');
             tr.innerHTML =
                 '<td><strong>[' + escHtml(c.materialCodigo) + '] ' + escHtml(c.materialNombre) + '</strong><br><small class="text-muted">' + escHtml(c.unidad) + '</small></td>' +
-                '<td><input type="number" class="form-control form-control-sm comp-edit-row" value="' + c.cantMin + '" min="0" step="0.01" id="cmin_' + c.pmID + '" /></td>' +
-                '<td><input type="number" class="form-control form-control-sm comp-edit-row" value="' + c.cantMax + '" min="0" step="0.01" id="cmax_' + c.pmID + '" /></td>' +
+                '<td>' + cantMinDisplay + '<input type="number" class="form-control form-control-sm comp-edit-row mt-1" value="' + c.cantMin + '" min="0" step="0.01" id="cmin_' + c.pmID + '" /></td>' +
+                '<td>' + cantMaxDisplay + '<input type="number" class="form-control form-control-sm comp-edit-row mt-1" value="' + c.cantMax + '" min="0" step="0.01" id="cmax_' + c.pmID + '" /></td>' +
                 '<td><input type="text"   class="form-control form-control-sm comp-edit-row" value="' + escHtml(c.notas) + '" maxlength="200" id="cnot_' + c.pmID + '" /></td>' +
                 '<td class="text-center">' +
                 '<button type="button" class="btn btn-success btn-xs btn-sm mr-1" onclick="guardarCompExistente(' + c.pmID + ', ' + c.materialID + ')" title="Guardar"><i class="fas fa-save"></i></button>' +
@@ -618,11 +736,12 @@
             return;
         }
 
-        document.getElementById('<%= hdnCompAccion.ClientID %>').value = 'UPDATE';
-        document.getElementById('<%= hdnCompPMID.ClientID %>').value    = pmID;
-        document.getElementById('<%= hdnCompCantMin.ClientID %>').value = cantMin;
-        document.getElementById('<%= hdnCompCantMax.ClientID %>').value = cantMax;
-        document.getElementById('<%= hdnCompNotas.ClientID %>').value   = notas;
+        document.getElementById('<%= hdnCompAccion.ClientID %>').value       = 'UPDATE';
+        document.getElementById('<%= hdnCompPMID.ClientID %>').value          = pmID;
+        document.getElementById('<%= hdnCompCantMin.ClientID %>').value       = cantMin;
+        document.getElementById('<%= hdnCompCantMax.ClientID %>').value       = cantMax;
+        document.getElementById('<%= hdnCompNotas.ClientID %>').value         = notas;
+        document.getElementById('<%= hdnCompConversionID.ClientID %>').value  = '0'; // edición inline = unidad base
         __doPostBack('<%= btnGuardarComponentes.UniqueID %>', '');
     }
 
@@ -646,7 +765,8 @@
         var cantMin = parseFloat(document.getElementById('txtCantMinComp').value) || 0;
         var cantMax = parseFloat(document.getElementById('txtCantMaxComp').value) || 0;
         var notas   = document.getElementById('txtNotasComp').value;
-        var prodID  = document.getElementById('<%= hdnCompProductoID.ClientID %>').value;
+        var ddlU    = document.getElementById('ddlUnidadComp');
+        var convID  = ddlU ? ddlU.value : '';   // '' = unidad base, otro = ConversionID
 
         if (!matID) {
             Swal.fire({ icon: 'warning', title: 'Material requerido',
@@ -660,15 +780,42 @@
                 .then(function () { $('#modalComponentes').modal('show'); });
             return;
         }
-        // Validación de duplicado eliminada: se permite el mismo material
-        // más de una vez con diferentes notas/medidas (ej: cortes distintos)
 
-        document.getElementById('<%= hdnCompAccion.ClientID %>').value     = 'INSERT';
-        document.getElementById('<%= hdnCompMaterialID.ClientID %>').value = matID;
-        document.getElementById('<%= hdnCompCantMin.ClientID %>').value    = cantMin;
-        document.getElementById('<%= hdnCompCantMax.ClientID %>').value    = cantMax;
-        document.getElementById('<%= hdnCompNotas.ClientID %>').value      = notas;
-        __doPostBack('<%= btnGuardarComponentes.UniqueID %>', '');
+        // Verificar si el material ya existe en el BOM y cuántas veces
+        var vecesAgregado = _compModal.filter(function (c) {
+            return String(c.materialID) === String(matID);
+        }).length;
+
+        function doInsert() {
+            document.getElementById('<%= hdnCompAccion.ClientID %>').value        = 'INSERT';
+            document.getElementById('<%= hdnCompMaterialID.ClientID %>').value    = matID;
+            document.getElementById('<%= hdnCompCantMin.ClientID %>').value       = cantMin;
+            document.getElementById('<%= hdnCompCantMax.ClientID %>').value       = cantMax;
+            document.getElementById('<%= hdnCompNotas.ClientID %>').value         = notas;
+            document.getElementById('<%= hdnCompConversionID.ClientID %>').value  = convID;
+            __doPostBack('<%= btnGuardarComponentes.UniqueID %>', '');
+        }
+
+        if (vecesAgregado >= 1) {
+            var veces = vecesAgregado === 1 ? '1 vez' : vecesAgregado + ' veces';
+            var mat = _materiales.find(function (m) { return String(m.id) === String(matID); });
+            var nomMat = mat ? '[' + mat.codigo + '] ' + mat.nombre : 'Este material';
+            Swal.fire({
+                icon: 'question',
+                title: 'Material duplicado',
+                html: '<b>' + escHtml(nomMat) + '</b> ya está agregado como componente <b>' + veces + '</b>.<br>¿Desea agregarlo de nuevo?',
+                showCancelButton: true,
+                confirmButtonText: 'Sí, agregar de nuevo',
+                cancelButtonText: 'Cancelar',
+                confirmButtonColor: '#003366',
+                cancelButtonColor: '#6c757d'
+            }).then(function (r) {
+                if (r.isConfirmed) doInsert();
+                else $('#modalComponentes').modal('show');
+            });
+        } else {
+            doInsert();
+        }
     }
 
     // ════════════════════════════════════════════════════

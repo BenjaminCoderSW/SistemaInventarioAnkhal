@@ -1337,11 +1337,19 @@ namespace GrupoAnkhalInventario.Modelo
 		private bool _EsMerma;
 		
 		private string _Notas;
-		
+
+		private System.Nullable<decimal> _CantidadRealCap;
+
+		private System.Nullable<decimal> _CantidadTeoMinCap;
+
+		private System.Nullable<decimal> _CantidadTeoMaxCap;
+
+		private string _UnidadClaveCap;
+
 		private EntityRef<Materiales> _Materiales;
-		
+
 		private EntityRef<Produccion> _Produccion;
-		
+
     #region Definiciones de métodos de extensibilidad
     partial void OnLoaded();
     partial void OnValidate(System.Data.Linq.ChangeAction action);
@@ -1362,6 +1370,14 @@ namespace GrupoAnkhalInventario.Modelo
     partial void OnEsMermaChanged();
     partial void OnNotasChanging(string value);
     partial void OnNotasChanged();
+    partial void OnCantidadRealCapChanging(System.Nullable<decimal> value);
+    partial void OnCantidadRealCapChanged();
+    partial void OnCantidadTeoMinCapChanging(System.Nullable<decimal> value);
+    partial void OnCantidadTeoMinCapChanged();
+    partial void OnCantidadTeoMaxCapChanging(System.Nullable<decimal> value);
+    partial void OnCantidadTeoMaxCapChanged();
+    partial void OnUnidadClaveCapChanging(string value);
+    partial void OnUnidadClaveCapChanged();
     #endregion
 		
 		public ConsumosProduccion()
@@ -1538,7 +1554,75 @@ namespace GrupoAnkhalInventario.Modelo
 				}
 			}
 		}
-		
+
+		[global::System.Data.Linq.Mapping.ColumnAttribute(Storage="_CantidadRealCap", DbType="Decimal(12,4)")]
+		public System.Nullable<decimal> CantidadRealCap
+		{
+			get { return this._CantidadRealCap; }
+			set
+			{
+				if ((this._CantidadRealCap != value))
+				{
+					this.OnCantidadRealCapChanging(value);
+					this.SendPropertyChanging();
+					this._CantidadRealCap = value;
+					this.SendPropertyChanged("CantidadRealCap");
+					this.OnCantidadRealCapChanged();
+				}
+			}
+		}
+
+		[global::System.Data.Linq.Mapping.ColumnAttribute(Storage="_CantidadTeoMinCap", DbType="Decimal(12,4)")]
+		public System.Nullable<decimal> CantidadTeoMinCap
+		{
+			get { return this._CantidadTeoMinCap; }
+			set
+			{
+				if ((this._CantidadTeoMinCap != value))
+				{
+					this.OnCantidadTeoMinCapChanging(value);
+					this.SendPropertyChanging();
+					this._CantidadTeoMinCap = value;
+					this.SendPropertyChanged("CantidadTeoMinCap");
+					this.OnCantidadTeoMinCapChanged();
+				}
+			}
+		}
+
+		[global::System.Data.Linq.Mapping.ColumnAttribute(Storage="_CantidadTeoMaxCap", DbType="Decimal(12,4)")]
+		public System.Nullable<decimal> CantidadTeoMaxCap
+		{
+			get { return this._CantidadTeoMaxCap; }
+			set
+			{
+				if ((this._CantidadTeoMaxCap != value))
+				{
+					this.OnCantidadTeoMaxCapChanging(value);
+					this.SendPropertyChanging();
+					this._CantidadTeoMaxCap = value;
+					this.SendPropertyChanged("CantidadTeoMaxCap");
+					this.OnCantidadTeoMaxCapChanged();
+				}
+			}
+		}
+
+		[global::System.Data.Linq.Mapping.ColumnAttribute(Storage="_UnidadClaveCap", DbType="VarChar(20)")]
+		public string UnidadClaveCap
+		{
+			get { return this._UnidadClaveCap; }
+			set
+			{
+				if ((this._UnidadClaveCap != value))
+				{
+					this.OnUnidadClaveCapChanging(value);
+					this.SendPropertyChanging();
+					this._UnidadClaveCap = value;
+					this.SendPropertyChanged("UnidadClaveCap");
+					this.OnUnidadClaveCapChanged();
+				}
+			}
+		}
+
 		[global::System.Data.Linq.Mapping.AssociationAttribute(Name="Materiales_ConsumosProduccion", Storage="_Materiales", ThisKey="MaterialID", OtherKey="MaterialID", IsForeignKey=true)]
 		public Materiales Materiales
 		{
@@ -4577,11 +4661,19 @@ namespace GrupoAnkhalInventario.Modelo
 		private decimal _CantidadMax;
 		
 		private string _Notas;
-		
+
+		private System.Nullable<int> _ConversionID;
+
+		private System.Nullable<decimal> _CantMinCapturada;
+
+		private System.Nullable<decimal> _CantMaxCapturada;
+
 		private EntityRef<Materiales> _Materiales;
-		
+
 		private EntityRef<Productos> _Productos;
-		
+
+		private EntityRef<ConversionesMaterial> _ConversionesMaterial;
+
     #region Definiciones de métodos de extensibilidad
     partial void OnLoaded();
     partial void OnValidate(System.Data.Linq.ChangeAction action);
@@ -4598,12 +4690,19 @@ namespace GrupoAnkhalInventario.Modelo
     partial void OnCantidadMaxChanged();
     partial void OnNotasChanging(string value);
     partial void OnNotasChanged();
+    partial void OnConversionIDChanging(System.Nullable<int> value);
+    partial void OnConversionIDChanged();
+    partial void OnCantMinCapturadaChanging(System.Nullable<decimal> value);
+    partial void OnCantMinCapturadaChanged();
+    partial void OnCantMaxCapturadaChanging(System.Nullable<decimal> value);
+    partial void OnCantMaxCapturadaChanged();
     #endregion
-		
+
 		public ProductoMateriales()
 		{
 			this._Materiales = default(EntityRef<Materiales>);
 			this._Productos = default(EntityRef<Productos>);
+			this._ConversionesMaterial = default(EntityRef<ConversionesMaterial>);
 			OnCreated();
 		}
 		
@@ -4735,6 +4834,89 @@ namespace GrupoAnkhalInventario.Modelo
 			}
 		}
 		
+		[global::System.Data.Linq.Mapping.ColumnAttribute(Storage="_ConversionID", DbType="Int")]
+		public System.Nullable<int> ConversionID
+		{
+			get { return this._ConversionID; }
+			set
+			{
+				if ((this._ConversionID != value))
+				{
+					if (this._ConversionesMaterial.HasLoadedOrAssignedValue)
+						throw new System.Data.Linq.ForeignKeyReferenceAlreadyHasValueException();
+					this.OnConversionIDChanging(value);
+					this.SendPropertyChanging();
+					this._ConversionID = value;
+					this.SendPropertyChanged("ConversionID");
+					this.OnConversionIDChanged();
+				}
+			}
+		}
+
+		[global::System.Data.Linq.Mapping.ColumnAttribute(Storage="_CantMinCapturada", DbType="Decimal(12,4)")]
+		public System.Nullable<decimal> CantMinCapturada
+		{
+			get { return this._CantMinCapturada; }
+			set
+			{
+				if ((this._CantMinCapturada != value))
+				{
+					this.OnCantMinCapturadaChanging(value);
+					this.SendPropertyChanging();
+					this._CantMinCapturada = value;
+					this.SendPropertyChanged("CantMinCapturada");
+					this.OnCantMinCapturadaChanged();
+				}
+			}
+		}
+
+		[global::System.Data.Linq.Mapping.ColumnAttribute(Storage="_CantMaxCapturada", DbType="Decimal(12,4)")]
+		public System.Nullable<decimal> CantMaxCapturada
+		{
+			get { return this._CantMaxCapturada; }
+			set
+			{
+				if ((this._CantMaxCapturada != value))
+				{
+					this.OnCantMaxCapturadaChanging(value);
+					this.SendPropertyChanging();
+					this._CantMaxCapturada = value;
+					this.SendPropertyChanged("CantMaxCapturada");
+					this.OnCantMaxCapturadaChanged();
+				}
+			}
+		}
+
+		[global::System.Data.Linq.Mapping.AssociationAttribute(Name="ConversionesMaterial_ProductoMateriales", Storage="_ConversionesMaterial", ThisKey="ConversionID", OtherKey="ConversionID", IsForeignKey=true)]
+		public ConversionesMaterial ConversionesMaterial
+		{
+			get { return this._ConversionesMaterial.Entity; }
+			set
+			{
+				ConversionesMaterial previousValue = this._ConversionesMaterial.Entity;
+				if (((previousValue != value) || (this._ConversionesMaterial.HasLoadedOrAssignedValue == false)))
+				{
+					this.SendPropertyChanging();
+					if ((previousValue != null))
+					{
+						this._ConversionesMaterial.Entity = null;
+						previousValue.ProductoMateriales.Remove(this);
+					}
+					this._ConversionesMaterial.Entity = value;
+					if ((value != null))
+					{
+						value.ProductoMateriales.Add(this);
+						this._ConversionID = value.ConversionID;
+					}
+					else
+					{
+						this._ConversionID = default(System.Nullable<int>);
+					}
+					this.SendPropertyChanged("ConversionesMaterial");
+				}
+			}
+		}
+
 		[global::System.Data.Linq.Mapping.AssociationAttribute(Name="Materiales_ProductoMateriales", Storage="_Materiales", ThisKey="MaterialID", OtherKey="MaterialID", IsForeignKey=true)]
 		public Materiales Materiales
 		{
@@ -8614,6 +8796,7 @@ namespace GrupoAnkhalInventario.Modelo
 		private EntityRef<Materiales> _Materiales;
 		private EntityRef<UnidadesMedida> _UnidadesMedida;
 		private EntityRef<Usuario> _Usuario;
+		private EntitySet<ProductoMateriales> _ProductoMateriales;
 
     #region Definiciones de métodos de extensibilidad
     partial void OnLoaded();
@@ -8639,9 +8822,12 @@ namespace GrupoAnkhalInventario.Modelo
 
 		public ConversionesMaterial()
 		{
-			this._Materiales     = default(EntityRef<Materiales>);
-			this._UnidadesMedida = default(EntityRef<UnidadesMedida>);
-			this._Usuario        = default(EntityRef<Usuario>);
+			this._Materiales         = default(EntityRef<Materiales>);
+			this._UnidadesMedida     = default(EntityRef<UnidadesMedida>);
+			this._Usuario            = default(EntityRef<Usuario>);
+			this._ProductoMateriales = new EntitySet<ProductoMateriales>(
+				pm => { pm.ConversionesMaterial = this; },
+				pm => { pm.ConversionesMaterial = null; });
 			OnCreated();
 		}
 
@@ -8873,6 +9059,13 @@ namespace GrupoAnkhalInventario.Modelo
 					this.SendPropertyChanged("Usuario");
 				}
 			}
+		}
+
+		[global::System.Data.Linq.Mapping.AssociationAttribute(Name="ConversionesMaterial_ProductoMateriales", Storage="_ProductoMateriales", ThisKey="ConversionID", OtherKey="ConversionID")]
+		public EntitySet<ProductoMateriales> ProductoMateriales
+		{
+			get { return this._ProductoMateriales; }
+			set { this._ProductoMateriales.Assign(value); }
 		}
 
 		public event PropertyChangingEventHandler PropertyChanging;

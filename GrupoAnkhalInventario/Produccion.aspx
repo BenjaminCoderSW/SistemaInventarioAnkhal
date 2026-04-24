@@ -1,4 +1,4 @@
-﻿<%@ Page Title="Producción" Language="C#" MasterPageFile="~/Site.Master" AutoEventWireup="true" CodeBehind="Produccion.aspx.cs" Inherits="GrupoAnkhalInventario.ProduccionPage" %>
+﻿<%@ Page Title="Producción" Language="C#" MasterPageFile="~/Site.Master" AutoEventWireup="true" CodeBehind="Produccion.aspx.cs" Inherits="GrupoAnkhalInventario.ProduccionPage" EnableEventValidation="false" %>
 
 <asp:Content ID="Content1" ContentPlaceHolderID="head" runat="server">
     <link href="css/gridviewPantalla.css" rel="stylesheet" />
@@ -56,6 +56,8 @@
         .consumo-table input[type=number] { width:100px; }
         .stock-ok { color:#27ae60; font-weight:600; }
         .stock-warn { color:#e74c3c; font-weight:600; }
+        /* DDL sin conversiones: apariencia deshabilitada pero sigue enviando en el POST */
+        .ddl-readonly { pointer-events:none; opacity:.65; background-color:#e9ecef !important; }
 
         /* ── Badges turno ── */
         .badge-manana  { background:#f39c12; color:#fff; }
@@ -223,15 +225,24 @@
                                 <tr>
                                     <td style="white-space:nowrap"><%# Eval("MaterialCodigo") %> - <%# Eval("MaterialNombre") %></td>
                                     <td class="text-right text-muted" style="white-space:nowrap">
-                                        <%# string.Format("{0:N0}–{1:N0}", Eval("TeoMin"), Eval("TeoMax")) %>
-                                        <small><%# Eval("Unidad") %></small>
+                                        <%# (bool)Eval("TieneCaptura")
+                                            ? string.Format("{0:N0}–{1:N0} <small>{2}</small>",
+                                                Eval("TeoMinCap"), Eval("TeoMaxCap"), Eval("UnidadCap"))
+                                            : string.Format("{0:N0}–{1:N0} <small>{2}</small>",
+                                                Eval("TeoMin"), Eval("TeoMax"),
+                                                string.IsNullOrEmpty(Eval("UnidadClave").ToString())
+                                                    ? Eval("Unidad") : Eval("UnidadClave")) %>
                                     </td>
-                                    <td class="text-right <%# (bool)Eval("EsMerma") ? "text-danger font-weight-bold" : "" %>">
+                                    <td class="text-right <%# (bool)Eval("EsMerma") ? "text-danger font-weight-bold" : "" %>"
+                                        style="white-space:nowrap">
                                         <%# string.Format("{0:N2}", Eval("Real")) %>
+                                        <small class="text-muted"> <%# string.IsNullOrEmpty(Eval("UnidadClave").ToString()) ? Eval("Unidad") : Eval("UnidadClave") %></small>
                                     </td>
-                                    <td class="text-right">
+                                    <td class="text-right" style="white-space:nowrap">
                                         <%# (decimal)Eval("Excedente") > 0
-                                            ? string.Format("<span class='text-danger font-weight-bold'>+{0:N2}</span>", Eval("Excedente"))
+                                            ? string.Format("<span class='text-danger font-weight-bold'>+{0:N2} <small class='text-danger'>{1}</small></span>",
+                                                Eval("Excedente"),
+                                                string.IsNullOrEmpty(Eval("UnidadClave").ToString()) ? Eval("Unidad") : Eval("UnidadClave"))
                                             : "<span class='text-success'>—</span>" %>
                                     </td>
                                 </tr>
@@ -341,9 +352,12 @@
                                         <tr>
                                             <td>
                                                 <%# Eval("MaterialCodigo") %> - <%# Eval("MaterialNombre") %>
-                                                <input type="hidden" name="matID" value='<%# Eval("MaterialID") %>' />
-                                                <input type="hidden" name="cantMin" value='<%# Eval("CantidadMin") %>' />
-                                                <input type="hidden" name="cantMax" value='<%# Eval("CantidadMax") %>' />
+                                                <input type="hidden" name="matID"       value='<%# Eval("MaterialID") %>' />
+                                                <input type="hidden" name="cantMin"     value='<%# Eval("CantidadMin") %>' />
+                                                <input type="hidden" name="cantMax"     value='<%# Eval("CantidadMax") %>' />
+                                                <input type="hidden" name="cantMinCap"  value='<%# Eval("CantMinCap") %>' />
+                                                <input type="hidden" name="cantMaxCap"  value='<%# Eval("CantMaxCap") %>' />
+                                                <input type="hidden" name="unidCapTxt"  value='<%# Eval("UnidadCapTexto") %>' />
                                             </td>
                                             <td><%# Eval("Unidad") %></td>
                                             <td>
@@ -351,17 +365,33 @@
                                                     CssClass="form-control form-control-sm">
                                                 </asp:DropDownList>
                                             </td>
-                                            <td class="text-right teorico-min"><%# Eval("TeoricoMin", "{0:N2}") %></td>
-                                            <td class="text-right teorico-max"><%# Eval("TeoricoMax", "{0:N2}") %></td>
+                                            <td class="text-right teorico-min">
+                                                <strong><%# Eval("TeoricoMinCap", "{0:0.####}") %></strong>
+                                                <span class="text-muted" style="font-size:.8rem;"> <%# Eval("UnidadCapTexto") %></span>
+                                            </td>
+                                            <td class="text-right teorico-max">
+                                                <strong><%# Eval("TeoricoMaxCap", "{0:0.####}") %></strong>
+                                                <span class="text-muted" style="font-size:.8rem;"> <%# Eval("UnidadCapTexto") %></span>
+                                            </td>
                                             <td>
                                                 <input type="number" name="consumoReal" step="0.01" min="0"
                                                     class="form-control form-control-sm consumo-input"
                                                     value='<%# Eval("ConsumoReal", "{0:0.##}") %>'
                                                     data-stock='<%# Eval("StockActual") %>'
                                                     onchange="validarConsumoStock(this)" />
+                                                <%-- Factor de la unidad pre-seleccionada, puesto por el servidor con InvariantCulture.
+                                                     JS lo lee con parseFloat() — no depende de texto de opciones ni de atributos
+                                                     data-* en <option> que WebForms no siempre emite.
+                                                     El onchange del DDL actualiza este valor cuando el usuario cambia la unidad. --%>
+                                                <input type="hidden" class="factor-bom-input"
+                                                       value='<%# Eval("FactorBOMStr") %>' />
+                                                <small class="text-muted consumo-hint" style="font-size:.75rem;">
+                                                    Ingresar en: <span class="consumo-hint-unid">—</span>
+                                                </small>
                                             </td>
                                             <td class="text-right stock-cell <%# Convert.ToDecimal(Eval("StockActual")) > 0 ? "stock-ok" : "stock-warn" %>">
                                                 <%# Eval("StockActual", "{0:N2}") %>
+                                                <small class="text-muted"> <%# Eval("UnidadBaseClave") %></small>
                                             </td>
                                         </tr>
                                     </ItemTemplate>
@@ -454,10 +484,12 @@
 
         var rows = document.querySelectorAll('#tblConsumos tbody tr');
         rows.forEach(function (row) {
-            var cantMin = parseFloat(row.querySelector('input[name="cantMin"]').value) || 0;
-            var cantMax = parseFloat(row.querySelector('input[name="cantMax"]').value) || 0;
-            row.querySelector('.teorico-min').innerText = (cantMin * total).toFixed(2);
-            row.querySelector('.teorico-max').innerText = (cantMax * total).toFixed(2);
+            var cantMinCap = parseFloat(row.querySelector('input[name="cantMinCap"]').value) || 0;
+            var cantMaxCap = parseFloat(row.querySelector('input[name="cantMaxCap"]').value) || 0;
+            var unidTxt    = (row.querySelector('input[name="unidCapTxt"]').value || '').trim();
+            var sufijo     = unidTxt ? ' <span class="text-muted" style="font-size:.8rem;">' + unidTxt + '</span>' : '';
+            row.querySelector('.teorico-min').innerHTML = '<strong>' + (cantMinCap * total).toFixed(4).replace(/\.?0+$/, '') + '</strong>' + sufijo;
+            row.querySelector('.teorico-max').innerHTML = '<strong>' + (cantMaxCap * total).toFixed(4).replace(/\.?0+$/, '') + '</strong>' + sufijo;
         });
     }
 
@@ -501,24 +533,56 @@
         return true;
     }
 
-    // Validar consumo vs stock
+    // Actualizar hint de unidad debajo del input de consumo real
+    function actualizarHint(ddl) {
+        var row  = ddl.closest('tr');
+        var hint = row.querySelector('.consumo-hint-unid');
+        if (!hint || ddl.selectedIndex < 0) return;
+        var txt = ddl.options[ddl.selectedIndex].text
+            .replace(/\s*\[×[^\]]+\]/, '')   // quita "[×0.001000]"
+            .replace(/\s*—\s*base\s*$/i, '') // quita "— base"
+            .trim();
+        hint.textContent = txt || '—';
+    }
+
+    // Lee el factor de conversión del <input hidden class="factor-bom-input"> de la fila.
+    // El servidor lo escribe con InvariantCulture (siempre punto decimal) al hacer DataBind,
+    // y el onchange del DDL lo actualiza cuando el usuario cambia la unidad.
+    // Este enfoque no depende de texto de <option>, atributos data-* en <option>
+    // (que WebForms no siempre emite), ni de regex sujeto a encoding/cultura.
+    function getFactorFromRow(row) {
+        if (!row) return 1;
+        var fi = row.querySelector('input.factor-bom-input');
+        return fi ? (parseFloat(fi.value) || 1) : 1;
+    }
+
+    // Validar consumo vs stock aplicando el factor de conversión de la fila
     function validarConsumoStock(input) {
-        var stock = parseFloat(input.dataset.stock) || 0;
-        var consumo = parseFloat(input.value) || 0;
-        var cell = input.closest('tr').querySelector('.stock-cell');
-        if (consumo > stock) {
+        var row         = input.closest('tr');
+        var factor      = getFactorFromRow(row);
+        var stock       = parseFloat(input.dataset.stock) || 0;
+        var consumo     = parseFloat(input.value) || 0;
+        var consumoBase = consumo * factor;   // convertir a unidad base antes de comparar
+
+        var cell = row.querySelector('.stock-cell');
+        if (consumoBase > stock) {
             cell.className = 'text-right stock-cell stock-warn';
             document.getElementById('divAlertaStock').classList.remove('d-none');
         } else {
             cell.className = 'text-right stock-cell stock-ok';
-            // Verificar si queda alguna alerta
+            // Verificar si queda alguna fila con alerta
             var hayAlerta = false;
             document.querySelectorAll('.consumo-input').forEach(function (inp) {
-                if (parseFloat(inp.value) > parseFloat(inp.dataset.stock)) hayAlerta = true;
+                var r2 = inp.closest('tr');
+                if ((parseFloat(inp.value) || 0) * getFactorFromRow(r2) >
+                    (parseFloat(inp.dataset.stock) || 0))
+                    hayAlerta = true;
             });
             if (!hayAlerta) document.getElementById('divAlertaStock').classList.add('d-none');
         }
     }
+
+
 
     // Formatea una fecha local como YYYY-MM-DD (sin conversión UTC)
     function fmtFecha(d) {
