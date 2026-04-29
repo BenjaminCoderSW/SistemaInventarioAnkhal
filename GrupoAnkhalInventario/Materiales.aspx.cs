@@ -1034,10 +1034,11 @@ namespace GrupoAnkhalInventario
                     return;
                 }
 
-                // Validación 4: no duplicar conversión activa
-                bool yaExiste = db.ConversionesMaterial.Any(c =>
-                    c.MaterialID == materialID && c.UnidadOrigenID == unidadOrigenID && c.Activo);
-                if (yaExiste)
+                // Validación 4: buscar conversión existente (activa o inactiva)
+                var existente = db.ConversionesMaterial.FirstOrDefault(c =>
+                    c.MaterialID == materialID && c.UnidadOrigenID == unidadOrigenID);
+
+                if (existente != null && existente.Activo)
                 {
                     SetMsg("warning", "Conversión duplicada",
                         "Ya existe una conversión activa para esa unidad en este material.", "modalEditar");
@@ -1045,16 +1046,28 @@ namespace GrupoAnkhalInventario
                 }
 
                 string desc = txtDescConversion.Text.Trim();
-                db.ConversionesMaterial.InsertOnSubmit(new Modelo.ConversionesMaterial
+                if (existente != null)
                 {
-                    MaterialID    = materialID,
-                    UnidadOrigenID = unidadOrigenID,
-                    Factor        = factor,
-                    Descripcion   = string.IsNullOrEmpty(desc) ? null : desc,
-                    Activo        = true,
-                    FechaAlta     = AppHelper.Ahora,
-                    UsuarioAltaID = Convert.ToInt32(Session["ClaveID"])
-                });
+                    // Reactivar fila inactiva — la unique constraint no filtra por Activo
+                    existente.Activo        = true;
+                    existente.Factor        = factor;
+                    existente.Descripcion   = string.IsNullOrEmpty(desc) ? null : desc;
+                    existente.FechaAlta     = AppHelper.Ahora;
+                    existente.UsuarioAltaID = Convert.ToInt32(Session["ClaveID"]);
+                }
+                else
+                {
+                    db.ConversionesMaterial.InsertOnSubmit(new Modelo.ConversionesMaterial
+                    {
+                        MaterialID    = materialID,
+                        UnidadOrigenID = unidadOrigenID,
+                        Factor        = factor,
+                        Descripcion   = string.IsNullOrEmpty(desc) ? null : desc,
+                        Activo        = true,
+                        FechaAlta     = AppHelper.Ahora,
+                        UsuarioAltaID = Convert.ToInt32(Session["ClaveID"])
+                    });
+                }
                 db.SubmitChanges();
             }
 
