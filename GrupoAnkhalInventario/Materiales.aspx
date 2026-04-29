@@ -216,7 +216,7 @@
                                     </span>
                                     <div class="stock-bar-wrap">
                                         <div class="stock-bar-fill <%# GetBarCss((decimal)Eval("StockGlobal"), (decimal)Eval("StockMinimo"), (decimal)Eval("StockMaximo"), (decimal)Eval("StockOptimo")) %>"
-                                             style="width:<%# GetBarPct((decimal)Eval("StockGlobal"), (decimal)Eval("StockOptimo")) %>%; background:<%# GetBarColor((decimal)Eval("StockGlobal"), (decimal)Eval("StockMinimo"), (decimal)Eval("StockMaximo"), (decimal)Eval("StockOptimo")) %>">
+                                             style="width:<%# GetBarPct((decimal)Eval("StockGlobal"), (decimal)Eval("StockMaximo")) %>%; background:<%# GetBarColor((decimal)Eval("StockGlobal"), (decimal)Eval("StockMinimo"), (decimal)Eval("StockMaximo"), (decimal)Eval("StockOptimo")) %>">
                                         </div>
                                     </div>
                                 </div>
@@ -317,7 +317,7 @@
     </div>
     <div class="form-group mb-2">
         <label style="font-size:.82rem;font-weight:600;">
-            Stock óptimo <span class="text-success">(🟢 nivel ideal)</span>
+            Stock óptimo <span class="text-muted">(referencia para la barra de progreso)</span>
         </label>
         <input type="number" id="inpNivelOpt" class="form-control form-control-sm"
                min="0" step="0.01" />
@@ -422,7 +422,7 @@
           </div>
           <div class="col-md-4">
             <div class="form-group">
-              <label>Stock óptimo <span style="color:red">*</span> <small class="text-success">(🟢)</small></label>
+              <label>Stock óptimo <span style="color:red">*</span> <small class="text-muted">(barra de progreso)</small></label>
               <asp:TextBox ID="txtStockOptimo" runat="server" CssClass="form-control" TextMode="Number" Text="0" min="0" step="0.01"></asp:TextBox>
             </div>
           </div>
@@ -513,7 +513,7 @@
           </div>
           <div class="col-md-4">
             <div class="form-group">
-              <label>Stock óptimo <small class="text-success">(🟢)</small></label>
+              <label>Stock óptimo <small class="text-muted">(barra de progreso)</small></label>
               <asp:TextBox ID="txtStockOptimoEdit" runat="server" CssClass="form-control" TextMode="Number" min="0" step="0.01"></asp:TextBox>
             </div>
           </div>

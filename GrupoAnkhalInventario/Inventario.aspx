@@ -41,7 +41,7 @@
         /* ── Semáforo badges ─────────────────────────────── */
         .nivel-badge { display:inline-block; padding:2px 8px; border-radius:12px; font-size:0.78rem; font-weight:600; }
         .nivel-critico { background:#fdecea; color:#c0392b; border:1px solid #e74c3c; }
-        .nivel-bajo    { background:#fef5e7; color:#d35400; border:1px solid #e67e22; }
+        .nivel-exceso  { background:#fef5e7; color:#d35400; border:1px solid #e67e22; }
         .nivel-optimo  { background:#eafaf1; color:#1e8449; border:1px solid #27ae60; }
         .nivel-sin     { background:#f0f0f0; color:#7f8c8d; border:1px solid #bdc3c7; }
 

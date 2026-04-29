@@ -727,10 +727,10 @@ namespace GrupoAnkhalInventario
 
         public string GetNivel(decimal stock, decimal minimo, decimal maximo, decimal optimo)
         {
-            if (stock == 0)     return "sin";
-            if (stock < minimo) return "critico";
-            if (stock < maximo) return "bajo";
-            return "optimo";
+            if (stock == 0)        return "sin";
+            if (stock < minimo)    return "critico";
+            if (stock <= maximo)   return "optimo";
+            return "exceso";
         }
 
         public string GetNivelCss(decimal stock, decimal minimo, decimal maximo, decimal optimo)
@@ -738,7 +738,7 @@ namespace GrupoAnkhalInventario
             switch (GetNivel(stock, minimo, maximo, optimo))
             {
                 case "critico": return "nivel-critico";
-                case "bajo":    return "nivel-bajo";
+                case "exceso":  return "nivel-exceso";
                 case "optimo":  return "nivel-optimo";
                 default:        return "nivel-sin";
             }
@@ -749,7 +749,7 @@ namespace GrupoAnkhalInventario
             switch (GetNivel(stock, minimo, maximo, optimo))
             {
                 case "critico": return "🔴";
-                case "bajo":    return "🟡";
+                case "exceso":  return "🟡";
                 case "optimo":  return "🟢";
                 default:        return "⚪";
             }
@@ -760,7 +760,7 @@ namespace GrupoAnkhalInventario
             switch (GetNivel(stock, minimo, maximo, optimo))
             {
                 case "critico": return "Crítico";
-                case "bajo":    return "Bajo";
+                case "exceso":  return "Exceso";
                 case "optimo":  return "Óptimo";
                 default:        return "Sin stock";
             }

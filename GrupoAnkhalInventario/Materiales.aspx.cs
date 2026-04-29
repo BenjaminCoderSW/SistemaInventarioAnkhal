@@ -849,10 +849,10 @@ namespace GrupoAnkhalInventario
             }
         }
 
-        public int GetBarPct(decimal stock, decimal optimo)
+        public int GetBarPct(decimal stock, decimal maximo)
         {
-            if (optimo <= 0) return 0;
-            int pct = (int)Math.Round(stock / optimo * 100);
+            if (maximo <= 0) return 0;
+            int pct = (int)Math.Round(stock / maximo * 100);
             return Math.Min(pct, 100);
         }
 
