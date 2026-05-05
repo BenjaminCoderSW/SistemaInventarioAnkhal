@@ -71,7 +71,7 @@ namespace GrupoAnkhalInventario
         {
             public string  TipoItem          { get; set; }
             public string  Nombre            { get; set; }
-            public int     Cantidad          { get; set; }
+            public decimal Cantidad          { get; set; }
             public decimal PrecioUnitario    { get; set; }
             public decimal CantidadCapturada { get; set; }
             public string  UnidadCaptura     { get; set; }   // nombre unidad capturada (ej. "Cubeta/s")
@@ -1063,7 +1063,7 @@ namespace GrupoAnkhalInventario
                     }
 
                     // Datos de captura para materiales: usar campos de DetalleEntregas directamente
-                    string cantidadHtml = d.Cantidad.ToString("N0");
+                    string cantidadHtml = d.Cantidad.ToString("0.####");
                     if (d.TipoItem == "MATERIAL")
                     {
                         string unidBaseN = (d.MaterialID.HasValue && matUnidadBaseImp.ContainsKey(d.MaterialID.Value))
@@ -1081,13 +1081,13 @@ namespace GrupoAnkhalInventario
                                 "<strong>{0} {1}</strong><span class='cap-info'>= {2} {3}</span>",
                                 capStr,
                                 System.Web.HttpUtility.HtmlEncode(unidCapN),
-                                d.Cantidad.ToString("N0"),
+                                d.Cantidad.ToString("0.####"),
                                 System.Web.HttpUtility.HtmlEncode(unidBaseN));
                         }
                         else if (!string.IsNullOrEmpty(unidBaseN))
                         {
                             cantidadHtml = string.Format("{0} {1}",
-                                d.Cantidad.ToString("N0"),
+                                d.Cantidad.ToString("0.####"),
                                 System.Web.HttpUtility.HtmlEncode(unidBaseN));
                         }
                     }
@@ -1218,10 +1218,14 @@ namespace GrupoAnkhalInventario
         private Modelo.Entregas CrearEntregaEntity(InventarioAnkhalDBDataContext db,
             int baseID, int clienteID, DateTime fecha, string estado)
         {
-            // Folio real (cuenta las entregas ya confirmadas del día)
-            DateTime hoy  = fecha.Date;
-            int count = db.Entregas.Count(e => e.FechaEntrega >= hoy && e.FechaEntrega < hoy.AddDays(1));
-            string folio  = string.Format("ENT-{0}-{1:D3}", fecha.ToString("yyyyMMdd"), count + 1);
+            // Folio real: COUNT con UPDLOCK+HOLDLOCK serializa el acceso concurrente
+            // dentro de la transacción ya abierta, evitando folios duplicados.
+            DateTime hoy = fecha.Date;
+            int count = db.ExecuteQuery<int>(
+                @"SELECT COUNT(*) FROM dbo.Entregas WITH (UPDLOCK, HOLDLOCK)
+                  WHERE FechaEntrega >= {0} AND FechaEntrega < {1}",
+                hoy, hoy.AddDays(1)).First();
+            string folio = string.Format("ENT-{0}-{1:D3}", fecha.ToString("yyyyMMdd"), count + 1);
 
             // Nombre del cliente (texto libre del catálogo)
             string clienteNombre = "";
@@ -1249,9 +1253,14 @@ namespace GrupoAnkhalInventario
         {
             foreach (var it in items)
             {
-                int cantAlmacenar = (it.TipoItem == "MATERIAL")
-                    ? (int)Math.Round(it.Cantidad * it.Factor)
-                    : (int)it.Cantidad;
+                decimal cantAlmacenar = (it.TipoItem == "MATERIAL")
+                    ? it.Cantidad * it.Factor
+                    : it.Cantidad;
+
+                if (cantAlmacenar <= 0m)
+                    throw new InvalidOperationException(
+                        string.Format("La cantidad del ítem {0} es inválida (≤ 0). " +
+                            "Verifique la cantidad ingresada y la conversión de unidades.", it.ItemID));
 
                 var det = new DetalleEntregas
                 {
@@ -1306,7 +1315,7 @@ namespace GrupoAnkhalInventario
                         .Select(s => s.CantidadActual)
                         .FirstOrDefault();
 
-                    int cantBase = (int)Math.Round(it.Cantidad * it.Factor);
+                    decimal cantBase = it.Cantidad * it.Factor;
                     if (disponible < cantBase)
                     {
                         string nombre = db.Materiales
@@ -1314,7 +1323,7 @@ namespace GrupoAnkhalInventario
                             .Select(m => m.Descripcion)
                             .FirstOrDefault() ?? "Material";
                         return string.Format(
-                            "Stock insuficiente para '{0}': disponible {1:N2}, requerido {2:N0}.",
+                            "Stock insuficiente para '{0}': disponible {1:N4}, requerido {2:N4}.",
                             nombre, disponible, cantBase);
                     }
                 }
@@ -1417,7 +1426,7 @@ namespace GrupoAnkhalInventario
                 }
                 else if (it.TipoItem == "MATERIAL")
                 {
-                    int cantBase = (int)Math.Round(it.Cantidad * it.Factor);
+                    decimal cantBase = it.Cantidad * it.Factor;
 
                     // Descontar de StockMateriales.CantidadActual
                     var stock = db.StockMateriales

@@ -8813,7 +8813,7 @@ namespace GrupoAnkhalInventario.Modelo
 		
 		private System.Nullable<int> _PaqueteID;
 		
-		private int _Cantidad;
+		private decimal _Cantidad;
 		
 		private decimal _PrecioUnitario;
 		
@@ -8845,7 +8845,7 @@ namespace GrupoAnkhalInventario.Modelo
     partial void OnProductoIDChanged();
     partial void OnPaqueteIDChanging(System.Nullable<int> value);
     partial void OnPaqueteIDChanged();
-    partial void OnCantidadChanging(int value);
+    partial void OnCantidadChanging(decimal value);
     partial void OnCantidadChanged();
     partial void OnPrecioUnitarioChanging(decimal value);
     partial void OnPrecioUnitarioChanged();
@@ -8975,8 +8975,8 @@ namespace GrupoAnkhalInventario.Modelo
 			}
 		}
 		
-		[global::System.Data.Linq.Mapping.ColumnAttribute(Storage="_Cantidad", DbType="Int NOT NULL")]
-		public int Cantidad
+		[global::System.Data.Linq.Mapping.ColumnAttribute(Storage="_Cantidad", DbType="Decimal(12,4) NOT NULL")]
+		public decimal Cantidad
 		{
 			get
 			{
