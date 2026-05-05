@@ -503,6 +503,18 @@ namespace GrupoAnkhalInventario
             }
             int tipoMovID = int.Parse(ddlTipoMovimiento.SelectedValue);
 
+            string claveTipo;
+            using (var dbClave = NuevoDb(false))
+            {
+                claveTipo = dbClave.TiposMovimiento
+                    .Where(t => t.TipoMovimientoID == tipoMovID)
+                    .Select(t => t.Clave)
+                    .FirstOrDefault();
+            }
+            if (string.IsNullOrEmpty(claveTipo))
+                throw new InvalidOperationException(
+                    $"Tipo de movimiento ID={tipoMovID} no reconocido en el catálogo.");
+
             // ── Validar item ──────────────────────────────────────────────────
             if (string.IsNullOrEmpty(ddlItem.SelectedValue))
             {
@@ -523,7 +535,7 @@ namespace GrupoAnkhalInventario
             }
             decimal costo;
             // Las transferencias entre bases no tienen costo (campo deshabilitado no envía valor)
-            if (tipoMovID == 3)
+            if (claveTipo == "TRANSFERENCIA")
             {
                 costo = 0m;
             }
@@ -535,13 +547,13 @@ namespace GrupoAnkhalInventario
             }
 
             // ── Determinar qué bases son requeridas ───────────────────────────
-            // ENTRADA(1)      → solo base DESTINO
-            // TRANSFERENCIA(3)→ base ORIGEN + base DESTINO
-            // MERMA(5)        → solo base ORIGEN
-            // AJUSTE_POS(6)   → solo base DESTINO
-            // AJUSTE_NEG(7)   → solo base ORIGEN
-            bool requiereOrigen  = tipoMovID == 3 || tipoMovID == 5 || tipoMovID == 7;
-            bool requiereDestino = tipoMovID == 1 || tipoMovID == 3 || tipoMovID == 6;
+            // ENTRADA         → solo base DESTINO
+            // TRANSFERENCIA   → base ORIGEN + base DESTINO
+            // MERMA           → solo base ORIGEN
+            // AJUSTE_POS      → solo base DESTINO
+            // AJUSTE_NEG      → solo base ORIGEN
+            bool requiereOrigen  = claveTipo == "TRANSFERENCIA" || claveTipo == "MERMA"   || claveTipo == "AJUSTE_NEG";
+            bool requiereDestino = claveTipo == "ENTRADA"       || claveTipo == "TRANSFERENCIA" || claveTipo == "AJUSTE_POS";
 
             int? baseOrigenID  = null;
             int? baseDestinoID = null;
@@ -566,7 +578,7 @@ namespace GrupoAnkhalInventario
                 }
                 baseDestinoID = int.Parse(ddlBaseDestino.SelectedValue);
             }
-            if (tipoMovID == 3 &&
+            if (claveTipo == "TRANSFERENCIA" &&
                 baseOrigenID.HasValue && baseDestinoID.HasValue &&
                 baseOrigenID.Value == baseDestinoID.Value)
             {
@@ -632,7 +644,7 @@ namespace GrupoAnkhalInventario
                     factorAplicado  = 1m;
                 }
 
-                bool restaStock = tipoMovID == 3 || tipoMovID == 5 || tipoMovID == 7;
+                bool restaStock = claveTipo == "TRANSFERENCIA" || claveTipo == "MERMA" || claveTipo == "AJUSTE_NEG";
 
                 // Validar stock usando la cantidad en unidad base
                 if (restaStock && !ValidarStockSuficiente(db, tipoItem, itemID, baseOrigenID, cantidadBase))
@@ -657,14 +669,22 @@ namespace GrupoAnkhalInventario
                 };
                 db.Movimientos.InsertOnSubmit(mov);
 
-                switch (tipoMovID)
+                switch (claveTipo)
                 {
-                    case 1: UpsertStock(db, tipoItem, itemID, baseDestinoID, +cantidadBase); break;
-                    case 3: UpsertStock(db, tipoItem, itemID, baseOrigenID,  -cantidadBase);
-                            UpsertStock(db, tipoItem, itemID, baseDestinoID, +cantidadBase); break;
-                    case 5: UpsertStock(db, tipoItem, itemID, baseOrigenID,  -cantidadBase); break;
-                    case 6: UpsertStock(db, tipoItem, itemID, baseDestinoID, +cantidadBase); break;
-                    case 7: UpsertStock(db, tipoItem, itemID, baseOrigenID,  -cantidadBase); break;
+                    case "ENTRADA":
+                        UpsertStock(db, tipoItem, itemID, baseDestinoID, +cantidadBase); break;
+                    case "TRANSFERENCIA":
+                        UpsertStock(db, tipoItem, itemID, baseOrigenID,  -cantidadBase);
+                        UpsertStock(db, tipoItem, itemID, baseDestinoID, +cantidadBase); break;
+                    case "MERMA":
+                        UpsertStock(db, tipoItem, itemID, baseOrigenID,  -cantidadBase); break;
+                    case "AJUSTE_POS":
+                        UpsertStock(db, tipoItem, itemID, baseDestinoID, +cantidadBase); break;
+                    case "AJUSTE_NEG":
+                        UpsertStock(db, tipoItem, itemID, baseOrigenID,  -cantidadBase); break;
+                    default:
+                        throw new InvalidOperationException(
+                            $"Tipo de movimiento '{claveTipo}' no tiene lógica de stock definida.");
                 }
 
                 db.SubmitChanges();
