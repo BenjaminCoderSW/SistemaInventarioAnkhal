@@ -4303,15 +4303,17 @@ namespace GrupoAnkhalInventario.Modelo
 		private System.Nullable<int> _ConversionID;
 		
 		private System.Nullable<decimal> _CantMinCapturada;
-		
+
 		private System.Nullable<decimal> _CantMaxCapturada;
-		
+
+		private bool _Activo;
+
 		private EntityRef<Materiales> _Materiales;
-		
+
 		private EntityRef<Productos> _Productos;
-		
+
 		private EntityRef<ConversionesMaterial> _ConversionesMaterial;
-		
+
     #region Definiciones de métodos de extensibilidad
     partial void OnLoaded();
     partial void OnValidate(System.Data.Linq.ChangeAction action);
@@ -4334,10 +4336,13 @@ namespace GrupoAnkhalInventario.Modelo
     partial void OnCantMinCapturadaChanged();
     partial void OnCantMaxCapturadaChanging(System.Nullable<decimal> value);
     partial void OnCantMaxCapturadaChanged();
+    partial void OnActivoChanging(bool value);
+    partial void OnActivoChanged();
     #endregion
-		
+
 		public ProductoMateriales()
 		{
+			this._Activo = true;
 			this._Materiales = default(EntityRef<Materiales>);
 			this._Productos = default(EntityRef<Productos>);
 			this._ConversionesMaterial = default(EntityRef<ConversionesMaterial>);
@@ -4535,7 +4540,27 @@ namespace GrupoAnkhalInventario.Modelo
 				}
 			}
 		}
-		
+
+		[global::System.Data.Linq.Mapping.ColumnAttribute(Storage="_Activo", DbType="Bit NOT NULL")]
+		public bool Activo
+		{
+			get
+			{
+				return this._Activo;
+			}
+			set
+			{
+				if ((this._Activo != value))
+				{
+					this.OnActivoChanging(value);
+					this.SendPropertyChanging();
+					this._Activo = value;
+					this.SendPropertyChanged("Activo");
+					this.OnActivoChanged();
+				}
+			}
+		}
+
 		[global::System.Data.Linq.Mapping.AssociationAttribute(Name="Materiales_ProductoMateriales", Storage="_Materiales", ThisKey="MaterialID", OtherKey="MaterialID", IsForeignKey=true)]
 		public Materiales Materiales
 		{

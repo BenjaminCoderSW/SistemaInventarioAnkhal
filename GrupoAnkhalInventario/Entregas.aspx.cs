@@ -1402,6 +1402,17 @@ namespace GrupoAnkhalInventario
                         .FirstOrDefault(s => s.BaseID == baseID && s.ProductoID == it.ItemID);
                     if (stock != null)
                     {
+                        // UPDLOCK bloquea la fila hasta que la transacción termine,
+                        // evitando race condition entre dos entregas concurrentes del mismo producto.
+                        int actualProd = db.ExecuteQuery<int>(
+                            "SELECT CantidadBuenas FROM dbo.StockProductos WITH (UPDLOCK, HOLDLOCK) WHERE BaseID={0} AND ProductoID={1}",
+                            baseID, it.ItemID).FirstOrDefault();
+
+                        if (actualProd < (int)it.Cantidad)
+                            throw new InvalidOperationException(
+                                string.Format("Stock insuficiente para producto #{0} al momento de confirmar: disponible {1}, requerido {2}.",
+                                    it.ItemID, actualProd, (int)it.Cantidad));
+
                         stock.CantidadBuenas  -= (int)it.Cantidad;
                         stock.FechaUltimaModif = AppHelper.Ahora;
                     }
@@ -1433,6 +1444,17 @@ namespace GrupoAnkhalInventario
                         .FirstOrDefault(s => s.BaseID == baseID && s.MaterialID == it.ItemID);
                     if (stock != null)
                     {
+                        // UPDLOCK bloquea la fila hasta que la transacción termine,
+                        // evitando race condition entre dos entregas concurrentes del mismo material.
+                        decimal actualMat = db.ExecuteQuery<decimal>(
+                            "SELECT CantidadActual FROM dbo.StockMateriales WITH (UPDLOCK, HOLDLOCK) WHERE BaseID={0} AND MaterialID={1}",
+                            baseID, it.ItemID).FirstOrDefault();
+
+                        if (actualMat < cantBase)
+                            throw new InvalidOperationException(
+                                string.Format("Stock insuficiente para material #{0} al momento de confirmar: disponible {1:N4}, requerido {2:N4}.",
+                                    it.ItemID, actualMat, cantBase));
+
                         stock.CantidadActual  -= cantBase;
                         stock.FechaUltimaModif = AppHelper.Ahora;
                     }

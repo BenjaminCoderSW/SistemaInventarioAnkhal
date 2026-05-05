@@ -166,7 +166,7 @@ namespace GrupoAnkhalInventario
                 var idsPagina = pagina.Select(x => x.p.ProductoID).ToList();
 
                 var compCounts = db.ProductoMateriales
-                    .Where(pm => idsPagina.Contains(pm.ProductoID))
+                    .Where(pm => idsPagina.Contains(pm.ProductoID) && pm.Activo)
                     .GroupBy(pm => pm.ProductoID)
                     .Select(g => new { ProductoID = g.Key, Total = g.Count() })
                     .ToList();
@@ -320,7 +320,7 @@ namespace GrupoAnkhalInventario
 
             var idsPagina = lista.Select(p => p.ProductoID).ToList();
             var pms = db.ProductoMateriales
-                .Where(pm => idsPagina.Contains(pm.ProductoID))
+                .Where(pm => idsPagina.Contains(pm.ProductoID) && pm.Activo)
                 .ToList();
             var matIds = pms.Select(pm => pm.MaterialID).Distinct().ToList();
             var mats2 = db.Materiales.Where(m => matIds.Contains(m.MaterialID)).ToList();
@@ -367,7 +367,7 @@ namespace GrupoAnkhalInventario
                     .Select(m => new { id = m.MaterialID, nombre = m.Descripcion, unidad = m.Unidad, codigo = m.Codigo })
                     .ToList();
 
-                var pms = db.ProductoMateriales.ToList();
+                var pms = db.ProductoMateriales.Where(pm => pm.Activo).ToList();
                 var mats2 = db.Materiales.ToList();
 
                 var dict = new Dictionary<string, object>();
@@ -694,7 +694,7 @@ namespace GrupoAnkhalInventario
                             var pmD = db.ProductoMateriales.FirstOrDefault(x => x.ProductoMaterialID == pmDel);
                             if (pmD != null)
                             {
-                                db.ProductoMateriales.DeleteOnSubmit(pmD);
+                                pmD.Activo = false;
                                 db.SubmitChanges();
                             }
                             SetMsg("success", "¡Eliminado!", "Componente eliminado.", null, true);

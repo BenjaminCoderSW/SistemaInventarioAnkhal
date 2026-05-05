@@ -291,6 +291,23 @@ namespace GrupoAnkhalInventario
                     var b = db.Bases.FirstOrDefault(x => x.BaseID == baseID);
                     if (b == null) return;
 
+                    // Bloquear desactivación si la base tiene stock activo
+                    if (b.Activo)
+                    {
+                        bool tieneStockMat  = db.StockMateriales
+                            .Any(s => s.BaseID == baseID && s.CantidadActual > 0);
+                        bool tieneStockProd = db.StockProductos
+                            .Any(s => s.BaseID == baseID && (s.CantidadBuenas > 0 || s.CantidadRechazo > 0));
+
+                        if (tieneStockMat || tieneStockProd)
+                        {
+                            CargarBases();
+                            SetMensajePendiente("warning", "No se puede desactivar",
+                                "La base tiene stock activo. Transfiere o ajusta el inventario antes de desactivarla.");
+                            return;
+                        }
+                    }
+
                     b.Activo = !b.Activo;
                     b.FechaModif = AppHelper.Ahora;
                     b.UsuarioModifID = Convert.ToInt32(Session["ClaveID"]);

@@ -460,7 +460,7 @@ namespace GrupoAnkhalInventario
             using (var db = NuevoDb(false))
             {
                 bom = (from pm in db.ProductoMateriales
-                           where pm.ProductoID == productoID
+                           where pm.ProductoID == productoID && pm.Activo
                            join m in db.Materiales on pm.MaterialID equals m.MaterialID
                            select new ConsumoVM
                            {
@@ -981,7 +981,7 @@ namespace GrupoAnkhalInventario
                 if (prod == null) return;
 
                 var bom = (from pm in db.ProductoMateriales
-                           where pm.ProductoID == productoID
+                           where pm.ProductoID == productoID && pm.Activo
                            join m in db.Materiales on pm.MaterialID equals m.MaterialID
                            orderby m.Descripcion
                            select new
@@ -1098,6 +1098,17 @@ namespace GrupoAnkhalInventario
             }
             else
             {
+                // UPDLOCK bloquea la fila hasta que la transacción termine,
+                // evitando que dos peticiones concurrentes lean el mismo valor y ambas descuenten.
+                decimal actual = db.ExecuteQuery<decimal>(
+                    "SELECT CantidadActual FROM dbo.StockMateriales WITH (UPDLOCK, HOLDLOCK) WHERE BaseID={0} AND MaterialID={1}",
+                    baseID, materialID).FirstOrDefault();
+
+                if (delta < 0 && actual + delta < 0)
+                    throw new InvalidOperationException(
+                        string.Format("Stock insuficiente para material #{0}: disponible {1:N4}, requerido {2:N4}.",
+                            materialID, actual, -delta));
+
                 s.CantidadActual   += delta;
                 s.FechaUltimaModif  = AppHelper.Ahora;
             }
