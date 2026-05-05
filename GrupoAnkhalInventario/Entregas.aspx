@@ -271,7 +271,12 @@
                     </div>
                     <div class="col-md-2">
                         <label class="font-weight-bold small">Cantidad <span class="text-danger">*</span></label>
-                        <input type="number" id="txtItemCantidad" class="form-control form-control-sm" min="1" value="1" />
+                        <input type="number" id="txtItemCantidad" class="form-control form-control-sm" min="0.001" step="any" value="1" />
+                    </div>
+                    <div class="col-md-2" id="divUnidadMaterial" style="display:none;">
+                        <label class="font-weight-bold small">Unidad</label>
+                        <select id="selUnidadMaterial" class="form-control form-control-sm"
+                                onchange="onUnidadMaterialChange()"></select>
                     </div>
                     <div class="col-md-2">
                         <label class="font-weight-bold small">Precio Unit.</label>
@@ -293,6 +298,7 @@
                                 <th>Tipo</th>
                                 <th>Descripci&oacute;n</th>
                                 <th class="text-right" style="width:80px">Cantidad</th>
+                                <th style="width:70px">Unidad</th>
                                 <th class="text-right" style="width:100px">Precio Unit.</th>
                                 <th class="text-right" style="width:100px">Subtotal</th>
                                 <th style="width:40px"></th>
@@ -300,14 +306,14 @@
                         </thead>
                         <tbody id="tbodyItems">
                             <tr id="trItemsVacios">
-                                <td colspan="6" class="text-center" id="divItemsVacios">
+                                <td colspan="7" class="text-center" id="divItemsVacios">
                                     A&uacute;n no hay items. Use el formulario de arriba para agregar.
                                 </td>
                             </tr>
                         </tbody>
                         <tfoot>
                             <tr>
-                                <td colspan="4" class="text-right font-weight-bold">Total:</td>
+                                <td colspan="5" class="text-right font-weight-bold">Total:</td>
                                 <td class="text-right font-weight-bold" id="tdTotalItems">$0.00</td>
                                 <td></td>
                             </tr>
@@ -439,6 +445,7 @@
         var tipo = document.getElementById('selTipoItem').value;
         document.getElementById('divSelProducto').style.display = tipo === 'PRODUCTO' ? '' : 'none';
         document.getElementById('divSelMaterial').style.display = tipo === 'MATERIAL' ? '' : 'none';
+        document.getElementById('divUnidadMaterial').style.display = tipo === 'MATERIAL' ? '' : 'none';
         onItemChange();
     }
 
@@ -453,9 +460,34 @@
             var sel2 = document.getElementById('<%= ddlItemMaterial.ClientID %>');
             var id2 = sel2.value;
             precio = (window.matPrecios && window.matPrecios[id2]) ? window.matPrecios[id2] : 0;
+            poblarUnidadesMaterial(id2);
         }
         document.getElementById('txtItemPrecio').value = precio.toFixed(2);
     }
+
+    function poblarUnidadesMaterial(matID) {
+        var sel = document.getElementById('selUnidadMaterial');
+        sel.innerHTML = '';
+        var opciones = (window.matConversiones && window.matConversiones[matID])
+            ? window.matConversiones[matID] : [];
+        if (opciones.length === 0) {
+            var opt = document.createElement('option');
+            opt.value = '';
+            opt.text = '\u2014 sin unidad \u2014';
+            opt.setAttribute('data-factor', '1');
+            sel.appendChild(opt);
+            return;
+        }
+        opciones.forEach(function (op) {
+            var opt = document.createElement('option');
+            opt.value = op.valor;
+            opt.text = op.texto;
+            opt.setAttribute('data-factor', op.factor);
+            sel.appendChild(opt);
+        });
+    }
+
+    function onUnidadMaterialChange() { /* factor se lee al agregar */ }
 
     function agregarItem() {
         var tipo = document.getElementById('selTipoItem').value;
@@ -473,14 +505,25 @@
             nombre = sel2.options[sel2.selectedIndex].text;
         }
 
-        var cantidad = parseInt(document.getElementById('txtItemCantidad').value) || 0;
+        var cantidad = parseFloat(document.getElementById('txtItemCantidad').value) || 0;
         var precio   = parseFloat(document.getElementById('txtItemPrecio').value) || 0;
 
         if (cantidad <= 0) { alert('La cantidad debe ser mayor a 0.'); return; }
 
-        // Evitar duplicado del mismo item+tipo
+        var unidadVal = '', factor = 1, unidadTexto = '';
+        if (tipo === 'MATERIAL') {
+            var selU = document.getElementById('selUnidadMaterial');
+            if (selU.options.length > 0 && selU.value) {
+                unidadVal   = selU.value;
+                factor      = parseFloat(selU.options[selU.selectedIndex].getAttribute('data-factor')) || 1;
+                unidadTexto = selU.options[selU.selectedIndex].text;
+            }
+        }
+
+        // Acumular solo si coinciden tipo, item Y unidad (distinta unidad = fila separada)
         for (var i = 0; i < _items.length; i++) {
-            if (_items[i].TipoItem === tipo && _items[i].ItemID === itemID) {
+            if (_items[i].TipoItem === tipo && _items[i].ItemID === itemID &&
+                _items[i].UnidadVal === unidadVal) {
                 _items[i].Cantidad += cantidad;
                 _items[i].PrecioUnitario = precio;
                 renderizarTabla();
@@ -489,7 +532,11 @@
             }
         }
 
-        var item = { TipoItem: tipo, ItemID: itemID, Nombre: nombre, Cantidad: cantidad, PrecioUnitario: precio };
+        var item = {
+            TipoItem: tipo, ItemID: itemID, Nombre: nombre,
+            Cantidad: cantidad, PrecioUnitario: precio,
+            UnidadVal: unidadVal, Factor: factor, UnidadTexto: unidadTexto
+        };
         _items.push(item);
         renderizarTabla();
         sincronizarHidden();
@@ -506,7 +553,7 @@
         var tbody = document.getElementById('tbodyItems');
         tbody.innerHTML = '';
         if (_items.length === 0) {
-            tbody.innerHTML = '<tr><td colspan="6" class="text-center" style="color:#868e96;font-style:italic;">A\u00FAn no hay items. Use el formulario de arriba para agregar.</td></tr>';
+            tbody.innerHTML = '<tr><td colspan="7" class="text-center" style="color:#868e96;font-style:italic;">A\u00FAn no hay items. Use el formulario de arriba para agregar.</td></tr>';
             actualizarTotal();
             return;
         }
@@ -517,12 +564,14 @@
     function renderizarFila(it, idx) {
         var subtotal = it.Cantidad * it.PrecioUnitario;
         var badgeCls = it.TipoItem === 'PRODUCTO' ? 'badge-primary' : 'badge-warning';
+        var unidadCell = (it.TipoItem === 'MATERIAL' && it.UnidadTexto) ? escHtml(it.UnidadTexto) : '\u2014';
         var tbody = document.getElementById('tbodyItems');
         var tr = document.createElement('tr');
         tr.innerHTML =
             '<td><span class="badge ' + badgeCls + '">' + it.TipoItem + '</span></td>' +
             '<td>' + escHtml(it.Nombre) + '</td>' +
             '<td class="text-right">' + it.Cantidad + '</td>' +
+            '<td>' + unidadCell + '</td>' +
             '<td class="text-right">$' + it.PrecioUnitario.toFixed(2) + '</td>' +
             '<td class="text-right font-weight-bold">$' + subtotal.toFixed(2) + '</td>' +
             '<td class="text-center"><button type="button" class="btn btn-xs btn-danger" onclick="eliminarItem(' + idx + ')">&times;</button></td>';
@@ -641,11 +690,23 @@
             var sub = it.Cantidad * it.PrecioUnitario;
             total += sub;
             var badgeCls = it.TipoItem === 'PRODUCTO' ? 'badge-primary' : 'badge-warning';
+
+            // Celda de cantidad: capturada como primaria, base como secundaria pequeña
+            var cantHtml;
+            if (it.TuvoConversion && it.UnidadCaptura) {
+                var capStr = parseFloat(it.CantidadCapturada).toString().replace(/\.?0+$/, '') || it.CantidadCapturada;
+                cantHtml = '<strong>' + escHtml(String(capStr)) + ' ' + escHtml(it.UnidadCaptura) + '</strong>' +
+                           '<small class="text-muted d-block">= ' + it.Cantidad + ' ' + escHtml(it.UnidadBase || '') + '</small>';
+            } else {
+                cantHtml = it.Cantidad;
+                if (it.UnidadBase) cantHtml += ' <small class="text-muted">' + escHtml(it.UnidadBase) + '</small>';
+            }
+
             var tr = document.createElement('tr');
             tr.innerHTML =
                 '<td><span class="badge ' + badgeCls + '">' + escHtml(it.TipoItem) + '</span></td>' +
                 '<td>' + escHtml(it.Nombre) + '</td>' +
-                '<td class="text-right">' + it.Cantidad + '</td>' +
+                '<td class="text-right">' + cantHtml + '</td>' +
                 '<td class="text-right">$' + parseFloat(it.PrecioUnitario).toFixed(2) + '</td>' +
                 '<td class="text-right font-weight-bold">$' + sub.toFixed(2) + '</td>';
             tbody.appendChild(tr);

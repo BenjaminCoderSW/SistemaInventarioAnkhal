@@ -42,11 +42,15 @@ namespace GrupoAnkhalInventario
         // Modelo de item para serializar/deserializar JSON (modal ↔ servidor)
         private class ItemEntregaModel
         {
-            public string  TipoItem       { get; set; }
-            public int     ItemID         { get; set; }
-            public string  Nombre         { get; set; }
-            public int     Cantidad       { get; set; }
-            public decimal PrecioUnitario { get; set; }
+            public string  TipoItem                { get; set; }
+            public int     ItemID                  { get; set; }
+            public string  Nombre                  { get; set; }
+            public decimal Cantidad                { get; set; }
+            public decimal PrecioUnitario          { get; set; }
+            public string  UnidadVal               { get; set; }   // "base:{id}" o "conv:{id}"
+            public decimal Factor                  { get; set; } = 1m;
+            public string  UnidadTexto             { get; set; }
+            public int?    UnidadCapturaIDDirecto  { get; set; }   // poblado al leer de DetalleEntregas
         }
 
         // Modelo del detalle completo para el modal de ver detalle
@@ -65,10 +69,14 @@ namespace GrupoAnkhalInventario
 
         private class ItemDetalleJson
         {
-            public string  TipoItem       { get; set; }
-            public string  Nombre         { get; set; }
-            public int     Cantidad       { get; set; }
-            public decimal PrecioUnitario { get; set; }
+            public string  TipoItem          { get; set; }
+            public string  Nombre            { get; set; }
+            public int     Cantidad          { get; set; }
+            public decimal PrecioUnitario    { get; set; }
+            public decimal CantidadCapturada { get; set; }
+            public string  UnidadCaptura     { get; set; }   // nombre unidad capturada (ej. "Cubeta/s")
+            public bool    TuvoConversion    { get; set; }
+            public string  UnidadBase        { get; set; }   // nombre unidad base del material (ej. "Litro/s")
         }
 
         // ══ Page_Load ════════════════════════════════════════════════════════
@@ -77,6 +85,7 @@ namespace GrupoAnkhalInventario
             if (Session["ClaveID"] == null) { Response.Redirect("~/Login.aspx"); return; }
 
             RegistrarPreciosJS();
+            RegistrarConversionesJS();
 
             if (!IsPostBack)
             {
@@ -184,6 +193,74 @@ namespace GrupoAnkhalInventario
 
                 string js = $"window.prodPrecios={prodJson};window.matPrecios={matJson};";
                 ClientScript.RegisterStartupScript(GetType(), "preciosJS", js, true);
+            }
+        }
+
+        // Inyecta window.matUnidadBase y window.matConversiones para el selector de unidades
+        private void RegistrarConversionesJS()
+        {
+            using (var db = NuevoDb(false))
+            {
+                var ci = System.Globalization.CultureInfo.InvariantCulture;
+
+                var mats = db.Materiales
+                    .Where(m => m.Activo && m.UnidadMedidaID.HasValue)
+                    .Select(m => new { m.MaterialID, m.Unidad, m.UnidadMedidaID })
+                    .ToList();
+
+                var unidades = db.UnidadesMedida
+                    .ToDictionary(u => u.UnidadMedidaID, u => u.Clave);
+
+                var convs = (from c in db.ConversionesMaterial
+                             where c.Activo
+                             join u in db.UnidadesMedida on c.UnidadOrigenID equals u.UnidadMedidaID
+                             select new { c.MaterialID, c.ConversionID, c.Factor, u.Clave, u.Nombre })
+                            .ToList();
+
+                // matUnidadBase: { "matID": { id: X, clave: "ml" } }
+                var baseEntries = mats
+                    .Where(m => unidades.ContainsKey(m.UnidadMedidaID.Value))
+                    .Select(m => string.Format(ci, "\"{0}\":{{\"id\":{1},\"clave\":\"{2}\"}}",
+                        m.MaterialID, m.UnidadMedidaID.Value,
+                        unidades[m.UnidadMedidaID.Value].Replace("\"", "\\\"")));
+
+                // matConversiones: { "matID": [{valor, texto, factor}, ...] }
+                var convEntries = new List<string>();
+                foreach (var m in mats)
+                {
+                    var opciones = new List<string>();
+                    // Opción base
+                    string clave = unidades.ContainsKey(m.UnidadMedidaID.Value)
+                        ? unidades[m.UnidadMedidaID.Value] : m.Unidad ?? "";
+                    opciones.Add(string.Format(ci,
+                        "{{\"valor\":\"base:{0}\",\"texto\":\"{1} (base)\",\"factor\":1}}",
+                        m.UnidadMedidaID.Value, clave.Replace("\"", "\\\"")));
+
+                    // Opciones de conversión
+                    foreach (var c in convs.Where(c => c.MaterialID == m.MaterialID))
+                    {
+                        string texto = string.IsNullOrEmpty(c.Nombre) ? c.Clave : c.Nombre;
+                        string factorDisplay = (c.Factor == Math.Floor(c.Factor))
+                            ? ((long)c.Factor).ToString(ci)
+                            : c.Factor.ToString("G6", ci);
+                        string textoConEq = string.Format("{0} (= {1} {2})",
+                            texto, factorDisplay, clave);
+                        opciones.Add(string.Format(ci,
+                            "{{\"valor\":\"conv:{0}\",\"texto\":\"{1}\",\"factor\":{2}}}",
+                            c.ConversionID, textoConEq.Replace("\"", "\\\""),
+                            c.Factor.ToString("F6", ci)));
+                    }
+
+                    convEntries.Add(string.Format("\"{0}\":[{1}]", m.MaterialID,
+                        string.Join(",", opciones)));
+                }
+
+                string js = string.Format(
+                    "window.matUnidadBase={{{0}}};window.matConversiones={{{1}}};",
+                    string.Join(",", baseEntries),
+                    string.Join(",", convEntries));
+
+                ClientScript.RegisterStartupScript(GetType(), "conversionesJS", js, true);
             }
         }
 
@@ -750,14 +827,58 @@ namespace GrupoAnkhalInventario
                 catch { }
 
                 // Items del detalle
-                var detalles = (from d  in db.DetalleEntregas
+                var detalles = (from d in db.DetalleEntregas
                                 where d.EntregaID == entregaID
+                                orderby d.DetalleEntregaID
                                 select d).ToList();
+
+                // Pre-cargar nombres de unidades de captura y base que aparecen en los detalles
+                var ucIDs = detalles.Where(d => d.UnidadCapturaID.HasValue)
+                                    .Select(d => d.UnidadCapturaID.Value).Distinct().ToList();
+
+                var matIDs = detalles.Where(d => d.TipoItem == "MATERIAL" && d.MaterialID.HasValue)
+                                     .Select(d => d.MaterialID.Value).Distinct().ToList();
+
+                var ucNombres = ucIDs.Any()
+                    ? db.UnidadesMedida
+                        .Where(u => ucIDs.Contains(u.UnidadMedidaID))
+                        .ToDictionary(u => u.UnidadMedidaID,
+                                      u => !string.IsNullOrEmpty(u.Nombre) ? u.Nombre : u.Clave)
+                    : new Dictionary<int, string>();
+
+                // Unidad base por MaterialID (para mostrar "= N UnidadBase")
+                var matUnidadBase = new Dictionary<int, string>();
+                if (matIDs.Any())
+                {
+                    var matsInfo = db.Materiales
+                        .Where(m => matIDs.Contains(m.MaterialID))
+                        .Select(m => new { m.MaterialID, m.Unidad, m.UnidadMedidaID })
+                        .ToList();
+
+                    var ubIDs = matsInfo.Where(m => m.UnidadMedidaID.HasValue)
+                                        .Select(m => m.UnidadMedidaID.Value).Distinct().ToList();
+                    var ubNombres = ubIDs.Any()
+                        ? db.UnidadesMedida
+                            .Where(u => ubIDs.Contains(u.UnidadMedidaID))
+                            .ToDictionary(u => u.UnidadMedidaID,
+                                          u => !string.IsNullOrEmpty(u.Nombre) ? u.Nombre : u.Clave)
+                        : new Dictionary<int, string>();
+
+                    foreach (var m in matsInfo)
+                    {
+                        string nombre_ub = (m.UnidadMedidaID.HasValue && ubNombres.ContainsKey(m.UnidadMedidaID.Value))
+                            ? ubNombres[m.UnidadMedidaID.Value]
+                            : (m.Unidad ?? "");
+                        matUnidadBase[m.MaterialID] = nombre_ub;
+                    }
+                }
 
                 var itemsJson = new List<ItemDetalleJson>();
                 foreach (var d in detalles)
                 {
-                    string nombre = d.TipoItem;
+                    string nombre    = d.TipoItem;
+                    string unidBase  = "";
+
                     if (d.TipoItem == "PRODUCTO" && d.ProductoID.HasValue)
                     {
                         var p = db.Productos.FirstOrDefault(x => x.ProductoID == d.ProductoID.Value);
@@ -767,14 +888,30 @@ namespace GrupoAnkhalInventario
                     {
                         var m = db.Materiales.FirstOrDefault(x => x.MaterialID == d.MaterialID.Value);
                         if (m != null) nombre = string.Format("[{0}] {1}", m.Codigo, m.Descripcion);
+                        if (matUnidadBase.ContainsKey(d.MaterialID.Value))
+                            unidBase = matUnidadBase[d.MaterialID.Value];
                     }
+
+                    // Leer directamente de los nuevos campos de DetalleEntregas
+                    bool tuvoConv = d.TipoItem == "MATERIAL"
+                                    && d.CantidadCapturada.HasValue
+                                    && d.UnidadCapturaID.HasValue
+                                    && d.CantidadCapturada.Value != d.Cantidad;
+
+                    decimal cantCap = d.CantidadCapturada ?? d.Cantidad;
+                    string  unidCap = (tuvoConv && ucNombres.ContainsKey(d.UnidadCapturaID.Value))
+                                      ? ucNombres[d.UnidadCapturaID.Value] : "";
 
                     itemsJson.Add(new ItemDetalleJson
                     {
-                        TipoItem       = d.TipoItem,
-                        Nombre         = nombre,
-                        Cantidad       = d.Cantidad,
-                        PrecioUnitario = d.PrecioUnitario
+                        TipoItem          = d.TipoItem,
+                        Nombre            = nombre,
+                        Cantidad          = d.Cantidad,
+                        PrecioUnitario    = d.PrecioUnitario,
+                        CantidadCapturada = cantCap,
+                        UnidadCaptura     = unidCap,
+                        TuvoConversion    = tuvoConv,
+                        UnidadBase        = unidBase
                     });
                 }
 
@@ -825,9 +962,46 @@ namespace GrupoAnkhalInventario
                     if (cli != null) clienteNombre = cli.Nombre;
                 }
 
-                var detalles = (from d  in db.DetalleEntregas
+                var detalles = (from d in db.DetalleEntregas
                                 where d.EntregaID == entregaID
+                                orderby d.DetalleEntregaID
                                 select d).ToList();
+
+                // Pre-cargar nombres de unidades de captura desde DetalleEntregas
+                var ucIDsImp = detalles.Where(d => d.UnidadCapturaID.HasValue)
+                                       .Select(d => d.UnidadCapturaID.Value).Distinct().ToList();
+                var unidCapNombresImp = ucIDsImp.Any()
+                    ? db.UnidadesMedida
+                        .Where(u => ucIDsImp.Contains(u.UnidadMedidaID))
+                        .ToDictionary(u => u.UnidadMedidaID,
+                                      u => !string.IsNullOrEmpty(u.Nombre) ? u.Nombre : u.Clave)
+                    : new Dictionary<int, string>();
+
+                // Pre-cargar unidades base de los materiales del comprobante
+                var matIDsImp = detalles.Where(d => d.TipoItem == "MATERIAL" && d.MaterialID.HasValue)
+                                        .Select(d => d.MaterialID.Value).Distinct().ToList();
+                var matUnidadBaseImp = new Dictionary<int, string>();
+                if (matIDsImp.Any())
+                {
+                    var matsImp = db.Materiales
+                        .Where(m => matIDsImp.Contains(m.MaterialID))
+                        .Select(m => new { m.MaterialID, m.Unidad, m.UnidadMedidaID })
+                        .ToList();
+                    var ubIDsImp = matsImp.Where(m => m.UnidadMedidaID.HasValue)
+                                          .Select(m => m.UnidadMedidaID.Value).Distinct().ToList();
+                    var ubNombresImp = ubIDsImp.Any()
+                        ? db.UnidadesMedida
+                            .Where(u => ubIDsImp.Contains(u.UnidadMedidaID))
+                            .ToDictionary(u => u.UnidadMedidaID,
+                                          u => !string.IsNullOrEmpty(u.Nombre) ? u.Nombre : u.Clave)
+                        : new Dictionary<int, string>();
+                    foreach (var m in matsImp)
+                    {
+                        string ub = (m.UnidadMedidaID.HasValue && ubNombresImp.ContainsKey(m.UnidadMedidaID.Value))
+                            ? ubNombresImp[m.UnidadMedidaID.Value] : (m.Unidad ?? "");
+                        matUnidadBaseImp[m.MaterialID] = ub;
+                    }
+                }
 
                 var sb = new StringBuilder();
                 sb.Append("<!DOCTYPE html><html><head><meta charset='UTF-8'/>");
@@ -851,6 +1025,7 @@ namespace GrupoAnkhalInventario
                 sb.Append(".firma{flex:1;border-top:2px solid #555;padding-top:6px;text-align:center;font-size:.85rem;color:#555}");
                 sb.Append(".btn-print{padding:8px 24px;background:#003366;color:#fff;border:none;border-radius:4px;cursor:pointer;font-size:.9rem;margin-right:8px}");
                 sb.Append(".btn-close{padding:8px 24px;background:#6c757d;color:#fff;border:none;border-radius:4px;cursor:pointer;font-size:.9rem}");
+                sb.Append(".cap-info{display:block;font-size:.76rem;color:#666;font-weight:normal}");
                 sb.Append("@media print{.no-print{display:none!important}}");
                 sb.Append("</style></head><body>");
 
@@ -886,11 +1061,42 @@ namespace GrupoAnkhalInventario
                         var m = db.Materiales.FirstOrDefault(x => x.MaterialID == d.MaterialID.Value);
                         if (m != null) nombre = string.Format("[{0}] {1}", m.Codigo, m.Descripcion);
                     }
+
+                    // Datos de captura para materiales: usar campos de DetalleEntregas directamente
+                    string cantidadHtml = d.Cantidad.ToString("N0");
+                    if (d.TipoItem == "MATERIAL")
+                    {
+                        string unidBaseN = (d.MaterialID.HasValue && matUnidadBaseImp.ContainsKey(d.MaterialID.Value))
+                            ? matUnidadBaseImp[d.MaterialID.Value] : "";
+
+                        bool tieneConvImp = d.CantidadCapturada.HasValue
+                                            && d.UnidadCapturaID.HasValue
+                                            && d.CantidadCapturada.Value != d.Cantidad;
+                        if (tieneConvImp)
+                        {
+                            string unidCapN = unidCapNombresImp.ContainsKey(d.UnidadCapturaID.Value)
+                                ? unidCapNombresImp[d.UnidadCapturaID.Value] : "";
+                            string capStr = d.CantidadCapturada.Value.ToString("0.####");
+                            cantidadHtml = string.Format(
+                                "<strong>{0} {1}</strong><span class='cap-info'>= {2} {3}</span>",
+                                capStr,
+                                System.Web.HttpUtility.HtmlEncode(unidCapN),
+                                d.Cantidad.ToString("N0"),
+                                System.Web.HttpUtility.HtmlEncode(unidBaseN));
+                        }
+                        else if (!string.IsNullOrEmpty(unidBaseN))
+                        {
+                            cantidadHtml = string.Format("{0} {1}",
+                                d.Cantidad.ToString("N0"),
+                                System.Web.HttpUtility.HtmlEncode(unidBaseN));
+                        }
+                    }
+
                     decimal sub = d.Cantidad * d.PrecioUnitario;
                     totalGeneral += sub;
                     sb.AppendFormat(
-                        "<tr><td>{0}</td><td>{1}</td><td class='r'>{2:N0}</td><td class='r'>{3:C2}</td><td class='r'>{4:C2}</td></tr>",
-                        d.TipoItem, nombre, d.Cantidad, d.PrecioUnitario, sub);
+                        "<tr><td>{0}</td><td>{1}</td><td class='r'>{2}</td><td class='r'>{3:C2}</td><td class='r'>{4:C2}</td></tr>",
+                        d.TipoItem, nombre, cantidadHtml, d.PrecioUnitario, sub);
                 }
                 sb.Append("</tbody>");
                 sb.AppendFormat(
@@ -953,14 +1159,29 @@ namespace GrupoAnkhalInventario
                 .Where(d => d.EntregaID == entregaID)
                 .ToList();
 
-            return detalles.Select(d => new ItemEntregaModel
+            return detalles.Select(d =>
             {
-                TipoItem       = (d.TipoItem ?? "").ToUpper(),
-                ItemID         = (d.TipoItem ?? "").ToUpper() == "PRODUCTO"
-                                    ? (d.ProductoID ?? 0)
-                                    : (d.MaterialID ?? 0),
-                Cantidad       = d.Cantidad,
-                PrecioUnitario = d.PrecioUnitario
+                string tipo = (d.TipoItem ?? "").ToUpper();
+
+                // Recuperar factor de conversión desde los campos guardados en DetalleEntregas
+                bool tieneConv = tipo == "MATERIAL"
+                                 && d.CantidadCapturada.HasValue
+                                 && d.UnidadCapturaID.HasValue
+                                 && d.CantidadCapturada.Value > 0
+                                 && d.CantidadCapturada.Value != d.Cantidad;
+
+                decimal cantCap = tieneConv ? d.CantidadCapturada.Value : d.Cantidad;
+                decimal factor  = (tieneConv && cantCap != 0m) ? (d.Cantidad / cantCap) : 1m;
+
+                return new ItemEntregaModel
+                {
+                    TipoItem               = tipo,
+                    ItemID                 = tipo == "PRODUCTO" ? (d.ProductoID ?? 0) : (d.MaterialID ?? 0),
+                    Cantidad               = cantCap,
+                    PrecioUnitario         = d.PrecioUnitario,
+                    Factor                 = factor,
+                    UnidadCapturaIDDirecto = tieneConv ? d.UnidadCapturaID : null
+                };
             }).ToList();
         }
 
@@ -1028,16 +1249,28 @@ namespace GrupoAnkhalInventario
         {
             foreach (var it in items)
             {
+                int cantAlmacenar = (it.TipoItem == "MATERIAL")
+                    ? (int)Math.Round(it.Cantidad * it.Factor)
+                    : (int)it.Cantidad;
+
                 var det = new DetalleEntregas
                 {
                     EntregaID      = entregaID,
                     TipoItem       = it.TipoItem,
-                    Cantidad       = it.Cantidad,
+                    Cantidad       = cantAlmacenar,
                     PrecioUnitario = it.PrecioUnitario,
                     Observaciones  = null
                 };
-                if (it.TipoItem == "PRODUCTO") det.ProductoID = it.ItemID;
-                else                           det.MaterialID  = it.ItemID;
+                if (it.TipoItem == "PRODUCTO")
+                {
+                    det.ProductoID = it.ItemID;
+                }
+                else
+                {
+                    det.MaterialID        = it.ItemID;
+                    det.CantidadCapturada = it.Cantidad;   // cantidad antes de aplicar el factor (ej. 1 cubeta)
+                    det.UnidadCapturaID   = ObtenerUnidadCapturaIDEntrega(it.ItemID, it.UnidadVal, db);
+                }
 
                 db.DetalleEntregas.InsertOnSubmit(det);
             }
@@ -1073,7 +1306,8 @@ namespace GrupoAnkhalInventario
                         .Select(s => s.CantidadActual)
                         .FirstOrDefault();
 
-                    if (disponible < it.Cantidad)
+                    int cantBase = (int)Math.Round(it.Cantidad * it.Factor);
+                    if (disponible < cantBase)
                     {
                         string nombre = db.Materiales
                             .Where(m => m.MaterialID == it.ItemID)
@@ -1081,11 +1315,60 @@ namespace GrupoAnkhalInventario
                             .FirstOrDefault() ?? "Material";
                         return string.Format(
                             "Stock insuficiente para '{0}': disponible {1:N2}, requerido {2:N0}.",
-                            nombre, disponible, it.Cantidad);
+                            nombre, disponible, cantBase);
                     }
                 }
             }
             return null; // null = todo bien
+        }
+
+        // ══ Conversión de unidades (mismo patrón que Produccion.aspx.cs) ══════
+        // selectedVal: "base:{UnidadMedidaID}" | "conv:{ConversionID}" | null
+        private decimal ObtenerFactorEntrega(int matID, string selectedVal,
+            InventarioAnkhalDBDataContext db)
+        {
+            if (string.IsNullOrEmpty(selectedVal) || selectedVal.StartsWith("base:"))
+                return 1m;
+
+            if (selectedVal.StartsWith("conv:"))
+            {
+                int convID;
+                if (!int.TryParse(selectedVal.Substring(5), out convID)) return 1m;
+
+                var conv = db.ConversionesMaterial
+                    .FirstOrDefault(c => c.ConversionID == convID &&
+                                         c.MaterialID   == matID  &&
+                                         c.Activo);
+                if (conv == null)
+                    throw new InvalidOperationException(string.Format(
+                        "No existe conversión activa (ConversionID={0}) para el material ID={1}.",
+                        convID, matID));
+
+                return conv.Factor;
+            }
+
+            return 1m;
+        }
+
+        private int? ObtenerUnidadCapturaIDEntrega(int matID, string selectedVal,
+            InventarioAnkhalDBDataContext db)
+        {
+            if (string.IsNullOrEmpty(selectedVal) || selectedVal.StartsWith("base:"))
+                return null;
+
+            if (selectedVal.StartsWith("conv:"))
+            {
+                int convID;
+                if (!int.TryParse(selectedVal.Substring(5), out convID)) return null;
+
+                var conv = db.ConversionesMaterial
+                    .FirstOrDefault(c => c.ConversionID == convID &&
+                                         c.MaterialID   == matID  &&
+                                         c.Activo);
+                return conv?.UnidadOrigenID;
+            }
+
+            return null;
         }
 
         private int ObtenerTipoMovimientoID(InventarioAnkhalDBDataContext db, string clave)
@@ -1110,7 +1393,7 @@ namespace GrupoAnkhalInventario
                         .FirstOrDefault(s => s.BaseID == baseID && s.ProductoID == it.ItemID);
                     if (stock != null)
                     {
-                        stock.CantidadBuenas  -= it.Cantidad;
+                        stock.CantidadBuenas  -= (int)it.Cantidad;
                         stock.FechaUltimaModif = AppHelper.Ahora;
                     }
 
@@ -1134,30 +1417,36 @@ namespace GrupoAnkhalInventario
                 }
                 else if (it.TipoItem == "MATERIAL")
                 {
+                    int cantBase = (int)Math.Round(it.Cantidad * it.Factor);
+
                     // Descontar de StockMateriales.CantidadActual
                     var stock = db.StockMateriales
                         .FirstOrDefault(s => s.BaseID == baseID && s.MaterialID == it.ItemID);
                     if (stock != null)
                     {
-                        stock.CantidadActual  -= it.Cantidad;
+                        stock.CantidadActual  -= cantBase;
                         stock.FechaUltimaModif = AppHelper.Ahora;
                     }
 
                     db.Movimientos.InsertOnSubmit(new Modelo.Movimientos
                     {
-                        TipoMovimientoID = tipoSalidaID,
-                        TipoItem         = "Material",
-                        MaterialID       = it.ItemID,
-                        ProductoID       = null,
-                        BaseOrigenID     = baseID,
-                        BaseDestinoID    = null,
-                        Cantidad         = it.Cantidad,
-                        Costo            = it.PrecioUnitario,
-                        EntregaID        = entregaID,
-                        ProduccionID     = null,
-                        Observaciones    = string.Format("Entrega #{0}", entregaID),
-                        RegistradoPorID  = claveID,
-                        FechaMovimiento  = AppHelper.Ahora
+                        TipoMovimientoID  = tipoSalidaID,
+                        TipoItem          = "Material",
+                        MaterialID        = it.ItemID,
+                        ProductoID        = null,
+                        BaseOrigenID      = baseID,
+                        BaseDestinoID     = null,
+                        Cantidad          = cantBase,
+                        Costo             = it.PrecioUnitario,
+                        EntregaID         = entregaID,
+                        ProduccionID      = null,
+                        Observaciones     = string.Format("Entrega #{0}", entregaID),
+                        RegistradoPorID   = claveID,
+                        FechaMovimiento   = AppHelper.Ahora,
+                        CantidadCapturada = it.Cantidad,
+                        UnidadCapturaID   = it.UnidadCapturaIDDirecto
+                                            ?? ObtenerUnidadCapturaIDEntrega(it.ItemID, it.UnidadVal, db),
+                        FactorAplicado    = it.Factor != 1m ? it.Factor : (decimal?)null
                     });
                 }
             }
@@ -1176,7 +1465,7 @@ namespace GrupoAnkhalInventario
                         .FirstOrDefault(s => s.BaseID == baseID && s.ProductoID == it.ItemID);
                     if (stock != null)
                     {
-                        stock.CantidadBuenas  += it.Cantidad;
+                        stock.CantidadBuenas  += (int)it.Cantidad;
                         stock.FechaUltimaModif = AppHelper.Ahora;
                     }
                     else
@@ -1185,7 +1474,7 @@ namespace GrupoAnkhalInventario
                         {
                             BaseID           = baseID,
                             ProductoID       = it.ItemID,
-                            CantidadBuenas   = it.Cantidad,
+                            CantidadBuenas   = (int)it.Cantidad,
                             CantidadRechazo  = 0,
                             FechaUltimaModif = AppHelper.Ahora
                         });

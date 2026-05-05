@@ -782,13 +782,6 @@ namespace GrupoAnkhalInventario
         }
 
         // ══ Helper para la columna Cantidad/Unidad ═══════════════════════════
-        /// <summary>
-        /// Si hubo conversión, muestra dos líneas:
-        ///   [pequeño] 1,400.00 ml
-        ///   [grande]  1.4 L
-        /// Si no hubo conversión muestra solo:
-        ///   [grande]  250 L
-        /// </summary>
         public string FormatCantidadGrilla(object cantCapObj, object unidCapObj,
                                            object cantBaseObj, object unidBaseObj,
                                            object tuvoConvObj)
@@ -799,13 +792,12 @@ namespace GrupoAnkhalInventario
             string  unidBase = (unidBaseObj ?? "").ToString();
             bool    tuvoConv = Convert.ToBoolean(tuvoConvObj ?? false);
 
-            // Formatea sin ceros finales: 1.4000 → "1.4", 250.0000 → "250"
             string FmtDec(decimal d) => d.ToString("0.####");
 
             if (tuvoConv && !string.IsNullOrEmpty(unidCap))
                 return string.Format(
-                    "<small class='text-muted d-block'>{0} {1}</small>" +
-                    "<strong>{2}</strong> <span class='text-muted'>{3}</span>",
+                    "<strong>{0} {1}</strong>" +
+                    "<small class='text-muted d-block'>= {2} {3}</small>",
                     FmtDec(cantCap),
                     System.Web.HttpUtility.HtmlEncode(unidCap),
                     FmtDec(cantBase),

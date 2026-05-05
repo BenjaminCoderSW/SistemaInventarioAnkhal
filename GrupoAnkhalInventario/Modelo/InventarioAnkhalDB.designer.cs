@@ -39,18 +39,12 @@ namespace GrupoAnkhalInventario.Modelo
     partial void InsertConsumosProduccion(ConsumosProduccion instance);
     partial void UpdateConsumosProduccion(ConsumosProduccion instance);
     partial void DeleteConsumosProduccion(ConsumosProduccion instance);
-    partial void InsertDetalleEntregas(DetalleEntregas instance);
-    partial void UpdateDetalleEntregas(DetalleEntregas instance);
-    partial void DeleteDetalleEntregas(DetalleEntregas instance);
     partial void InsertEntregas(Entregas instance);
     partial void UpdateEntregas(Entregas instance);
     partial void DeleteEntregas(Entregas instance);
     partial void InsertMateriales(Materiales instance);
     partial void UpdateMateriales(Materiales instance);
     partial void DeleteMateriales(Materiales instance);
-    partial void InsertConversionesMaterial(ConversionesMaterial instance);
-    partial void UpdateConversionesMaterial(ConversionesMaterial instance);
-    partial void DeleteConversionesMaterial(ConversionesMaterial instance);
     partial void InsertMovimientos(Movimientos instance);
     partial void UpdateMovimientos(Movimientos instance);
     partial void DeleteMovimientos(Movimientos instance);
@@ -81,6 +75,12 @@ namespace GrupoAnkhalInventario.Modelo
     partial void InsertTiposProducto(TiposProducto instance);
     partial void UpdateTiposProducto(TiposProducto instance);
     partial void DeleteTiposProducto(TiposProducto instance);
+    partial void InsertUnidadesMedida(UnidadesMedida instance);
+    partial void UpdateUnidadesMedida(UnidadesMedida instance);
+    partial void DeleteUnidadesMedida(UnidadesMedida instance);
+    partial void InsertConversionesMaterial(ConversionesMaterial instance);
+    partial void UpdateConversionesMaterial(ConversionesMaterial instance);
+    partial void DeleteConversionesMaterial(ConversionesMaterial instance);
     partial void InsertUsuario(Usuario instance);
     partial void UpdateUsuario(Usuario instance);
     partial void DeleteUsuario(Usuario instance);
@@ -90,6 +90,9 @@ namespace GrupoAnkhalInventario.Modelo
     partial void InsertUsuarioRoles(UsuarioRoles instance);
     partial void UpdateUsuarioRoles(UsuarioRoles instance);
     partial void DeleteUsuarioRoles(UsuarioRoles instance);
+    partial void InsertDetalleEntregas(DetalleEntregas instance);
+    partial void UpdateDetalleEntregas(DetalleEntregas instance);
+    partial void DeleteDetalleEntregas(DetalleEntregas instance);
     #endregion
 		
 		public InventarioAnkhalDBDataContext(string connection) : 
@@ -137,14 +140,6 @@ namespace GrupoAnkhalInventario.Modelo
 			get
 			{
 				return this.GetTable<ConsumosProduccion>();
-			}
-		}
-		
-		public System.Data.Linq.Table<DetalleEntregas> DetalleEntregas
-		{
-			get
-			{
-				return this.GetTable<DetalleEntregas>();
 			}
 		}
 		
@@ -235,7 +230,15 @@ namespace GrupoAnkhalInventario.Modelo
 				return this.GetTable<TiposMovimiento>();
 			}
 		}
-
+		
+		public System.Data.Linq.Table<TiposProducto> TiposProducto
+		{
+			get
+			{
+				return this.GetTable<TiposProducto>();
+			}
+		}
+		
 		public System.Data.Linq.Table<UnidadesMedida> UnidadesMedida
 		{
 			get
@@ -243,20 +246,12 @@ namespace GrupoAnkhalInventario.Modelo
 				return this.GetTable<UnidadesMedida>();
 			}
 		}
-
+		
 		public System.Data.Linq.Table<ConversionesMaterial> ConversionesMaterial
 		{
 			get
 			{
 				return this.GetTable<ConversionesMaterial>();
-			}
-		}
-
-		public System.Data.Linq.Table<TiposProducto> TiposProducto
-		{
-			get
-			{
-				return this.GetTable<TiposProducto>();
 			}
 		}
 		
@@ -289,6 +284,14 @@ namespace GrupoAnkhalInventario.Modelo
 			get
 			{
 				return this.GetTable<DatosUsuario>();
+			}
+		}
+		
+		public System.Data.Linq.Table<DetalleEntregas> DetalleEntregas
+		{
+			get
+			{
+				return this.GetTable<DetalleEntregas>();
 			}
 		}
 	}
@@ -1337,19 +1340,19 @@ namespace GrupoAnkhalInventario.Modelo
 		private bool _EsMerma;
 		
 		private string _Notas;
-
+		
 		private System.Nullable<decimal> _CantidadRealCap;
-
+		
 		private System.Nullable<decimal> _CantidadTeoMinCap;
-
+		
 		private System.Nullable<decimal> _CantidadTeoMaxCap;
-
+		
 		private string _UnidadClaveCap;
-
+		
 		private EntityRef<Materiales> _Materiales;
-
+		
 		private EntityRef<Produccion> _Produccion;
-
+		
     #region Definiciones de métodos de extensibilidad
     partial void OnLoaded();
     partial void OnValidate(System.Data.Linq.ChangeAction action);
@@ -1554,11 +1557,14 @@ namespace GrupoAnkhalInventario.Modelo
 				}
 			}
 		}
-
+		
 		[global::System.Data.Linq.Mapping.ColumnAttribute(Storage="_CantidadRealCap", DbType="Decimal(12,4)")]
 		public System.Nullable<decimal> CantidadRealCap
 		{
-			get { return this._CantidadRealCap; }
+			get
+			{
+				return this._CantidadRealCap;
+			}
 			set
 			{
 				if ((this._CantidadRealCap != value))
@@ -1571,11 +1577,14 @@ namespace GrupoAnkhalInventario.Modelo
 				}
 			}
 		}
-
+		
 		[global::System.Data.Linq.Mapping.ColumnAttribute(Storage="_CantidadTeoMinCap", DbType="Decimal(12,4)")]
 		public System.Nullable<decimal> CantidadTeoMinCap
 		{
-			get { return this._CantidadTeoMinCap; }
+			get
+			{
+				return this._CantidadTeoMinCap;
+			}
 			set
 			{
 				if ((this._CantidadTeoMinCap != value))
@@ -1588,11 +1597,14 @@ namespace GrupoAnkhalInventario.Modelo
 				}
 			}
 		}
-
+		
 		[global::System.Data.Linq.Mapping.ColumnAttribute(Storage="_CantidadTeoMaxCap", DbType="Decimal(12,4)")]
 		public System.Nullable<decimal> CantidadTeoMaxCap
 		{
-			get { return this._CantidadTeoMaxCap; }
+			get
+			{
+				return this._CantidadTeoMaxCap;
+			}
 			set
 			{
 				if ((this._CantidadTeoMaxCap != value))
@@ -1605,11 +1617,14 @@ namespace GrupoAnkhalInventario.Modelo
 				}
 			}
 		}
-
+		
 		[global::System.Data.Linq.Mapping.ColumnAttribute(Storage="_UnidadClaveCap", DbType="VarChar(20)")]
 		public string UnidadClaveCap
 		{
-			get { return this._UnidadClaveCap; }
+			get
+			{
+				return this._UnidadClaveCap;
+			}
 			set
 			{
 				if ((this._UnidadClaveCap != value))
@@ -1622,7 +1637,7 @@ namespace GrupoAnkhalInventario.Modelo
 				}
 			}
 		}
-
+		
 		[global::System.Data.Linq.Mapping.AssociationAttribute(Name="Materiales_ConsumosProduccion", Storage="_Materiales", ThisKey="MaterialID", OtherKey="MaterialID", IsForeignKey=true)]
 		public Materiales Materiales
 		{
@@ -1712,383 +1727,6 @@ namespace GrupoAnkhalInventario.Modelo
 		}
 	}
 	
-	[global::System.Data.Linq.Mapping.TableAttribute(Name="dbo.DetalleEntregas")]
-	public partial class DetalleEntregas : INotifyPropertyChanging, INotifyPropertyChanged
-	{
-		
-		private static PropertyChangingEventArgs emptyChangingEventArgs = new PropertyChangingEventArgs(String.Empty);
-		
-		private int _DetalleEntregaID;
-		
-		private int _EntregaID;
-		
-		private string _TipoItem;
-		
-		private System.Nullable<int> _ProductoID;
-		
-		private System.Nullable<int> _PaqueteID;
-		
-		private int _Cantidad;
-		
-		private decimal _PrecioUnitario;
-		
-		private string _Observaciones;
-		
-		private System.Nullable<int> _MaterialID;
-		
-		private EntityRef<Entregas> _Entregas;
-		
-		private EntityRef<Materiales> _Materiales;
-		
-		private EntityRef<Productos> _Productos;
-		
-    #region Definiciones de métodos de extensibilidad
-    partial void OnLoaded();
-    partial void OnValidate(System.Data.Linq.ChangeAction action);
-    partial void OnCreated();
-    partial void OnDetalleEntregaIDChanging(int value);
-    partial void OnDetalleEntregaIDChanged();
-    partial void OnEntregaIDChanging(int value);
-    partial void OnEntregaIDChanged();
-    partial void OnTipoItemChanging(string value);
-    partial void OnTipoItemChanged();
-    partial void OnProductoIDChanging(System.Nullable<int> value);
-    partial void OnProductoIDChanged();
-    partial void OnPaqueteIDChanging(System.Nullable<int> value);
-    partial void OnPaqueteIDChanged();
-    partial void OnCantidadChanging(int value);
-    partial void OnCantidadChanged();
-    partial void OnPrecioUnitarioChanging(decimal value);
-    partial void OnPrecioUnitarioChanged();
-    partial void OnObservacionesChanging(string value);
-    partial void OnObservacionesChanged();
-    partial void OnMaterialIDChanging(System.Nullable<int> value);
-    partial void OnMaterialIDChanged();
-    #endregion
-		
-		public DetalleEntregas()
-		{
-			this._Entregas = default(EntityRef<Entregas>);
-			this._Materiales = default(EntityRef<Materiales>);
-			this._Productos = default(EntityRef<Productos>);
-			OnCreated();
-		}
-		
-		[global::System.Data.Linq.Mapping.ColumnAttribute(Storage="_DetalleEntregaID", AutoSync=AutoSync.OnInsert, DbType="Int NOT NULL IDENTITY", IsPrimaryKey=true, IsDbGenerated=true)]
-		public int DetalleEntregaID
-		{
-			get
-			{
-				return this._DetalleEntregaID;
-			}
-			set
-			{
-				if ((this._DetalleEntregaID != value))
-				{
-					this.OnDetalleEntregaIDChanging(value);
-					this.SendPropertyChanging();
-					this._DetalleEntregaID = value;
-					this.SendPropertyChanged("DetalleEntregaID");
-					this.OnDetalleEntregaIDChanged();
-				}
-			}
-		}
-		
-		[global::System.Data.Linq.Mapping.ColumnAttribute(Storage="_EntregaID", DbType="Int NOT NULL")]
-		public int EntregaID
-		{
-			get
-			{
-				return this._EntregaID;
-			}
-			set
-			{
-				if ((this._EntregaID != value))
-				{
-					if (this._Entregas.HasLoadedOrAssignedValue)
-					{
-						throw new System.Data.Linq.ForeignKeyReferenceAlreadyHasValueException();
-					}
-					this.OnEntregaIDChanging(value);
-					this.SendPropertyChanging();
-					this._EntregaID = value;
-					this.SendPropertyChanged("EntregaID");
-					this.OnEntregaIDChanged();
-				}
-			}
-		}
-		
-		[global::System.Data.Linq.Mapping.ColumnAttribute(Storage="_TipoItem", DbType="VarChar(10) NOT NULL", CanBeNull=false)]
-		public string TipoItem
-		{
-			get
-			{
-				return this._TipoItem;
-			}
-			set
-			{
-				if ((this._TipoItem != value))
-				{
-					this.OnTipoItemChanging(value);
-					this.SendPropertyChanging();
-					this._TipoItem = value;
-					this.SendPropertyChanged("TipoItem");
-					this.OnTipoItemChanged();
-				}
-			}
-		}
-		
-		[global::System.Data.Linq.Mapping.ColumnAttribute(Storage="_ProductoID", DbType="Int")]
-		public System.Nullable<int> ProductoID
-		{
-			get
-			{
-				return this._ProductoID;
-			}
-			set
-			{
-				if ((this._ProductoID != value))
-				{
-					if (this._Productos.HasLoadedOrAssignedValue)
-					{
-						throw new System.Data.Linq.ForeignKeyReferenceAlreadyHasValueException();
-					}
-					this.OnProductoIDChanging(value);
-					this.SendPropertyChanging();
-					this._ProductoID = value;
-					this.SendPropertyChanged("ProductoID");
-					this.OnProductoIDChanged();
-				}
-			}
-		}
-		
-		[global::System.Data.Linq.Mapping.ColumnAttribute(Storage="_PaqueteID", DbType="Int")]
-		public System.Nullable<int> PaqueteID
-		{
-			get
-			{
-				return this._PaqueteID;
-			}
-			set
-			{
-				if ((this._PaqueteID != value))
-				{
-					this.OnPaqueteIDChanging(value);
-					this.SendPropertyChanging();
-					this._PaqueteID = value;
-					this.SendPropertyChanged("PaqueteID");
-					this.OnPaqueteIDChanged();
-				}
-			}
-		}
-		
-		[global::System.Data.Linq.Mapping.ColumnAttribute(Storage="_Cantidad", DbType="Int NOT NULL")]
-		public int Cantidad
-		{
-			get
-			{
-				return this._Cantidad;
-			}
-			set
-			{
-				if ((this._Cantidad != value))
-				{
-					this.OnCantidadChanging(value);
-					this.SendPropertyChanging();
-					this._Cantidad = value;
-					this.SendPropertyChanged("Cantidad");
-					this.OnCantidadChanged();
-				}
-			}
-		}
-		
-		[global::System.Data.Linq.Mapping.ColumnAttribute(Storage="_PrecioUnitario", DbType="Decimal(12,4) NOT NULL")]
-		public decimal PrecioUnitario
-		{
-			get
-			{
-				return this._PrecioUnitario;
-			}
-			set
-			{
-				if ((this._PrecioUnitario != value))
-				{
-					this.OnPrecioUnitarioChanging(value);
-					this.SendPropertyChanging();
-					this._PrecioUnitario = value;
-					this.SendPropertyChanged("PrecioUnitario");
-					this.OnPrecioUnitarioChanged();
-				}
-			}
-		}
-		
-		[global::System.Data.Linq.Mapping.ColumnAttribute(Storage="_Observaciones", DbType="VarChar(200)")]
-		public string Observaciones
-		{
-			get
-			{
-				return this._Observaciones;
-			}
-			set
-			{
-				if ((this._Observaciones != value))
-				{
-					this.OnObservacionesChanging(value);
-					this.SendPropertyChanging();
-					this._Observaciones = value;
-					this.SendPropertyChanged("Observaciones");
-					this.OnObservacionesChanged();
-				}
-			}
-		}
-		
-		[global::System.Data.Linq.Mapping.ColumnAttribute(Storage="_MaterialID", DbType="Int")]
-		public System.Nullable<int> MaterialID
-		{
-			get
-			{
-				return this._MaterialID;
-			}
-			set
-			{
-				if ((this._MaterialID != value))
-				{
-					if (this._Materiales.HasLoadedOrAssignedValue)
-					{
-						throw new System.Data.Linq.ForeignKeyReferenceAlreadyHasValueException();
-					}
-					this.OnMaterialIDChanging(value);
-					this.SendPropertyChanging();
-					this._MaterialID = value;
-					this.SendPropertyChanged("MaterialID");
-					this.OnMaterialIDChanged();
-				}
-			}
-		}
-		
-		[global::System.Data.Linq.Mapping.AssociationAttribute(Name="Entregas_DetalleEntregas", Storage="_Entregas", ThisKey="EntregaID", OtherKey="EntregaID", IsForeignKey=true)]
-		public Entregas Entregas
-		{
-			get
-			{
-				return this._Entregas.Entity;
-			}
-			set
-			{
-				Entregas previousValue = this._Entregas.Entity;
-				if (((previousValue != value) 
-							|| (this._Entregas.HasLoadedOrAssignedValue == false)))
-				{
-					this.SendPropertyChanging();
-					if ((previousValue != null))
-					{
-						this._Entregas.Entity = null;
-						previousValue.DetalleEntregas.Remove(this);
-					}
-					this._Entregas.Entity = value;
-					if ((value != null))
-					{
-						value.DetalleEntregas.Add(this);
-						this._EntregaID = value.EntregaID;
-					}
-					else
-					{
-						this._EntregaID = default(int);
-					}
-					this.SendPropertyChanged("Entregas");
-				}
-			}
-		}
-		
-		[global::System.Data.Linq.Mapping.AssociationAttribute(Name="Materiales_DetalleEntregas", Storage="_Materiales", ThisKey="MaterialID", OtherKey="MaterialID", IsForeignKey=true)]
-		public Materiales Materiales
-		{
-			get
-			{
-				return this._Materiales.Entity;
-			}
-			set
-			{
-				Materiales previousValue = this._Materiales.Entity;
-				if (((previousValue != value) 
-							|| (this._Materiales.HasLoadedOrAssignedValue == false)))
-				{
-					this.SendPropertyChanging();
-					if ((previousValue != null))
-					{
-						this._Materiales.Entity = null;
-						previousValue.DetalleEntregas.Remove(this);
-					}
-					this._Materiales.Entity = value;
-					if ((value != null))
-					{
-						value.DetalleEntregas.Add(this);
-						this._MaterialID = value.MaterialID;
-					}
-					else
-					{
-						this._MaterialID = default(Nullable<int>);
-					}
-					this.SendPropertyChanged("Materiales");
-				}
-			}
-		}
-		
-		[global::System.Data.Linq.Mapping.AssociationAttribute(Name="Productos_DetalleEntregas", Storage="_Productos", ThisKey="ProductoID", OtherKey="ProductoID", IsForeignKey=true)]
-		public Productos Productos
-		{
-			get
-			{
-				return this._Productos.Entity;
-			}
-			set
-			{
-				Productos previousValue = this._Productos.Entity;
-				if (((previousValue != value) 
-							|| (this._Productos.HasLoadedOrAssignedValue == false)))
-				{
-					this.SendPropertyChanging();
-					if ((previousValue != null))
-					{
-						this._Productos.Entity = null;
-						previousValue.DetalleEntregas.Remove(this);
-					}
-					this._Productos.Entity = value;
-					if ((value != null))
-					{
-						value.DetalleEntregas.Add(this);
-						this._ProductoID = value.ProductoID;
-					}
-					else
-					{
-						this._ProductoID = default(Nullable<int>);
-					}
-					this.SendPropertyChanged("Productos");
-				}
-			}
-		}
-		
-		public event PropertyChangingEventHandler PropertyChanging;
-		
-		public event PropertyChangedEventHandler PropertyChanged;
-		
-		protected virtual void SendPropertyChanging()
-		{
-			if ((this.PropertyChanging != null))
-			{
-				this.PropertyChanging(this, emptyChangingEventArgs);
-			}
-		}
-		
-		protected virtual void SendPropertyChanged(String propertyName)
-		{
-			if ((this.PropertyChanged != null))
-			{
-				this.PropertyChanged(this, new PropertyChangedEventArgs(propertyName));
-			}
-		}
-	}
-	
 	[global::System.Data.Linq.Mapping.TableAttribute(Name="dbo.Entregas")]
 	public partial class Entregas : INotifyPropertyChanging, INotifyPropertyChanged
 	{
@@ -2117,9 +1755,9 @@ namespace GrupoAnkhalInventario.Modelo
 		
 		private System.Nullable<int> _ClienteID;
 		
-		private EntitySet<DetalleEntregas> _DetalleEntregas;
-		
 		private EntitySet<Movimientos> _Movimientos;
+		
+		private EntitySet<DetalleEntregas> _DetalleEntregas;
 		
 		private EntityRef<Bases> _Bases;
 		
@@ -2157,8 +1795,8 @@ namespace GrupoAnkhalInventario.Modelo
 		
 		public Entregas()
 		{
-			this._DetalleEntregas = new EntitySet<DetalleEntregas>(new Action<DetalleEntregas>(this.attach_DetalleEntregas), new Action<DetalleEntregas>(this.detach_DetalleEntregas));
 			this._Movimientos = new EntitySet<Movimientos>(new Action<Movimientos>(this.attach_Movimientos), new Action<Movimientos>(this.detach_Movimientos));
+			this._DetalleEntregas = new EntitySet<DetalleEntregas>(new Action<DetalleEntregas>(this.attach_DetalleEntregas), new Action<DetalleEntregas>(this.detach_DetalleEntregas));
 			this._Bases = default(EntityRef<Bases>);
 			this._Clientes = default(EntityRef<Clientes>);
 			this._Usuario = default(EntityRef<Usuario>);
@@ -2397,19 +2035,6 @@ namespace GrupoAnkhalInventario.Modelo
 			}
 		}
 		
-		[global::System.Data.Linq.Mapping.AssociationAttribute(Name="Entregas_DetalleEntregas", Storage="_DetalleEntregas", ThisKey="EntregaID", OtherKey="EntregaID")]
-		public EntitySet<DetalleEntregas> DetalleEntregas
-		{
-			get
-			{
-				return this._DetalleEntregas;
-			}
-			set
-			{
-				this._DetalleEntregas.Assign(value);
-			}
-		}
-		
 		[global::System.Data.Linq.Mapping.AssociationAttribute(Name="Entregas_Movimientos", Storage="_Movimientos", ThisKey="EntregaID", OtherKey="EntregaID")]
 		public EntitySet<Movimientos> Movimientos
 		{
@@ -2420,6 +2045,19 @@ namespace GrupoAnkhalInventario.Modelo
 			set
 			{
 				this._Movimientos.Assign(value);
+			}
+		}
+		
+		[global::System.Data.Linq.Mapping.AssociationAttribute(Name="Entregas_DetalleEntregas", Storage="_DetalleEntregas", ThisKey="EntregaID", OtherKey="EntregaID")]
+		public EntitySet<DetalleEntregas> DetalleEntregas
+		{
+			get
+			{
+				return this._DetalleEntregas;
+			}
+			set
+			{
+				this._DetalleEntregas.Assign(value);
 			}
 		}
 		
@@ -2545,18 +2183,6 @@ namespace GrupoAnkhalInventario.Modelo
 			}
 		}
 		
-		private void attach_DetalleEntregas(DetalleEntregas entity)
-		{
-			this.SendPropertyChanging();
-			entity.Entregas = this;
-		}
-		
-		private void detach_DetalleEntregas(DetalleEntregas entity)
-		{
-			this.SendPropertyChanging();
-			entity.Entregas = null;
-		}
-		
 		private void attach_Movimientos(Movimientos entity)
 		{
 			this.SendPropertyChanging();
@@ -2564,6 +2190,18 @@ namespace GrupoAnkhalInventario.Modelo
 		}
 		
 		private void detach_Movimientos(Movimientos entity)
+		{
+			this.SendPropertyChanging();
+			entity.Entregas = null;
+		}
+		
+		private void attach_DetalleEntregas(DetalleEntregas entity)
+		{
+			this.SendPropertyChanging();
+			entity.Entregas = this;
+		}
+		
+		private void detach_DetalleEntregas(DetalleEntregas entity)
 		{
 			this.SendPropertyChanging();
 			entity.Entregas = null;
@@ -2607,27 +2245,27 @@ namespace GrupoAnkhalInventario.Modelo
 		private System.Nullable<int> _UsuarioModifID;
 		
 		private System.Data.Linq.Binary _RowVersion;
-
+		
 		private System.Nullable<int> _UnidadMedidaID;
-
+		
 		private EntitySet<ConsumosProduccion> _ConsumosProduccion;
-
-		private EntitySet<ConversionesMaterial> _ConversionesMaterial;
-
-		private EntitySet<DetalleEntregas> _DetalleEntregas;
-
+		
 		private EntitySet<Movimientos> _Movimientos;
-
+		
 		private EntitySet<ProductoMateriales> _ProductoMateriales;
-
+		
 		private EntitySet<StockMateriales> _StockMateriales;
-
+		
+		private EntitySet<ConversionesMaterial> _ConversionesMaterial;
+		
+		private EntitySet<DetalleEntregas> _DetalleEntregas;
+		
 		private EntityRef<TiposMaterial> _TiposMaterial;
-
+		
 		private EntityRef<UnidadesMedida> _UnidadesMedida;
-
+		
 		private EntityRef<Usuario> _Usuario;
-
+		
 		private EntityRef<Usuario> _Usuario1;
 		
     #region Definiciones de métodos de extensibilidad
@@ -2669,15 +2307,15 @@ namespace GrupoAnkhalInventario.Modelo
     partial void OnUnidadMedidaIDChanging(System.Nullable<int> value);
     partial void OnUnidadMedidaIDChanged();
     #endregion
-
+		
 		public Materiales()
 		{
 			this._ConsumosProduccion = new EntitySet<ConsumosProduccion>(new Action<ConsumosProduccion>(this.attach_ConsumosProduccion), new Action<ConsumosProduccion>(this.detach_ConsumosProduccion));
-			this._ConversionesMaterial = new EntitySet<ConversionesMaterial>(new Action<ConversionesMaterial>(this.attach_ConversionesMaterial_Mat), new Action<ConversionesMaterial>(this.detach_ConversionesMaterial_Mat));
-			this._DetalleEntregas = new EntitySet<DetalleEntregas>(new Action<DetalleEntregas>(this.attach_DetalleEntregas), new Action<DetalleEntregas>(this.detach_DetalleEntregas));
 			this._Movimientos = new EntitySet<Movimientos>(new Action<Movimientos>(this.attach_Movimientos), new Action<Movimientos>(this.detach_Movimientos));
 			this._ProductoMateriales = new EntitySet<ProductoMateriales>(new Action<ProductoMateriales>(this.attach_ProductoMateriales), new Action<ProductoMateriales>(this.detach_ProductoMateriales));
 			this._StockMateriales = new EntitySet<StockMateriales>(new Action<StockMateriales>(this.attach_StockMateriales), new Action<StockMateriales>(this.detach_StockMateriales));
+			this._ConversionesMaterial = new EntitySet<ConversionesMaterial>(new Action<ConversionesMaterial>(this.attach_ConversionesMaterial), new Action<ConversionesMaterial>(this.detach_ConversionesMaterial));
+			this._DetalleEntregas = new EntitySet<DetalleEntregas>(new Action<DetalleEntregas>(this.attach_DetalleEntregas), new Action<DetalleEntregas>(this.detach_DetalleEntregas));
 			this._TiposMaterial = default(EntityRef<TiposMaterial>);
 			this._UnidadesMedida = default(EntityRef<UnidadesMedida>);
 			this._Usuario = default(EntityRef<Usuario>);
@@ -3040,41 +2678,7 @@ namespace GrupoAnkhalInventario.Modelo
 				}
 			}
 		}
-
-		[global::System.Data.Linq.Mapping.AssociationAttribute(Name="UnidadesMedida_Materiales", Storage="_UnidadesMedida", ThisKey="UnidadMedidaID", OtherKey="UnidadMedidaID", IsForeignKey=true)]
-		public UnidadesMedida UnidadesMedida
-		{
-			get
-			{
-				return this._UnidadesMedida.Entity;
-			}
-			set
-			{
-				UnidadesMedida previousValue = this._UnidadesMedida.Entity;
-				if (((previousValue != value)
-							|| (this._UnidadesMedida.HasLoadedOrAssignedValue == false)))
-				{
-					this.SendPropertyChanging();
-					if ((previousValue != null))
-					{
-						this._UnidadesMedida.Entity = null;
-						previousValue.Materiales.Remove(this);
-					}
-					this._UnidadesMedida.Entity = value;
-					if ((value != null))
-					{
-						value.Materiales.Add(this);
-						this._UnidadMedidaID = value.UnidadMedidaID;
-					}
-					else
-					{
-						this._UnidadMedidaID = default(Nullable<int>);
-					}
-					this.SendPropertyChanged("UnidadesMedida");
-				}
-			}
-		}
-
+		
 		[global::System.Data.Linq.Mapping.AssociationAttribute(Name="Materiales_ConsumosProduccion", Storage="_ConsumosProduccion", ThisKey="MaterialID", OtherKey="MaterialID")]
 		public EntitySet<ConsumosProduccion> ConsumosProduccion
 		{
@@ -3085,32 +2689,6 @@ namespace GrupoAnkhalInventario.Modelo
 			set
 			{
 				this._ConsumosProduccion.Assign(value);
-			}
-		}
-
-		[global::System.Data.Linq.Mapping.AssociationAttribute(Name="Materiales_ConversionesMaterial", Storage="_ConversionesMaterial", ThisKey="MaterialID", OtherKey="MaterialID")]
-		public EntitySet<ConversionesMaterial> ConversionesMaterial
-		{
-			get
-			{
-				return this._ConversionesMaterial;
-			}
-			set
-			{
-				this._ConversionesMaterial.Assign(value);
-			}
-		}
-
-		[global::System.Data.Linq.Mapping.AssociationAttribute(Name="Materiales_DetalleEntregas", Storage="_DetalleEntregas", ThisKey="MaterialID", OtherKey="MaterialID")]
-		public EntitySet<DetalleEntregas> DetalleEntregas
-		{
-			get
-			{
-				return this._DetalleEntregas;
-			}
-			set
-			{
-				this._DetalleEntregas.Assign(value);
 			}
 		}
 		
@@ -3153,6 +2731,32 @@ namespace GrupoAnkhalInventario.Modelo
 			}
 		}
 		
+		[global::System.Data.Linq.Mapping.AssociationAttribute(Name="Materiales_ConversionesMaterial", Storage="_ConversionesMaterial", ThisKey="MaterialID", OtherKey="MaterialID")]
+		public EntitySet<ConversionesMaterial> ConversionesMaterial
+		{
+			get
+			{
+				return this._ConversionesMaterial;
+			}
+			set
+			{
+				this._ConversionesMaterial.Assign(value);
+			}
+		}
+		
+		[global::System.Data.Linq.Mapping.AssociationAttribute(Name="Materiales_DetalleEntregas", Storage="_DetalleEntregas", ThisKey="MaterialID", OtherKey="MaterialID")]
+		public EntitySet<DetalleEntregas> DetalleEntregas
+		{
+			get
+			{
+				return this._DetalleEntregas;
+			}
+			set
+			{
+				this._DetalleEntregas.Assign(value);
+			}
+		}
+		
 		[global::System.Data.Linq.Mapping.AssociationAttribute(Name="TiposMaterial_Materiales", Storage="_TiposMaterial", ThisKey="TipoMaterialID", OtherKey="TipoMaterialID", IsForeignKey=true)]
 		public TiposMaterial TiposMaterial
 		{
@@ -3183,6 +2787,40 @@ namespace GrupoAnkhalInventario.Modelo
 						this._TipoMaterialID = default(int);
 					}
 					this.SendPropertyChanged("TiposMaterial");
+				}
+			}
+		}
+		
+		[global::System.Data.Linq.Mapping.AssociationAttribute(Name="UnidadesMedida_Materiales", Storage="_UnidadesMedida", ThisKey="UnidadMedidaID", OtherKey="UnidadMedidaID", IsForeignKey=true)]
+		public UnidadesMedida UnidadesMedida
+		{
+			get
+			{
+				return this._UnidadesMedida.Entity;
+			}
+			set
+			{
+				UnidadesMedida previousValue = this._UnidadesMedida.Entity;
+				if (((previousValue != value) 
+							|| (this._UnidadesMedida.HasLoadedOrAssignedValue == false)))
+				{
+					this.SendPropertyChanging();
+					if ((previousValue != null))
+					{
+						this._UnidadesMedida.Entity = null;
+						previousValue.Materiales.Remove(this);
+					}
+					this._UnidadesMedida.Entity = value;
+					if ((value != null))
+					{
+						value.Materiales.Add(this);
+						this._UnidadMedidaID = value.UnidadMedidaID;
+					}
+					else
+					{
+						this._UnidadMedidaID = default(Nullable<int>);
+					}
+					this.SendPropertyChanged("UnidadesMedida");
 				}
 			}
 		}
@@ -3280,49 +2918,25 @@ namespace GrupoAnkhalInventario.Modelo
 			this.SendPropertyChanging();
 			entity.Materiales = this;
 		}
-
+		
 		private void detach_ConsumosProduccion(ConsumosProduccion entity)
 		{
 			this.SendPropertyChanging();
 			entity.Materiales = null;
 		}
-
-		private void attach_ConversionesMaterial_Mat(ConversionesMaterial entity)
-		{
-			this.SendPropertyChanging();
-			entity.Materiales = this;
-		}
-
-		private void detach_ConversionesMaterial_Mat(ConversionesMaterial entity)
-		{
-			this.SendPropertyChanging();
-			entity.Materiales = null;
-		}
-
-		private void attach_DetalleEntregas(DetalleEntregas entity)
-		{
-			this.SendPropertyChanging();
-			entity.Materiales = this;
-		}
-
-		private void detach_DetalleEntregas(DetalleEntregas entity)
-		{
-			this.SendPropertyChanging();
-			entity.Materiales = null;
-		}
-
+		
 		private void attach_Movimientos(Movimientos entity)
 		{
 			this.SendPropertyChanging();
 			entity.Materiales = this;
 		}
-
+		
 		private void detach_Movimientos(Movimientos entity)
 		{
 			this.SendPropertyChanging();
 			entity.Materiales = null;
 		}
-
+		
 		private void attach_ProductoMateriales(ProductoMateriales entity)
 		{
 			this.SendPropertyChanging();
@@ -3342,6 +2956,30 @@ namespace GrupoAnkhalInventario.Modelo
 		}
 		
 		private void detach_StockMateriales(StockMateriales entity)
+		{
+			this.SendPropertyChanging();
+			entity.Materiales = null;
+		}
+		
+		private void attach_ConversionesMaterial(ConversionesMaterial entity)
+		{
+			this.SendPropertyChanging();
+			entity.Materiales = this;
+		}
+		
+		private void detach_ConversionesMaterial(ConversionesMaterial entity)
+		{
+			this.SendPropertyChanging();
+			entity.Materiales = null;
+		}
+		
+		private void attach_DetalleEntregas(DetalleEntregas entity)
+		{
+			this.SendPropertyChanging();
+			entity.Materiales = this;
+		}
+		
+		private void detach_DetalleEntregas(DetalleEntregas entity)
 		{
 			this.SendPropertyChanging();
 			entity.Materiales = null;
@@ -3381,31 +3019,31 @@ namespace GrupoAnkhalInventario.Modelo
 		private int _RegistradoPorID;
 		
 		private System.DateTime _FechaMovimiento;
-
+		
 		private System.Nullable<decimal> _CantidadCapturada;
-
+		
 		private System.Nullable<int> _UnidadCapturaID;
-
+		
 		private System.Nullable<decimal> _FactorAplicado;
-
+		
 		private EntityRef<Bases> _Bases;
-
+		
 		private EntityRef<Bases> _Bases1;
-
+		
 		private EntityRef<Entregas> _Entregas;
-
+		
 		private EntityRef<Materiales> _Materiales;
-
+		
 		private EntityRef<Produccion> _Produccion;
-
+		
 		private EntityRef<Productos> _Productos;
-
+		
 		private EntityRef<TiposMovimiento> _TiposMovimiento;
-
-		private EntityRef<Usuario> _Usuario;
-
+		
 		private EntityRef<UnidadesMedida> _UnidadesMedida;
-
+		
+		private EntityRef<Usuario> _Usuario;
+		
     #region Definiciones de métodos de extensibilidad
     partial void OnLoaded();
     partial void OnValidate(System.Data.Linq.ChangeAction action);
@@ -3445,7 +3083,7 @@ namespace GrupoAnkhalInventario.Modelo
     partial void OnFactorAplicadoChanging(System.Nullable<decimal> value);
     partial void OnFactorAplicadoChanged();
     #endregion
-
+		
 		public Movimientos()
 		{
 			this._Bases = default(EntityRef<Bases>);
@@ -3455,8 +3093,8 @@ namespace GrupoAnkhalInventario.Modelo
 			this._Produccion = default(EntityRef<Produccion>);
 			this._Productos = default(EntityRef<Productos>);
 			this._TiposMovimiento = default(EntityRef<TiposMovimiento>);
-			this._Usuario = default(EntityRef<Usuario>);
 			this._UnidadesMedida = default(EntityRef<UnidadesMedida>);
+			this._Usuario = default(EntityRef<Usuario>);
 			OnCreated();
 		}
 		
@@ -3771,7 +3409,7 @@ namespace GrupoAnkhalInventario.Modelo
 				}
 			}
 		}
-
+		
 		[global::System.Data.Linq.Mapping.ColumnAttribute(Storage="_CantidadCapturada", DbType="Decimal(12,4)")]
 		public System.Nullable<decimal> CantidadCapturada
 		{
@@ -3791,7 +3429,7 @@ namespace GrupoAnkhalInventario.Modelo
 				}
 			}
 		}
-
+		
 		[global::System.Data.Linq.Mapping.ColumnAttribute(Storage="_UnidadCapturaID", DbType="Int")]
 		public System.Nullable<int> UnidadCapturaID
 		{
@@ -3815,7 +3453,7 @@ namespace GrupoAnkhalInventario.Modelo
 				}
 			}
 		}
-
+		
 		[global::System.Data.Linq.Mapping.ColumnAttribute(Storage="_FactorAplicado", DbType="Decimal(18,6)")]
 		public System.Nullable<decimal> FactorAplicado
 		{
@@ -3835,7 +3473,7 @@ namespace GrupoAnkhalInventario.Modelo
 				}
 			}
 		}
-
+		
 		[global::System.Data.Linq.Mapping.AssociationAttribute(Name="Bases_Movimientos", Storage="_Bases", ThisKey="BaseDestinoID", OtherKey="BaseID", IsForeignKey=true)]
 		public Bases Bases
 		{
@@ -4074,40 +3712,6 @@ namespace GrupoAnkhalInventario.Modelo
 			}
 		}
 		
-		[global::System.Data.Linq.Mapping.AssociationAttribute(Name="Usuario_Movimientos", Storage="_Usuario", ThisKey="RegistradoPorID", OtherKey="ClaveID", IsForeignKey=true)]
-		public Usuario Usuario
-		{
-			get
-			{
-				return this._Usuario.Entity;
-			}
-			set
-			{
-				Usuario previousValue = this._Usuario.Entity;
-				if (((previousValue != value)
-							|| (this._Usuario.HasLoadedOrAssignedValue == false)))
-				{
-					this.SendPropertyChanging();
-					if ((previousValue != null))
-					{
-						this._Usuario.Entity = null;
-						previousValue.Movimientos.Remove(this);
-					}
-					this._Usuario.Entity = value;
-					if ((value != null))
-					{
-						value.Movimientos.Add(this);
-						this._RegistradoPorID = value.ClaveID;
-					}
-					else
-					{
-						this._RegistradoPorID = default(int);
-					}
-					this.SendPropertyChanged("Usuario");
-				}
-			}
-		}
-
 		[global::System.Data.Linq.Mapping.AssociationAttribute(Name="UnidadesMedida_Movimientos", Storage="_UnidadesMedida", ThisKey="UnidadCapturaID", OtherKey="UnidadMedidaID", IsForeignKey=true)]
 		public UnidadesMedida UnidadesMedida
 		{
@@ -4118,7 +3722,7 @@ namespace GrupoAnkhalInventario.Modelo
 			set
 			{
 				UnidadesMedida previousValue = this._UnidadesMedida.Entity;
-				if (((previousValue != value)
+				if (((previousValue != value) 
 							|| (this._UnidadesMedida.HasLoadedOrAssignedValue == false)))
 				{
 					this.SendPropertyChanging();
@@ -4141,11 +3745,45 @@ namespace GrupoAnkhalInventario.Modelo
 				}
 			}
 		}
-
+		
+		[global::System.Data.Linq.Mapping.AssociationAttribute(Name="Usuario_Movimientos", Storage="_Usuario", ThisKey="RegistradoPorID", OtherKey="ClaveID", IsForeignKey=true)]
+		public Usuario Usuario
+		{
+			get
+			{
+				return this._Usuario.Entity;
+			}
+			set
+			{
+				Usuario previousValue = this._Usuario.Entity;
+				if (((previousValue != value) 
+							|| (this._Usuario.HasLoadedOrAssignedValue == false)))
+				{
+					this.SendPropertyChanging();
+					if ((previousValue != null))
+					{
+						this._Usuario.Entity = null;
+						previousValue.Movimientos.Remove(this);
+					}
+					this._Usuario.Entity = value;
+					if ((value != null))
+					{
+						value.Movimientos.Add(this);
+						this._RegistradoPorID = value.ClaveID;
+					}
+					else
+					{
+						this._RegistradoPorID = default(int);
+					}
+					this.SendPropertyChanged("Usuario");
+				}
+			}
+		}
+		
 		public event PropertyChangingEventHandler PropertyChanging;
-
+		
 		public event PropertyChangedEventHandler PropertyChanged;
-
+		
 		protected virtual void SendPropertyChanging()
 		{
 			if ((this.PropertyChanging != null))
@@ -4661,19 +4299,19 @@ namespace GrupoAnkhalInventario.Modelo
 		private decimal _CantidadMax;
 		
 		private string _Notas;
-
+		
 		private System.Nullable<int> _ConversionID;
-
+		
 		private System.Nullable<decimal> _CantMinCapturada;
-
+		
 		private System.Nullable<decimal> _CantMaxCapturada;
-
+		
 		private EntityRef<Materiales> _Materiales;
-
+		
 		private EntityRef<Productos> _Productos;
-
+		
 		private EntityRef<ConversionesMaterial> _ConversionesMaterial;
-
+		
     #region Definiciones de métodos de extensibilidad
     partial void OnLoaded();
     partial void OnValidate(System.Data.Linq.ChangeAction action);
@@ -4697,7 +4335,7 @@ namespace GrupoAnkhalInventario.Modelo
     partial void OnCantMaxCapturadaChanging(System.Nullable<decimal> value);
     partial void OnCantMaxCapturadaChanged();
     #endregion
-
+		
 		public ProductoMateriales()
 		{
 			this._Materiales = default(EntityRef<Materiales>);
@@ -4837,13 +4475,18 @@ namespace GrupoAnkhalInventario.Modelo
 		[global::System.Data.Linq.Mapping.ColumnAttribute(Storage="_ConversionID", DbType="Int")]
 		public System.Nullable<int> ConversionID
 		{
-			get { return this._ConversionID; }
+			get
+			{
+				return this._ConversionID;
+			}
 			set
 			{
 				if ((this._ConversionID != value))
 				{
 					if (this._ConversionesMaterial.HasLoadedOrAssignedValue)
+					{
 						throw new System.Data.Linq.ForeignKeyReferenceAlreadyHasValueException();
+					}
 					this.OnConversionIDChanging(value);
 					this.SendPropertyChanging();
 					this._ConversionID = value;
@@ -4852,11 +4495,14 @@ namespace GrupoAnkhalInventario.Modelo
 				}
 			}
 		}
-
+		
 		[global::System.Data.Linq.Mapping.ColumnAttribute(Storage="_CantMinCapturada", DbType="Decimal(12,4)")]
 		public System.Nullable<decimal> CantMinCapturada
 		{
-			get { return this._CantMinCapturada; }
+			get
+			{
+				return this._CantMinCapturada;
+			}
 			set
 			{
 				if ((this._CantMinCapturada != value))
@@ -4869,11 +4515,14 @@ namespace GrupoAnkhalInventario.Modelo
 				}
 			}
 		}
-
+		
 		[global::System.Data.Linq.Mapping.ColumnAttribute(Storage="_CantMaxCapturada", DbType="Decimal(12,4)")]
 		public System.Nullable<decimal> CantMaxCapturada
 		{
-			get { return this._CantMaxCapturada; }
+			get
+			{
+				return this._CantMaxCapturada;
+			}
 			set
 			{
 				if ((this._CantMaxCapturada != value))
@@ -4886,37 +4535,7 @@ namespace GrupoAnkhalInventario.Modelo
 				}
 			}
 		}
-
-		[global::System.Data.Linq.Mapping.AssociationAttribute(Name="ConversionesMaterial_ProductoMateriales", Storage="_ConversionesMaterial", ThisKey="ConversionID", OtherKey="ConversionID", IsForeignKey=true)]
-		public ConversionesMaterial ConversionesMaterial
-		{
-			get { return this._ConversionesMaterial.Entity; }
-			set
-			{
-				ConversionesMaterial previousValue = this._ConversionesMaterial.Entity;
-				if (((previousValue != value) || (this._ConversionesMaterial.HasLoadedOrAssignedValue == false)))
-				{
-					this.SendPropertyChanging();
-					if ((previousValue != null))
-					{
-						this._ConversionesMaterial.Entity = null;
-						previousValue.ProductoMateriales.Remove(this);
-					}
-					this._ConversionesMaterial.Entity = value;
-					if ((value != null))
-					{
-						value.ProductoMateriales.Add(this);
-						this._ConversionID = value.ConversionID;
-					}
-					else
-					{
-						this._ConversionID = default(System.Nullable<int>);
-					}
-					this.SendPropertyChanged("ConversionesMaterial");
-				}
-			}
-		}
-
+		
 		[global::System.Data.Linq.Mapping.AssociationAttribute(Name="Materiales_ProductoMateriales", Storage="_Materiales", ThisKey="MaterialID", OtherKey="MaterialID", IsForeignKey=true)]
 		public Materiales Materiales
 		{
@@ -4985,6 +4604,40 @@ namespace GrupoAnkhalInventario.Modelo
 			}
 		}
 		
+		[global::System.Data.Linq.Mapping.AssociationAttribute(Name="ConversionesMaterial_ProductoMateriales", Storage="_ConversionesMaterial", ThisKey="ConversionID", OtherKey="ConversionID", IsForeignKey=true)]
+		public ConversionesMaterial ConversionesMaterial
+		{
+			get
+			{
+				return this._ConversionesMaterial.Entity;
+			}
+			set
+			{
+				ConversionesMaterial previousValue = this._ConversionesMaterial.Entity;
+				if (((previousValue != value) 
+							|| (this._ConversionesMaterial.HasLoadedOrAssignedValue == false)))
+				{
+					this.SendPropertyChanging();
+					if ((previousValue != null))
+					{
+						this._ConversionesMaterial.Entity = null;
+						previousValue.ProductoMateriales.Remove(this);
+					}
+					this._ConversionesMaterial.Entity = value;
+					if ((value != null))
+					{
+						value.ProductoMateriales.Add(this);
+						this._ConversionID = value.ConversionID;
+					}
+					else
+					{
+						this._ConversionID = default(Nullable<int>);
+					}
+					this.SendPropertyChanged("ConversionesMaterial");
+				}
+			}
+		}
+		
 		public event PropertyChangingEventHandler PropertyChanging;
 		
 		public event PropertyChangedEventHandler PropertyChanged;
@@ -5034,8 +4687,6 @@ namespace GrupoAnkhalInventario.Modelo
 		
 		private System.Data.Linq.Binary _RowVersion;
 		
-		private EntitySet<DetalleEntregas> _DetalleEntregas;
-		
 		private EntitySet<Movimientos> _Movimientos;
 		
 		private EntitySet<Produccion> _Produccion;
@@ -5043,6 +4694,8 @@ namespace GrupoAnkhalInventario.Modelo
 		private EntitySet<ProductoMateriales> _ProductoMateriales;
 		
 		private EntitySet<StockProductos> _StockProductos;
+		
+		private EntitySet<DetalleEntregas> _DetalleEntregas;
 		
 		private EntityRef<TiposProducto> _TiposProducto;
 		
@@ -5080,11 +4733,11 @@ namespace GrupoAnkhalInventario.Modelo
 		
 		public Productos()
 		{
-			this._DetalleEntregas = new EntitySet<DetalleEntregas>(new Action<DetalleEntregas>(this.attach_DetalleEntregas), new Action<DetalleEntregas>(this.detach_DetalleEntregas));
 			this._Movimientos = new EntitySet<Movimientos>(new Action<Movimientos>(this.attach_Movimientos), new Action<Movimientos>(this.detach_Movimientos));
 			this._Produccion = new EntitySet<Produccion>(new Action<Produccion>(this.attach_Produccion), new Action<Produccion>(this.detach_Produccion));
 			this._ProductoMateriales = new EntitySet<ProductoMateriales>(new Action<ProductoMateriales>(this.attach_ProductoMateriales), new Action<ProductoMateriales>(this.detach_ProductoMateriales));
 			this._StockProductos = new EntitySet<StockProductos>(new Action<StockProductos>(this.attach_StockProductos), new Action<StockProductos>(this.detach_StockProductos));
+			this._DetalleEntregas = new EntitySet<DetalleEntregas>(new Action<DetalleEntregas>(this.attach_DetalleEntregas), new Action<DetalleEntregas>(this.detach_DetalleEntregas));
 			this._TiposProducto = default(EntityRef<TiposProducto>);
 			this._Usuario = default(EntityRef<Usuario>);
 			this._Usuario1 = default(EntityRef<Usuario>);
@@ -5323,19 +4976,6 @@ namespace GrupoAnkhalInventario.Modelo
 			}
 		}
 		
-		[global::System.Data.Linq.Mapping.AssociationAttribute(Name="Productos_DetalleEntregas", Storage="_DetalleEntregas", ThisKey="ProductoID", OtherKey="ProductoID")]
-		public EntitySet<DetalleEntregas> DetalleEntregas
-		{
-			get
-			{
-				return this._DetalleEntregas;
-			}
-			set
-			{
-				this._DetalleEntregas.Assign(value);
-			}
-		}
-		
 		[global::System.Data.Linq.Mapping.AssociationAttribute(Name="Productos_Movimientos", Storage="_Movimientos", ThisKey="ProductoID", OtherKey="ProductoID")]
 		public EntitySet<Movimientos> Movimientos
 		{
@@ -5385,6 +5025,19 @@ namespace GrupoAnkhalInventario.Modelo
 			set
 			{
 				this._StockProductos.Assign(value);
+			}
+		}
+		
+		[global::System.Data.Linq.Mapping.AssociationAttribute(Name="Productos_DetalleEntregas", Storage="_DetalleEntregas", ThisKey="ProductoID", OtherKey="ProductoID")]
+		public EntitySet<DetalleEntregas> DetalleEntregas
+		{
+			get
+			{
+				return this._DetalleEntregas;
+			}
+			set
+			{
+				this._DetalleEntregas.Assign(value);
 			}
 		}
 		
@@ -5510,18 +5163,6 @@ namespace GrupoAnkhalInventario.Modelo
 			}
 		}
 		
-		private void attach_DetalleEntregas(DetalleEntregas entity)
-		{
-			this.SendPropertyChanging();
-			entity.Productos = this;
-		}
-		
-		private void detach_DetalleEntregas(DetalleEntregas entity)
-		{
-			this.SendPropertyChanging();
-			entity.Productos = null;
-		}
-		
 		private void attach_Movimientos(Movimientos entity)
 		{
 			this.SendPropertyChanging();
@@ -5565,6 +5206,18 @@ namespace GrupoAnkhalInventario.Modelo
 		}
 		
 		private void detach_StockProductos(StockProductos entity)
+		{
+			this.SendPropertyChanging();
+			entity.Productos = null;
+		}
+		
+		private void attach_DetalleEntregas(DetalleEntregas entity)
+		{
+			this.SendPropertyChanging();
+			entity.Productos = this;
+		}
+		
+		private void detach_DetalleEntregas(DetalleEntregas entity)
 		{
 			this.SendPropertyChanging();
 			entity.Productos = null;
@@ -6768,6 +6421,589 @@ namespace GrupoAnkhalInventario.Modelo
 		{
 			this.SendPropertyChanging();
 			entity.TiposProducto = null;
+		}
+	}
+	
+	[global::System.Data.Linq.Mapping.TableAttribute(Name="dbo.UnidadesMedida")]
+	public partial class UnidadesMedida : INotifyPropertyChanging, INotifyPropertyChanged
+	{
+		
+		private static PropertyChangingEventArgs emptyChangingEventArgs = new PropertyChangingEventArgs(String.Empty);
+		
+		private int _UnidadMedidaID;
+		
+		private string _Clave;
+		
+		private string _Nombre;
+		
+		private bool _Activo;
+		
+		private EntitySet<Materiales> _Materiales;
+		
+		private EntitySet<Movimientos> _Movimientos;
+		
+		private EntitySet<ConversionesMaterial> _ConversionesMaterial;
+		
+    #region Definiciones de métodos de extensibilidad
+    partial void OnLoaded();
+    partial void OnValidate(System.Data.Linq.ChangeAction action);
+    partial void OnCreated();
+    partial void OnUnidadMedidaIDChanging(int value);
+    partial void OnUnidadMedidaIDChanged();
+    partial void OnClaveChanging(string value);
+    partial void OnClaveChanged();
+    partial void OnNombreChanging(string value);
+    partial void OnNombreChanged();
+    partial void OnActivoChanging(bool value);
+    partial void OnActivoChanged();
+    #endregion
+		
+		public UnidadesMedida()
+		{
+			this._Materiales = new EntitySet<Materiales>(new Action<Materiales>(this.attach_Materiales), new Action<Materiales>(this.detach_Materiales));
+			this._Movimientos = new EntitySet<Movimientos>(new Action<Movimientos>(this.attach_Movimientos), new Action<Movimientos>(this.detach_Movimientos));
+			this._ConversionesMaterial = new EntitySet<ConversionesMaterial>(new Action<ConversionesMaterial>(this.attach_ConversionesMaterial), new Action<ConversionesMaterial>(this.detach_ConversionesMaterial));
+			OnCreated();
+		}
+		
+		[global::System.Data.Linq.Mapping.ColumnAttribute(Storage="_UnidadMedidaID", AutoSync=AutoSync.OnInsert, DbType="Int NOT NULL IDENTITY", IsPrimaryKey=true, IsDbGenerated=true)]
+		public int UnidadMedidaID
+		{
+			get
+			{
+				return this._UnidadMedidaID;
+			}
+			set
+			{
+				if ((this._UnidadMedidaID != value))
+				{
+					this.OnUnidadMedidaIDChanging(value);
+					this.SendPropertyChanging();
+					this._UnidadMedidaID = value;
+					this.SendPropertyChanged("UnidadMedidaID");
+					this.OnUnidadMedidaIDChanged();
+				}
+			}
+		}
+		
+		[global::System.Data.Linq.Mapping.ColumnAttribute(Storage="_Clave", DbType="VarChar(20) NOT NULL", CanBeNull=false)]
+		public string Clave
+		{
+			get
+			{
+				return this._Clave;
+			}
+			set
+			{
+				if ((this._Clave != value))
+				{
+					this.OnClaveChanging(value);
+					this.SendPropertyChanging();
+					this._Clave = value;
+					this.SendPropertyChanged("Clave");
+					this.OnClaveChanged();
+				}
+			}
+		}
+		
+		[global::System.Data.Linq.Mapping.ColumnAttribute(Storage="_Nombre", DbType="VarChar(100) NOT NULL", CanBeNull=false)]
+		public string Nombre
+		{
+			get
+			{
+				return this._Nombre;
+			}
+			set
+			{
+				if ((this._Nombre != value))
+				{
+					this.OnNombreChanging(value);
+					this.SendPropertyChanging();
+					this._Nombre = value;
+					this.SendPropertyChanged("Nombre");
+					this.OnNombreChanged();
+				}
+			}
+		}
+		
+		[global::System.Data.Linq.Mapping.ColumnAttribute(Storage="_Activo", DbType="Bit NOT NULL")]
+		public bool Activo
+		{
+			get
+			{
+				return this._Activo;
+			}
+			set
+			{
+				if ((this._Activo != value))
+				{
+					this.OnActivoChanging(value);
+					this.SendPropertyChanging();
+					this._Activo = value;
+					this.SendPropertyChanged("Activo");
+					this.OnActivoChanged();
+				}
+			}
+		}
+		
+		[global::System.Data.Linq.Mapping.AssociationAttribute(Name="UnidadesMedida_Materiales", Storage="_Materiales", ThisKey="UnidadMedidaID", OtherKey="UnidadMedidaID")]
+		public EntitySet<Materiales> Materiales
+		{
+			get
+			{
+				return this._Materiales;
+			}
+			set
+			{
+				this._Materiales.Assign(value);
+			}
+		}
+		
+		[global::System.Data.Linq.Mapping.AssociationAttribute(Name="UnidadesMedida_Movimientos", Storage="_Movimientos", ThisKey="UnidadMedidaID", OtherKey="UnidadCapturaID")]
+		public EntitySet<Movimientos> Movimientos
+		{
+			get
+			{
+				return this._Movimientos;
+			}
+			set
+			{
+				this._Movimientos.Assign(value);
+			}
+		}
+		
+		[global::System.Data.Linq.Mapping.AssociationAttribute(Name="UnidadesMedida_ConversionesMaterial", Storage="_ConversionesMaterial", ThisKey="UnidadMedidaID", OtherKey="UnidadOrigenID")]
+		public EntitySet<ConversionesMaterial> ConversionesMaterial
+		{
+			get
+			{
+				return this._ConversionesMaterial;
+			}
+			set
+			{
+				this._ConversionesMaterial.Assign(value);
+			}
+		}
+		
+		public event PropertyChangingEventHandler PropertyChanging;
+		
+		public event PropertyChangedEventHandler PropertyChanged;
+		
+		protected virtual void SendPropertyChanging()
+		{
+			if ((this.PropertyChanging != null))
+			{
+				this.PropertyChanging(this, emptyChangingEventArgs);
+			}
+		}
+		
+		protected virtual void SendPropertyChanged(String propertyName)
+		{
+			if ((this.PropertyChanged != null))
+			{
+				this.PropertyChanged(this, new PropertyChangedEventArgs(propertyName));
+			}
+		}
+		
+		private void attach_Materiales(Materiales entity)
+		{
+			this.SendPropertyChanging();
+			entity.UnidadesMedida = this;
+		}
+		
+		private void detach_Materiales(Materiales entity)
+		{
+			this.SendPropertyChanging();
+			entity.UnidadesMedida = null;
+		}
+		
+		private void attach_Movimientos(Movimientos entity)
+		{
+			this.SendPropertyChanging();
+			entity.UnidadesMedida = this;
+		}
+		
+		private void detach_Movimientos(Movimientos entity)
+		{
+			this.SendPropertyChanging();
+			entity.UnidadesMedida = null;
+		}
+		
+		private void attach_ConversionesMaterial(ConversionesMaterial entity)
+		{
+			this.SendPropertyChanging();
+			entity.UnidadesMedida = this;
+		}
+		
+		private void detach_ConversionesMaterial(ConversionesMaterial entity)
+		{
+			this.SendPropertyChanging();
+			entity.UnidadesMedida = null;
+		}
+	}
+	
+	[global::System.Data.Linq.Mapping.TableAttribute(Name="dbo.ConversionesMaterial")]
+	public partial class ConversionesMaterial : INotifyPropertyChanging, INotifyPropertyChanged
+	{
+		
+		private static PropertyChangingEventArgs emptyChangingEventArgs = new PropertyChangingEventArgs(String.Empty);
+		
+		private int _ConversionID;
+		
+		private int _MaterialID;
+		
+		private int _UnidadOrigenID;
+		
+		private decimal _Factor;
+		
+		private string _Descripcion;
+		
+		private bool _Activo;
+		
+		private System.DateTime _FechaAlta;
+		
+		private System.Nullable<int> _UsuarioAltaID;
+		
+		private EntitySet<ProductoMateriales> _ProductoMateriales;
+		
+		private EntityRef<Materiales> _Materiales;
+		
+		private EntityRef<UnidadesMedida> _UnidadesMedida;
+		
+		private EntityRef<Usuario> _Usuario;
+		
+    #region Definiciones de métodos de extensibilidad
+    partial void OnLoaded();
+    partial void OnValidate(System.Data.Linq.ChangeAction action);
+    partial void OnCreated();
+    partial void OnConversionIDChanging(int value);
+    partial void OnConversionIDChanged();
+    partial void OnMaterialIDChanging(int value);
+    partial void OnMaterialIDChanged();
+    partial void OnUnidadOrigenIDChanging(int value);
+    partial void OnUnidadOrigenIDChanged();
+    partial void OnFactorChanging(decimal value);
+    partial void OnFactorChanged();
+    partial void OnDescripcionChanging(string value);
+    partial void OnDescripcionChanged();
+    partial void OnActivoChanging(bool value);
+    partial void OnActivoChanged();
+    partial void OnFechaAltaChanging(System.DateTime value);
+    partial void OnFechaAltaChanged();
+    partial void OnUsuarioAltaIDChanging(System.Nullable<int> value);
+    partial void OnUsuarioAltaIDChanged();
+    #endregion
+		
+		public ConversionesMaterial()
+		{
+			this._ProductoMateriales = new EntitySet<ProductoMateriales>(new Action<ProductoMateriales>(this.attach_ProductoMateriales), new Action<ProductoMateriales>(this.detach_ProductoMateriales));
+			this._Materiales = default(EntityRef<Materiales>);
+			this._UnidadesMedida = default(EntityRef<UnidadesMedida>);
+			this._Usuario = default(EntityRef<Usuario>);
+			OnCreated();
+		}
+		
+		[global::System.Data.Linq.Mapping.ColumnAttribute(Storage="_ConversionID", AutoSync=AutoSync.OnInsert, DbType="Int NOT NULL IDENTITY", IsPrimaryKey=true, IsDbGenerated=true)]
+		public int ConversionID
+		{
+			get
+			{
+				return this._ConversionID;
+			}
+			set
+			{
+				if ((this._ConversionID != value))
+				{
+					this.OnConversionIDChanging(value);
+					this.SendPropertyChanging();
+					this._ConversionID = value;
+					this.SendPropertyChanged("ConversionID");
+					this.OnConversionIDChanged();
+				}
+			}
+		}
+		
+		[global::System.Data.Linq.Mapping.ColumnAttribute(Storage="_MaterialID", DbType="Int NOT NULL")]
+		public int MaterialID
+		{
+			get
+			{
+				return this._MaterialID;
+			}
+			set
+			{
+				if ((this._MaterialID != value))
+				{
+					if (this._Materiales.HasLoadedOrAssignedValue)
+					{
+						throw new System.Data.Linq.ForeignKeyReferenceAlreadyHasValueException();
+					}
+					this.OnMaterialIDChanging(value);
+					this.SendPropertyChanging();
+					this._MaterialID = value;
+					this.SendPropertyChanged("MaterialID");
+					this.OnMaterialIDChanged();
+				}
+			}
+		}
+		
+		[global::System.Data.Linq.Mapping.ColumnAttribute(Storage="_UnidadOrigenID", DbType="Int NOT NULL")]
+		public int UnidadOrigenID
+		{
+			get
+			{
+				return this._UnidadOrigenID;
+			}
+			set
+			{
+				if ((this._UnidadOrigenID != value))
+				{
+					if (this._UnidadesMedida.HasLoadedOrAssignedValue)
+					{
+						throw new System.Data.Linq.ForeignKeyReferenceAlreadyHasValueException();
+					}
+					this.OnUnidadOrigenIDChanging(value);
+					this.SendPropertyChanging();
+					this._UnidadOrigenID = value;
+					this.SendPropertyChanged("UnidadOrigenID");
+					this.OnUnidadOrigenIDChanged();
+				}
+			}
+		}
+		
+		[global::System.Data.Linq.Mapping.ColumnAttribute(Storage="_Factor", DbType="Decimal(18,6) NOT NULL")]
+		public decimal Factor
+		{
+			get
+			{
+				return this._Factor;
+			}
+			set
+			{
+				if ((this._Factor != value))
+				{
+					this.OnFactorChanging(value);
+					this.SendPropertyChanging();
+					this._Factor = value;
+					this.SendPropertyChanged("Factor");
+					this.OnFactorChanged();
+				}
+			}
+		}
+		
+		[global::System.Data.Linq.Mapping.ColumnAttribute(Storage="_Descripcion", DbType="VarChar(200)")]
+		public string Descripcion
+		{
+			get
+			{
+				return this._Descripcion;
+			}
+			set
+			{
+				if ((this._Descripcion != value))
+				{
+					this.OnDescripcionChanging(value);
+					this.SendPropertyChanging();
+					this._Descripcion = value;
+					this.SendPropertyChanged("Descripcion");
+					this.OnDescripcionChanged();
+				}
+			}
+		}
+		
+		[global::System.Data.Linq.Mapping.ColumnAttribute(Storage="_Activo", DbType="Bit NOT NULL")]
+		public bool Activo
+		{
+			get
+			{
+				return this._Activo;
+			}
+			set
+			{
+				if ((this._Activo != value))
+				{
+					this.OnActivoChanging(value);
+					this.SendPropertyChanging();
+					this._Activo = value;
+					this.SendPropertyChanged("Activo");
+					this.OnActivoChanged();
+				}
+			}
+		}
+		
+		[global::System.Data.Linq.Mapping.ColumnAttribute(Storage="_FechaAlta", DbType="DateTime2 NOT NULL")]
+		public System.DateTime FechaAlta
+		{
+			get
+			{
+				return this._FechaAlta;
+			}
+			set
+			{
+				if ((this._FechaAlta != value))
+				{
+					this.OnFechaAltaChanging(value);
+					this.SendPropertyChanging();
+					this._FechaAlta = value;
+					this.SendPropertyChanged("FechaAlta");
+					this.OnFechaAltaChanged();
+				}
+			}
+		}
+		
+		[global::System.Data.Linq.Mapping.ColumnAttribute(Storage="_UsuarioAltaID", DbType="Int")]
+		public System.Nullable<int> UsuarioAltaID
+		{
+			get
+			{
+				return this._UsuarioAltaID;
+			}
+			set
+			{
+				if ((this._UsuarioAltaID != value))
+				{
+					if (this._Usuario.HasLoadedOrAssignedValue)
+					{
+						throw new System.Data.Linq.ForeignKeyReferenceAlreadyHasValueException();
+					}
+					this.OnUsuarioAltaIDChanging(value);
+					this.SendPropertyChanging();
+					this._UsuarioAltaID = value;
+					this.SendPropertyChanged("UsuarioAltaID");
+					this.OnUsuarioAltaIDChanged();
+				}
+			}
+		}
+		
+		[global::System.Data.Linq.Mapping.AssociationAttribute(Name="ConversionesMaterial_ProductoMateriales", Storage="_ProductoMateriales", ThisKey="ConversionID", OtherKey="ConversionID")]
+		public EntitySet<ProductoMateriales> ProductoMateriales
+		{
+			get
+			{
+				return this._ProductoMateriales;
+			}
+			set
+			{
+				this._ProductoMateriales.Assign(value);
+			}
+		}
+		
+		[global::System.Data.Linq.Mapping.AssociationAttribute(Name="Materiales_ConversionesMaterial", Storage="_Materiales", ThisKey="MaterialID", OtherKey="MaterialID", IsForeignKey=true)]
+		public Materiales Materiales
+		{
+			get
+			{
+				return this._Materiales.Entity;
+			}
+			set
+			{
+				Materiales previousValue = this._Materiales.Entity;
+				if (((previousValue != value) 
+							|| (this._Materiales.HasLoadedOrAssignedValue == false)))
+				{
+					this.SendPropertyChanging();
+					if ((previousValue != null))
+					{
+						this._Materiales.Entity = null;
+						previousValue.ConversionesMaterial.Remove(this);
+					}
+					this._Materiales.Entity = value;
+					if ((value != null))
+					{
+						value.ConversionesMaterial.Add(this);
+						this._MaterialID = value.MaterialID;
+					}
+					else
+					{
+						this._MaterialID = default(int);
+					}
+					this.SendPropertyChanged("Materiales");
+				}
+			}
+		}
+		
+		[global::System.Data.Linq.Mapping.AssociationAttribute(Name="UnidadesMedida_ConversionesMaterial", Storage="_UnidadesMedida", ThisKey="UnidadOrigenID", OtherKey="UnidadMedidaID", IsForeignKey=true)]
+		public UnidadesMedida UnidadesMedida
+		{
+			get
+			{
+				return this._UnidadesMedida.Entity;
+			}
+			set
+			{
+				UnidadesMedida previousValue = this._UnidadesMedida.Entity;
+				if (((previousValue != value) 
+							|| (this._UnidadesMedida.HasLoadedOrAssignedValue == false)))
+				{
+					this.SendPropertyChanging();
+					if ((previousValue != null))
+					{
+						this._UnidadesMedida.Entity = null;
+						previousValue.ConversionesMaterial.Remove(this);
+					}
+					this._UnidadesMedida.Entity = value;
+					if ((value != null))
+					{
+						value.ConversionesMaterial.Add(this);
+						this._UnidadOrigenID = value.UnidadMedidaID;
+					}
+					else
+					{
+						this._UnidadOrigenID = default(int);
+					}
+					this.SendPropertyChanged("UnidadesMedida");
+				}
+			}
+		}
+		
+		[global::System.Data.Linq.Mapping.AssociationAttribute(Name="Usuario_ConversionesMaterial", Storage="_Usuario", ThisKey="UsuarioAltaID", OtherKey="ClaveID", IsForeignKey=true)]
+		public Usuario Usuario
+		{
+			get
+			{
+				return this._Usuario.Entity;
+			}
+			set
+			{
+				if ((this._Usuario.Entity != value))
+				{
+					this.SendPropertyChanging();
+					this._Usuario.Entity = value;
+					this.SendPropertyChanged("Usuario");
+				}
+			}
+		}
+		
+		public event PropertyChangingEventHandler PropertyChanging;
+		
+		public event PropertyChangedEventHandler PropertyChanged;
+		
+		protected virtual void SendPropertyChanging()
+		{
+			if ((this.PropertyChanging != null))
+			{
+				this.PropertyChanging(this, emptyChangingEventArgs);
+			}
+		}
+		
+		protected virtual void SendPropertyChanged(String propertyName)
+		{
+			if ((this.PropertyChanged != null))
+			{
+				this.PropertyChanged(this, new PropertyChangedEventArgs(propertyName));
+			}
+		}
+		
+		private void attach_ProductoMateriales(ProductoMateriales entity)
+		{
+			this.SendPropertyChanging();
+			entity.ConversionesMaterial = this;
+		}
+		
+		private void detach_ProductoMateriales(ProductoMateriales entity)
+		{
+			this.SendPropertyChanging();
+			entity.ConversionesMaterial = null;
 		}
 	}
 	
@@ -8560,304 +8796,260 @@ namespace GrupoAnkhalInventario.Modelo
 			}
 		}
 	}
-
-	[global::System.Data.Linq.Mapping.TableAttribute(Name="dbo.UnidadesMedida")]
-	public partial class UnidadesMedida : INotifyPropertyChanging, INotifyPropertyChanged
+	
+	[global::System.Data.Linq.Mapping.TableAttribute(Name="dbo.DetalleEntregas")]
+	public partial class DetalleEntregas : INotifyPropertyChanging, INotifyPropertyChanged
 	{
-
+		
 		private static PropertyChangingEventArgs emptyChangingEventArgs = new PropertyChangingEventArgs(String.Empty);
-
-		private int _UnidadMedidaID;
-
-		private string _Clave;
-
-		private string _Nombre;
-
-		private bool _Activo;
-
-		private EntitySet<Materiales> _Materiales;
-
-		private EntitySet<ConversionesMaterial> _ConversionesMaterial;
-
-		private EntitySet<Movimientos> _Movimientos;
-
-    #region Definiciones de métodos de extensibilidad
-    partial void OnLoaded();
-    partial void OnValidate(System.Data.Linq.ChangeAction action);
-    partial void OnCreated();
-    partial void OnUnidadMedidaIDChanging(int value);
-    partial void OnUnidadMedidaIDChanged();
-    partial void OnClaveChanging(string value);
-    partial void OnClaveChanged();
-    partial void OnNombreChanging(string value);
-    partial void OnNombreChanged();
-    partial void OnActivoChanging(bool value);
-    partial void OnActivoChanged();
-    #endregion
-
-		public UnidadesMedida()
-		{
-			this._Materiales = new EntitySet<Materiales>(new Action<Materiales>(this.attach_Materiales), new Action<Materiales>(this.detach_Materiales));
-			this._ConversionesMaterial = new EntitySet<ConversionesMaterial>(new Action<ConversionesMaterial>(this.attach_ConversionesMaterial_Unid), new Action<ConversionesMaterial>(this.detach_ConversionesMaterial_Unid));
-			this._Movimientos = new EntitySet<Movimientos>(new Action<Movimientos>(this.attach_Movimientos_Unid), new Action<Movimientos>(this.detach_Movimientos_Unid));
-			OnCreated();
-		}
-
-		[global::System.Data.Linq.Mapping.ColumnAttribute(Storage="_UnidadMedidaID", AutoSync=AutoSync.OnInsert, DbType="Int NOT NULL IDENTITY", IsPrimaryKey=true, IsDbGenerated=true)]
-		public int UnidadMedidaID
-		{
-			get
-			{
-				return this._UnidadMedidaID;
-			}
-			set
-			{
-				if ((this._UnidadMedidaID != value))
-				{
-					this.OnUnidadMedidaIDChanging(value);
-					this.SendPropertyChanging();
-					this._UnidadMedidaID = value;
-					this.SendPropertyChanged("UnidadMedidaID");
-					this.OnUnidadMedidaIDChanged();
-				}
-			}
-		}
-
-		[global::System.Data.Linq.Mapping.ColumnAttribute(Storage="_Clave", DbType="VarChar(20) NOT NULL", CanBeNull=false)]
-		public string Clave
-		{
-			get
-			{
-				return this._Clave;
-			}
-			set
-			{
-				if ((this._Clave != value))
-				{
-					this.OnClaveChanging(value);
-					this.SendPropertyChanging();
-					this._Clave = value;
-					this.SendPropertyChanged("Clave");
-					this.OnClaveChanged();
-				}
-			}
-		}
-
-		[global::System.Data.Linq.Mapping.ColumnAttribute(Storage="_Nombre", DbType="VarChar(100) NOT NULL", CanBeNull=false)]
-		public string Nombre
-		{
-			get
-			{
-				return this._Nombre;
-			}
-			set
-			{
-				if ((this._Nombre != value))
-				{
-					this.OnNombreChanging(value);
-					this.SendPropertyChanging();
-					this._Nombre = value;
-					this.SendPropertyChanged("Nombre");
-					this.OnNombreChanged();
-				}
-			}
-		}
-
-		[global::System.Data.Linq.Mapping.ColumnAttribute(Storage="_Activo", DbType="Bit NOT NULL")]
-		public bool Activo
-		{
-			get
-			{
-				return this._Activo;
-			}
-			set
-			{
-				if ((this._Activo != value))
-				{
-					this.OnActivoChanging(value);
-					this.SendPropertyChanging();
-					this._Activo = value;
-					this.SendPropertyChanged("Activo");
-					this.OnActivoChanged();
-				}
-			}
-		}
-
-		[global::System.Data.Linq.Mapping.AssociationAttribute(Name="UnidadesMedida_Materiales", Storage="_Materiales", ThisKey="UnidadMedidaID", OtherKey="UnidadMedidaID")]
-		public EntitySet<Materiales> Materiales
-		{
-			get
-			{
-				return this._Materiales;
-			}
-			set
-			{
-				this._Materiales.Assign(value);
-			}
-		}
-
-		[global::System.Data.Linq.Mapping.AssociationAttribute(Name="UnidadesMedida_ConversionesMaterial", Storage="_ConversionesMaterial", ThisKey="UnidadMedidaID", OtherKey="UnidadOrigenID")]
-		public EntitySet<ConversionesMaterial> ConversionesMaterial
-		{
-			get
-			{
-				return this._ConversionesMaterial;
-			}
-			set
-			{
-				this._ConversionesMaterial.Assign(value);
-			}
-		}
-
-		[global::System.Data.Linq.Mapping.AssociationAttribute(Name="UnidadesMedida_Movimientos", Storage="_Movimientos", ThisKey="UnidadMedidaID", OtherKey="UnidadCapturaID")]
-		public EntitySet<Movimientos> Movimientos
-		{
-			get
-			{
-				return this._Movimientos;
-			}
-			set
-			{
-				this._Movimientos.Assign(value);
-			}
-		}
-
-		public event PropertyChangingEventHandler PropertyChanging;
-
-		public event PropertyChangedEventHandler PropertyChanged;
-
-		protected virtual void SendPropertyChanging()
-		{
-			if ((this.PropertyChanging != null))
-			{
-				this.PropertyChanging(this, emptyChangingEventArgs);
-			}
-		}
-
-		protected virtual void SendPropertyChanged(String propertyName)
-		{
-			if ((this.PropertyChanged != null))
-			{
-				this.PropertyChanged(this, new PropertyChangedEventArgs(propertyName));
-			}
-		}
-
-		private void attach_Materiales(Materiales entity)
-		{
-			this.SendPropertyChanging();
-			entity.UnidadesMedida = this;
-		}
-
-		private void detach_Materiales(Materiales entity)
-		{
-			this.SendPropertyChanging();
-			entity.UnidadesMedida = null;
-		}
-
-		private void attach_ConversionesMaterial_Unid(ConversionesMaterial entity)
-		{
-			this.SendPropertyChanging();
-			entity.UnidadesMedida = this;
-		}
-
-		private void detach_ConversionesMaterial_Unid(ConversionesMaterial entity)
-		{
-			this.SendPropertyChanging();
-			entity.UnidadesMedida = null;
-		}
-
-		private void attach_Movimientos_Unid(Movimientos entity)
-		{
-			this.SendPropertyChanging();
-			entity.UnidadesMedida = this;
-		}
-
-		private void detach_Movimientos_Unid(Movimientos entity)
-		{
-			this.SendPropertyChanging();
-			entity.UnidadesMedida = null;
-		}
-	}
-
-	[global::System.Data.Linq.Mapping.TableAttribute(Name="dbo.ConversionesMaterial")]
-	public partial class ConversionesMaterial : INotifyPropertyChanging, INotifyPropertyChanged
-	{
-		private static PropertyChangingEventArgs emptyChangingEventArgs = new PropertyChangingEventArgs(String.Empty);
-
-		private int _ConversionID;
-		private int _MaterialID;
-		private int _UnidadOrigenID;
-		private decimal _Factor;
-		private string _Descripcion;
-		private bool _Activo;
-		private System.DateTime _FechaAlta;
-		private System.Nullable<int> _UsuarioAltaID;
-
+		
+		private int _DetalleEntregaID;
+		
+		private int _EntregaID;
+		
+		private string _TipoItem;
+		
+		private System.Nullable<int> _ProductoID;
+		
+		private System.Nullable<int> _PaqueteID;
+		
+		private int _Cantidad;
+		
+		private decimal _PrecioUnitario;
+		
+		private string _Observaciones;
+		
+		private System.Nullable<int> _MaterialID;
+		
+		private System.Nullable<decimal> _CantidadCapturada;
+		
+		private System.Nullable<int> _UnidadCapturaID;
+		
 		private EntityRef<Materiales> _Materiales;
-		private EntityRef<UnidadesMedida> _UnidadesMedida;
-		private EntityRef<Usuario> _Usuario;
-		private EntitySet<ProductoMateriales> _ProductoMateriales;
-
+		
+		private EntityRef<Entregas> _Entregas;
+		
+		private EntityRef<Productos> _Productos;
+		
     #region Definiciones de métodos de extensibilidad
     partial void OnLoaded();
     partial void OnValidate(System.Data.Linq.ChangeAction action);
     partial void OnCreated();
-    partial void OnConversionIDChanging(int value);
-    partial void OnConversionIDChanged();
-    partial void OnMaterialIDChanging(int value);
+    partial void OnDetalleEntregaIDChanging(int value);
+    partial void OnDetalleEntregaIDChanged();
+    partial void OnEntregaIDChanging(int value);
+    partial void OnEntregaIDChanged();
+    partial void OnTipoItemChanging(string value);
+    partial void OnTipoItemChanged();
+    partial void OnProductoIDChanging(System.Nullable<int> value);
+    partial void OnProductoIDChanged();
+    partial void OnPaqueteIDChanging(System.Nullable<int> value);
+    partial void OnPaqueteIDChanged();
+    partial void OnCantidadChanging(int value);
+    partial void OnCantidadChanged();
+    partial void OnPrecioUnitarioChanging(decimal value);
+    partial void OnPrecioUnitarioChanged();
+    partial void OnObservacionesChanging(string value);
+    partial void OnObservacionesChanged();
+    partial void OnMaterialIDChanging(System.Nullable<int> value);
     partial void OnMaterialIDChanged();
-    partial void OnUnidadOrigenIDChanging(int value);
-    partial void OnUnidadOrigenIDChanged();
-    partial void OnFactorChanging(decimal value);
-    partial void OnFactorChanged();
-    partial void OnDescripcionChanging(string value);
-    partial void OnDescripcionChanged();
-    partial void OnActivoChanging(bool value);
-    partial void OnActivoChanged();
-    partial void OnFechaAltaChanging(System.DateTime value);
-    partial void OnFechaAltaChanged();
-    partial void OnUsuarioAltaIDChanging(System.Nullable<int> value);
-    partial void OnUsuarioAltaIDChanged();
+    partial void OnCantidadCapturadaChanging(System.Nullable<decimal> value);
+    partial void OnCantidadCapturadaChanged();
+    partial void OnUnidadCapturaIDChanging(System.Nullable<int> value);
+    partial void OnUnidadCapturaIDChanged();
     #endregion
-
-		public ConversionesMaterial()
+		
+		public DetalleEntregas()
 		{
-			this._Materiales         = default(EntityRef<Materiales>);
-			this._UnidadesMedida     = default(EntityRef<UnidadesMedida>);
-			this._Usuario            = default(EntityRef<Usuario>);
-			this._ProductoMateriales = new EntitySet<ProductoMateriales>(
-				pm => { pm.ConversionesMaterial = this; },
-				pm => { pm.ConversionesMaterial = null; });
+			this._Materiales = default(EntityRef<Materiales>);
+			this._Entregas = default(EntityRef<Entregas>);
+			this._Productos = default(EntityRef<Productos>);
 			OnCreated();
 		}
-
-		[global::System.Data.Linq.Mapping.ColumnAttribute(Storage="_ConversionID", AutoSync=AutoSync.OnInsert, DbType="Int NOT NULL IDENTITY", IsPrimaryKey=true, IsDbGenerated=true)]
-		public int ConversionID
+		
+		[global::System.Data.Linq.Mapping.ColumnAttribute(Storage="_DetalleEntregaID", AutoSync=AutoSync.OnInsert, DbType="Int NOT NULL IDENTITY", IsPrimaryKey=true, IsDbGenerated=true)]
+		public int DetalleEntregaID
 		{
-			get { return this._ConversionID; }
+			get
+			{
+				return this._DetalleEntregaID;
+			}
 			set
 			{
-				if ((this._ConversionID != value))
+				if ((this._DetalleEntregaID != value))
 				{
-					this.OnConversionIDChanging(value);
+					this.OnDetalleEntregaIDChanging(value);
 					this.SendPropertyChanging();
-					this._ConversionID = value;
-					this.SendPropertyChanged("ConversionID");
-					this.OnConversionIDChanged();
+					this._DetalleEntregaID = value;
+					this.SendPropertyChanged("DetalleEntregaID");
+					this.OnDetalleEntregaIDChanged();
 				}
 			}
 		}
-
-		[global::System.Data.Linq.Mapping.ColumnAttribute(Storage="_MaterialID", DbType="Int NOT NULL")]
-		public int MaterialID
+		
+		[global::System.Data.Linq.Mapping.ColumnAttribute(Storage="_EntregaID", DbType="Int NOT NULL")]
+		public int EntregaID
 		{
-			get { return this._MaterialID; }
+			get
+			{
+				return this._EntregaID;
+			}
+			set
+			{
+				if ((this._EntregaID != value))
+				{
+					if (this._Entregas.HasLoadedOrAssignedValue)
+					{
+						throw new System.Data.Linq.ForeignKeyReferenceAlreadyHasValueException();
+					}
+					this.OnEntregaIDChanging(value);
+					this.SendPropertyChanging();
+					this._EntregaID = value;
+					this.SendPropertyChanged("EntregaID");
+					this.OnEntregaIDChanged();
+				}
+			}
+		}
+		
+		[global::System.Data.Linq.Mapping.ColumnAttribute(Storage="_TipoItem", DbType="VarChar(10) NOT NULL", CanBeNull=false)]
+		public string TipoItem
+		{
+			get
+			{
+				return this._TipoItem;
+			}
+			set
+			{
+				if ((this._TipoItem != value))
+				{
+					this.OnTipoItemChanging(value);
+					this.SendPropertyChanging();
+					this._TipoItem = value;
+					this.SendPropertyChanged("TipoItem");
+					this.OnTipoItemChanged();
+				}
+			}
+		}
+		
+		[global::System.Data.Linq.Mapping.ColumnAttribute(Storage="_ProductoID", DbType="Int")]
+		public System.Nullable<int> ProductoID
+		{
+			get
+			{
+				return this._ProductoID;
+			}
+			set
+			{
+				if ((this._ProductoID != value))
+				{
+					if (this._Productos.HasLoadedOrAssignedValue)
+					{
+						throw new System.Data.Linq.ForeignKeyReferenceAlreadyHasValueException();
+					}
+					this.OnProductoIDChanging(value);
+					this.SendPropertyChanging();
+					this._ProductoID = value;
+					this.SendPropertyChanged("ProductoID");
+					this.OnProductoIDChanged();
+				}
+			}
+		}
+		
+		[global::System.Data.Linq.Mapping.ColumnAttribute(Storage="_PaqueteID", DbType="Int")]
+		public System.Nullable<int> PaqueteID
+		{
+			get
+			{
+				return this._PaqueteID;
+			}
+			set
+			{
+				if ((this._PaqueteID != value))
+				{
+					this.OnPaqueteIDChanging(value);
+					this.SendPropertyChanging();
+					this._PaqueteID = value;
+					this.SendPropertyChanged("PaqueteID");
+					this.OnPaqueteIDChanged();
+				}
+			}
+		}
+		
+		[global::System.Data.Linq.Mapping.ColumnAttribute(Storage="_Cantidad", DbType="Int NOT NULL")]
+		public int Cantidad
+		{
+			get
+			{
+				return this._Cantidad;
+			}
+			set
+			{
+				if ((this._Cantidad != value))
+				{
+					this.OnCantidadChanging(value);
+					this.SendPropertyChanging();
+					this._Cantidad = value;
+					this.SendPropertyChanged("Cantidad");
+					this.OnCantidadChanged();
+				}
+			}
+		}
+		
+		[global::System.Data.Linq.Mapping.ColumnAttribute(Storage="_PrecioUnitario", DbType="Decimal(12,4) NOT NULL")]
+		public decimal PrecioUnitario
+		{
+			get
+			{
+				return this._PrecioUnitario;
+			}
+			set
+			{
+				if ((this._PrecioUnitario != value))
+				{
+					this.OnPrecioUnitarioChanging(value);
+					this.SendPropertyChanging();
+					this._PrecioUnitario = value;
+					this.SendPropertyChanged("PrecioUnitario");
+					this.OnPrecioUnitarioChanged();
+				}
+			}
+		}
+		
+		[global::System.Data.Linq.Mapping.ColumnAttribute(Storage="_Observaciones", DbType="VarChar(200)")]
+		public string Observaciones
+		{
+			get
+			{
+				return this._Observaciones;
+			}
+			set
+			{
+				if ((this._Observaciones != value))
+				{
+					this.OnObservacionesChanging(value);
+					this.SendPropertyChanging();
+					this._Observaciones = value;
+					this.SendPropertyChanged("Observaciones");
+					this.OnObservacionesChanged();
+				}
+			}
+		}
+		
+		[global::System.Data.Linq.Mapping.ColumnAttribute(Storage="_MaterialID", DbType="Int")]
+		public System.Nullable<int> MaterialID
+		{
+			get
+			{
+				return this._MaterialID;
+			}
 			set
 			{
 				if ((this._MaterialID != value))
 				{
 					if (this._Materiales.HasLoadedOrAssignedValue)
+					{
 						throw new System.Data.Linq.ForeignKeyReferenceAlreadyHasValueException();
+					}
 					this.OnMaterialIDChanging(value);
 					this.SendPropertyChanging();
 					this._MaterialID = value;
@@ -8866,223 +9058,168 @@ namespace GrupoAnkhalInventario.Modelo
 				}
 			}
 		}
-
-		[global::System.Data.Linq.Mapping.ColumnAttribute(Storage="_UnidadOrigenID", DbType="Int NOT NULL")]
-		public int UnidadOrigenID
+		
+		[global::System.Data.Linq.Mapping.ColumnAttribute(Storage="_CantidadCapturada", DbType="Decimal(12,4)")]
+		public System.Nullable<decimal> CantidadCapturada
 		{
-			get { return this._UnidadOrigenID; }
+			get
+			{
+				return this._CantidadCapturada;
+			}
 			set
 			{
-				if ((this._UnidadOrigenID != value))
+				if ((this._CantidadCapturada != value))
 				{
-					if (this._UnidadesMedida.HasLoadedOrAssignedValue)
-						throw new System.Data.Linq.ForeignKeyReferenceAlreadyHasValueException();
-					this.OnUnidadOrigenIDChanging(value);
+					this.OnCantidadCapturadaChanging(value);
 					this.SendPropertyChanging();
-					this._UnidadOrigenID = value;
-					this.SendPropertyChanged("UnidadOrigenID");
-					this.OnUnidadOrigenIDChanged();
+					this._CantidadCapturada = value;
+					this.SendPropertyChanged("CantidadCapturada");
+					this.OnCantidadCapturadaChanged();
 				}
 			}
 		}
-
-		[global::System.Data.Linq.Mapping.ColumnAttribute(Storage="_Factor", DbType="Decimal(18,6) NOT NULL")]
-		public decimal Factor
+		
+		[global::System.Data.Linq.Mapping.ColumnAttribute(Storage="_UnidadCapturaID", DbType="Int")]
+		public System.Nullable<int> UnidadCapturaID
 		{
-			get { return this._Factor; }
+			get
+			{
+				return this._UnidadCapturaID;
+			}
 			set
 			{
-				if ((this._Factor != value))
+				if ((this._UnidadCapturaID != value))
 				{
-					this.OnFactorChanging(value);
+					this.OnUnidadCapturaIDChanging(value);
 					this.SendPropertyChanging();
-					this._Factor = value;
-					this.SendPropertyChanged("Factor");
-					this.OnFactorChanged();
+					this._UnidadCapturaID = value;
+					this.SendPropertyChanged("UnidadCapturaID");
+					this.OnUnidadCapturaIDChanged();
 				}
 			}
 		}
-
-		[global::System.Data.Linq.Mapping.ColumnAttribute(Storage="_Descripcion", DbType="VarChar(200)")]
-		public string Descripcion
-		{
-			get { return this._Descripcion; }
-			set
-			{
-				if ((this._Descripcion != value))
-				{
-					this.OnDescripcionChanging(value);
-					this.SendPropertyChanging();
-					this._Descripcion = value;
-					this.SendPropertyChanged("Descripcion");
-					this.OnDescripcionChanged();
-				}
-			}
-		}
-
-		[global::System.Data.Linq.Mapping.ColumnAttribute(Storage="_Activo", DbType="Bit NOT NULL")]
-		public bool Activo
-		{
-			get { return this._Activo; }
-			set
-			{
-				if ((this._Activo != value))
-				{
-					this.OnActivoChanging(value);
-					this.SendPropertyChanging();
-					this._Activo = value;
-					this.SendPropertyChanged("Activo");
-					this.OnActivoChanged();
-				}
-			}
-		}
-
-		[global::System.Data.Linq.Mapping.ColumnAttribute(Storage="_FechaAlta", DbType="DateTime2 NOT NULL")]
-		public System.DateTime FechaAlta
-		{
-			get { return this._FechaAlta; }
-			set
-			{
-				if ((this._FechaAlta != value))
-				{
-					this.OnFechaAltaChanging(value);
-					this.SendPropertyChanging();
-					this._FechaAlta = value;
-					this.SendPropertyChanged("FechaAlta");
-					this.OnFechaAltaChanged();
-				}
-			}
-		}
-
-		[global::System.Data.Linq.Mapping.ColumnAttribute(Storage="_UsuarioAltaID", DbType="Int")]
-		public System.Nullable<int> UsuarioAltaID
-		{
-			get { return this._UsuarioAltaID; }
-			set
-			{
-				if ((this._UsuarioAltaID != value))
-				{
-					if (this._Usuario.HasLoadedOrAssignedValue)
-						throw new System.Data.Linq.ForeignKeyReferenceAlreadyHasValueException();
-					this.OnUsuarioAltaIDChanging(value);
-					this.SendPropertyChanging();
-					this._UsuarioAltaID = value;
-					this.SendPropertyChanged("UsuarioAltaID");
-					this.OnUsuarioAltaIDChanged();
-				}
-			}
-		}
-
-		[global::System.Data.Linq.Mapping.AssociationAttribute(Name="Materiales_ConversionesMaterial", Storage="_Materiales", ThisKey="MaterialID", OtherKey="MaterialID", IsForeignKey=true)]
+		
+		[global::System.Data.Linq.Mapping.AssociationAttribute(Name="Materiales_DetalleEntregas", Storage="_Materiales", ThisKey="MaterialID", OtherKey="MaterialID", IsForeignKey=true)]
 		public Materiales Materiales
 		{
-			get { return this._Materiales.Entity; }
+			get
+			{
+				return this._Materiales.Entity;
+			}
 			set
 			{
 				Materiales previousValue = this._Materiales.Entity;
-				if (((previousValue != value) || (this._Materiales.HasLoadedOrAssignedValue == false)))
+				if (((previousValue != value) 
+							|| (this._Materiales.HasLoadedOrAssignedValue == false)))
 				{
 					this.SendPropertyChanging();
 					if ((previousValue != null))
 					{
 						this._Materiales.Entity = null;
-						previousValue.ConversionesMaterial.Remove(this);
+						previousValue.DetalleEntregas.Remove(this);
 					}
 					this._Materiales.Entity = value;
 					if ((value != null))
 					{
-						value.ConversionesMaterial.Add(this);
+						value.DetalleEntregas.Add(this);
 						this._MaterialID = value.MaterialID;
 					}
 					else
 					{
-						this._MaterialID = default(int);
+						this._MaterialID = default(Nullable<int>);
 					}
 					this.SendPropertyChanged("Materiales");
 				}
 			}
 		}
-
-		[global::System.Data.Linq.Mapping.AssociationAttribute(Name="UnidadesMedida_ConversionesMaterial", Storage="_UnidadesMedida", ThisKey="UnidadOrigenID", OtherKey="UnidadMedidaID", IsForeignKey=true)]
-		public UnidadesMedida UnidadesMedida
+		
+		[global::System.Data.Linq.Mapping.AssociationAttribute(Name="Entregas_DetalleEntregas", Storage="_Entregas", ThisKey="EntregaID", OtherKey="EntregaID", IsForeignKey=true)]
+		public Entregas Entregas
 		{
-			get { return this._UnidadesMedida.Entity; }
+			get
+			{
+				return this._Entregas.Entity;
+			}
 			set
 			{
-				UnidadesMedida previousValue = this._UnidadesMedida.Entity;
-				if (((previousValue != value) || (this._UnidadesMedida.HasLoadedOrAssignedValue == false)))
+				Entregas previousValue = this._Entregas.Entity;
+				if (((previousValue != value) 
+							|| (this._Entregas.HasLoadedOrAssignedValue == false)))
 				{
 					this.SendPropertyChanging();
 					if ((previousValue != null))
 					{
-						this._UnidadesMedida.Entity = null;
-						previousValue.ConversionesMaterial.Remove(this);
+						this._Entregas.Entity = null;
+						previousValue.DetalleEntregas.Remove(this);
 					}
-					this._UnidadesMedida.Entity = value;
+					this._Entregas.Entity = value;
 					if ((value != null))
 					{
-						value.ConversionesMaterial.Add(this);
-						this._UnidadOrigenID = value.UnidadMedidaID;
+						value.DetalleEntregas.Add(this);
+						this._EntregaID = value.EntregaID;
 					}
 					else
 					{
-						this._UnidadOrigenID = default(int);
+						this._EntregaID = default(int);
 					}
-					this.SendPropertyChanged("UnidadesMedida");
+					this.SendPropertyChanged("Entregas");
 				}
 			}
 		}
-
-		[global::System.Data.Linq.Mapping.AssociationAttribute(Name="Usuario_ConversionesMaterial", Storage="_Usuario", ThisKey="UsuarioAltaID", OtherKey="ClaveID", IsForeignKey=true)]
-		public Usuario Usuario
+		
+		[global::System.Data.Linq.Mapping.AssociationAttribute(Name="Productos_DetalleEntregas", Storage="_Productos", ThisKey="ProductoID", OtherKey="ProductoID", IsForeignKey=true)]
+		public Productos Productos
 		{
-			get { return this._Usuario.Entity; }
+			get
+			{
+				return this._Productos.Entity;
+			}
 			set
 			{
-				Usuario previousValue = this._Usuario.Entity;
-				if (((previousValue != value) || (this._Usuario.HasLoadedOrAssignedValue == false)))
+				Productos previousValue = this._Productos.Entity;
+				if (((previousValue != value) 
+							|| (this._Productos.HasLoadedOrAssignedValue == false)))
 				{
 					this.SendPropertyChanging();
 					if ((previousValue != null))
 					{
-						this._Usuario.Entity = null;
+						this._Productos.Entity = null;
+						previousValue.DetalleEntregas.Remove(this);
 					}
-					this._Usuario.Entity = value;
+					this._Productos.Entity = value;
 					if ((value != null))
 					{
-						this._UsuarioAltaID = value.ClaveID;
+						value.DetalleEntregas.Add(this);
+						this._ProductoID = value.ProductoID;
 					}
 					else
 					{
-						this._UsuarioAltaID = default(Nullable<int>);
+						this._ProductoID = default(Nullable<int>);
 					}
-					this.SendPropertyChanged("Usuario");
+					this.SendPropertyChanged("Productos");
 				}
 			}
 		}
-
-		[global::System.Data.Linq.Mapping.AssociationAttribute(Name="ConversionesMaterial_ProductoMateriales", Storage="_ProductoMateriales", ThisKey="ConversionID", OtherKey="ConversionID")]
-		public EntitySet<ProductoMateriales> ProductoMateriales
-		{
-			get { return this._ProductoMateriales; }
-			set { this._ProductoMateriales.Assign(value); }
-		}
-
+		
 		public event PropertyChangingEventHandler PropertyChanging;
+		
 		public event PropertyChangedEventHandler PropertyChanged;
-
+		
 		protected virtual void SendPropertyChanging()
 		{
 			if ((this.PropertyChanging != null))
+			{
 				this.PropertyChanging(this, emptyChangingEventArgs);
+			}
 		}
-
+		
 		protected virtual void SendPropertyChanged(String propertyName)
 		{
 			if ((this.PropertyChanged != null))
+			{
 				this.PropertyChanged(this, new PropertyChangedEventArgs(propertyName));
+			}
 		}
 	}
 }
-#pragma warning restore 1591
 #pragma warning restore 1591
