@@ -55,6 +55,7 @@ namespace GrupoAnkhalInventario
             public decimal TeoMax         { get; set; }   // teórico máx en unidad base
             public decimal Real           { get; set; }   // real en unidad base
             public decimal Excedente      { get; set; }
+            public decimal Deficit        { get; set; }
             public bool    EsMerma        { get; set; }
             // ── Valores capturados (unidad de captura del BOM) ─────────────────
             public decimal TeoMinCap      { get; set; }   // teórico mín en unidad captura
@@ -194,13 +195,11 @@ namespace GrupoAnkhalInventario
             {
                 var q = AplicarFiltros(db.Produccion.AsQueryable());
 
-                var data = (from p  in q
-                            join pr in db.Productos on p.ProductoID equals pr.ProductoID
-                            select new
+                var data = q.Select(p => new
                             {
                                 p.CantidadBuena,
                                 p.CantidadRechazo,
-                                Valor = p.CantidadBuena * pr.PrecioVenta
+                                Valor = p.CantidadBuena * p.PrecioVenta
                             }).ToList();
 
                 int     totalRegs   = data.Count;
@@ -264,7 +263,7 @@ namespace GrupoAnkhalInventario
                                ProductoNombre  = pr.Descripcion,
                                p.CantidadBuena,
                                p.CantidadRechazo,
-                               PrecioVenta     = pr.PrecioVenta,
+                               PrecioVenta     = p.PrecioVenta,
                                p.RegistradoPorID
                            }).ToList();
 
@@ -372,6 +371,8 @@ namespace GrupoAnkhalInventario
                             Real           = c.CantidadReal,
                             Excedente      = c.CantidadReal > c.CantidadTeoricaMax
                                              ? c.CantidadReal - c.CantidadTeoricaMax : 0m,
+                            Deficit        = c.CantidadReal < c.CantidadTeoricaMin
+                                             ? c.CantidadTeoricaMin - c.CantidadReal : 0m,
                             EsMerma        = c.EsMerma,
                             TeoMinCap      = c.CantidadTeoMinCap ?? 0m,
                             TeoMaxCap      = c.CantidadTeoMaxCap ?? 0m,
@@ -842,6 +843,11 @@ namespace GrupoAnkhalInventario
                                 .ToDictionary(m => m.MaterialID, m => m.PrecioUnitario);
 
                             // 1. Insertar Produccion → necesitamos el ProduccionID
+                            decimal precioVentaActual = db.Productos
+                                .Where(p => p.ProductoID == productoID)
+                                .Select(p => p.PrecioVenta)
+                                .FirstOrDefault();
+
                             var prod = new Produccion
                             {
                                 BaseID          = baseID,
@@ -853,7 +859,8 @@ namespace GrupoAnkhalInventario
                                 MetaDia         = metaDia,
                                 Observaciones   = string.IsNullOrEmpty(obs) ? null : obs,
                                 RegistradoPorID = claveID,
-                                FechaRegistro   = AppHelper.Ahora
+                                FechaRegistro   = AppHelper.Ahora,
+                                PrecioVenta     = precioVentaActual
                             };
                             db.Produccion.InsertOnSubmit(prod);
                             db.SubmitChanges(); // ← primer commit para obtener ProduccionID

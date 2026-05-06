@@ -131,6 +131,22 @@ namespace GrupoAnkhalInventario
             string codigoUpper = txtCodigo.Text.Trim().ToUpper();
             string nombreTrim = txtNombre.Text.Trim();
 
+            decimal metaD = ParseMeta(txtMetaDiaria.Text);
+            decimal metaS = ParseMeta(txtMetaSemanal.Text);
+            decimal metaM = ParseMeta(txtMetaMensual.Text);
+            if (metaD > 0 && metaS > 0 && metaS < metaD)
+            {
+                SetMensajePendiente("warning", "Metas inconsistentes",
+                    $"La meta semanal ({metaS:N2}) no puede ser menor a la meta diaria ({metaD:N2}).", "modalNueva");
+                return;
+            }
+            if (metaS > 0 && metaM > 0 && metaM < metaS)
+            {
+                SetMensajePendiente("warning", "Metas inconsistentes",
+                    $"La meta mensual ({metaM:N2}) no puede ser menor a la meta semanal ({metaS:N2}).", "modalNueva");
+                return;
+            }
+
             using (var db = NuevoDb())
             {
                 if (db.Bases.Any(b => b.Codigo == codigoUpper))
@@ -197,6 +213,22 @@ namespace GrupoAnkhalInventario
             int baseID = Convert.ToInt32(hdnBaseID.Value);
             string codigoUpper = txtCodigoEdit.Text.Trim().ToUpper();
             string nombreTrim = txtNombreEdit.Text.Trim();
+
+            decimal metaD = ParseMeta(txtMetaDiariaEdit.Text);
+            decimal metaS = ParseMeta(txtMetaSemanalEdit.Text);
+            decimal metaM = ParseMeta(txtMetaMensualEdit.Text);
+            if (metaD > 0 && metaS > 0 && metaS < metaD)
+            {
+                SetMensajePendiente("warning", "Metas inconsistentes",
+                    $"La meta semanal ({metaS:N2}) no puede ser menor a la meta diaria ({metaD:N2}).", "modalEditar");
+                return;
+            }
+            if (metaS > 0 && metaM > 0 && metaM < metaS)
+            {
+                SetMensajePendiente("warning", "Metas inconsistentes",
+                    $"La meta mensual ({metaM:N2}) no puede ser menor a la meta semanal ({metaS:N2}).", "modalEditar");
+                return;
+            }
 
             using (var db = NuevoDb())
             {

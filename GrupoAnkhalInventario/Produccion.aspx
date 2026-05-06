@@ -216,7 +216,7 @@
                                             <th>Material</th>
                                             <th class="text-right">Rango</th>
                                             <th class="text-right">Real</th>
-                                            <th class="text-right">Excedente</th>
+                                            <th class="text-right">Desviación</th>
                                         </tr>
                                     </thead>
                                     <tbody>
@@ -243,7 +243,11 @@
                                             ? string.Format("<span class='text-danger font-weight-bold'>+{0:N2} <small class='text-danger'>{1}</small></span>",
                                                 Eval("Excedente"),
                                                 string.IsNullOrEmpty(Eval("UnidadClave").ToString()) ? Eval("Unidad") : Eval("UnidadClave"))
-                                            : "<span class='text-success'>—</span>" %>
+                                            : (decimal)Eval("Deficit") > 0
+                                                ? string.Format("<span class='text-warning font-weight-bold'>−{0:N2} <small class='text-warning'>{1}</small></span>",
+                                                    Eval("Deficit"),
+                                                    string.IsNullOrEmpty(Eval("UnidadClave").ToString()) ? Eval("Unidad") : Eval("UnidadClave"))
+                                                : "<span class='text-success'>—</span>" %>
                                     </td>
                                 </tr>
                             </ItemTemplate>

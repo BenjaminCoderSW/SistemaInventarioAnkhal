@@ -155,6 +155,7 @@
       <Column Name="Observaciones" Type="System.String" DbType="VarChar(500)" CanBeNull="true" />
       <Column Name="RegistradoPorID" Type="System.Int32" DbType="Int NOT NULL" CanBeNull="false" />
       <Column Name="FechaRegistro" Type="System.DateTime" DbType="DateTime2 NOT NULL" CanBeNull="false" />
+      <Column Name="PrecioVenta" Type="System.Decimal" DbType="Decimal(12,4) NOT NULL" CanBeNull="false" />
       <Association Name="Produccion_ConsumosProduccion" Member="ConsumosProduccion" ThisKey="ProduccionID" OtherKey="ProduccionID" Type="ConsumosProduccion" />
       <Association Name="Produccion_Movimientos" Member="Movimientos" ThisKey="ProduccionID" OtherKey="ProduccionID" Type="Movimientos" />
       <Association Name="Bases_Produccion" Member="Bases" ThisKey="BaseID" OtherKey="BaseID" Type="Bases" IsForeignKey="true" />

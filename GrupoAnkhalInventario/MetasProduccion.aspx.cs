@@ -138,11 +138,10 @@ namespace GrupoAnkhalInventario
                 decimal metaPeriodo = metaDiaria * numDias;
 
                 // Valor producido en el período (solo bases filtradas)
-                var valorRaw = (from p  in db.Produccion
-                                join pr in db.Productos on p.ProductoID equals pr.ProductoID
-                                where p.Fecha >= desde && p.Fecha <= hasta
-                                      && baseIds.Contains(p.BaseID)
-                                select p.CantidadBuena * pr.PrecioVenta).ToList();
+                var valorRaw = db.Produccion
+                    .Where(p => p.Fecha >= desde && p.Fecha <= hasta && baseIds.Contains(p.BaseID))
+                    .Select(p => p.CantidadBuena * p.PrecioVenta)
+                    .ToList();
                 decimal valorPeriodo = valorRaw.Any() ? valorRaw.Sum() : 0m;
 
                 int cumplPct = metaPeriodo > 0
@@ -175,11 +174,10 @@ namespace GrupoAnkhalInventario
                 var baseIds = bases.Select(b => b.BaseID).ToList();
 
                 // Valor producido en el período agrupado por base (solo bases filtradas)
-                var valorPorBase = (from p  in db.Produccion
-                                    join pr in db.Productos on p.ProductoID equals pr.ProductoID
+                var valorPorBase = (from p in db.Produccion
                                     where p.Fecha >= desde && p.Fecha <= hasta
                                           && baseIds.Contains(p.BaseID)
-                                    group p.CantidadBuena * pr.PrecioVenta by p.BaseID into g
+                                    group p.CantidadBuena * p.PrecioVenta by p.BaseID into g
                                     select new { BaseID = g.Key, Valor = g.Sum() }).ToList();
 
                 var lista = bases.Select(b =>

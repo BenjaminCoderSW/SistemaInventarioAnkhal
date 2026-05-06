@@ -486,6 +486,14 @@
                 Swal.fire({ icon: 'warning', title: 'Metas inválidas', text: 'Las metas no pueden ser negativas.', confirmButtonColor: '#003366' });
                 return false;
             }
+            if (metaD > 0 && metaS > 0 && metaS < metaD) {
+                Swal.fire({ icon: 'warning', title: 'Metas inconsistentes', text: 'La meta semanal (' + metaS.toLocaleString() + ') no puede ser menor a la meta diaria (' + metaD.toLocaleString() + ').', confirmButtonColor: '#003366' });
+                return false;
+            }
+            if (metaS > 0 && metaM > 0 && metaM < metaS) {
+                Swal.fire({ icon: 'warning', title: 'Metas inconsistentes', text: 'La meta mensual (' + metaM.toLocaleString() + ') no puede ser menor a la meta semanal (' + metaS.toLocaleString() + ').', confirmButtonColor: '#003366' });
+                return false;
+            }
             return true;
         }
 
@@ -524,6 +532,14 @@
             }
             if (metaD < 0 || metaS < 0 || metaM < 0) {
                 Swal.fire({ icon: 'warning', title: 'Metas inválidas', text: 'Las metas no pueden ser negativas.', confirmButtonColor: '#003366' });
+                return false;
+            }
+            if (metaD > 0 && metaS > 0 && metaS < metaD) {
+                Swal.fire({ icon: 'warning', title: 'Metas inconsistentes', text: 'La meta semanal (' + metaS.toLocaleString() + ') no puede ser menor a la meta diaria (' + metaD.toLocaleString() + ').', confirmButtonColor: '#003366' });
+                return false;
+            }
+            if (metaS > 0 && metaM > 0 && metaM < metaS) {
+                Swal.fire({ icon: 'warning', title: 'Metas inconsistentes', text: 'La meta mensual (' + metaM.toLocaleString() + ') no puede ser menor a la meta semanal (' + metaS.toLocaleString() + ').', confirmButtonColor: '#003366' });
                 return false;
             }
             return true;

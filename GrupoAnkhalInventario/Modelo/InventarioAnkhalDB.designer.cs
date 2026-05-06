@@ -3828,17 +3828,19 @@ namespace GrupoAnkhalInventario.Modelo
 		private int _RegistradoPorID;
 		
 		private System.DateTime _FechaRegistro;
-		
+
+		private decimal _PrecioVenta;
+
 		private EntitySet<ConsumosProduccion> _ConsumosProduccion;
-		
+
 		private EntitySet<Movimientos> _Movimientos;
-		
+
 		private EntityRef<Bases> _Bases;
-		
+
 		private EntityRef<Productos> _Productos;
-		
+
 		private EntityRef<Usuario> _Usuario;
-		
+
     #region Definiciones de métodos de extensibilidad
     partial void OnLoaded();
     partial void OnValidate(System.Data.Linq.ChangeAction action);
@@ -3865,6 +3867,8 @@ namespace GrupoAnkhalInventario.Modelo
     partial void OnRegistradoPorIDChanged();
     partial void OnFechaRegistroChanging(System.DateTime value);
     partial void OnFechaRegistroChanged();
+    partial void OnPrecioVentaChanging(decimal value);
+    partial void OnPrecioVentaChanged();
     #endregion
 		
 		public Produccion()
@@ -4109,6 +4113,26 @@ namespace GrupoAnkhalInventario.Modelo
 			}
 		}
 		
+		[global::System.Data.Linq.Mapping.ColumnAttribute(Storage="_PrecioVenta", DbType="Decimal(12,4) NOT NULL", UpdateCheck=UpdateCheck.Never)]
+		public decimal PrecioVenta
+		{
+			get
+			{
+				return this._PrecioVenta;
+			}
+			set
+			{
+				if ((this._PrecioVenta != value))
+				{
+					this.OnPrecioVentaChanging(value);
+					this.SendPropertyChanging();
+					this._PrecioVenta = value;
+					this.SendPropertyChanged("PrecioVenta");
+					this.OnPrecioVentaChanged();
+				}
+			}
+		}
+
 		[global::System.Data.Linq.Mapping.AssociationAttribute(Name="Produccion_ConsumosProduccion", Storage="_ConsumosProduccion", ThisKey="ProduccionID", OtherKey="ProduccionID")]
 		public EntitySet<ConsumosProduccion> ConsumosProduccion
 		{
