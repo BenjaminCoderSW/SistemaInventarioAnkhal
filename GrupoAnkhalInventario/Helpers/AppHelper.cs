@@ -135,5 +135,38 @@ namespace GrupoAnkhalInventario.Helpers
 
             return cantidadCapturada * conv.Factor;
         }
+
+        /// <summary>
+        /// Retorna el factor de conversión dado el valor del dropdown de unidad.
+        /// selectedVal: "base:{UnidadMedidaID}" | "conv:{ConversionID}" | null/vacío
+        /// Throws InvalidOperationException si la conversión no existe o está inactiva.
+        /// </summary>
+        public static decimal ObtenerFactor(int matID, string selectedVal,
+            InventarioAnkhalDBDataContext db)
+        {
+            if (string.IsNullOrEmpty(selectedVal) || selectedVal.StartsWith("base:"))
+                return 1m;
+
+            if (selectedVal.StartsWith("conv:"))
+            {
+                int convID;
+                if (!int.TryParse(selectedVal.Substring(5), out convID))
+                    return 1m;
+
+                var conv = db.ConversionesMaterial
+                    .FirstOrDefault(c => c.ConversionID == convID &&
+                                         c.MaterialID   == matID  &&
+                                         c.Activo);
+                if (conv == null)
+                    throw new InvalidOperationException(
+                        string.Format(
+                            "No existe conversión activa (ConversionID={0}) para el material ID={1}.",
+                            convID, matID));
+
+                return conv.Factor;
+            }
+
+            return 1m;
+        }
     }
 }

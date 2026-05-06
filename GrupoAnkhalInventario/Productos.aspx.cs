@@ -164,6 +164,7 @@ namespace GrupoAnkhalInventario
                     .ToList();
 
                 var idsPagina = pagina.Select(x => x.p.ProductoID).ToList();
+                ViewState["IdsPagina"] = idsPagina;
 
                 var compCounts = db.ProductoMateriales
                     .Where(pm => idsPagina.Contains(pm.ProductoID) && pm.Activo)
@@ -367,13 +368,15 @@ namespace GrupoAnkhalInventario
                     .Select(m => new { id = m.MaterialID, nombre = m.Descripcion, unidad = m.Unidad, codigo = m.Codigo })
                     .ToList();
 
-                var pms = db.ProductoMateriales.Where(pm => pm.Activo).ToList();
-                var mats2 = db.Materiales.ToList();
+                var idsPag = ViewState["IdsPagina"] as List<int> ?? new List<int>();
+                var pms = db.ProductoMateriales
+                    .Where(pm => idsPag.Contains(pm.ProductoID) && pm.Activo)
+                    .ToList();
 
                 var dict = new Dictionary<string, object>();
                 foreach (var pm in pms)
                 {
-                    var mat = mats2.FirstOrDefault(m => m.MaterialID == pm.MaterialID);
+                    var mat = mats.FirstOrDefault(m => m.id == pm.MaterialID);
                     if (mat == null) continue;
                     string key = pm.ProductoID.ToString();
                     if (!dict.ContainsKey(key))
@@ -382,9 +385,9 @@ namespace GrupoAnkhalInventario
                     {
                         pmID           = pm.ProductoMaterialID,
                         materialID     = pm.MaterialID,
-                        materialCodigo = mat.Codigo,
-                        materialNombre = mat.Descripcion,
-                        unidad         = mat.Unidad,
+                        materialCodigo = mat.codigo,
+                        materialNombre = mat.nombre,
+                        unidad         = mat.unidad,
                         cantMin        = pm.CantidadMin,
                         cantMax        = pm.CantidadMax,
                         cantMinCap     = pm.CantMinCapturada ?? pm.CantidadMin,

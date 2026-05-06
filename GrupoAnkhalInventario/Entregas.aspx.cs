@@ -1331,34 +1331,6 @@ namespace GrupoAnkhalInventario
             return null; // null = todo bien
         }
 
-        // ══ Conversión de unidades (mismo patrón que Produccion.aspx.cs) ══════
-        // selectedVal: "base:{UnidadMedidaID}" | "conv:{ConversionID}" | null
-        private decimal ObtenerFactorEntrega(int matID, string selectedVal,
-            InventarioAnkhalDBDataContext db)
-        {
-            if (string.IsNullOrEmpty(selectedVal) || selectedVal.StartsWith("base:"))
-                return 1m;
-
-            if (selectedVal.StartsWith("conv:"))
-            {
-                int convID;
-                if (!int.TryParse(selectedVal.Substring(5), out convID)) return 1m;
-
-                var conv = db.ConversionesMaterial
-                    .FirstOrDefault(c => c.ConversionID == convID &&
-                                         c.MaterialID   == matID  &&
-                                         c.Activo);
-                if (conv == null)
-                    throw new InvalidOperationException(string.Format(
-                        "No existe conversión activa (ConversionID={0}) para el material ID={1}.",
-                        convID, matID));
-
-                return conv.Factor;
-            }
-
-            return 1m;
-        }
-
         private int? ObtenerUnidadCapturaIDEntrega(int matID, string selectedVal,
             InventarioAnkhalDBDataContext db)
         {

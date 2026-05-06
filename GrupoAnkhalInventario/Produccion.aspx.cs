@@ -799,7 +799,7 @@ namespace GrupoAnkhalInventario
 
                     foreach (var c in listaConsumos.Where(c => c.CantCapturada > 0))
                     {
-                        decimal factor   = ObtenerFactor(c.MatID, c.UnidadVal, dbVal);
+                        decimal factor   = AppHelper.ObtenerFactor(c.MatID, c.UnidadVal, dbVal);
                         decimal cantBase = c.CantCapturada * factor;
 
                         var infoMat  = matInfoVal.FirstOrDefault(x => x.MaterialID == c.MatID);
@@ -869,7 +869,7 @@ namespace GrupoAnkhalInventario
                             foreach (var c in listaConsumos)
                             {
                                 // Resolver conversión: cantBase = lo que afecta inventario
-                                decimal factor        = ObtenerFactor(c.MatID, c.UnidadVal, db);
+                                decimal factor        = AppHelper.ObtenerFactor(c.MatID, c.UnidadVal, db);
                                 decimal cantBase      = c.CantCapturada * factor;
                                 int?    unidCapturaID = ObtenerUnidadCapturaID(c.MatID, c.UnidadVal, db);
 
@@ -1185,40 +1185,6 @@ namespace GrupoAnkhalInventario
                 case "UNICO":  return "badge badge-unico";
                 default:       return "badge badge-secondary";
             }
-        }
-
-        // ══ Conversión de unidades ════════════════════════════════════════════
-        /// <summary>
-        /// Retorna el factor de conversión para el valor seleccionado en ddlUnidadConsumo.
-        /// selectedVal: "base:{UnidadMedidaID}" o "conv:{ConversionID}"
-        /// Throws InvalidOperationException si la conversión no existe o está inactiva.
-        /// </summary>
-        private decimal ObtenerFactor(int matID, string selectedVal,
-            InventarioAnkhalDBDataContext db)
-        {
-            if (string.IsNullOrEmpty(selectedVal) || selectedVal.StartsWith("base:"))
-                return 1m;   // unidad base → factor = 1
-
-            if (selectedVal.StartsWith("conv:"))
-            {
-                int convID;
-                if (!int.TryParse(selectedVal.Substring(5), out convID))
-                    return 1m;
-
-                var conv = db.ConversionesMaterial
-                    .FirstOrDefault(c => c.ConversionID == convID &&
-                                         c.MaterialID   == matID  &&
-                                         c.Activo);
-                if (conv == null)
-                    throw new InvalidOperationException(
-                        string.Format(
-                            "No existe conversión activa (ConversionID={0}) para el material ID={1}. " +
-                            "No se puede registrar la producción.", convID, matID));
-
-                return conv.Factor;
-            }
-
-            return 1m;   // fallback
         }
 
         /// <summary>
