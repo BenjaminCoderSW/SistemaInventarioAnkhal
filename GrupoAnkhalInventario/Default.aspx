@@ -459,6 +459,26 @@
             return null; // personalizado: no tocar los campos
         }
 
+        // ── Reloj en tiempo real (zona México) ───────────────────────────────
+        var _diasES = ['domingo','lunes','martes','miércoles','jueves','viernes','sábado'];
+
+        function actualizarReloj() {
+            var ahora    = new Date();
+            var mxStr    = ahora.toLocaleString('en-US', { timeZone: 'America/Mexico_City' });
+            var mx       = new Date(mxStr);
+            var dia      = _diasES[mx.getDay()];
+            var dd       = String(mx.getDate())        .padStart(2, '0');
+            var mm       = String(mx.getMonth() + 1)   .padStart(2, '0');
+            var yyyy     = mx.getFullYear();
+            var hh       = String(mx.getHours())       .padStart(2, '0');
+            var min      = String(mx.getMinutes())     .padStart(2, '0');
+            var lbl      = document.getElementById('<%= lblFechaHora.ClientID %>');
+            if (lbl) lbl.innerText = dia + ' ' + dd + '/' + mm + '/' + yyyy + '  ' + hh + ':' + min;
+        }
+
+        actualizarReloj();
+        setInterval(actualizarReloj, 1000);
+
         window.addEventListener('DOMContentLoaded', function () {
             // Tooltips Bootstrap
             $('[data-toggle="tooltip"]').tooltip();
