@@ -64,6 +64,7 @@
         .kpi-card.margen-neg { background: linear-gradient(135deg, #7b241c, #c0392b); }
         .kpi-card.alertas { background: linear-gradient(135deg, #7b241c, #c0392b); }
         .kpi-card.alertas-ok { background: linear-gradient(135deg, #1d6a27, #27ae60); }
+        .kpi-card.coef    { background: linear-gradient(135deg, #4a235a, #7d3c98); }
 
         /* ── Separadores de sección ─────────────────────── */
         .sec-title {
@@ -176,7 +177,12 @@
             <div class="col-lg-4 col-md-6 mb-3">
                 <div class="kpi-card inv h-100">
                     <i class="fas fa-warehouse kpi-icon"></i>
-                    <div class="kpi-label">Valor Total en Inventario</div>
+                    <div class="kpi-label">Valor Total en Inventario
+                        <i class="fas fa-info-circle"
+                           style="font-size:0.85rem;opacity:0.9;cursor:help;margin-left:4px;"
+                           data-toggle="tooltip" data-placement="right"
+                           title="Materiales: suma de (stock actual × precio unitario) por cada material activo. Productos: suma de (unidades buenas × precio venta) + (unidades rechazo × precio venta × 50%). No aplica filtro de período."></i>
+                    </div>
                     <div class="kpi-value">$<asp:Label ID="lblValorInventario" runat="server" Text="0.00"></asp:Label></div>
                     <div class="kpi-sub">
                         <asp:Label ID="lblInvSub" runat="server" Text=""></asp:Label>
@@ -187,7 +193,12 @@
             <div class="col-lg-4 col-md-6 mb-3">
                 <div class="kpi-card prod h-100">
                     <i class="fas fa-industry kpi-icon"></i>
-                    <div class="kpi-label">Valor Producido — <asp:Label ID="lblPeriodoA" runat="server" Text="Hoy"></asp:Label></div>
+                    <div class="kpi-label">Valor Producido — <asp:Label ID="lblPeriodoA" runat="server" Text="Hoy"></asp:Label>
+                        <i class="fas fa-info-circle"
+                           style="font-size:0.85rem;opacity:0.9;cursor:help;margin-left:4px;"
+                           data-toggle="tooltip" data-placement="right"
+                           title="Fórmula: suma de (unidades buenas producidas × precio de venta del producto) en el período. No incluye unidades de rechazo."></i>
+                    </div>
                     <div class="kpi-value">$<asp:Label ID="lblValorProducido" runat="server" Text="0.00"></asp:Label></div>
                     <div class="kpi-sub">
                         <asp:Label ID="lblProdSub" runat="server" Text=""></asp:Label>
@@ -198,7 +209,12 @@
             <div class="col-lg-4 col-md-6 mb-3">
                 <div class="kpi-card ventas h-100">
                     <i class="fas fa-truck kpi-icon"></i>
-                    <div class="kpi-label">Valor Entregado / Vendido — <asp:Label ID="lblPeriodoB" runat="server" Text="Hoy"></asp:Label></div>
+                    <div class="kpi-label">Valor Entregado / Vendido — <asp:Label ID="lblPeriodoB" runat="server" Text="Hoy"></asp:Label>
+                        <i class="fas fa-info-circle"
+                           style="font-size:0.85rem;opacity:0.9;cursor:help;margin-left:4px;"
+                           data-toggle="tooltip" data-placement="right"
+                           title="Fórmula: suma de (cantidad entregada × precio unitario) de todos los renglones de entregas con estado ENTREGADA en el período."></i>
+                    </div>
                     <div class="kpi-value">$<asp:Label ID="lblValorEntregado" runat="server" Text="0.00"></asp:Label></div>
                     <div class="kpi-sub">
                         <asp:Label ID="lblEntSub" runat="server" Text=""></asp:Label>
@@ -213,7 +229,12 @@
             <div class="col-lg-4 col-md-6 mb-3">
                 <div class="kpi-card costo h-100">
                     <i class="fas fa-box-open kpi-icon"></i>
-                    <div class="kpi-label">Costo Materiales Consumidos — <asp:Label ID="lblPeriodoC" runat="server" Text="Hoy"></asp:Label></div>
+                    <div class="kpi-label">Costo Materiales Consumidos — <asp:Label ID="lblPeriodoC" runat="server" Text="Hoy"></asp:Label>
+                        <i class="fas fa-info-circle"
+                           style="font-size:0.85rem;opacity:0.9;cursor:help;margin-left:4px;"
+                           data-toggle="tooltip" data-placement="right"
+                           title="Fórmula: suma de (cantidad real consumida × precio unitario del material) de todos los consumos registrados en producciones del período."></i>
+                    </div>
                     <div class="kpi-value">$<asp:Label ID="lblCostoMaterial" runat="server" Text="0.00"></asp:Label></div>
                     <div class="kpi-sub">Materiales utilizados en produccion</div>
                 </div>
@@ -222,7 +243,12 @@
             <div class="col-lg-4 col-md-6 mb-3">
                 <asp:Panel ID="pnlMargenCard" runat="server" CssClass="kpi-card margen h-100">
                     <i class="fas fa-chart-line kpi-icon"></i>
-                    <div class="kpi-label">Margen Bruto Estimado — <asp:Label ID="lblPeriodoD" runat="server" Text="Hoy"></asp:Label></div>
+                    <div class="kpi-label">Margen Bruto Estimado — <asp:Label ID="lblPeriodoD" runat="server" Text="Hoy"></asp:Label>
+                        <i class="fas fa-info-circle"
+                           style="font-size:0.85rem;opacity:0.9;cursor:help;margin-left:4px;"
+                           data-toggle="tooltip" data-placement="right"
+                           title="Fórmula: Valor Entregado − Costo Materiales Consumidos en el período. Un valor negativo indica que el costo de materiales superó lo facturado."></i>
+                    </div>
                     <div class="kpi-value">$<asp:Label ID="lblMargenDia" runat="server" Text="0.00"></asp:Label></div>
                     <div class="kpi-sub">
                         <asp:Label ID="lblMargenPct" runat="server" Text=""></asp:Label>
@@ -234,7 +260,12 @@
             <div class="col-lg-4 col-md-6 mb-3">
                 <asp:Panel ID="pnlAlertasCard" runat="server" CssClass="kpi-card alertas h-100">
                     <i class="fas fa-exclamation-triangle kpi-icon"></i>
-                    <div class="kpi-label">Materiales Bajo Minimo</div>
+                    <div class="kpi-label">Materiales Bajo Minimo
+                        <i class="fas fa-info-circle"
+                           style="font-size:0.85rem;opacity:0.9;cursor:help;margin-left:4px;"
+                           data-toggle="tooltip" data-placement="right"
+                           title="Conteo de materiales activos cuyo stock total (sumado entre todas las bases) está por debajo del nivel mínimo configurado. No aplica filtro de período."></i>
+                    </div>
                     <div class="kpi-value"><asp:Label ID="lblCriticosCount" runat="server" Text="0"></asp:Label></div>
                     <div class="kpi-sub">
                         <asp:Label ID="lblCriticosSub" runat="server" Text="Sin alertas activas"></asp:Label>
@@ -243,7 +274,30 @@
             </div>
         </div>
 
-        <!-- ══ ROW 3 — PRODUCCIÓN + CRÍTICOS ═════════════════════════════════ -->
+        <!-- ══ ROW 3 — COEFICIENTE MATERIA PRIMA ════════════════════════════ -->
+        <div class="row mb-3">
+            <div class="col-lg-4 col-md-6 mb-3">
+                <div class="kpi-card coef h-100">
+                    <i class="fas fa-percent kpi-icon"></i>
+                    <div class="kpi-label">
+                        Coef. Materia Prima &mdash;
+                        <asp:Label ID="lblPeriodoE" runat="server" Text="Hoy"></asp:Label>
+                        <i class="fas fa-info-circle"
+                           style="font-size:0.85rem;opacity:0.9;cursor:help;margin-left:4px;"
+                           data-toggle="tooltip" data-placement="right"
+                           title="Fórmula: (Costo materiales consumidos en producción ÷ Valor entregado en ventas) × 100. Indica qué porcentaje del valor vendido representa el costo de materiales."></i>
+                    </div>
+                    <div class="kpi-value">
+                        <asp:Label ID="lblCoefMatPrima" runat="server" Text="0.0"></asp:Label>%
+                    </div>
+                    <div class="kpi-sub">
+                        <asp:Label ID="lblCoefMatPrimaSub" runat="server" Text=""></asp:Label>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- ══ ROW 4 — PRODUCCIÓN + CRÍTICOS ═════════════════════════════════ -->
         <div class="row">
             <!-- Producción del período -->
             <div class="col-lg-8 mb-3">
@@ -304,7 +358,7 @@
             </div>
         </div>
 
-        <!-- ══ ROW 4 — ÚLTIMAS ENTREGAS + VALOR POR BASE ═════════════════════ -->
+        <!-- ══ ROW 5 — ÚLTIMAS ENTREGAS + VALOR POR BASE ═════════════════════ -->
         <div class="row">
             <!-- Últimas entregas -->
             <div class="col-lg-7 mb-3">
@@ -406,6 +460,9 @@
         }
 
         window.addEventListener('DOMContentLoaded', function () {
+            // Tooltips Bootstrap
+            $('[data-toggle="tooltip"]').tooltip();
+
             // SweetAlert mensajes pendientes
             var h = document.getElementById('<%= hdnMensajePendiente.ClientID %>');
             if (h && h.value) {

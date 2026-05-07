@@ -42,6 +42,11 @@ namespace GrupoAnkhalInventario
         protected global::System.Web.UI.WebControls.Label lblCostoMaterial;
         protected global::System.Web.UI.WebControls.Label lblPeriodoD;
 
+        // KPI Row 3 — Coeficiente Materia Prima
+        protected global::System.Web.UI.WebControls.Label lblPeriodoE;
+        protected global::System.Web.UI.WebControls.Label lblCoefMatPrima;
+        protected global::System.Web.UI.WebControls.Label lblCoefMatPrimaSub;
+
         protected global::System.Web.UI.WebControls.Panel pnlMargenCard;
         protected global::System.Web.UI.WebControls.Label lblMargenDia;
         protected global::System.Web.UI.WebControls.Label lblMargenPct;

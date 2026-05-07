@@ -156,6 +156,7 @@ namespace GrupoAnkhalInventario
             lblPeriodoB.Text   = _periodoLabel;
             lblPeriodoC.Text   = _periodoLabel;
             lblPeriodoD.Text   = _periodoLabel;
+            lblPeriodoE.Text   = _periodoLabel;
             lblTituloProd.Text = _periodoLabel;
         }
 
@@ -283,6 +284,13 @@ namespace GrupoAnkhalInventario
             lblCostoMaterial.Text = costoMat.ToString("N2");
             lblMargenDia.Text     = margen.ToString("N2");
             lblMargenPct.Text     = margenPct.ToString("N1") + "% margen";
+
+            // Coeficiente de Materia Prima: (CostoMat / ValorEntregado) × 100
+            decimal coefMP = valEntregado > 0 ? Math.Round(costoMat / valEntregado * 100, 1) : 0m;
+            lblCoefMatPrima.Text    = coefMP.ToString("N1");
+            lblCoefMatPrimaSub.Text = valEntregado > 0
+                ? costoMat.ToString("C2") + " / " + valEntregado.ToString("C2")
+                : "Sin ventas entregadas en el período";
 
             // Color del card de margen
             if (margen < 0)
