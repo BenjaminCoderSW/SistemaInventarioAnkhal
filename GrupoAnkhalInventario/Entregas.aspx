@@ -271,7 +271,7 @@
                     </div>
                     <div class="col-md-2">
                         <label class="font-weight-bold small">Cantidad <span class="text-danger">*</span></label>
-                        <input type="number" id="txtItemCantidad" class="form-control form-control-sm" min="0.001" step="any" value="1" />
+                        <input type="number" id="txtItemCantidad" class="form-control form-control-sm" min="0.01" step="0.01" value="1" />
                     </div>
                     <div class="col-md-2" id="divUnidadMaterial" style="display:none;">
                         <label class="font-weight-bold small">Unidad</label>

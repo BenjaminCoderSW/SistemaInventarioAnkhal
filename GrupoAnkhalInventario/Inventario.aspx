@@ -103,7 +103,12 @@
             </div>
             <div class="inv-card mats">
                 <i class="fas fa-cubes icon-big"></i>
-                <div class="lbl">Valor Materiales</div>
+                <div class="lbl">Valor Materiales
+                    <i class="fas fa-info-circle"
+                       style="font-size:0.8rem;opacity:0.85;cursor:help;margin-left:4px;"
+                       data-toggle="tooltip" data-placement="right"
+                       title="Total calculado sumando (stock actual × precio unitario) de cada material a máxima precisión decimal, redondeado al final. Puede diferir en ±$0.01 respecto a sumar manualmente los valores que muestra la tabla."></i>
+                </div>
                 <div class="num">$<asp:Label ID="lblValorMateriales" runat="server" Text="0.00"></asp:Label></div>
             </div>
             <div class="inv-card buenos">
@@ -327,6 +332,11 @@
                     hdnEl.value = '';
                 }
             } catch (e) { }
+        });
+
+        // Inicializar tooltips de Bootstrap
+        window.addEventListener('DOMContentLoaded', function () {
+            $('[data-toggle="tooltip"]').tooltip();
         });
 
         // Toggle accordion de detalle por base
