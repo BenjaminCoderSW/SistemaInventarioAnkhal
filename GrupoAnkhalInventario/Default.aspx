@@ -309,6 +309,7 @@
                     </span>
                 </div>
                 <div class="sec-card">
+                    <div class="table-responsive">
                     <asp:GridView ID="gvProduccion" runat="server"
                         AutoGenerateColumns="False"
                         CssClass="table table-hover table-sm dash-table mb-0"
@@ -341,6 +342,7 @@
                         <AlternatingRowStyle BackColor="#f8f9fa" />
                         <FooterStyle BackColor="#e8ecf4" Font-Bold="True" />
                     </asp:GridView>
+                    </div>
                 </div>
             </div>
 
@@ -366,6 +368,7 @@
                     <i class="fas fa-truck"></i> Ultimas Entregas
                 </div>
                 <div class="sec-card">
+                    <div class="table-responsive">
                     <asp:GridView ID="gvUltimasEntregas" runat="server"
                         AutoGenerateColumns="False"
                         CssClass="table table-hover table-sm dash-table mb-0"
@@ -390,6 +393,7 @@
                         <HeaderStyle BackColor="#003366" ForeColor="White" />
                         <AlternatingRowStyle BackColor="#f8f9fa" />
                     </asp:GridView>
+                    </div>
                 </div>
             </div>
 
@@ -399,6 +403,7 @@
                     <i class="fas fa-chart-bar"></i> Valor del Inventario por Base
                 </div>
                 <div class="sec-card">
+                    <div class="table-responsive">
                     <asp:GridView ID="gvValorPorBase" runat="server"
                         AutoGenerateColumns="False"
                         CssClass="table table-sm dash-table mb-0"
@@ -420,6 +425,7 @@
                         <AlternatingRowStyle BackColor="#f8f9fa" />
                         <FooterStyle BackColor="#e8ecf4" Font-Bold="True" />
                     </asp:GridView>
+                    </div>
                 </div>
             </div>
         </div>

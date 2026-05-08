@@ -156,6 +156,7 @@
             </div>
             <div class="card" style="border-radius:0 0 6px 6px; border-top:none;">
                 <div class="card-body p-0">
+                    <div class="table-responsive">
                     <asp:GridView ID="gvMateriales" runat="server"
                         AllowCustomPaging="True" AllowPaging="True" PageSize="15"
                         AutoGenerateColumns="False"
@@ -200,6 +201,7 @@
                         <HeaderStyle BackColor="#003366" ForeColor="White" />
                         <AlternatingRowStyle BackColor="#f8f9fa" />
                     </asp:GridView>
+                    </div>
                 </div>
             </div>
         </asp:Panel>
@@ -214,6 +216,7 @@
             </div>
             <div class="card" style="border-radius:0 0 6px 6px; border-top:none;">
                 <div class="card-body p-0">
+                    <div class="table-responsive">
                     <asp:GridView ID="gvProductos" runat="server"
                         AllowCustomPaging="True" AllowPaging="True" PageSize="15"
                         AutoGenerateColumns="False"
@@ -263,6 +266,7 @@
                         <HeaderStyle BackColor="#003366" ForeColor="White" />
                         <AlternatingRowStyle BackColor="#f8f9fa" />
                     </asp:GridView>
+                    </div>
                 </div>
             </div>
         </asp:Panel>
@@ -274,6 +278,7 @@
             </div>
             <div class="card" style="border-radius:0 0 6px 6px; border-top:none;">
                 <div class="card-body p-0">
+                    <div class="table-responsive">
                     <asp:GridView ID="gvResumen" runat="server"
                         AutoGenerateColumns="False"
                         CssClass="table table-sm tbl-resumen mb-0"
@@ -300,6 +305,7 @@
                         <AlternatingRowStyle BackColor="#f8f9fa" />
                         <FooterStyle BackColor="#e8ecf4" Font-Bold="True" />
                     </asp:GridView>
+                    </div>
                 </div>
             </div>
         </asp:Panel>
