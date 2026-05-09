@@ -166,7 +166,15 @@ namespace GrupoAnkhalInventario.Modelo
 				return this.GetTable<Movimientos>();
 			}
 		}
-		
+
+		public System.Data.Linq.Table<LotesMovimientos> LotesMovimientos
+		{
+			get
+			{
+				return this.GetTable<LotesMovimientos>();
+			}
+		}
+
 		public System.Data.Linq.Table<Produccion> Produccion
 		{
 			get
@@ -3025,25 +3033,29 @@ namespace GrupoAnkhalInventario.Modelo
 		private System.Nullable<int> _UnidadCapturaID;
 		
 		private System.Nullable<decimal> _FactorAplicado;
-		
+
+		private System.Nullable<int> _LoteID;
+
 		private EntityRef<Bases> _Bases;
-		
+
 		private EntityRef<Bases> _Bases1;
-		
+
 		private EntityRef<Entregas> _Entregas;
-		
+
+		private EntityRef<LotesMovimientos> _LotesMovimientos;
+
 		private EntityRef<Materiales> _Materiales;
-		
+
 		private EntityRef<Produccion> _Produccion;
-		
+
 		private EntityRef<Productos> _Productos;
-		
+
 		private EntityRef<TiposMovimiento> _TiposMovimiento;
-		
+
 		private EntityRef<UnidadesMedida> _UnidadesMedida;
-		
+
 		private EntityRef<Usuario> _Usuario;
-		
+
     #region Definiciones de métodos de extensibilidad
     partial void OnLoaded();
     partial void OnValidate(System.Data.Linq.ChangeAction action);
@@ -3082,13 +3094,16 @@ namespace GrupoAnkhalInventario.Modelo
     partial void OnUnidadCapturaIDChanged();
     partial void OnFactorAplicadoChanging(System.Nullable<decimal> value);
     partial void OnFactorAplicadoChanged();
+    partial void OnLoteIDChanging(System.Nullable<int> value);
+    partial void OnLoteIDChanged();
     #endregion
-		
+
 		public Movimientos()
 		{
 			this._Bases = default(EntityRef<Bases>);
 			this._Bases1 = default(EntityRef<Bases>);
 			this._Entregas = default(EntityRef<Entregas>);
+			this._LotesMovimientos = default(EntityRef<LotesMovimientos>);
 			this._Materiales = default(EntityRef<Materiales>);
 			this._Produccion = default(EntityRef<Produccion>);
 			this._Productos = default(EntityRef<Productos>);
@@ -3474,6 +3489,64 @@ namespace GrupoAnkhalInventario.Modelo
 			}
 		}
 		
+		[global::System.Data.Linq.Mapping.ColumnAttribute(Storage="_LoteID", DbType="Int")]
+		public System.Nullable<int> LoteID
+		{
+			get
+			{
+				return this._LoteID;
+			}
+			set
+			{
+				if ((this._LoteID != value))
+				{
+					if (this._LotesMovimientos.HasLoadedOrAssignedValue)
+					{
+						throw new System.Data.Linq.ForeignKeyReferenceAlreadyHasValueException();
+					}
+					this.OnLoteIDChanging(value);
+					this.SendPropertyChanging();
+					this._LoteID = value;
+					this.SendPropertyChanged("LoteID");
+					this.OnLoteIDChanged();
+				}
+			}
+		}
+
+		[global::System.Data.Linq.Mapping.AssociationAttribute(Name="LotesMovimientos_Movimientos", Storage="_LotesMovimientos", ThisKey="LoteID", OtherKey="LoteID", IsForeignKey=true)]
+		public LotesMovimientos LotesMovimientos
+		{
+			get
+			{
+				return this._LotesMovimientos.Entity;
+			}
+			set
+			{
+				LotesMovimientos previousValue = this._LotesMovimientos.Entity;
+				if (((previousValue != value)
+							|| (this._LotesMovimientos.HasLoadedOrAssignedValue == false)))
+				{
+					this.SendPropertyChanging();
+					if ((previousValue != null))
+					{
+						this._LotesMovimientos.Entity = null;
+						previousValue.Movimientos.Remove(this);
+					}
+					this._LotesMovimientos.Entity = value;
+					if ((value != null))
+					{
+						value.Movimientos.Add(this);
+						this._LoteID = value.LoteID;
+					}
+					else
+					{
+						this._LoteID = default(Nullable<int>);
+					}
+					this.SendPropertyChanged("LotesMovimientos");
+				}
+			}
+		}
+
 		[global::System.Data.Linq.Mapping.AssociationAttribute(Name="Bases_Movimientos", Storage="_Bases", ThisKey="BaseDestinoID", OtherKey="BaseID", IsForeignKey=true)]
 		public Bases Bases
 		{
@@ -3801,12 +3874,249 @@ namespace GrupoAnkhalInventario.Modelo
 		}
 	}
 	
+	[global::System.Data.Linq.Mapping.TableAttribute(Name="dbo.LotesMovimiento")]
+	public partial class LotesMovimientos : INotifyPropertyChanging, INotifyPropertyChanged
+	{
+		private static PropertyChangingEventArgs emptyChangingEventArgs = new PropertyChangingEventArgs(String.Empty);
+
+		private int _LoteID;
+		private string _Folio;
+		private System.DateTime _FechaLote;
+		private int _TipoMovimientoID;
+		private System.Nullable<int> _BaseOrigenID;
+		private System.Nullable<int> _BaseDestinoID;
+		private string _Observaciones;
+		private int _RegistradoPorID;
+		private System.DateTime _FechaRegistro;
+
+		private EntitySet<Movimientos> _Movimientos;
+
+    #region Definiciones de métodos de extensibilidad
+    partial void OnLoaded();
+    partial void OnValidate(System.Data.Linq.ChangeAction action);
+    partial void OnCreated();
+    partial void OnLoteIDChanging(int value);
+    partial void OnLoteIDChanged();
+    partial void OnFolioChanging(string value);
+    partial void OnFolioChanged();
+    partial void OnFechaLoteChanging(System.DateTime value);
+    partial void OnFechaLoteChanged();
+    partial void OnTipoMovimientoIDChanging(int value);
+    partial void OnTipoMovimientoIDChanged();
+    partial void OnBaseOrigenIDChanging(System.Nullable<int> value);
+    partial void OnBaseOrigenIDChanged();
+    partial void OnBaseDestinoIDChanging(System.Nullable<int> value);
+    partial void OnBaseDestinoIDChanged();
+    partial void OnObservacionesChanging(string value);
+    partial void OnObservacionesChanged();
+    partial void OnRegistradoPorIDChanging(int value);
+    partial void OnRegistradoPorIDChanged();
+    partial void OnFechaRegistroChanging(System.DateTime value);
+    partial void OnFechaRegistroChanged();
+    #endregion
+
+		public LotesMovimientos()
+		{
+			this._Movimientos = new EntitySet<Movimientos>(
+				new Action<Movimientos>(this.attach_Movimientos),
+				new Action<Movimientos>(this.detach_Movimientos));
+			OnCreated();
+		}
+
+		[global::System.Data.Linq.Mapping.ColumnAttribute(Storage="_LoteID", AutoSync=AutoSync.OnInsert, DbType="Int NOT NULL IDENTITY", IsPrimaryKey=true, IsDbGenerated=true)]
+		public int LoteID
+		{
+			get { return this._LoteID; }
+			set
+			{
+				if ((this._LoteID != value))
+				{
+					this.OnLoteIDChanging(value);
+					this.SendPropertyChanging();
+					this._LoteID = value;
+					this.SendPropertyChanged("LoteID");
+					this.OnLoteIDChanged();
+				}
+			}
+		}
+
+		[global::System.Data.Linq.Mapping.ColumnAttribute(Storage="_Folio", DbType="VarChar(30) NOT NULL", CanBeNull=false)]
+		public string Folio
+		{
+			get { return this._Folio; }
+			set
+			{
+				if ((this._Folio != value))
+				{
+					this.OnFolioChanging(value);
+					this.SendPropertyChanging();
+					this._Folio = value;
+					this.SendPropertyChanged("Folio");
+					this.OnFolioChanged();
+				}
+			}
+		}
+
+		[global::System.Data.Linq.Mapping.ColumnAttribute(Storage="_FechaLote", DbType="Date NOT NULL")]
+		public System.DateTime FechaLote
+		{
+			get { return this._FechaLote; }
+			set
+			{
+				if ((this._FechaLote != value))
+				{
+					this.OnFechaLoteChanging(value);
+					this.SendPropertyChanging();
+					this._FechaLote = value;
+					this.SendPropertyChanged("FechaLote");
+					this.OnFechaLoteChanged();
+				}
+			}
+		}
+
+		[global::System.Data.Linq.Mapping.ColumnAttribute(Storage="_TipoMovimientoID", DbType="Int NOT NULL")]
+		public int TipoMovimientoID
+		{
+			get { return this._TipoMovimientoID; }
+			set
+			{
+				if ((this._TipoMovimientoID != value))
+				{
+					this.OnTipoMovimientoIDChanging(value);
+					this.SendPropertyChanging();
+					this._TipoMovimientoID = value;
+					this.SendPropertyChanged("TipoMovimientoID");
+					this.OnTipoMovimientoIDChanged();
+				}
+			}
+		}
+
+		[global::System.Data.Linq.Mapping.ColumnAttribute(Storage="_BaseOrigenID", DbType="Int")]
+		public System.Nullable<int> BaseOrigenID
+		{
+			get { return this._BaseOrigenID; }
+			set
+			{
+				if ((this._BaseOrigenID != value))
+				{
+					this.OnBaseOrigenIDChanging(value);
+					this.SendPropertyChanging();
+					this._BaseOrigenID = value;
+					this.SendPropertyChanged("BaseOrigenID");
+					this.OnBaseOrigenIDChanged();
+				}
+			}
+		}
+
+		[global::System.Data.Linq.Mapping.ColumnAttribute(Storage="_BaseDestinoID", DbType="Int")]
+		public System.Nullable<int> BaseDestinoID
+		{
+			get { return this._BaseDestinoID; }
+			set
+			{
+				if ((this._BaseDestinoID != value))
+				{
+					this.OnBaseDestinoIDChanging(value);
+					this.SendPropertyChanging();
+					this._BaseDestinoID = value;
+					this.SendPropertyChanged("BaseDestinoID");
+					this.OnBaseDestinoIDChanged();
+				}
+			}
+		}
+
+		[global::System.Data.Linq.Mapping.ColumnAttribute(Storage="_Observaciones", DbType="VarChar(500)")]
+		public string Observaciones
+		{
+			get { return this._Observaciones; }
+			set
+			{
+				if ((this._Observaciones != value))
+				{
+					this.OnObservacionesChanging(value);
+					this.SendPropertyChanging();
+					this._Observaciones = value;
+					this.SendPropertyChanged("Observaciones");
+					this.OnObservacionesChanged();
+				}
+			}
+		}
+
+		[global::System.Data.Linq.Mapping.ColumnAttribute(Storage="_RegistradoPorID", DbType="Int NOT NULL")]
+		public int RegistradoPorID
+		{
+			get { return this._RegistradoPorID; }
+			set
+			{
+				if ((this._RegistradoPorID != value))
+				{
+					this.OnRegistradoPorIDChanging(value);
+					this.SendPropertyChanging();
+					this._RegistradoPorID = value;
+					this.SendPropertyChanged("RegistradoPorID");
+					this.OnRegistradoPorIDChanged();
+				}
+			}
+		}
+
+		[global::System.Data.Linq.Mapping.ColumnAttribute(Storage="_FechaRegistro", DbType="DateTime2 NOT NULL")]
+		public System.DateTime FechaRegistro
+		{
+			get { return this._FechaRegistro; }
+			set
+			{
+				if ((this._FechaRegistro != value))
+				{
+					this.OnFechaRegistroChanging(value);
+					this.SendPropertyChanging();
+					this._FechaRegistro = value;
+					this.SendPropertyChanged("FechaRegistro");
+					this.OnFechaRegistroChanged();
+				}
+			}
+		}
+
+		[global::System.Data.Linq.Mapping.AssociationAttribute(Name="LotesMovimientos_Movimientos", Storage="_Movimientos", ThisKey="LoteID", OtherKey="LoteID")]
+		public EntitySet<Movimientos> Movimientos
+		{
+			get { return this._Movimientos; }
+			set { this._Movimientos.Assign(value); }
+		}
+
+		private void attach_Movimientos(Movimientos entity)
+		{
+			this.SendPropertyChanging();
+			entity.LotesMovimientos = this;
+		}
+
+		private void detach_Movimientos(Movimientos entity)
+		{
+			this.SendPropertyChanging();
+			entity.LotesMovimientos = null;
+		}
+
+		public event PropertyChangingEventHandler PropertyChanging;
+		public event PropertyChangedEventHandler PropertyChanged;
+
+		protected virtual void SendPropertyChanging()
+		{
+			if ((this.PropertyChanging != null))
+				this.PropertyChanging(this, emptyChangingEventArgs);
+		}
+
+		protected virtual void SendPropertyChanged(String propertyName)
+		{
+			if ((this.PropertyChanged != null))
+				this.PropertyChanged(this, new PropertyChangedEventArgs(propertyName));
+		}
+	}
+
 	[global::System.Data.Linq.Mapping.TableAttribute(Name="dbo.Produccion")]
 	public partial class Produccion : INotifyPropertyChanging, INotifyPropertyChanged
 	{
-		
+
 		private static PropertyChangingEventArgs emptyChangingEventArgs = new PropertyChangingEventArgs(String.Empty);
-		
+
 		private int _ProduccionID;
 		
 		private int _BaseID;

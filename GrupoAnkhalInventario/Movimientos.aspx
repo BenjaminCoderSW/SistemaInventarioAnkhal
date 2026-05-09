@@ -76,6 +76,39 @@
             border-radius: 6px;
             text-align: center;
         }
+
+        /* ── Lote: sección agregar ítem ── */
+        .lote-seccion-header {
+            background: #eaf2f8;
+            border-left: 4px solid #2980b9;
+            padding: 8px 12px;
+            margin-bottom: 12px;
+            border-radius: 4px;
+            font-weight: 600;
+            color: #003366;
+            font-size: .9rem;
+        }
+        .lote-seccion-items {
+            background: #f0fff4;
+            border-left: 4px solid #27ae60;
+            padding: 8px 12px;
+            margin-bottom: 12px;
+            border-radius: 4px;
+            font-weight: 600;
+            color: #1e8449;
+            font-size: .9rem;
+        }
+        #tblItemsLote { font-size: .88rem; }
+        #tblItemsLote thead th { background: #003366; color: #fff; font-size:.8rem; }
+        .btn-quitar-item { padding: 2px 7px; font-size: .78rem; }
+        #divItemsAcumulados { display: none; }
+        .lote-subtotal {
+            text-align: right;
+            font-weight: 700;
+            font-size: 1rem;
+            color: #003366;
+            padding: 4px 8px;
+        }
     </style>
 </asp:Content>
 
@@ -273,6 +306,15 @@
 
                         <asp:BoundField DataField="RegistradoPor" HeaderText="Registrado Por" />
 
+                        <asp:TemplateField HeaderText="Folio Lote">
+                            <ItemTemplate>
+                                <%# !string.IsNullOrEmpty(Eval("FolioLote") as string)
+                                    ? "<span class='badge' style='background:#555;color:#fff;font-size:.78rem;'>" +
+                                      System.Web.HttpUtility.HtmlEncode(Eval("FolioLote").ToString()) + "</span>"
+                                    : "<span class='text-muted small'>—</span>" %>
+                            </ItemTemplate>
+                        </asp:TemplateField>
+
                         <asp:BoundField DataField="Observaciones" HeaderText="Observaciones" />
                     </Columns>
                 </asp:GridView>
@@ -287,6 +329,7 @@
 <!-- ── HIDDEN FIELDS ────────────────────────────── -->
 <asp:HiddenField ID="hdnMensajePendiente" runat="server" Value="" />
 <asp:HiddenField ID="hdnTipoItemSeleccionado" runat="server" Value="Material" />
+<asp:HiddenField ID="hdnItemsJson" runat="server" Value="" />
 <asp:Button ID="btnCargarItems" runat="server" style="display:none" OnClick="btnCargarItems_Click" />
 
 <!-- ══ MODAL NUEVO MOVIMIENTO ═════════════════════════ -->
@@ -298,9 +341,13 @@
         <button type="button" class="close text-white" data-dismiss="modal"><span>&times;</span></button>
       </div>
       <div class="modal-body">
-        <!-- Fila 1: Tipo de movimiento -->
+
+        <!-- ── ZONA ENCABEZADO DEL LOTE ─────────────────────────────── -->
+        <div class="lote-seccion-header"><i class="fas fa-tag mr-1"></i> Encabezado del movimiento</div>
+
+        <!-- Tipo de movimiento + bases -->
         <div class="row">
-          <div class="col-md-6">
+          <div class="col-md-4">
             <div class="form-group">
               <label>Tipo de movimiento <span style="color:red">*</span></label>
               <asp:DropDownList ID="ddlTipoMovimiento" runat="server" CssClass="form-control"
@@ -314,10 +361,32 @@
               </asp:DropDownList>
             </div>
           </div>
-          <div class="col-md-6">
+          <div class="col-md-4" id="divBaseOrigen" style="display:none;">
             <div class="form-group">
-              <label>Tipo de item <span style="color:red">*</span></label>
-              <div class="tipo-item-radio mt-2">
+              <label>Base Origen <span style="color:red">*</span></label>
+              <asp:DropDownList ID="ddlBaseOrigen" runat="server" CssClass="form-control">
+                <asp:ListItem Value="">-- Seleccione --</asp:ListItem>
+              </asp:DropDownList>
+            </div>
+          </div>
+          <div class="col-md-4" id="divBaseDestino" style="display:none;">
+            <div class="form-group">
+              <label>Base Destino <span style="color:red">*</span></label>
+              <asp:DropDownList ID="ddlBaseDestino" runat="server" CssClass="form-control">
+                <asp:ListItem Value="">-- Seleccione --</asp:ListItem>
+              </asp:DropDownList>
+            </div>
+          </div>
+        </div>
+
+        <!-- ── ZONA AGREGAR ÍTEM ─────────────────────────────────────── -->
+        <div class="lote-seccion-items"><i class="fas fa-plus-circle mr-1"></i> Agregar ítem al lote</div>
+
+        <div class="row">
+          <div class="col-md-3">
+            <div class="form-group">
+              <label>Tipo de item</label>
+              <div class="tipo-item-radio mt-1">
                 <label>
                   <input type="radio" name="rbTipoItem" id="rbMaterial" value="Material" checked="checked"
                       onclick="onTipoItemChange();" />
@@ -331,11 +400,7 @@
               </div>
             </div>
           </div>
-        </div>
-
-        <!-- Fila 2: Item -->
-        <div class="row">
-          <div class="col-md-12">
+          <div class="col-md-9">
             <div class="form-group">
               <label>Item <span style="color:red">*</span></label>
               <asp:DropDownList ID="ddlItem" runat="server" CssClass="form-control"
@@ -346,27 +411,6 @@
           </div>
         </div>
 
-        <!-- Fila 3: Bases -->
-        <div class="row">
-          <div class="col-md-6" id="divBaseOrigen" style="display:none;">
-            <div class="form-group">
-              <label>Base Origen <span style="color:red">*</span></label>
-              <asp:DropDownList ID="ddlBaseOrigen" runat="server" CssClass="form-control">
-                <asp:ListItem Value="">-- Seleccione --</asp:ListItem>
-              </asp:DropDownList>
-            </div>
-          </div>
-          <div class="col-md-6" id="divBaseDestino" style="display:none;">
-            <div class="form-group">
-              <label>Base Destino <span style="color:red">*</span></label>
-              <asp:DropDownList ID="ddlBaseDestino" runat="server" CssClass="form-control">
-                <asp:ListItem Value="">-- Seleccione --</asp:ListItem>
-              </asp:DropDownList>
-            </div>
-          </div>
-        </div>
-
-        <!-- Fila 4: Cantidad + Unidad captura + Costo -->
         <div class="row">
           <div class="col-md-3">
             <div class="form-group">
@@ -397,29 +441,56 @@
               </div>
             </div>
           </div>
-          <div class="col-md-4">
+          <div class="col-md-2">
             <div class="form-group">
-              <label>Total</label>
-              <div class="total-display">
+              <label>Subtotal ítem</label>
+              <div class="total-display" style="font-size:1.1rem;">
                 $<asp:Label ID="lblTotal" runat="server" Text="0.00"></asp:Label>
               </div>
             </div>
           </div>
+          <div class="col-md-2 d-flex align-items-end pb-3">
+            <button type="button" class="btn btn-primary btn-block"
+                onclick="agregarItemAlLote();">
+              <i class="fas fa-plus"></i> Agregar
+            </button>
+          </div>
         </div>
 
-        <!-- Fila 5: Observaciones -->
+        <!-- ── TABLA DE ÍTEMS ACUMULADOS ─────────────────────────────── -->
+        <div id="divItemsAcumulados" class="mb-2">
+          <table id="tblItemsLote" class="table table-bordered table-sm mb-1">
+            <thead>
+              <tr>
+                <th>#</th>
+                <th>Tipo</th>
+                <th>Item</th>
+                <th>Cant. capturada</th>
+                <th>Unidad</th>
+                <th>Costo Unit.</th>
+                <th>Subtotal</th>
+                <th></th>
+              </tr>
+            </thead>
+            <tbody id="tbodyItems"></tbody>
+          </table>
+          <div class="lote-subtotal">Total lote: $<span id="spnTotalLote">0.00</span></div>
+        </div>
+
+        <!-- ── OBSERVACIONES (nivel lote) ───────────────────────────── -->
         <div class="row">
           <div class="col-md-12">
             <div class="form-group">
-              <label>Observaciones</label>
+              <label>Observaciones del lote</label>
               <asp:TextBox ID="txtObservaciones" runat="server" CssClass="form-control" TextMode="MultiLine"
-                  Rows="3" Placeholder="Observaciones opcionales..." MaxLength="500"></asp:TextBox>
+                  Rows="2" Placeholder="Observaciones opcionales..." MaxLength="500"></asp:TextBox>
             </div>
           </div>
         </div>
-      </div>
+
+      </div><!-- /modal-body -->
       <div class="modal-footer">
-        <asp:Button ID="btnGuardar" runat="server" Text="Guardar Movimiento"
+        <asp:Button ID="btnGuardar" runat="server" Text="Guardar Lote"
             CssClass="btn btn-success"
             OnClientClick="return validarNuevo();"
             OnClick="btnGuardar_Click" />
@@ -432,14 +503,15 @@
 <asp:Literal ID="litJsData" runat="server"></asp:Literal>
 
 <script>
+    // ── Array acumulado de ítems del lote ───────────────────────────
+    var _items = [];
+
     // ── Mensaje pendiente (SweetAlert) ──────────────────────────────
     window.addEventListener('load', function () {
-        // Restaurar estado del radio al volver de postback
         var tipoItem = document.getElementById('<%= hdnTipoItemSeleccionado.ClientID %>').value;
         if (tipoItem === 'Producto') document.getElementById('rbProducto').checked = true;
         else                         document.getElementById('rbMaterial').checked  = true;
 
-        // Mostrar mensaje pendiente
         var hdnMsg = document.getElementById('<%= hdnMensajePendiente.ClientID %>');
         if (!hdnMsg || !hdnMsg.value) return;
         try {
@@ -456,6 +528,8 @@
 
     // ── Abrir modal nuevo ───────────────────────────────────────────
     function abrirModalNuevo() {
+        _items = [];
+        document.getElementById('<%= hdnItemsJson.ClientID %>').value = '[]';
         document.getElementById('<%= ddlTipoMovimiento.ClientID %>').value = '';
         document.getElementById('rbMaterial').checked = true;
         document.getElementById('<%= hdnTipoItemSeleccionado.ClientID %>').value = 'Material';
@@ -474,7 +548,128 @@
         document.getElementById('<%= lblConversionInfo.ClientID %>').innerText = '';
         var ddlUC = document.getElementById('<%= ddlUnidadCaptura.ClientID %>');
         if (ddlUC) ddlUC.innerHTML = '';
+        renderTablaItems();
         $('#modalNuevo').modal('show');
+    }
+
+    // ── Agregar ítem al array _items ────────────────────────────────
+    function agregarItemAlLote() {
+        var tipo     = document.getElementById('<%= hdnTipoItemSeleccionado.ClientID %>').value;
+        var ddlItem  = document.getElementById('<%= ddlItem.ClientID %>');
+        var itemId   = parseInt(ddlItem.value);
+        var cant     = parseFloat(document.getElementById('<%= txtCantidad.ClientID %>').value) || 0;
+        var costo    = parseFloat(document.getElementById('<%= txtCosto.ClientID %>').value) || 0;
+        var itemText = ddlItem.options[ddlItem.selectedIndex] ? ddlItem.options[ddlItem.selectedIndex].text : '';
+
+        function warn(txt) {
+            Swal.fire({ icon: 'warning', title: 'Campo inválido', text: txt, confirmButtonColor: '#003366' })
+                .then(function () { $('#modalNuevo').modal('show'); });
+        }
+        if (!itemId)     { warn('Debe seleccionar un item.'); return; }
+        if (cant <= 0)   { warn('La cantidad debe ser mayor a cero.'); return; }
+        var tipoMov = document.getElementById('<%= ddlTipoMovimiento.ClientID %>').value;
+        if (!tipoMov)    { warn('Debe seleccionar el tipo de movimiento primero.'); return; }
+        if (tipoMov !== '3' && costo < 0) { warn('El costo unitario no puede ser negativo.'); return; }
+
+        // Unidad de captura
+        var unidadId  = 0;
+        var unidadTxt = '';
+        var factor    = 1;
+        var divUC     = document.getElementById('divUnidadCaptura');
+        var ddlUC     = document.getElementById('<%= ddlUnidadCaptura.ClientID %>');
+        if (divUC && divUC.style.display !== 'none' && ddlUC && ddlUC.options.length > 0) {
+            var selOpt = ddlUC.options[ddlUC.selectedIndex];
+            unidadId   = parseInt(selOpt.value) || 0;
+            unidadTxt  = selOpt.text;
+            factor     = parseFloat(selOpt.getAttribute('data-factor')) || 1;
+        }
+
+        // Acumular si mismo ítem ya existe (mismo tipo+id+unidad)
+        var existing = null;
+        for (var i = 0; i < _items.length; i++) {
+            if (_items[i].tipoItem === tipo && _items[i].itemId === itemId && _items[i].unidadId === unidadId) {
+                existing = _items[i];
+                break;
+            }
+        }
+
+        if (existing) {
+            existing.cantidadCapturada += cant;
+        } else {
+            _items.push({
+                tipoItem:          tipo,
+                itemId:            itemId,
+                itemTexto:         itemText,
+                cantidadCapturada: cant,
+                costo:             costo,
+                unidadId:          unidadId,
+                unidadTexto:       unidadTxt,
+                factor:            factor
+            });
+        }
+
+        document.getElementById('<%= hdnItemsJson.ClientID %>').value = JSON.stringify(_items);
+        renderTablaItems();
+        limpiarCamposItem();
+    }
+
+    // ── Eliminar ítem del array ─────────────────────────────────────
+    function quitarItem(idx) {
+        _items.splice(idx, 1);
+        document.getElementById('<%= hdnItemsJson.ClientID %>').value = JSON.stringify(_items);
+        renderTablaItems();
+    }
+
+    // ── Renderizar tabla de ítems acumulados ────────────────────────
+    function renderTablaItems() {
+        var tbody = document.getElementById('tbodyItems');
+        var div   = document.getElementById('divItemsAcumulados');
+        tbody.innerHTML = '';
+        if (_items.length === 0) { div.style.display = 'none'; return; }
+        div.style.display = 'block';
+
+        var totalLote = 0;
+        for (var i = 0; i < _items.length; i++) {
+            var it      = _items[i];
+            var cantBase = it.cantidadCapturada * it.factor;
+            var subtotal = cantBase * it.costo;
+            totalLote   += subtotal;
+
+            var unidTxt = it.unidadTexto
+                ? it.unidadTexto.replace(/\s*\[.*\]$/, '').replace(/\s*—\s*base\s*$/i, '').trim()
+                : (it.tipoItem === 'Producto' ? 'Und.' : 'base');
+
+            var cantMostrar = it.factor !== 1
+                ? it.cantidadCapturada.toFixed(4).replace(/\.?0+$/, '') + ' → ' +
+                  cantBase.toFixed(4).replace(/\.?0+$/, '')
+                : it.cantidadCapturada.toFixed(4).replace(/\.?0+$/, '');
+
+            var tr = '<tr>' +
+                '<td>' + (i + 1) + '</td>' +
+                '<td>' + it.tipoItem + '</td>' +
+                '<td>' + it.itemTexto + '</td>' +
+                '<td>' + cantMostrar + '</td>' +
+                '<td>' + unidTxt + '</td>' +
+                '<td>$' + it.costo.toFixed(2) + '</td>' +
+                '<td>$' + subtotal.toFixed(2) + '</td>' +
+                '<td><button type="button" class="btn btn-danger btn-quitar-item" ' +
+                    'onclick="quitarItem(' + i + ')"><i class="fas fa-times"></i></button></td>' +
+                '</tr>';
+            tbody.innerHTML += tr;
+        }
+        document.getElementById('spnTotalLote').innerText = totalLote.toFixed(2);
+    }
+
+    // ── Limpiar campos de ítem (después de agregar) ─────────────────
+    function limpiarCamposItem() {
+        document.getElementById('<%= ddlItem.ClientID %>').selectedIndex = 0;
+        document.getElementById('<%= txtCantidad.ClientID %>').value = '';
+        document.getElementById('<%= txtCosto.ClientID %>').value = '';
+        document.getElementById('<%= lblTotal.ClientID %>').innerText = '0.00';
+        document.getElementById('divUnidadCaptura').style.display = 'none';
+        document.getElementById('<%= lblConversionInfo.ClientID %>').innerText = '';
+        var ddlUC = document.getElementById('<%= ddlUnidadCaptura.ClientID %>');
+        if (ddlUC) ddlUC.innerHTML = '';
     }
 
     // ── Mostrar/ocultar bases y bloquear costo en transferencia ────
@@ -487,7 +682,6 @@
         divOrigen.style.display  = 'none';
         divDestino.style.display = 'none';
 
-        // Transferencia interna → costo siempre $0 (no hay ganancia ni pérdida)
         if (tipo === '3') {
             txtCosto.value    = '0.00';
             txtCosto.disabled = true;
@@ -521,7 +715,6 @@
                 ddl.appendChild(opt);
             });
         }
-        // Ocultar unidad de captura al cambiar tipo de item
         document.getElementById('divUnidadCaptura').style.display = 'none';
         document.getElementById('<%= lblConversionInfo.ClientID %>').innerText = '';
     }
@@ -544,13 +737,11 @@
         var lista = tipo === 'Producto' ? window._productosData
                   : window._materialesData;
         var item  = lista && lista.find(function (i) { return i.id === id; });
-        // Solo auto-llenar costo si NO es transferencia (campo habilitado)
         if (item && !txtCosto.disabled) {
             txtCosto.value = (item.costo || 0).toFixed(2);
             calcularTotal();
         }
 
-        // Poblar unidades de captura (solo para materiales con conversiones)
         var convKey = id.toString();
         if (tipo === 'Material' && window._conversionesMat &&
             window._conversionesMat[convKey] && window._conversionesMat[convKey].length > 1) {
@@ -587,19 +778,17 @@
             lblCI.innerText = 'Cantidad en unidad base. Sin conversión.';
         } else {
             var cantBase   = cantidad * factor;
-            // Nombre de la unidad base = primer item del dropdown (strip " — base")
             var baseNombre = ddlUC.options[0].text.replace(/\s*[—\-]\s*base\s*$/i, '').trim();
             var cantStr    = (cantBase % 1 === 0) ? cantBase.toString() : cantBase.toFixed(4).replace(/\.?0+$/, '');
             lblCI.innerText = 'Captura: ' + cantidad + ' → ' + cantStr + ' ' + baseNombre + ' en stock';
         }
     }
 
-    // ── Auto-calcular total ─────────────────────────────────────────
+    // ── Auto-calcular subtotal del ítem actual ──────────────────────
     function calcularTotal() {
         var cantCapturada = parseFloat(document.getElementById('<%= txtCantidad.ClientID %>').value) || 0;
         var costo         = parseFloat(document.getElementById('<%= txtCosto.ClientID %>').value) || 0;
 
-        // Aplicar factor de conversión si el dropdown de unidad está visible
         var cantBase = cantCapturada;
         var divUC = document.getElementById('divUnidadCaptura');
         if (divUC && divUC.style.display !== 'none') {
@@ -609,18 +798,14 @@
                 cantBase = cantCapturada * factor;
             }
         }
-
         document.getElementById('<%= lblTotal.ClientID %>').innerText = (cantBase * costo).toFixed(2);
     }
 
-    // ── Validación cliente antes de guardar ─────────────────────────
+    // ── Validación antes de postback de guardar ─────────────────────
     function validarNuevo() {
-        var tipo     = document.getElementById('<%= ddlTipoMovimiento.ClientID %>').value;
-        var item     = document.getElementById('<%= ddlItem.ClientID %>').value;
-        var cantidad = parseFloat(document.getElementById('<%= txtCantidad.ClientID %>').value) || 0;
-        var costo    = parseFloat(document.getElementById('<%= txtCosto.ClientID %>').value) || 0;
-        var origen   = document.getElementById('<%= ddlBaseOrigen.ClientID %>').value;
-        var destino  = document.getElementById('<%= ddlBaseDestino.ClientID %>').value;
+        var tipo    = document.getElementById('<%= ddlTipoMovimiento.ClientID %>').value;
+        var origen  = document.getElementById('<%= ddlBaseOrigen.ClientID %>').value;
+        var destino = document.getElementById('<%= ddlBaseDestino.ClientID %>').value;
 
         function warn(txt) {
             Swal.fire({ icon: 'warning', title: 'Campo inválido', text: txt, confirmButtonColor: '#003366' })
@@ -628,11 +813,8 @@
             return false;
         }
 
-        if (!tipo)       return warn('Debe seleccionar el tipo de movimiento.');
-        if (!item)       return warn('Debe seleccionar un item.');
-        if (cantidad <= 0) return warn('La cantidad debe ser mayor a cero.');
-        // El costo de una transferencia siempre es $0, no validar
-        if (tipo !== '3' && costo < 0) return warn('El costo unitario no puede ser negativo.');
+        if (!tipo) return warn('Debe seleccionar el tipo de movimiento.');
+        if (_items.length === 0) return warn('Debe agregar al menos un ítem al lote antes de guardar.');
 
         var divOrigen  = document.getElementById('divBaseOrigen');
         var divDestino = document.getElementById('divBaseDestino');

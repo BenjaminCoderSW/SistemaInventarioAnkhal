@@ -1,6 +1,7 @@
 using System;
 using System.Collections.Generic;
 using System.Configuration;
+using System.Data;
 using System.Linq;
 using System.Web.Script.Serialization;
 using System.Web.UI.WebControls;
@@ -25,6 +26,18 @@ namespace GrupoAnkhalInventario
             return ctx;
         }
 
+        // ══ Modelo para ítems del lote (deserializado desde JSON) ════════════
+        private class ItemLoteModel
+        {
+            public string  tipoItem          { get; set; }
+            public int     itemId            { get; set; }
+            public string  itemTexto         { get; set; }
+            public decimal cantidadCapturada { get; set; }
+            public decimal costo             { get; set; }
+            public int     unidadId          { get; set; }
+            public decimal factor            { get; set; }
+        }
+
         // ══ ViewModel ════════════════════════════════════════════════════════
         public class MovimientoVM
         {
@@ -46,6 +59,7 @@ namespace GrupoAnkhalInventario
             public bool     TuvoConversion      { get; set; }   // true si se aplicó factor ≠ 1
             public string   RegistradoPor       { get; set; }
             public string   Observaciones       { get; set; }
+            public string   FolioLote           { get; set; }
         }
 
         // ══ Page_Load ════════════════════════════════════════════════════════
@@ -359,6 +373,9 @@ namespace GrupoAnkhalInventario
                            join bd in db.Bases
                                on mv.BaseDestinoID equals (int?)bd.BaseID into bdG
                            from bd in bdG.DefaultIfEmpty()
+                           join lm in db.LotesMovimientos
+                               on mv.LoteID equals (int?)lm.LoteID into lmG
+                           from lm in lmG.DefaultIfEmpty()
                            select new
                            {
                                mv.MovimientoID,
@@ -379,7 +396,8 @@ namespace GrupoAnkhalInventario
                                UnidadCapturaID   = mv.UnidadCapturaID,
                                mv.Costo,
                                mv.RegistradoPorID,
-                               mv.Observaciones
+                               mv.Observaciones,
+                               FolioLote         = lm.Folio
                            }).ToList();
 
                 // ── Paso 4a: Nombres de unidades de captura ──────────────────────
@@ -454,7 +472,8 @@ namespace GrupoAnkhalInventario
                         RegistradoPor = nombresUsuario.ContainsKey(r.RegistradoPorID)
                                         ? nombresUsuario[r.RegistradoPorID]
                                         : r.RegistradoPorID.ToString(),
-                        Observaciones = r.Observaciones ?? ""
+                        Observaciones = r.Observaciones ?? "",
+                        FolioLote     = r.FolioLote ?? ""
                     }).ToList();
 
                 gvMovimientos.DataSource = pagina;
@@ -491,9 +510,28 @@ namespace GrupoAnkhalInventario
         // No-op: ya no hace postback desde JS, se deja para no romper compilación
         protected void btnCargarItems_Click(object sender, EventArgs e) { }
 
-        // ══ Guardar movimiento ════════════════════════════════════════════════
+        // ══ Guardar lote de movimientos ══════════════════════════════════════
         protected void btnGuardar_Click(object sender, EventArgs e)
         {
+            // ── Leer ítems del JSON ───────────────────────────────────────────
+            List<ItemLoteModel> items;
+            try
+            {
+                var rawJson = hdnItemsJson.Value ?? "[]";
+                items = _json.Deserialize<List<ItemLoteModel>>(rawJson);
+            }
+            catch
+            {
+                items = new List<ItemLoteModel>();
+            }
+
+            if (items == null || items.Count == 0)
+            {
+                SetMsg("warning", "Sin ítems",
+                    "Agregue al menos un ítem antes de guardar.", "modalNuevo");
+                return;
+            }
+
             // ── Validar tipo de movimiento ────────────────────────────────────
             if (string.IsNullOrEmpty(ddlTipoMovimiento.SelectedValue))
             {
@@ -515,44 +553,8 @@ namespace GrupoAnkhalInventario
                 throw new InvalidOperationException(
                     $"Tipo de movimiento ID={tipoMovID} no reconocido en el catálogo.");
 
-            // ── Validar item ──────────────────────────────────────────────────
-            if (string.IsNullOrEmpty(ddlItem.SelectedValue))
-            {
-                SetMsg("warning", "Campo requerido",
-                    "Seleccione un item.", "modalNuevo");
-                return;
-            }
-            string tipoItem = hdnTipoItemSeleccionado.Value;  // "Material" | "Producto"
-            int    itemID   = int.Parse(ddlItem.SelectedValue);
-
-            // ── Validar cantidad y costo ──────────────────────────────────────
-            decimal cantidadCapturada;
-            if (!decimal.TryParse(txtCantidad.Text, out cantidadCapturada) || cantidadCapturada <= 0)
-            {
-                SetMsg("warning", "Campo inválido",
-                    "La cantidad debe ser mayor a cero.", "modalNuevo");
-                return;
-            }
-            decimal costo;
-            // Las transferencias entre bases no tienen costo (campo deshabilitado no envía valor)
-            if (claveTipo == "TRANSFERENCIA")
-            {
-                costo = 0m;
-            }
-            else if (!decimal.TryParse(txtCosto.Text, out costo) || costo < 0)
-            {
-                SetMsg("warning", "Campo inválido",
-                    "El costo unitario no puede ser negativo.", "modalNuevo");
-                return;
-            }
-
-            // ── Determinar qué bases son requeridas ───────────────────────────
-            // ENTRADA         → solo base DESTINO
-            // TRANSFERENCIA   → base ORIGEN + base DESTINO
-            // MERMA           → solo base ORIGEN
-            // AJUSTE_POS      → solo base DESTINO
-            // AJUSTE_NEG      → solo base ORIGEN
-            bool requiereOrigen  = claveTipo == "TRANSFERENCIA" || claveTipo == "MERMA"   || claveTipo == "AJUSTE_NEG";
+            // ── Determinar bases requeridas ───────────────────────────────────
+            bool requiereOrigen  = claveTipo == "TRANSFERENCIA" || claveTipo == "MERMA"        || claveTipo == "AJUSTE_NEG";
             bool requiereDestino = claveTipo == "ENTRADA"       || claveTipo == "TRANSFERENCIA" || claveTipo == "AJUSTE_POS";
 
             int? baseOrigenID  = null;
@@ -562,8 +564,7 @@ namespace GrupoAnkhalInventario
             {
                 if (string.IsNullOrEmpty(ddlBaseOrigen.SelectedValue))
                 {
-                    SetMsg("warning", "Campo requerido",
-                        "Seleccione la base de origen.", "modalNuevo");
+                    SetMsg("warning", "Campo requerido", "Seleccione la base de origen.", "modalNuevo");
                     return;
                 }
                 baseOrigenID = int.Parse(ddlBaseOrigen.SelectedValue);
@@ -572,8 +573,7 @@ namespace GrupoAnkhalInventario
             {
                 if (string.IsNullOrEmpty(ddlBaseDestino.SelectedValue))
                 {
-                    SetMsg("warning", "Campo requerido",
-                        "Seleccione la base de destino.", "modalNuevo");
+                    SetMsg("warning", "Campo requerido", "Seleccione la base de destino.", "modalNuevo");
                     return;
                 }
                 baseDestinoID = int.Parse(ddlBaseDestino.SelectedValue);
@@ -589,111 +589,143 @@ namespace GrupoAnkhalInventario
 
             string obs     = txtObservaciones.Text.Trim();
             int    claveID = Convert.ToInt32(Session["ClaveID"]);
+            bool   restaStock = claveTipo == "TRANSFERENCIA" || claveTipo == "MERMA" || claveTipo == "AJUSTE_NEG";
 
-            // ── Ejecutar en un solo contexto (atómico con SubmitChanges) ──────
             using (var db = NuevoDb(true))
             {
-                // ── Conversión de unidades ────────────────────────────────────
-                // Invariante: CantidadCapturada × FactorAplicado = Cantidad (en unidad base)
-                // FactorAplicado = 1m siempre (nunca null), incluso para unidad base o productos
-                decimal cantidadBase;
-                int?    unidadCapturaID = null;
-                decimal factorAplicado  = 1m;
-
-                if (tipoItem == "Material")
+                // Pre-validar stock de todos los ítems antes de abrir la transacción
+                if (restaStock)
                 {
-                    var mat = db.Materiales.FirstOrDefault(m => m.MaterialID == itemID);
-                    // El dropdown se llenó en JS (client-side), así que leemos el valor via Request.Form
-                    string unidadVal = Request.Form[ddlUnidadCaptura.UniqueID] ?? "";
-                    int parsedVal;
-
-                    bool esUnidadBase = !int.TryParse(unidadVal, out parsedVal) ||
-                                        (mat != null && mat.UnidadMedidaID.HasValue &&
-                                         parsedVal == mat.UnidadMedidaID.Value);
-
-                    if (esUnidadBase)
+                    foreach (var it in items)
                     {
-                        cantidadBase    = cantidadCapturada;
-                        unidadCapturaID = mat != null ? mat.UnidadMedidaID : null;
-                        factorAplicado  = 1m;
-                    }
-                    else
-                    {
-                        // Es un ConversionID
-                        var conv = db.ConversionesMaterial
-                            .FirstOrDefault(c => c.ConversionID == parsedVal &&
-                                                 c.MaterialID   == itemID    &&
-                                                 c.Activo);
-                        if (conv == null)
-                        {
-                            SetMsg("error", "Conversión inválida",
-                                "No existe conversión activa para esa unidad en este material. " +
-                                "No se puede registrar el movimiento.", "modalNuevo");
+                        decimal cantBase = it.cantidadCapturada * it.factor;
+                        if (!ValidarStockSuficiente(db, it.tipoItem, it.itemId, baseOrigenID, cantBase))
                             return;
-                        }
-                        cantidadBase    = cantidadCapturada * conv.Factor;
-                        unidadCapturaID = conv.UnidadOrigenID;
-                        factorAplicado  = conv.Factor;
                     }
                 }
-                else
+
+                db.Connection.Open();
+                using (var tx = db.Connection.BeginTransaction(IsolationLevel.Serializable))
                 {
-                    // Productos: sin conversión
-                    cantidadBase    = cantidadCapturada;
-                    unidadCapturaID = null;   // productos no tienen UnidadMedidaID
-                    factorAplicado  = 1m;
+                    db.Transaction = tx;
+                    try
+                    {
+                        // ── 1. Crear LoteMovimiento con folio ─────────────────
+                        string folio = GenerarFolioLote(db);
+                        var lote = new Modelo.LotesMovimientos
+                        {
+                            Folio            = folio,
+                            TipoMovimientoID = tipoMovID,
+                            BaseOrigenID     = baseOrigenID,
+                            BaseDestinoID    = baseDestinoID,
+                            Observaciones    = string.IsNullOrEmpty(obs) ? null : obs,
+                            RegistradoPorID  = claveID,
+                            FechaLote        = AppHelper.Ahora.Date,
+                            FechaRegistro    = AppHelper.Ahora
+                        };
+                        db.LotesMovimientos.InsertOnSubmit(lote);
+                        db.SubmitChanges(); // obtener LoteID
+
+                        // ── 2. Insertar movimiento + actualizar stock por ítem ─
+                        foreach (var it in items)
+                        {
+                            var (cantBase, unidadCapturaID, factorAplicado) =
+                                ResolverConversion(db, it);
+
+                            var mov = new Modelo.Movimientos
+                            {
+                                TipoMovimientoID  = tipoMovID,
+                                TipoItem          = it.tipoItem,
+                                MaterialID        = it.tipoItem == "Material" ? (int?)it.itemId : null,
+                                ProductoID        = it.tipoItem == "Producto" ? (int?)it.itemId : null,
+                                BaseOrigenID      = baseOrigenID,
+                                BaseDestinoID     = baseDestinoID,
+                                Cantidad          = cantBase,
+                                CantidadCapturada = it.cantidadCapturada,
+                                UnidadCapturaID   = unidadCapturaID,
+                                FactorAplicado    = factorAplicado,
+                                Costo             = it.costo,
+                                LoteID            = lote.LoteID,
+                                Observaciones     = null,
+                                RegistradoPorID   = claveID,
+                                FechaMovimiento   = lote.FechaRegistro
+                            };
+                            db.Movimientos.InsertOnSubmit(mov);
+
+                            switch (claveTipo)
+                            {
+                                case "ENTRADA":
+                                    UpsertStock(db, it.tipoItem, it.itemId, baseDestinoID, +cantBase); break;
+                                case "TRANSFERENCIA":
+                                    UpsertStock(db, it.tipoItem, it.itemId, baseOrigenID,  -cantBase);
+                                    UpsertStock(db, it.tipoItem, it.itemId, baseDestinoID, +cantBase); break;
+                                case "MERMA":
+                                    UpsertStock(db, it.tipoItem, it.itemId, baseOrigenID,  -cantBase); break;
+                                case "AJUSTE_POS":
+                                    UpsertStock(db, it.tipoItem, it.itemId, baseDestinoID, +cantBase); break;
+                                case "AJUSTE_NEG":
+                                    UpsertStock(db, it.tipoItem, it.itemId, baseOrigenID,  -cantBase); break;
+                                default:
+                                    throw new InvalidOperationException(
+                                        $"Tipo de movimiento '{claveTipo}' sin lógica de stock definida.");
+                            }
+                        }
+
+                        db.SubmitChanges();
+                        tx.Commit();
+                    }
+                    catch
+                    {
+                        tx.Rollback();
+                        throw;
+                    }
                 }
-
-                bool restaStock = claveTipo == "TRANSFERENCIA" || claveTipo == "MERMA" || claveTipo == "AJUSTE_NEG";
-
-                // Validar stock usando la cantidad en unidad base
-                if (restaStock && !ValidarStockSuficiente(db, tipoItem, itemID, baseOrigenID, cantidadBase))
-                    return;
-
-                var mov = new Modelo.Movimientos
-                {
-                    TipoMovimientoID  = tipoMovID,
-                    TipoItem          = tipoItem,
-                    MaterialID        = tipoItem == "Material" ? (int?)itemID : null,
-                    ProductoID        = tipoItem == "Producto" ? (int?)itemID : null,
-                    BaseOrigenID      = baseOrigenID,
-                    BaseDestinoID     = baseDestinoID,
-                    Cantidad          = cantidadBase,         // siempre en unidad base
-                    CantidadCapturada = cantidadCapturada,    // original capturado por el usuario
-                    UnidadCapturaID   = unidadCapturaID,      // unidad usada (null para productos)
-                    FactorAplicado    = factorAplicado,        // factor congelado (1 si no hubo conversión)
-                    Costo             = costo,
-                    Observaciones     = string.IsNullOrEmpty(obs) ? null : obs,
-                    RegistradoPorID   = claveID,
-                    FechaMovimiento   = AppHelper.Ahora
-                };
-                db.Movimientos.InsertOnSubmit(mov);
-
-                switch (claveTipo)
-                {
-                    case "ENTRADA":
-                        UpsertStock(db, tipoItem, itemID, baseDestinoID, +cantidadBase); break;
-                    case "TRANSFERENCIA":
-                        UpsertStock(db, tipoItem, itemID, baseOrigenID,  -cantidadBase);
-                        UpsertStock(db, tipoItem, itemID, baseDestinoID, +cantidadBase); break;
-                    case "MERMA":
-                        UpsertStock(db, tipoItem, itemID, baseOrigenID,  -cantidadBase); break;
-                    case "AJUSTE_POS":
-                        UpsertStock(db, tipoItem, itemID, baseDestinoID, +cantidadBase); break;
-                    case "AJUSTE_NEG":
-                        UpsertStock(db, tipoItem, itemID, baseOrigenID,  -cantidadBase); break;
-                    default:
-                        throw new InvalidOperationException(
-                            $"Tipo de movimiento '{claveTipo}' no tiene lógica de stock definida.");
-                }
-
-                db.SubmitChanges();
             }
 
             LimpiarModal();
-            SetMsg("success", "Movimiento registrado", "El movimiento se guardó correctamente.");
+            SetMsg("success", "Lote registrado",
+                string.Format("Lote guardado con {0} movimiento(s).", items.Count));
             CargarDashboard();
             CargarGrid();
+        }
+
+        // ── Genera folio MOV-yyyyMMdd-### con UPDLOCK/HOLDLOCK ────────────────
+        private string GenerarFolioLote(InventarioAnkhalDBDataContext db)
+        {
+            DateTime hoy = AppHelper.Hoy;
+            int count = db.ExecuteQuery<int>(
+                @"SELECT COUNT(*) FROM dbo.LotesMovimiento WITH (UPDLOCK, HOLDLOCK)
+                  WHERE FechaLote >= {0} AND FechaLote < {1}",
+                hoy, hoy.AddDays(1)).First();
+            return string.Format("MOV-{0}-{1:D3}", hoy.ToString("yyyyMMdd"), count + 1);
+        }
+
+        // ── Resuelve la conversión de unidades para un ítem del lote ─────────
+        // Retorna (cantidadBase, unidadCapturaID, factorAplicado)
+        private (decimal cantBase, int? unidadCapturaID, decimal factorAplicado)
+            ResolverConversion(InventarioAnkhalDBDataContext db, ItemLoteModel it)
+        {
+            if (it.tipoItem != "Material")
+                return (it.cantidadCapturada, null, 1m);
+
+            // El JS ya resolvió el factor; el unidadId puede ser el UnidadMedidaID (unidad base)
+            // o un ConversionID. Si factor == 1 o unidadId == 0, es unidad base.
+            if (it.factor == 1m || it.unidadId == 0)
+            {
+                var mat = db.Materiales.FirstOrDefault(m => m.MaterialID == it.itemId);
+                return (it.cantidadCapturada, mat != null ? mat.UnidadMedidaID : null, 1m);
+            }
+
+            // Verificar que la conversión sigue activa en servidor (seguridad)
+            var conv = db.ConversionesMaterial
+                .FirstOrDefault(c => c.ConversionID == it.unidadId &&
+                                     c.MaterialID   == it.itemId   &&
+                                     c.Activo);
+            if (conv == null)
+                throw new InvalidOperationException(
+                    $"Conversión ID={it.unidadId} ya no está activa para el material {it.itemId}.");
+
+            return (it.cantidadCapturada * conv.Factor, conv.UnidadOrigenID, conv.Factor);
         }
 
         // ══ Helpers de negocio ═══════════════════════════════════════════════
@@ -850,6 +882,7 @@ namespace GrupoAnkhalInventario
         {
             ddlTipoMovimiento.SelectedIndex = 0;
             hdnTipoItemSeleccionado.Value   = "Material";
+            hdnItemsJson.Value              = "[]";
             ddlItem.SelectedIndex           = 0;
             ddlBaseOrigen.SelectedIndex     = 0;
             ddlBaseDestino.SelectedIndex    = 0;
