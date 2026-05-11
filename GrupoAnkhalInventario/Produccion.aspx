@@ -205,6 +205,12 @@
                 </asp:TemplateField>
                 <asp:BoundField DataField="MetaBase" HeaderText="Meta ($)" DataFormatString="{0:C2}" ItemStyle-CssClass="text-right" />
                 <asp:BoundField DataField="RegistradoPor" HeaderText="Registrado Por" />
+                <asp:TemplateField HeaderText="Observaciones">
+                    <ItemStyle Width="160px" />
+                    <ItemTemplate>
+                        <%# string.IsNullOrEmpty(Eval("Observaciones").ToString()) ? "—" : Eval("Observaciones") %>
+                    </ItemTemplate>
+                </asp:TemplateField>
                 <asp:TemplateField HeaderText="Consumo de Materiales">
                     <HeaderStyle CssClass="text-center" Width="280px" />
                     <ItemTemplate>

@@ -42,6 +42,7 @@ namespace GrupoAnkhalInventario
             public int      CumplPct        { get; set; }
             public decimal  Valor           { get; set; }
             public string   RegistradoPor   { get; set; }
+            public string   Observaciones   { get; set; }
             public List<ConsumoDetalleVM> Consumos { get; set; } = new List<ConsumoDetalleVM>();
         }
 
@@ -264,7 +265,8 @@ namespace GrupoAnkhalInventario
                                p.CantidadBuena,
                                p.CantidadRechazo,
                                PrecioVenta     = p.PrecioVenta,
-                               p.RegistradoPorID
+                               p.RegistradoPorID,
+                               p.Observaciones
                            }).ToList();
 
                 // ── Nombres de usuario via API de Asistencia ─────────────────
@@ -318,7 +320,8 @@ namespace GrupoAnkhalInventario
                             Valor           = valorReg,
                             RegistradoPor   = nombresUsuario.ContainsKey(r.RegistradoPorID)
                                               ? nombresUsuario[r.RegistradoPorID]
-                                              : r.RegistradoPorID.ToString()
+                                              : r.RegistradoPorID.ToString(),
+                            Observaciones   = r.Observaciones ?? ""
                         };
                     }).ToList();
 

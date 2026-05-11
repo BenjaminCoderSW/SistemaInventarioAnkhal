@@ -508,6 +508,7 @@
 <script>
     // ── Array acumulado de ítems del lote ───────────────────────────
     var _items = [];
+    var _prevTipoMovimiento = "";
 
     // ── Mensaje pendiente (SweetAlert) ──────────────────────────────
     window.addEventListener('load', function () {
@@ -532,6 +533,7 @@
     // ── Abrir modal nuevo ───────────────────────────────────────────
     function abrirModalNuevo() {
         _items = [];
+        _prevTipoMovimiento = "";
         document.getElementById('<%= hdnItemsJson.ClientID %>').value = '[]';
         document.getElementById('<%= ddlTipoMovimiento.ClientID %>').value = '';
         document.getElementById('rbMaterial').checked = true;
@@ -687,7 +689,21 @@
 
     // ── Mostrar/ocultar bases y bloquear costo en transferencia ────
     function onTipoMovimientoChange() {
-        var tipo       = document.getElementById('<%= ddlTipoMovimiento.ClientID %>').value;
+        var ddlTipo = document.getElementById('<%= ddlTipoMovimiento.ClientID %>');
+        var tipo    = ddlTipo.value;
+
+        if (_items.length > 0) {
+            var ok = confirm("Ya tienes ítems agregados al lote. Cambiar el tipo de movimiento vaciará la lista. ¿Deseas continuar?");
+            if (!ok) {
+                ddlTipo.value = _prevTipoMovimiento;
+                return;
+            }
+            _items = [];
+            document.getElementById('<%= hdnItemsJson.ClientID %>').value = '[]';
+            renderTablaItems();
+        }
+
+        _prevTipoMovimiento = tipo;
         var divOrigen  = document.getElementById('divBaseOrigen');
         var divDestino = document.getElementById('divBaseDestino');
         var txtCosto   = document.getElementById('<%= txtCosto.ClientID %>');

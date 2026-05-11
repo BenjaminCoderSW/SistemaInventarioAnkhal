@@ -396,7 +396,7 @@ namespace GrupoAnkhalInventario
                                UnidadCapturaID   = mv.UnidadCapturaID,
                                mv.Costo,
                                mv.RegistradoPorID,
-                               mv.Observaciones,
+                               LoteObs           = lm.Observaciones ?? mv.Observaciones,
                                FolioLote         = lm.Folio
                            }).ToList();
 
@@ -472,7 +472,7 @@ namespace GrupoAnkhalInventario
                         RegistradoPor = nombresUsuario.ContainsKey(r.RegistradoPorID)
                                         ? nombresUsuario[r.RegistradoPorID]
                                         : r.RegistradoPorID.ToString(),
-                        Observaciones = r.Observaciones ?? "",
+                        Observaciones = r.LoteObs ?? "",
                         FolioLote     = r.FolioLote ?? ""
                     }).ToList();
 
