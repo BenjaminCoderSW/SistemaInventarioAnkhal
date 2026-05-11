@@ -605,7 +605,7 @@ namespace GrupoAnkhalInventario
 
                             // Descontar stock y registrar movimientos SALIDA
                             int tipoSalidaID = ObtenerTipoMovimientoID(db, "SALIDA");
-                            DescontarStockYRegistrarMovimientos(db, entrega.EntregaID, baseID, items, tipoSalidaID);
+                            DescontarStockYRegistrarMovimientos(db, entrega.EntregaID, baseID, items, tipoSalidaID, entrega.Observaciones);
 
                             db.SubmitChanges();
                             tx.Commit();
@@ -700,7 +700,7 @@ namespace GrupoAnkhalInventario
                             var items   = ObtenerItemsEntrega(db, entregaID);
                             int tipoSalidaID = ObtenerTipoMovimientoID(db, "SALIDA");
 
-                            DescontarStockYRegistrarMovimientos(db, entregaID, entrega.BaseOrigenID, items, tipoSalidaID);
+                            DescontarStockYRegistrarMovimientos(db, entregaID, entrega.BaseOrigenID, items, tipoSalidaID, entrega.Observaciones);
 
                             entrega.Estado     = "ENTREGADA";
                             entrega.FechaModif = AppHelper.Ahora;
@@ -1361,9 +1361,26 @@ namespace GrupoAnkhalInventario
         }
 
         private void DescontarStockYRegistrarMovimientos(InventarioAnkhalDBDataContext db,
-            int entregaID, int baseID, List<ItemEntregaModel> items, int tipoSalidaID)
+            int entregaID, int baseID, List<ItemEntregaModel> items, int tipoSalidaID,
+            string obsEntrega = null)
         {
             int claveID = Convert.ToInt32(Session["ClaveID"]);
+
+            // Crear lote que agrupa todos los movimientos de esta entrega
+            var loteEnt = new Modelo.LotesMovimientos
+            {
+                Folio            = AppHelper.GenerarFolio(db, "ENT"),
+                TipoMovimientoID = tipoSalidaID,
+                BaseOrigenID     = baseID,
+                BaseDestinoID    = null,
+                Observaciones    = string.IsNullOrEmpty(obsEntrega) ? null : obsEntrega,
+                RegistradoPorID  = claveID,
+                FechaLote        = AppHelper.Ahora.Date,
+                FechaRegistro    = AppHelper.Ahora
+            };
+            db.LotesMovimientos.InsertOnSubmit(loteEnt);
+            db.SubmitChanges(); // obtener LoteID
+            int loteEntID = loteEnt.LoteID;
 
             foreach (var it in items)
             {
@@ -1402,7 +1419,8 @@ namespace GrupoAnkhalInventario
                         Costo            = it.PrecioUnitario,
                         EntregaID        = entregaID,
                         ProduccionID     = null,
-                        Observaciones    = string.Format("Entrega #{0}", entregaID),
+                        LoteID           = loteEntID,
+                        Observaciones    = string.IsNullOrEmpty(obsEntrega) ? null : obsEntrega,
                         RegistradoPorID  = claveID,
                         FechaMovimiento  = AppHelper.Ahora
                     });
@@ -1443,7 +1461,8 @@ namespace GrupoAnkhalInventario
                         Costo             = it.PrecioUnitario,
                         EntregaID         = entregaID,
                         ProduccionID      = null,
-                        Observaciones     = string.Format("Entrega #{0}", entregaID),
+                        LoteID            = loteEntID,
+                        Observaciones     = string.IsNullOrEmpty(obsEntrega) ? null : obsEntrega,
                         RegistradoPorID   = claveID,
                         FechaMovimiento   = AppHelper.Ahora,
                         CantidadCapturada = it.Cantidad,

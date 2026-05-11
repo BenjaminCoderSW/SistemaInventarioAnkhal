@@ -141,6 +141,20 @@ namespace GrupoAnkhalInventario.Helpers
         /// selectedVal: "base:{UnidadMedidaID}" | "conv:{ConversionID}" | null/vacío
         /// Throws InvalidOperationException si la conversión no existe o está inactiva.
         /// </summary>
+        /// <summary>
+        /// Genera un folio con formato {prefix}-yyyyMMdd-### con secuencia diaria independiente por prefijo.
+        /// Debe llamarse dentro de una transacción activa en el DataContext para evitar duplicados.
+        /// </summary>
+        public static string GenerarFolio(InventarioAnkhalDBDataContext db, string prefix)
+        {
+            DateTime hoy = AppHelper.Hoy;
+            int count = db.ExecuteQuery<int>(
+                @"SELECT COUNT(*) FROM dbo.LotesMovimiento WITH (UPDLOCK, HOLDLOCK)
+                  WHERE FechaLote >= {0} AND FechaLote < {1} AND Folio LIKE {2}",
+                hoy, hoy.AddDays(1), prefix + "-%").First();
+            return string.Format("{0}-{1}-{2:D3}", prefix, hoy.ToString("yyyyMMdd"), count + 1);
+        }
+
         public static decimal ObtenerFactor(int matID, string selectedVal,
             InventarioAnkhalDBDataContext db)
         {

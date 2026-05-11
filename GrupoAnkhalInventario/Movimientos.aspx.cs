@@ -473,17 +473,7 @@ namespace GrupoAnkhalInventario
                                         ? nombresUsuario[r.RegistradoPorID]
                                         : r.RegistradoPorID.ToString(),
                         Observaciones = r.LoteObs ?? "",
-                        FolioLote     = !string.IsNullOrEmpty(r.FolioLote)
-                                        ? r.FolioLote
-                                        : r.LoteObs != null && r.LoteObs.StartsWith("Entrega #")
-                                            ? string.Format("ENT-{0}-{1:D3}",
-                                                r.Fecha.ToString("yyyyMMdd"),
-                                                int.Parse(r.LoteObs.Substring(9)))
-                                            : r.LoteObs != null && r.LoteObs.StartsWith("Producción #")
-                                                ? string.Format("PROD-{0}-{1:D3}",
-                                                    r.Fecha.ToString("yyyyMMdd"),
-                                                    int.Parse(r.LoteObs.Substring(12)))
-                                                : ""
+                        FolioLote     = r.FolioLote ?? ""
                     }).ToList();
 
                 gvMovimientos.DataSource = pagina;
@@ -711,12 +701,7 @@ namespace GrupoAnkhalInventario
         // ── Genera folio MOV-yyyyMMdd-### con UPDLOCK/HOLDLOCK ────────────────
         private string GenerarFolioLote(InventarioAnkhalDBDataContext db)
         {
-            DateTime hoy = AppHelper.Hoy;
-            int count = db.ExecuteQuery<int>(
-                @"SELECT COUNT(*) FROM dbo.LotesMovimiento WITH (UPDLOCK, HOLDLOCK)
-                  WHERE FechaLote >= {0} AND FechaLote < {1}",
-                hoy, hoy.AddDays(1)).First();
-            return string.Format("MOV-{0}-{1:D3}", hoy.ToString("yyyyMMdd"), count + 1);
+            return AppHelper.GenerarFolio(db, "MOV");
         }
 
         // ── Resuelve la conversión de unidades para un ítem del lote ─────────

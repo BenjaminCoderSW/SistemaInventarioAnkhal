@@ -868,6 +868,22 @@ namespace GrupoAnkhalInventario
                             db.Produccion.InsertOnSubmit(prod);
                             db.SubmitChanges(); // ← primer commit para obtener ProduccionID
 
+                            // Crear lote que agrupa todos los consumos de esta producción
+                            var loteProd = new Modelo.LotesMovimientos
+                            {
+                                Folio            = AppHelper.GenerarFolio(db, "PROD"),
+                                TipoMovimientoID = tipoConsumoID,
+                                BaseOrigenID     = baseID,
+                                BaseDestinoID    = null,
+                                Observaciones    = string.IsNullOrEmpty(obs) ? null : obs,
+                                RegistradoPorID  = claveID,
+                                FechaLote        = AppHelper.Ahora.Date,
+                                FechaRegistro    = AppHelper.Ahora
+                            };
+                            db.LotesMovimientos.InsertOnSubmit(loteProd);
+                            db.SubmitChanges(); // obtener LoteID
+                            int loteProdID = loteProd.LoteID;
+
                             // 2. Consumos de materiales del BOM
                             foreach (var c in listaConsumos)
                             {
@@ -926,7 +942,8 @@ namespace GrupoAnkhalInventario
                                         Costo             = costoMat,
                                         ProduccionID      = prod.ProduccionID,
                                         EntregaID         = null,
-                                        Observaciones     = string.Format("Producción #{0}", prod.ProduccionID),
+                                        LoteID            = loteProdID,
+                                        Observaciones     = string.IsNullOrEmpty(obs) ? null : obs,
                                         RegistradoPorID   = claveID,
                                         FechaMovimiento   = AppHelper.Ahora
                                     });
