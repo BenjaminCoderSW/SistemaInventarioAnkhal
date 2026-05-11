@@ -473,7 +473,17 @@ namespace GrupoAnkhalInventario
                                         ? nombresUsuario[r.RegistradoPorID]
                                         : r.RegistradoPorID.ToString(),
                         Observaciones = r.LoteObs ?? "",
-                        FolioLote     = r.FolioLote ?? ""
+                        FolioLote     = !string.IsNullOrEmpty(r.FolioLote)
+                                        ? r.FolioLote
+                                        : r.LoteObs != null && r.LoteObs.StartsWith("Entrega #")
+                                            ? string.Format("ENT-{0}-{1:D3}",
+                                                r.Fecha.ToString("yyyyMMdd"),
+                                                int.Parse(r.LoteObs.Substring(9)))
+                                            : r.LoteObs != null && r.LoteObs.StartsWith("Producción #")
+                                                ? string.Format("PROD-{0}-{1:D3}",
+                                                    r.Fecha.ToString("yyyyMMdd"),
+                                                    int.Parse(r.LoteObs.Substring(12)))
+                                                : ""
                     }).ToList();
 
                 gvMovimientos.DataSource = pagina;
