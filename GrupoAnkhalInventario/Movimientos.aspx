@@ -458,6 +458,9 @@
         </div>
 
         <!-- ── TABLA DE ÍTEMS ACUMULADOS ─────────────────────────────── -->
+        <div class="mb-1">
+          <small class="text-muted"><i class="fas fa-info-circle"></i> Puedes agregar hasta 50 ítems por movimiento.</small>
+        </div>
         <div id="divItemsAcumulados" class="mb-2">
           <table id="tblItemsLote" class="table table-bordered table-sm mb-1">
             <thead>
@@ -582,6 +585,16 @@
             unidadId   = parseInt(selOpt.value) || 0;
             unidadTxt  = selOpt.text;
             factor     = parseFloat(selOpt.getAttribute('data-factor')) || 1;
+        }
+
+        // Verificar límite antes de agregar
+        var MAX_ITEMS = 50;
+        if (_items.length >= MAX_ITEMS) {
+            Swal.fire({ icon: 'warning', title: 'Límite alcanzado',
+                text: 'Un lote no puede contener más de ' + MAX_ITEMS + ' ítems.',
+                confirmButtonColor: '#003366' })
+                .then(function () { $('#modalNuevo').modal('show'); });
+            return;
         }
 
         // Acumular si mismo ítem ya existe (mismo tipo+id+unidad)

@@ -494,8 +494,9 @@ namespace GrupoAnkhalInventario
             foreach (ListItem li in cblFiltrTipo.Items) li.Selected = false;
             ddlFiltrBase.SelectedIndex = 0;
             ddlFiltrItem.SelectedIndex = 0;
-            txtFechaDesde.Text         = "";
-            txtFechaHasta.Text         = "";
+            string hoy = AppHelper.Hoy.ToString("yyyy-MM-dd");
+            txtFechaDesde.Text         = hoy;
+            txtFechaHasta.Text         = hoy;
             gvMovimientos.PageIndex    = 0;
             CargarDashboard();
             CargarGrid();
@@ -529,6 +530,14 @@ namespace GrupoAnkhalInventario
             {
                 SetMsg("warning", "Sin ítems",
                     "Agregue al menos un ítem antes de guardar.", "modalNuevo");
+                return;
+            }
+
+            const int MaxItemsPorLote = 50;
+            if (items.Count > MaxItemsPorLote)
+            {
+                SetMsg("warning", "Límite excedido",
+                    $"Un lote no puede contener más de {MaxItemsPorLote} ítems.", "modalNuevo");
                 return;
             }
 
