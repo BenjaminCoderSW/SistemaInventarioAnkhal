@@ -2029,6 +2029,7 @@
     <Content Include="Produccion.aspx" />
     <Content Include="Productos.aspx" />
     <Content Include="RegistrarClientes.aspx" />
+    <Content Include="RegistrarProveedores.aspx" />
     <Content Include="scriptsPropios\sweetalert2%4011.js" />
     <Content Include="Usuarios.aspx" />
     <Content Include="Web.config" />
@@ -2059,6 +2060,13 @@
       <DependentUpon>Global.asax</DependentUpon>
     </Compile>
     <Compile Include="Helpers\AppHelper.cs" />
+    <Compile Include="RegistrarProveedores.aspx.cs">
+      <DependentUpon>RegistrarProveedores.aspx</DependentUpon>
+      <SubType>ASPXCodeBehind</SubType>
+    </Compile>
+    <Compile Include="RegistrarProveedores.aspx.designer.cs">
+      <DependentUpon>RegistrarProveedores.aspx</DependentUpon>
+    </Compile>
     <Compile Include="Services\UsuarioService.cs" />
     <Compile Include="ImprimirInventario.ashx.cs">
       <DependentUpon>ImprimirInventario.ashx</DependentUpon>

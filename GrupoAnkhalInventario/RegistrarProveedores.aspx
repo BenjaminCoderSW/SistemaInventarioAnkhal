@@ -1,4 +1,4 @@
-<%@ Page Title="Clientes" Language="C#" MasterPageFile="~/Site.Master" AutoEventWireup="true" CodeBehind="RegistrarClientes.aspx.cs" Inherits="GrupoAnkhalInventario.RegistrarClientes" %>
+<%@ Page Title="Proveedores" Language="C#" MasterPageFile="~/Site.Master" AutoEventWireup="true" CodeBehind="RegistrarProveedores.aspx.cs" Inherits="GrupoAnkhalInventario.RegistrarProveedores" %>
 
 <asp:Content ID="Content1" ContentPlaceHolderID="head" runat="server">
     <link href="css/gridviewPantalla.css" rel="stylesheet" />
@@ -49,12 +49,12 @@
             <div class="col-12">
                 <div class="card">
                     <div class="card-header" style="background-color: #003366; color: white;">
-                        <h3 class="card-title"><i class="fas fa-users"></i> Clientes</h3>
+                        <h3 class="card-title"><i class="fas fa-truck"></i> Proveedores</h3>
                     </div>
                     <div class="card-body">
 
                         <div class="mb-3">
-                            <asp:Button ID="btnNuevo" runat="server" Text="+ Nuevo Cliente"
+                            <asp:Button ID="btnNuevo" runat="server" Text="+ Nuevo Proveedor"
                                 CssClass="btn btn-success"
                                 OnClientClick="abrirModalNuevo(); return false;" />
                         </div>
@@ -91,23 +91,23 @@
                         </div>
 
                         <div class="table-responsive">
-                            <asp:GridView ID="gvClientes" runat="server" AutoGenerateColumns="False"
+                            <asp:GridView ID="gvProveedores" runat="server" AutoGenerateColumns="False"
                                 CssClass="table table-bordered table-striped custom-grid"
                                 AllowPaging="True" AllowCustomPaging="True" PageSize="15"
-                                OnPageIndexChanging="gvClientes_PageIndexChanging"
+                                OnPageIndexChanging="gvProveedores_PageIndexChanging"
                                 PagerStyle-CssClass="pager-custom"
                                 PagerSettings-Mode="NumericFirstLast"
                                 PagerSettings-FirstPageText="«"
                                 PagerSettings-LastPageText="»"
                                 PagerSettings-PageButtonCount="5">
                                 <Columns>
-                                    <asp:BoundField DataField="ClienteID"    HeaderText="ID"           Visible="false" />
-                                    <asp:BoundField DataField="Nombre"       HeaderText="Nombre" />
-                                    <asp:BoundField DataField="Contacto"     HeaderText="Contacto" />
-                                    <asp:BoundField DataField="Telefono"     HeaderText="Tel&eacute;fono" />
-                                    <asp:BoundField DataField="Email"        HeaderText="Email" />
-                                    <asp:BoundField DataField="RFC"          HeaderText="RFC" />
-                                    <asp:BoundField DataField="TipoPersona"  HeaderText="Tipo" />
+                                    <asp:BoundField DataField="ProveedorID"   HeaderText="ID"           Visible="false" />
+                                    <asp:BoundField DataField="Nombre"        HeaderText="Nombre" />
+                                    <asp:BoundField DataField="Contacto"      HeaderText="Contacto" />
+                                    <asp:BoundField DataField="Telefono"      HeaderText="Tel&eacute;fono" />
+                                    <asp:BoundField DataField="Email"         HeaderText="Email" />
+                                    <asp:BoundField DataField="RFC"           HeaderText="RFC" />
+                                    <asp:BoundField DataField="TipoPersona"   HeaderText="Tipo" />
                                     <asp:TemplateField HeaderText="Estado">
                                         <ItemTemplate>
                                             <span class="badge badge-<%# Convert.ToBoolean(Eval("Activo")) ? "success" : "secondary" %>">
@@ -119,38 +119,41 @@
                                         <ItemTemplate>
                                             <button type="button" class="btn btn-primary btn-sm"
                                                 onclick="abrirModalEditar(
-                                                    '<%# Eval("ClienteID") %>',
-                                                    '<%# Server.HtmlEncode((Eval("Nombre")           ?? "").ToString()) %>',
-                                                    '<%# Server.HtmlEncode((Eval("Contacto")         ?? "").ToString()) %>',
-                                                    '<%# Server.HtmlEncode((Eval("Telefono")         ?? "").ToString()) %>',
-                                                    '<%# Server.HtmlEncode((Eval("Email")            ?? "").ToString()) %>',
-                                                    '<%# Server.HtmlEncode((Eval("PaginaWeb")        ?? "").ToString()) %>',
-                                                    '<%# Server.HtmlEncode((Eval("TipoEmpresa")      ?? "").ToString()) %>',
-                                                    '<%# Server.HtmlEncode((Eval("Nacionalidad")     ?? "").ToString()) %>',
-                                                    '<%# Server.HtmlEncode((Eval("TipoPersona")      ?? "").ToString()) %>',
-                                                    '<%# Server.HtmlEncode((Eval("RazonSocialFiscal")?? "").ToString()) %>',
-                                                    '<%# Server.HtmlEncode((Eval("RFC")              ?? "").ToString()) %>',
-                                                    '<%# Server.HtmlEncode((Eval("RegimenFiscal")    ?? "").ToString()) %>',
-                                                    '<%# Server.HtmlEncode((Eval("UsoCFDI")          ?? "").ToString()) %>',
-                                                    '<%# Server.HtmlEncode((Eval("CURP")             ?? "").ToString()) %>',
-                                                    '<%# Server.HtmlEncode((Eval("Pais")             ?? "").ToString()) %>',
-                                                    '<%# Server.HtmlEncode((Eval("CodigoPostal")     ?? "").ToString()) %>',
-                                                    '<%# Server.HtmlEncode((Eval("Estado")           ?? "").ToString()) %>',
-                                                    '<%# Server.HtmlEncode((Eval("Municipio")        ?? "").ToString()) %>',
-                                                    '<%# Server.HtmlEncode((Eval("Colonia")          ?? "").ToString()) %>',
-                                                    '<%# Server.HtmlEncode((Eval("NumExt")           ?? "").ToString()) %>',
-                                                    '<%# Server.HtmlEncode((Eval("NumInt")           ?? "").ToString()) %>',
-                                                    '<%# Server.HtmlEncode((Eval("Referencia")       ?? "").ToString()) %>',
+                                                    '<%# Eval("ProveedorID") %>',
+                                                    '<%# Server.HtmlEncode((Eval("Nombre")            ?? "").ToString()) %>',
+                                                    '<%# Server.HtmlEncode((Eval("Contacto")          ?? "").ToString()) %>',
+                                                    '<%# Server.HtmlEncode((Eval("Telefono")          ?? "").ToString()) %>',
+                                                    '<%# Server.HtmlEncode((Eval("Email")             ?? "").ToString()) %>',
+                                                    '<%# Server.HtmlEncode((Eval("PaginaWeb")         ?? "").ToString()) %>',
+                                                    '<%# Server.HtmlEncode((Eval("TipoEmpresa")       ?? "").ToString()) %>',
+                                                    '<%# Server.HtmlEncode((Eval("Nacionalidad")      ?? "").ToString()) %>',
+                                                    '<%# Server.HtmlEncode((Eval("TipoPersona")       ?? "").ToString()) %>',
+                                                    '<%# Server.HtmlEncode((Eval("RazonSocialFiscal") ?? "").ToString()) %>',
+                                                    '<%# Server.HtmlEncode((Eval("RFC")               ?? "").ToString()) %>',
+                                                    '<%# Server.HtmlEncode((Eval("RegimenFiscal")     ?? "").ToString()) %>',
+                                                    '<%# Server.HtmlEncode((Eval("CURP")              ?? "").ToString()) %>',
+                                                    '<%# Server.HtmlEncode((Eval("Banco")             ?? "").ToString()) %>',
+                                                    '<%# Server.HtmlEncode((Eval("CLABE")             ?? "").ToString()) %>',
+                                                    '<%# Server.HtmlEncode((Eval("CuentaBancaria")    ?? "").ToString()) %>',
+                                                    '<%# Server.HtmlEncode((Eval("TitularCuenta")     ?? "").ToString()) %>',
                                                     '<%# Eval("DiasCredito")   ?? "" %>',
-                                                    '<%# Eval("LimiteCredito") ?? "" %>'
+                                                    '<%# Eval("LimiteCredito") ?? "" %>',
+                                                    '<%# Server.HtmlEncode((Eval("Pais")              ?? "").ToString()) %>',
+                                                    '<%# Server.HtmlEncode((Eval("CodigoPostal")      ?? "").ToString()) %>',
+                                                    '<%# Server.HtmlEncode((Eval("Estado")            ?? "").ToString()) %>',
+                                                    '<%# Server.HtmlEncode((Eval("Municipio")         ?? "").ToString()) %>',
+                                                    '<%# Server.HtmlEncode((Eval("Colonia")           ?? "").ToString()) %>',
+                                                    '<%# Server.HtmlEncode((Eval("NumExt")            ?? "").ToString()) %>',
+                                                    '<%# Server.HtmlEncode((Eval("NumInt")            ?? "").ToString()) %>',
+                                                    '<%# Server.HtmlEncode((Eval("Referencia")        ?? "").ToString()) %>'
                                                 )">
                                                 <i class="fas fa-edit"></i> Editar
                                             </button>
                                             <asp:Button ID="btnToggle" runat="server"
                                                 CssClass='<%# Convert.ToBoolean(Eval("Activo")) ? "btn btn-warning btn-sm" : "btn btn-success btn-sm" %>'
                                                 Text='<%# Convert.ToBoolean(Eval("Activo")) ? "Desactivar" : "Activar" %>'
-                                                CommandArgument='<%# Eval("ClienteID") %>'
-                                                OnClientClick='<%# "return confirmarToggle(\"" + Eval("ClienteID") + "\", \"" + Server.HtmlEncode((Eval("Nombre") ?? "").ToString()) + "\", " + Eval("Activo").ToString().ToLower() + ");" %>'
+                                                CommandArgument='<%# Eval("ProveedorID") %>'
+                                                OnClientClick='<%# "return confirmarToggle(\"" + Eval("ProveedorID") + "\", \"" + Server.HtmlEncode((Eval("Nombre") ?? "").ToString()) + "\", " + Eval("Activo").ToString().ToLower() + ");" %>'
                                                 OnClick="btnToggle_Click" />
                                         </ItemTemplate>
                                     </asp:TemplateField>
@@ -164,24 +167,25 @@
         </div>
     </div>
 
-    <asp:HiddenField ID="hdnToggleClienteID" runat="server" Value="" />
+    <asp:HiddenField ID="hdnToggleProveedorID" runat="server" Value="" />
     <asp:Button ID="btnToggleHidden" runat="server" CssClass="d-none" OnClick="btnToggleHidden_Click" />
     <asp:HiddenField ID="hdnMensajePendiente" runat="server" Value="" />
 
     <!-- ══════════════════════════════════════════════════════════════════════
-         MODAL NUEVO CLIENTE
+         MODAL NUEVO PROVEEDOR
     ══════════════════════════════════════════════════════════════════════ -->
     <div class="modal fade" id="modalNuevo" tabindex="-1" role="dialog" data-backdrop="static">
         <div class="modal-dialog modal-xl" role="document">
             <div class="modal-content">
                 <div class="modal-header" style="background-color:#003366;color:white;">
-                    <h5 class="modal-title"><i class="fas fa-user-plus"></i> Nuevo Cliente</h5>
+                    <h5 class="modal-title"><i class="fas fa-truck"></i> Nuevo Proveedor</h5>
                     <button type="button" class="close text-white" data-dismiss="modal"><span>&times;</span></button>
                 </div>
                 <div class="modal-body">
                     <ul class="nav nav-tabs mb-3" id="tabsNuevo" role="tablist">
                         <li class="nav-item"><a class="nav-link active" data-toggle="tab" href="#pane-gen-n"><i class="fas fa-user"></i> Datos Generales</a></li>
                         <li class="nav-item"><a class="nav-link" data-toggle="tab" href="#pane-fis-n"><i class="fas fa-file-invoice"></i> Datos Fiscales</a></li>
+                        <li class="nav-item"><a class="nav-link" data-toggle="tab" href="#pane-ban-n"><i class="fas fa-university"></i> Datos Bancarios</a></li>
                         <li class="nav-item"><a class="nav-link" data-toggle="tab" href="#pane-dir-n"><i class="fas fa-map-marker-alt"></i> Direcci&oacute;n</a></li>
                     </ul>
                     <div class="tab-content">
@@ -215,7 +219,7 @@
                                     <div class="form-group">
                                         <label>Contacto</label>
                                         <asp:TextBox ID="txtContacto" runat="server" CssClass="form-control"
-                                            Placeholder="Nombre del contacto" MaxLength="150"></asp:TextBox>
+                                            Placeholder="Nombre del contacto" MaxLength="100"></asp:TextBox>
                                     </div>
                                 </div>
                                 <div class="col-md-6">
@@ -231,14 +235,14 @@
                                     <div class="form-group">
                                         <label>Email</label>
                                         <asp:TextBox ID="txtEmail" runat="server" CssClass="form-control"
-                                            Placeholder="correo@empresa.com" MaxLength="150" TextMode="Email"></asp:TextBox>
+                                            Placeholder="correo@empresa.com" MaxLength="100" TextMode="Email"></asp:TextBox>
                                     </div>
                                 </div>
                                 <div class="col-md-6">
                                     <div class="form-group">
                                         <label>P&aacute;gina Web</label>
                                         <asp:TextBox ID="txtPaginaWeb" runat="server" CssClass="form-control"
-                                            Placeholder="www.empresa.com" MaxLength="200"></asp:TextBox>
+                                            Placeholder="www.proveedor.com" MaxLength="200"></asp:TextBox>
                                     </div>
                                 </div>
                             </div>
@@ -261,24 +265,6 @@
                                     </div>
                                 </div>
                             </div>
-                            <div class="row">
-                                <div class="col-md-4">
-                                    <div class="form-group">
-                                        <label>D&iacute;as de Cr&eacute;dito</label>
-                                        <asp:TextBox ID="txtDiasCredito" runat="server" CssClass="form-control"
-                                            Placeholder="Ej: 30" MaxLength="5" TextMode="Number"></asp:TextBox>
-                                        <div class="field-hint">Plazo que le das al cliente para pagar.</div>
-                                    </div>
-                                </div>
-                                <div class="col-md-4">
-                                    <div class="form-group">
-                                        <label>L&iacute;mite de Cr&eacute;dito <small class="text-muted">($ MXN)</small></label>
-                                        <asp:TextBox ID="txtLimiteCredito" runat="server" CssClass="form-control"
-                                            Placeholder="Ej: 50000.00" MaxLength="15" TextMode="Number"></asp:TextBox>
-                                        <div class="field-hint">Monto m&aacute;ximo de venta a cr&eacute;dito. Ingresar en pesos mexicanos.</div>
-                                    </div>
-                                </div>
-                            </div>
                         </div>
 
                         <!-- ── TAB FISCAL ── -->
@@ -289,7 +275,7 @@
                                         <label>Raz&oacute;n Social Fiscal</label>
                                         <asp:TextBox ID="txtRazonSocialFiscal" runat="server" CssClass="form-control"
                                             Placeholder="Nombre exacto registrado en el SAT" MaxLength="300"></asp:TextBox>
-                                        <div class="field-hint"><i class="fas fa-info-circle"></i> Debe coincidir exactamente con el SAT. Se usa en el CFDI.</div>
+                                        <div class="field-hint"><i class="fas fa-info-circle"></i> Debe coincidir exactamente con el SAT para validar sus facturas.</div>
                                     </div>
                                 </div>
                             </div>
@@ -337,39 +323,6 @@
                                     </div>
                                 </div>
                             </div>
-                            <div class="row">
-                                <div class="col-md-12">
-                                    <div class="form-group">
-                                        <label>Uso CFDI Predeterminado</label>
-                                        <asp:DropDownList ID="ddlUsoCFDI" runat="server" CssClass="form-control">
-                                            <asp:ListItem Value="">-- Seleccionar --</asp:ListItem>
-                                            <asp:ListItem Value="G01" data-tipo="Ambos">G01 - Adquisici&oacute;n de mercanc&iacute;as</asp:ListItem>
-                                            <asp:ListItem Value="G02" data-tipo="Ambos">G02 - Devoluciones, descuentos o bonificaciones</asp:ListItem>
-                                            <asp:ListItem Value="G03" data-tipo="Ambos">G03 - Gastos en general</asp:ListItem>
-                                            <asp:ListItem Value="I01" data-tipo="Ambos">I01 - Construcciones</asp:ListItem>
-                                            <asp:ListItem Value="I02" data-tipo="Ambos">I02 - Mobilario y equipo de oficina</asp:ListItem>
-                                            <asp:ListItem Value="I03" data-tipo="Ambos">I03 - Equipo de transporte</asp:ListItem>
-                                            <asp:ListItem Value="I04" data-tipo="Ambos">I04 - Equipo de c&oacute;mputo y accesorios</asp:ListItem>
-                                            <asp:ListItem Value="I05" data-tipo="Ambos">I05 - Dados, troqueles, moldes y herramental</asp:ListItem>
-                                            <asp:ListItem Value="I06" data-tipo="Ambos">I06 - Comunicaciones telef&oacute;nicas</asp:ListItem>
-                                            <asp:ListItem Value="I07" data-tipo="Ambos">I07 - Comunicaciones satelitales</asp:ListItem>
-                                            <asp:ListItem Value="I08" data-tipo="Ambos">I08 - Otra maquinaria y equipo</asp:ListItem>
-                                            <asp:ListItem Value="D01" data-tipo="Fisica">D01 - Honorarios m&eacute;dicos y gastos hospitalarios</asp:ListItem>
-                                            <asp:ListItem Value="D02" data-tipo="Fisica">D02 - Gastos m&eacute;dicos por incapacidad</asp:ListItem>
-                                            <asp:ListItem Value="D03" data-tipo="Fisica">D03 - Gastos funerales</asp:ListItem>
-                                            <asp:ListItem Value="D04" data-tipo="Fisica">D04 - Donativos</asp:ListItem>
-                                            <asp:ListItem Value="D05" data-tipo="Fisica">D05 - Intereses por cr&eacute;ditos hipotecarios</asp:ListItem>
-                                            <asp:ListItem Value="D06" data-tipo="Fisica">D06 - Aportaciones voluntarias al SAR</asp:ListItem>
-                                            <asp:ListItem Value="D07" data-tipo="Fisica">D07 - Primas por seguros de gastos m&eacute;dicos</asp:ListItem>
-                                            <asp:ListItem Value="D08" data-tipo="Fisica">D08 - Transportaci&oacute;n escolar obligatoria</asp:ListItem>
-                                            <asp:ListItem Value="D09" data-tipo="Fisica">D09 - Dep&oacute;sitos en cuentas de ahorro y pensiones</asp:ListItem>
-                                            <asp:ListItem Value="D10" data-tipo="Fisica">D10 - Pagos por servicios educativos</asp:ListItem>
-                                            <asp:ListItem Value="S01" data-tipo="Ambos">S01 - Sin efectos fiscales</asp:ListItem>
-                                            <asp:ListItem Value="CP01" data-tipo="Ambos">CP01 - Pagos</asp:ListItem>
-                                        </asp:DropDownList>
-                                    </div>
-                                </div>
-                            </div>
                             <div class="row" id="rowCurp">
                                 <div class="col-md-8">
                                     <div class="form-group">
@@ -390,6 +343,62 @@
                             </div>
                         </div>
 
+                        <!-- ── TAB BANCARIO ── -->
+                        <div class="tab-pane fade" id="pane-ban-n">
+                            <div class="row">
+                                <div class="col-md-6">
+                                    <div class="form-group">
+                                        <label>Banco</label>
+                                        <asp:TextBox ID="txtBanco" runat="server" CssClass="form-control"
+                                            Placeholder="Ej: BBVA, Banorte, HSBC..." MaxLength="100"></asp:TextBox>
+                                    </div>
+                                </div>
+                                <div class="col-md-6">
+                                    <div class="form-group">
+                                        <label>CLABE Interbancaria</label>
+                                        <asp:TextBox ID="txtCLABE" runat="server" CssClass="form-control"
+                                            Placeholder="18 d&iacute;gitos" MaxLength="18"></asp:TextBox>
+                                        <div class="field-hint"><i class="fas fa-info-circle"></i> 18 d&iacute;gitos num&eacute;ricos para transferencias.</div>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="row">
+                                <div class="col-md-6">
+                                    <div class="form-group">
+                                        <label>N&uacute;mero de Cuenta</label>
+                                        <asp:TextBox ID="txtCuentaBancaria" runat="server" CssClass="form-control"
+                                            Placeholder="N&uacute;mero de cuenta bancaria" MaxLength="30"></asp:TextBox>
+                                    </div>
+                                </div>
+                                <div class="col-md-6">
+                                    <div class="form-group">
+                                        <label>Titular de la Cuenta</label>
+                                        <asp:TextBox ID="txtTitularCuenta" runat="server" CssClass="form-control"
+                                            Placeholder="Nombre del titular" MaxLength="200"></asp:TextBox>
+                                    </div>
+                                </div>
+                            </div>
+                            <hr />
+                            <div class="row">
+                                <div class="col-md-4">
+                                    <div class="form-group">
+                                        <label>D&iacute;as de Cr&eacute;dito</label>
+                                        <asp:TextBox ID="txtDiasCredito" runat="server" CssClass="form-control"
+                                            Placeholder="Ej: 30" MaxLength="5" TextMode="Number"></asp:TextBox>
+                                        <div class="field-hint">D&iacute;as para pago de facturas del proveedor.</div>
+                                    </div>
+                                </div>
+                                <div class="col-md-4">
+                                    <div class="form-group">
+                                        <label>L&iacute;mite de Cr&eacute;dito <small class="text-muted">($ MXN)</small></label>
+                                        <asp:TextBox ID="txtLimiteCredito" runat="server" CssClass="form-control"
+                                            Placeholder="Ej: 50000.00" MaxLength="15" TextMode="Number"></asp:TextBox>
+                                        <div class="field-hint">Monto m&aacute;ximo autorizado de compra a cr&eacute;dito. Ingresar en pesos mexicanos.</div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
                         <!-- ── TAB DIRECCIÓN ── -->
                         <div class="tab-pane fade" id="pane-dir-n">
                             <div class="row">
@@ -402,7 +411,7 @@
                                 </div>
                                 <div class="col-md-6">
                                     <div class="form-group">
-                                        <label>C&oacute;digo Postal Fiscal <small class="text-muted">(domicilio SAT)</small></label>
+                                        <label>C&oacute;digo Postal</label>
                                         <asp:TextBox ID="txtCodigoPostal" runat="server" CssClass="form-control"
                                             Placeholder="Ej: 06600" MaxLength="10"></asp:TextBox>
                                     </div>
@@ -454,7 +463,7 @@
                                     <div class="form-group">
                                         <label>Referencia</label>
                                         <asp:TextBox ID="txtReferencia" runat="server" CssClass="form-control"
-                                            Placeholder="Ej: Entre calle X y calle Y, fachada azul" MaxLength="300"></asp:TextBox>
+                                            Placeholder="Ej: Entre calle X y calle Y" MaxLength="300"></asp:TextBox>
                                     </div>
                                 </div>
                             </div>
@@ -474,20 +483,21 @@
     </div>
 
     <!-- ══════════════════════════════════════════════════════════════════════
-         MODAL EDITAR CLIENTE
+         MODAL EDITAR PROVEEDOR
     ══════════════════════════════════════════════════════════════════════ -->
     <div class="modal fade" id="modalEditar" tabindex="-1" role="dialog" data-backdrop="static">
         <div class="modal-dialog modal-xl" role="document">
             <div class="modal-content">
                 <div class="modal-header" style="background-color:#003366;color:white;">
-                    <h5 class="modal-title"><i class="fas fa-edit"></i> Editar Cliente</h5>
+                    <h5 class="modal-title"><i class="fas fa-edit"></i> Editar Proveedor</h5>
                     <button type="button" class="close text-white" data-dismiss="modal"><span>&times;</span></button>
                 </div>
                 <div class="modal-body">
-                    <asp:HiddenField ID="hdnClienteID" runat="server" />
+                    <asp:HiddenField ID="hdnProveedorID" runat="server" />
                     <ul class="nav nav-tabs mb-3" id="tabsEditar" role="tablist">
                         <li class="nav-item"><a class="nav-link active" data-toggle="tab" href="#pane-gen-e"><i class="fas fa-user"></i> Datos Generales</a></li>
                         <li class="nav-item"><a class="nav-link" data-toggle="tab" href="#pane-fis-e"><i class="fas fa-file-invoice"></i> Datos Fiscales</a></li>
+                        <li class="nav-item"><a class="nav-link" data-toggle="tab" href="#pane-ban-e"><i class="fas fa-university"></i> Datos Bancarios</a></li>
                         <li class="nav-item"><a class="nav-link" data-toggle="tab" href="#pane-dir-e"><i class="fas fa-map-marker-alt"></i> Direcci&oacute;n</a></li>
                     </ul>
                     <div class="tab-content">
@@ -519,7 +529,7 @@
                                 <div class="col-md-6">
                                     <div class="form-group">
                                         <label>Contacto</label>
-                                        <asp:TextBox ID="txtContactoEdit" runat="server" CssClass="form-control" MaxLength="150"></asp:TextBox>
+                                        <asp:TextBox ID="txtContactoEdit" runat="server" CssClass="form-control" MaxLength="100"></asp:TextBox>
                                     </div>
                                 </div>
                                 <div class="col-md-6">
@@ -533,7 +543,7 @@
                                 <div class="col-md-6">
                                     <div class="form-group">
                                         <label>Email</label>
-                                        <asp:TextBox ID="txtEmailEdit" runat="server" CssClass="form-control" MaxLength="150" TextMode="Email"></asp:TextBox>
+                                        <asp:TextBox ID="txtEmailEdit" runat="server" CssClass="form-control" MaxLength="100" TextMode="Email"></asp:TextBox>
                                     </div>
                                 </div>
                                 <div class="col-md-6">
@@ -561,22 +571,6 @@
                                     </div>
                                 </div>
                             </div>
-                            <div class="row">
-                                <div class="col-md-4">
-                                    <div class="form-group">
-                                        <label>D&iacute;as de Cr&eacute;dito</label>
-                                        <asp:TextBox ID="txtDiasCreditoEdit" runat="server" CssClass="form-control" MaxLength="5" TextMode="Number"></asp:TextBox>
-                                        <div class="field-hint">Plazo que le das al cliente para pagar.</div>
-                                    </div>
-                                </div>
-                                <div class="col-md-4">
-                                    <div class="form-group">
-                                        <label>L&iacute;mite de Cr&eacute;dito <small class="text-muted">($ MXN)</small></label>
-                                        <asp:TextBox ID="txtLimiteCreditoEdit" runat="server" CssClass="form-control" MaxLength="15" TextMode="Number"></asp:TextBox>
-                                        <div class="field-hint">Monto m&aacute;ximo de venta a cr&eacute;dito. Ingresar en pesos mexicanos.</div>
-                                    </div>
-                                </div>
-                            </div>
                         </div>
 
                         <!-- ── TAB FISCAL ── -->
@@ -587,7 +581,7 @@
                                         <label>Raz&oacute;n Social Fiscal</label>
                                         <asp:TextBox ID="txtRazonSocialFiscalEdit" runat="server" CssClass="form-control"
                                             Placeholder="Nombre exacto registrado en el SAT" MaxLength="300"></asp:TextBox>
-                                        <div class="field-hint"><i class="fas fa-info-circle"></i> Debe coincidir exactamente con el SAT. Se usa en el CFDI.</div>
+                                        <div class="field-hint"><i class="fas fa-info-circle"></i> Debe coincidir exactamente con el SAT para validar sus facturas.</div>
                                     </div>
                                 </div>
                             </div>
@@ -635,39 +629,6 @@
                                     </div>
                                 </div>
                             </div>
-                            <div class="row">
-                                <div class="col-md-12">
-                                    <div class="form-group">
-                                        <label>Uso CFDI Predeterminado</label>
-                                        <asp:DropDownList ID="ddlUsoCFDIEdit" runat="server" CssClass="form-control">
-                                            <asp:ListItem Value="">-- Seleccionar --</asp:ListItem>
-                                            <asp:ListItem Value="G01" data-tipo="Ambos">G01 - Adquisici&oacute;n de mercanc&iacute;as</asp:ListItem>
-                                            <asp:ListItem Value="G02" data-tipo="Ambos">G02 - Devoluciones, descuentos o bonificaciones</asp:ListItem>
-                                            <asp:ListItem Value="G03" data-tipo="Ambos">G03 - Gastos en general</asp:ListItem>
-                                            <asp:ListItem Value="I01" data-tipo="Ambos">I01 - Construcciones</asp:ListItem>
-                                            <asp:ListItem Value="I02" data-tipo="Ambos">I02 - Mobilario y equipo de oficina</asp:ListItem>
-                                            <asp:ListItem Value="I03" data-tipo="Ambos">I03 - Equipo de transporte</asp:ListItem>
-                                            <asp:ListItem Value="I04" data-tipo="Ambos">I04 - Equipo de c&oacute;mputo y accesorios</asp:ListItem>
-                                            <asp:ListItem Value="I05" data-tipo="Ambos">I05 - Dados, troqueles, moldes y herramental</asp:ListItem>
-                                            <asp:ListItem Value="I06" data-tipo="Ambos">I06 - Comunicaciones telef&oacute;nicas</asp:ListItem>
-                                            <asp:ListItem Value="I07" data-tipo="Ambos">I07 - Comunicaciones satelitales</asp:ListItem>
-                                            <asp:ListItem Value="I08" data-tipo="Ambos">I08 - Otra maquinaria y equipo</asp:ListItem>
-                                            <asp:ListItem Value="D01" data-tipo="Fisica">D01 - Honorarios m&eacute;dicos y gastos hospitalarios</asp:ListItem>
-                                            <asp:ListItem Value="D02" data-tipo="Fisica">D02 - Gastos m&eacute;dicos por incapacidad</asp:ListItem>
-                                            <asp:ListItem Value="D03" data-tipo="Fisica">D03 - Gastos funerales</asp:ListItem>
-                                            <asp:ListItem Value="D04" data-tipo="Fisica">D04 - Donativos</asp:ListItem>
-                                            <asp:ListItem Value="D05" data-tipo="Fisica">D05 - Intereses por cr&eacute;ditos hipotecarios</asp:ListItem>
-                                            <asp:ListItem Value="D06" data-tipo="Fisica">D06 - Aportaciones voluntarias al SAR</asp:ListItem>
-                                            <asp:ListItem Value="D07" data-tipo="Fisica">D07 - Primas por seguros de gastos m&eacute;dicos</asp:ListItem>
-                                            <asp:ListItem Value="D08" data-tipo="Fisica">D08 - Transportaci&oacute;n escolar obligatoria</asp:ListItem>
-                                            <asp:ListItem Value="D09" data-tipo="Fisica">D09 - Dep&oacute;sitos en cuentas de ahorro y pensiones</asp:ListItem>
-                                            <asp:ListItem Value="D10" data-tipo="Fisica">D10 - Pagos por servicios educativos</asp:ListItem>
-                                            <asp:ListItem Value="S01" data-tipo="Ambos">S01 - Sin efectos fiscales</asp:ListItem>
-                                            <asp:ListItem Value="CP01" data-tipo="Ambos">CP01 - Pagos</asp:ListItem>
-                                        </asp:DropDownList>
-                                    </div>
-                                </div>
-                            </div>
                             <div class="row" id="rowCurpEdit">
                                 <div class="col-md-8">
                                     <div class="form-group">
@@ -688,6 +649,55 @@
                             </div>
                         </div>
 
+                        <!-- ── TAB BANCARIO ── -->
+                        <div class="tab-pane fade" id="pane-ban-e">
+                            <div class="row">
+                                <div class="col-md-6">
+                                    <div class="form-group">
+                                        <label>Banco</label>
+                                        <asp:TextBox ID="txtBancoEdit" runat="server" CssClass="form-control" MaxLength="100"></asp:TextBox>
+                                    </div>
+                                </div>
+                                <div class="col-md-6">
+                                    <div class="form-group">
+                                        <label>CLABE Interbancaria</label>
+                                        <asp:TextBox ID="txtCLABEEdit" runat="server" CssClass="form-control" MaxLength="18"></asp:TextBox>
+                                        <div class="field-hint"><i class="fas fa-info-circle"></i> 18 d&iacute;gitos num&eacute;ricos para transferencias.</div>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="row">
+                                <div class="col-md-6">
+                                    <div class="form-group">
+                                        <label>N&uacute;mero de Cuenta</label>
+                                        <asp:TextBox ID="txtCuentaBancariaEdit" runat="server" CssClass="form-control" MaxLength="30"></asp:TextBox>
+                                    </div>
+                                </div>
+                                <div class="col-md-6">
+                                    <div class="form-group">
+                                        <label>Titular de la Cuenta</label>
+                                        <asp:TextBox ID="txtTitularCuentaEdit" runat="server" CssClass="form-control" MaxLength="200"></asp:TextBox>
+                                    </div>
+                                </div>
+                            </div>
+                            <hr />
+                            <div class="row">
+                                <div class="col-md-4">
+                                    <div class="form-group">
+                                        <label>D&iacute;as de Cr&eacute;dito</label>
+                                        <asp:TextBox ID="txtDiasCreditoEdit" runat="server" CssClass="form-control" MaxLength="5" TextMode="Number"></asp:TextBox>
+                                    </div>
+                                </div>
+                                <div class="col-md-4">
+                                    <div class="form-group">
+                                        <label>L&iacute;mite de Cr&eacute;dito <small class="text-muted">($ MXN)</small></label>
+                                        <asp:TextBox ID="txtLimiteCreditoEdit" runat="server" CssClass="form-control" MaxLength="15" TextMode="Number"></asp:TextBox>
+                                        <div class="field-hint">Ingresar en pesos mexicanos.</div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
                         <!-- ── TAB DIRECCIÓN ── -->
                         <div class="tab-pane fade" id="pane-dir-e">
                             <div class="row">
@@ -699,7 +709,7 @@
                                 </div>
                                 <div class="col-md-6">
                                     <div class="form-group">
-                                        <label>C&oacute;digo Postal Fiscal <small class="text-muted">(domicilio SAT)</small></label>
+                                        <label>C&oacute;digo Postal</label>
                                         <asp:TextBox ID="txtCodigoPostalEdit" runat="server" CssClass="form-control" MaxLength="10"></asp:TextBox>
                                     </div>
                                 </div>
@@ -787,44 +797,45 @@
         // ── Abrir modales ──────────────────────────────────────────────────────
         function abrirModalNuevo() {
             $('#tabsNuevo a[href="#pane-gen-n"]').tab('show');
-            // Estado inicial: CURP visible (no hay tipo seleccionado)
             document.getElementById('rowCurp').style.display = '';
             $('#modalNuevo').modal('show');
         }
 
         function abrirModalEditar(id, nombre, contacto, telefono, email, paginaWeb, tipoEmpresa,
-            nacionalidad, tipoPersona, razonSocialFiscal, rfc, regimenFiscal, usoCFDI,
-            curp, pais, codigoPostal, estado, municipio, colonia, numExt, numInt, referencia,
-            diasCredito, limiteCredito) {
+            nacionalidad, tipoPersona, razonSocialFiscal, rfc, regimenFiscal,
+            curp, banco, clabe, cuentaBancaria, titularCuenta,
+            diasCredito, limiteCredito,
+            pais, codigoPostal, estado, municipio, colonia, numExt, numInt, referencia) {
 
-            document.getElementById('<%= hdnClienteID.ClientID %>').value             = id;
-            document.getElementById('<%= txtNombreEdit.ClientID %>').value             = nombre;
-            document.getElementById('<%= txtContactoEdit.ClientID %>').value           = contacto;
-            document.getElementById('<%= txtTelefonoEdit.ClientID %>').value           = telefono;
-            document.getElementById('<%= txtEmailEdit.ClientID %>').value              = email;
-            document.getElementById('<%= txtPaginaWebEdit.ClientID %>').value          = paginaWeb;
+            document.getElementById('<%= hdnProveedorID.ClientID %>').value              = id;
+            document.getElementById('<%= txtNombreEdit.ClientID %>').value               = nombre;
+            document.getElementById('<%= txtContactoEdit.ClientID %>').value             = contacto;
+            document.getElementById('<%= txtTelefonoEdit.ClientID %>').value             = telefono;
+            document.getElementById('<%= txtEmailEdit.ClientID %>').value                = email;
+            document.getElementById('<%= txtPaginaWebEdit.ClientID %>').value            = paginaWeb;
             setDdl('<%= ddlTipoEmpresaEdit.ClientID %>', tipoEmpresa);
-            document.getElementById('<%= txtNacionalidadEdit.ClientID %>').value       = nacionalidad;
+            document.getElementById('<%= txtNacionalidadEdit.ClientID %>').value         = nacionalidad;
             setDdl('<%= ddlTipoPersonaEdit.ClientID %>', tipoPersona);
-            document.getElementById('<%= txtRazonSocialFiscalEdit.ClientID %>').value  = razonSocialFiscal;
-            document.getElementById('<%= txtRFCEdit.ClientID %>').value                = rfc;
+            document.getElementById('<%= txtRazonSocialFiscalEdit.ClientID %>').value    = razonSocialFiscal;
+            document.getElementById('<%= txtRFCEdit.ClientID %>').value                  = rfc;
             setDdl('<%= ddlRegimenFiscalEdit.ClientID %>', regimenFiscal);
-            setDdl('<%= ddlUsoCFDIEdit.ClientID %>', usoCFDI);
-            document.getElementById('<%= txtCURPEdit.ClientID %>').value               = curp;
-            document.getElementById('<%= txtPaisEdit.ClientID %>').value               = pais;
-            document.getElementById('<%= txtCodigoPostalEdit.ClientID %>').value       = codigoPostal;
-            document.getElementById('<%= txtEstadoEdit.ClientID %>').value             = estado;
-            document.getElementById('<%= txtMunicipioEdit.ClientID %>').value          = municipio;
-            document.getElementById('<%= txtColoniaEdit.ClientID %>').value            = colonia;
-            document.getElementById('<%= txtNumExtEdit.ClientID %>').value             = numExt;
-            document.getElementById('<%= txtNumIntEdit.ClientID %>').value             = numInt;
-            document.getElementById('<%= txtReferenciaEdit.ClientID %>').value         = referencia;
-            document.getElementById('<%= txtDiasCreditoEdit.ClientID %>').value       = diasCredito;
-            document.getElementById('<%= txtLimiteCreditoEdit.ClientID %>').value     = limiteCredito;
+            document.getElementById('<%= txtCURPEdit.ClientID %>').value                 = curp;
+            document.getElementById('<%= txtBancoEdit.ClientID %>').value                = banco;
+            document.getElementById('<%= txtCLABEEdit.ClientID %>').value                = clabe;
+            document.getElementById('<%= txtCuentaBancariaEdit.ClientID %>').value       = cuentaBancaria;
+            document.getElementById('<%= txtTitularCuentaEdit.ClientID %>').value        = titularCuenta;
+            document.getElementById('<%= txtDiasCreditoEdit.ClientID %>').value          = diasCredito;
+            document.getElementById('<%= txtLimiteCreditoEdit.ClientID %>').value        = limiteCredito;
+            document.getElementById('<%= txtPaisEdit.ClientID %>').value                 = pais;
+            document.getElementById('<%= txtCodigoPostalEdit.ClientID %>').value         = codigoPostal;
+            document.getElementById('<%= txtEstadoEdit.ClientID %>').value               = estado;
+            document.getElementById('<%= txtMunicipioEdit.ClientID %>').value            = municipio;
+            document.getElementById('<%= txtColoniaEdit.ClientID %>').value              = colonia;
+            document.getElementById('<%= txtNumExtEdit.ClientID %>').value               = numExt;
+            document.getElementById('<%= txtNumIntEdit.ClientID %>').value               = numInt;
+            document.getElementById('<%= txtReferenciaEdit.ClientID %>').value           = referencia;
 
-            // Aplicar filtros según el tipo de persona cargado
             onTipoPersonaChangeEdit();
-
             $('#tabsEditar a[href="#pane-gen-e"]').tab('show');
             $('#modalEditar').modal('show');
         }
@@ -843,14 +854,12 @@
             var tipo = document.getElementById('<%= ddlTipoPersona.ClientID %>').value;
             document.getElementById('rowCurp').style.display = (tipo === 'Moral') ? 'none' : '';
             filtrarOpcionesEl(document.getElementById('<%= ddlRegimenFiscal.ClientID %>'), tipo);
-            filtrarOpcionesEl(document.getElementById('<%= ddlUsoCFDI.ClientID %>'), tipo);
         }
 
         function onTipoPersonaChangeEdit() {
             var tipo = document.getElementById('<%= ddlTipoPersonaEdit.ClientID %>').value;
             document.getElementById('rowCurpEdit').style.display = (tipo === 'Moral') ? 'none' : '';
             filtrarOpcionesEl(document.getElementById('<%= ddlRegimenFiscalEdit.ClientID %>'), tipo);
-            filtrarOpcionesEl(document.getElementById('<%= ddlUsoCFDIEdit.ClientID %>'), tipo);
         }
 
         function filtrarOpcionesEl(sel, tipo) {
@@ -910,9 +919,10 @@
         function validarFormularioNuevo() {
             var nombre = document.getElementById('<%= txtNombre.ClientID %>').value.trim();
             var telef  = document.getElementById('<%= txtTelefono.ClientID %>').value.trim();
+            var clabe  = document.getElementById('<%= txtCLABE.ClientID %>').value.trim();
             if (nombre === '') {
                 $('#tabsNuevo a[href="#pane-gen-n"]').tab('show');
-                Swal.fire({ icon: 'warning', title: 'Campo obligatorio', text: 'El nombre del cliente es obligatorio.', confirmButtonColor: '#003366' });
+                Swal.fire({ icon: 'warning', title: 'Campo obligatorio', text: 'El nombre del proveedor es obligatorio.', confirmButtonColor: '#003366' });
                 return false;
             }
             if (nombre.length < 2) {
@@ -923,6 +933,11 @@
             if (telef !== '' && !/^\d{7,20}$/.test(telef)) {
                 $('#tabsNuevo a[href="#pane-gen-n"]').tab('show');
                 Swal.fire({ icon: 'warning', title: 'Tel&eacute;fono inv&aacute;lido', text: 'El tel&eacute;fono debe contener solo n&uacute;meros (7 a 20 d&iacute;gitos).', confirmButtonColor: '#003366' });
+                return false;
+            }
+            if (clabe !== '' && !/^\d{18}$/.test(clabe)) {
+                $('#tabsNuevo a[href="#pane-ban-n"]').tab('show');
+                Swal.fire({ icon: 'warning', title: 'CLABE inv&aacute;lida', text: 'La CLABE interbancaria debe tener exactamente 18 d&iacute;gitos num&eacute;ricos.', confirmButtonColor: '#003366' });
                 return false;
             }
             return true;
@@ -931,9 +946,10 @@
         function validarFormularioEditar() {
             var nombre = document.getElementById('<%= txtNombreEdit.ClientID %>').value.trim();
             var telef  = document.getElementById('<%= txtTelefonoEdit.ClientID %>').value.trim();
+            var clabe  = document.getElementById('<%= txtCLABEEdit.ClientID %>').value.trim();
             if (nombre === '') {
                 $('#tabsEditar a[href="#pane-gen-e"]').tab('show');
-                Swal.fire({ icon: 'warning', title: 'Campo obligatorio', text: 'El nombre del cliente es obligatorio.', confirmButtonColor: '#003366' });
+                Swal.fire({ icon: 'warning', title: 'Campo obligatorio', text: 'El nombre del proveedor es obligatorio.', confirmButtonColor: '#003366' });
                 return false;
             }
             if (nombre.length < 2) {
@@ -946,15 +962,20 @@
                 Swal.fire({ icon: 'warning', title: 'Tel&eacute;fono inv&aacute;lido', text: 'El tel&eacute;fono debe contener solo n&uacute;meros (7 a 20 d&iacute;gitos).', confirmButtonColor: '#003366' });
                 return false;
             }
+            if (clabe !== '' && !/^\d{18}$/.test(clabe)) {
+                $('#tabsEditar a[href="#pane-ban-e"]').tab('show');
+                Swal.fire({ icon: 'warning', title: 'CLABE inv&aacute;lida', text: 'La CLABE interbancaria debe tener exactamente 18 d&iacute;gitos num&eacute;ricos.', confirmButtonColor: '#003366' });
+                return false;
+            }
             return true;
         }
 
         // ── Toggle Activo/Inactivo ─────────────────────────────────────────────
-        function confirmarToggle(clienteID, nombre, activo) {
+        function confirmarToggle(proveedorID, nombre, activo) {
             var accion = activo ? 'desactivar' : 'activar';
             Swal.fire({
                 icon: activo ? 'warning' : 'question',
-                title: '&iquest;' + (activo ? 'Desactivar' : 'Activar') + ' cliente?',
+                title: '&iquest;' + (activo ? 'Desactivar' : 'Activar') + ' proveedor?',
                 html: '&iquest;Est&aacute; seguro de <b>' + accion + '</b> a <b>' + nombre + '</b>?',
                 showCancelButton: true,
                 confirmButtonText: 'S&iacute;, ' + accion,
@@ -963,7 +984,7 @@
                 cancelButtonColor: '#6c757d'
             }).then(function (r) {
                 if (r.isConfirmed) {
-                    document.getElementById('<%= hdnToggleClienteID.ClientID %>').value = clienteID;
+                    document.getElementById('<%= hdnToggleProveedorID.ClientID %>').value = proveedorID;
                     __doPostBack('<%= btnToggleHidden.UniqueID %>', '');
                 }
             });

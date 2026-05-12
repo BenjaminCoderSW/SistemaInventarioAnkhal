@@ -9,7 +9,7 @@
 
 namespace GrupoAnkhalInventario
 {
-    public partial class RegistrarClientes
+    public partial class RegistrarProveedores
     {
         // ── Filtros ────────────────────────────────────────────────────────────
         protected global::System.Web.UI.WebControls.TextBox       txtBuscar;
@@ -22,12 +22,12 @@ namespace GrupoAnkhalInventario
         protected global::System.Web.UI.WebControls.Label         lblResultados;
 
         // ── Grid ───────────────────────────────────────────────────────────────
-        protected global::System.Web.UI.WebControls.GridView      gvClientes;
+        protected global::System.Web.UI.WebControls.GridView      gvProveedores;
 
         // ── Hidden fields ──────────────────────────────────────────────────────
-        protected global::System.Web.UI.WebControls.HiddenField   hdnToggleClienteID;
+        protected global::System.Web.UI.WebControls.HiddenField   hdnToggleProveedorID;
         protected global::System.Web.UI.WebControls.HiddenField   hdnMensajePendiente;
-        protected global::System.Web.UI.WebControls.HiddenField   hdnClienteID;
+        protected global::System.Web.UI.WebControls.HiddenField   hdnProveedorID;
 
         // ── Botón toggle oculto ────────────────────────────────────────────────
         protected global::System.Web.UI.WebControls.Button        btnToggleHidden;
@@ -42,16 +42,19 @@ namespace GrupoAnkhalInventario
         protected global::System.Web.UI.WebControls.DropDownList  ddlTipoEmpresa;
         protected global::System.Web.UI.WebControls.TextBox       txtNacionalidad;
 
-        // ── Modal Nuevo — Condiciones Comerciales ──────────────────────────────
-        protected global::System.Web.UI.WebControls.TextBox       txtDiasCredito;
-        protected global::System.Web.UI.WebControls.TextBox       txtLimiteCredito;
-
         // ── Modal Nuevo — Tab Fiscal ───────────────────────────────────────────
         protected global::System.Web.UI.WebControls.TextBox       txtRazonSocialFiscal;
         protected global::System.Web.UI.WebControls.TextBox       txtRFC;
         protected global::System.Web.UI.WebControls.DropDownList  ddlRegimenFiscal;
-        protected global::System.Web.UI.WebControls.DropDownList  ddlUsoCFDI;
         protected global::System.Web.UI.WebControls.TextBox       txtCURP;
+
+        // ── Modal Nuevo — Tab Bancario ─────────────────────────────────────────
+        protected global::System.Web.UI.WebControls.TextBox       txtBanco;
+        protected global::System.Web.UI.WebControls.TextBox       txtCLABE;
+        protected global::System.Web.UI.WebControls.TextBox       txtCuentaBancaria;
+        protected global::System.Web.UI.WebControls.TextBox       txtTitularCuenta;
+        protected global::System.Web.UI.WebControls.TextBox       txtDiasCredito;
+        protected global::System.Web.UI.WebControls.TextBox       txtLimiteCredito;
 
         // ── Modal Nuevo — Tab Dirección ────────────────────────────────────────
         protected global::System.Web.UI.WebControls.TextBox       txtPais;
@@ -74,16 +77,19 @@ namespace GrupoAnkhalInventario
         protected global::System.Web.UI.WebControls.DropDownList  ddlTipoEmpresaEdit;
         protected global::System.Web.UI.WebControls.TextBox       txtNacionalidadEdit;
 
-        // ── Modal Editar — Condiciones Comerciales ─────────────────────────────
-        protected global::System.Web.UI.WebControls.TextBox       txtDiasCreditoEdit;
-        protected global::System.Web.UI.WebControls.TextBox       txtLimiteCreditoEdit;
-
         // ── Modal Editar — Tab Fiscal ──────────────────────────────────────────
         protected global::System.Web.UI.WebControls.TextBox       txtRazonSocialFiscalEdit;
         protected global::System.Web.UI.WebControls.TextBox       txtRFCEdit;
         protected global::System.Web.UI.WebControls.DropDownList  ddlRegimenFiscalEdit;
-        protected global::System.Web.UI.WebControls.DropDownList  ddlUsoCFDIEdit;
         protected global::System.Web.UI.WebControls.TextBox       txtCURPEdit;
+
+        // ── Modal Editar — Tab Bancario ────────────────────────────────────────
+        protected global::System.Web.UI.WebControls.TextBox       txtBancoEdit;
+        protected global::System.Web.UI.WebControls.TextBox       txtCLABEEdit;
+        protected global::System.Web.UI.WebControls.TextBox       txtCuentaBancariaEdit;
+        protected global::System.Web.UI.WebControls.TextBox       txtTitularCuentaEdit;
+        protected global::System.Web.UI.WebControls.TextBox       txtDiasCreditoEdit;
+        protected global::System.Web.UI.WebControls.TextBox       txtLimiteCreditoEdit;
 
         // ── Modal Editar — Tab Dirección ───────────────────────────────────────
         protected global::System.Web.UI.WebControls.TextBox       txtPaisEdit;

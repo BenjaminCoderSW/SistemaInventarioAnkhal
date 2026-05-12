@@ -9,7 +9,7 @@ using System.Web.UI.WebControls;
 
 namespace GrupoAnkhalInventario
 {
-    public partial class RegistrarClientes : Page
+    public partial class RegistrarProveedores : Page
     {
         private static readonly string _connStr =
             ConfigurationManager.ConnectionStrings["InventarioAnkhalDBConnectionString"].ConnectionString;
@@ -27,62 +27,62 @@ namespace GrupoAnkhalInventario
             if (Session["ClaveID"] == null) { Response.Redirect("~/Login.aspx"); return; }
 
             if (!IsPostBack)
-                CargarClientes();
+                CargarProveedores();
             else
                 if (ViewState["TotalRegistros"] != null)
-                    gvClientes.VirtualItemCount = (int)ViewState["TotalRegistros"];
+                    gvProveedores.VirtualItemCount = (int)ViewState["TotalRegistros"];
         }
 
         // ══ CARGA ═════════════════════════════════════════════════════════════
-        private void CargarClientes()
+        private void CargarProveedores()
         {
             string buscar = (txtBuscar.Text ?? "").Trim().ToLower();
             string filEst = ddlFiltrEstado.SelectedValue;
-            int pageIdx   = gvClientes.PageIndex;
-            int pageSz    = gvClientes.PageSize;
+            int pageIdx   = gvProveedores.PageIndex;
+            int pageSz    = gvProveedores.PageSize;
 
             using (var db = NuevoDb(tracking: false))
             {
-                var query = db.Clientes.AsQueryable();
+                var query = db.Proveedores.AsQueryable();
 
                 if (!string.IsNullOrEmpty(buscar))
-                    query = query.Where(c =>
-                        c.Nombre.ToLower().Contains(buscar) ||
-                        (c.Contacto != null && c.Contacto.ToLower().Contains(buscar)));
+                    query = query.Where(p =>
+                        p.Nombre.ToLower().Contains(buscar) ||
+                        (p.Contacto != null && p.Contacto.ToLower().Contains(buscar)));
 
-                if (filEst == "1") query = query.Where(c => c.Activo == true);
-                else if (filEst == "0") query = query.Where(c => c.Activo == false);
+                if (filEst == "1") query = query.Where(p => p.Activo == true);
+                else if (filEst == "0") query = query.Where(p => p.Activo == false);
 
-                query = query.OrderBy(c => c.Nombre);
+                query = query.OrderBy(p => p.Nombre);
 
                 int total = query.Count();
                 lblResultados.Text = total == 1 ? "1 registro encontrado." : total + " registros encontrados.";
                 ViewState["TotalRegistros"] = total;
 
-                gvClientes.VirtualItemCount = total;
-                gvClientes.DataSource = query.Skip(pageIdx * pageSz).Take(pageSz).ToList();
-                gvClientes.DataBind();
+                gvProveedores.VirtualItemCount = total;
+                gvProveedores.DataSource = query.Skip(pageIdx * pageSz).Take(pageSz).ToList();
+                gvProveedores.DataBind();
             }
         }
 
-        protected void gvClientes_PageIndexChanging(object sender, GridViewPageEventArgs e)
+        protected void gvProveedores_PageIndexChanging(object sender, GridViewPageEventArgs e)
         {
-            gvClientes.PageIndex = e.NewPageIndex;
-            CargarClientes();
+            gvProveedores.PageIndex = e.NewPageIndex;
+            CargarProveedores();
         }
 
         protected void btnBuscar_Click(object sender, EventArgs e)
         {
-            gvClientes.PageIndex = 0;
-            CargarClientes();
+            gvProveedores.PageIndex = 0;
+            CargarProveedores();
         }
 
         protected void btnLimpiarFiltros_Click(object sender, EventArgs e)
         {
             txtBuscar.Text = "";
             ddlFiltrEstado.SelectedIndex = 0;
-            gvClientes.PageIndex = 0;
-            CargarClientes();
+            gvProveedores.PageIndex = 0;
+            CargarProveedores();
         }
 
         // ══ GUARDAR NUEVO ═════════════════════════════════════════════════════
@@ -91,20 +91,20 @@ namespace GrupoAnkhalInventario
             string nombreTrim = (txtNombre.Text ?? "").Trim();
             if (string.IsNullOrWhiteSpace(nombreTrim))
             {
-                SetMsg("warning", "Campo obligatorio", "El nombre del cliente es obligatorio.", "modalNuevo");
+                SetMsg("warning", "Campo obligatorio", "El nombre del proveedor es obligatorio.", "modalNuevo");
                 return;
             }
 
             using (var db = NuevoDb())
             {
-                if (db.Clientes.Any(c => c.Nombre.ToLower() == nombreTrim.ToLower()))
+                if (db.Proveedores.Any(p => p.Nombre.ToLower() == nombreTrim.ToLower()))
                 {
-                    SetMsg("error", "Nombre duplicado", "Ya existe un cliente con el nombre '" + nombreTrim + "'.", "modalNuevo");
+                    SetMsg("error", "Nombre duplicado", "Ya existe un proveedor con el nombre '" + nombreTrim + "'.", "modalNuevo");
                     return;
                 }
                 try
                 {
-                    db.Clientes.InsertOnSubmit(new Clientes
+                    db.Proveedores.InsertOnSubmit(new Proveedores
                     {
                         Nombre            = nombreTrim,
                         Contacto          = NullIfEmpty(txtContacto.Text),
@@ -117,10 +117,13 @@ namespace GrupoAnkhalInventario
                         RazonSocialFiscal = NullIfEmpty(txtRazonSocialFiscal.Text),
                         RFC               = NullIfEmpty(txtRFC.Text)?.ToUpper(),
                         RegimenFiscal     = NullIfEmpty(ddlRegimenFiscal.SelectedValue),
-                        UsoCFDI           = NullIfEmpty(ddlUsoCFDI.SelectedValue),
+                        CURP              = NullIfEmpty(txtCURP.Text)?.ToUpper(),
+                        Banco             = NullIfEmpty(txtBanco.Text),
+                        CLABE             = NullIfEmpty(txtCLABE.Text),
+                        CuentaBancaria    = NullIfEmpty(txtCuentaBancaria.Text),
+                        TitularCuenta     = NullIfEmpty(txtTitularCuenta.Text),
                         DiasCredito       = ParseNullableInt(txtDiasCredito.Text),
                         LimiteCredito     = ParseNullableDecimal(txtLimiteCredito.Text),
-                        CURP              = NullIfEmpty(txtCURP.Text)?.ToUpper(),
                         Pais              = NullIfEmpty(txtPais.Text),
                         CodigoPostal      = NullIfEmpty(txtCodigoPostal.Text),
                         Estado            = NullIfEmpty(txtEstado.Text),
@@ -135,13 +138,13 @@ namespace GrupoAnkhalInventario
                     });
                     db.SubmitChanges();
                     LimpiarNuevo();
-                    CargarClientes();
-                    SetMsg("success", "¡Guardado!", "El cliente fue registrado correctamente.");
+                    CargarProveedores();
+                    SetMsg("success", "¡Guardado!", "El proveedor fue registrado correctamente.");
                 }
                 catch (Exception ex)
                 {
-                    System.Diagnostics.Debug.WriteLine("Error guardar cliente: " + ex.Message);
-                    SetMsg("error", "Error del sistema", "No se pudo guardar el cliente. Contacte al administrador.", "modalNuevo");
+                    System.Diagnostics.Debug.WriteLine("Error guardar proveedor: " + ex.Message);
+                    SetMsg("error", "Error del sistema", "No se pudo guardar el proveedor. Contacte al administrador.", "modalNuevo");
                 }
             }
         }
@@ -149,61 +152,64 @@ namespace GrupoAnkhalInventario
         // ══ GUARDAR EDICIÓN ═══════════════════════════════════════════════════
         protected void btnGuardarEdit_Click(object sender, EventArgs e)
         {
-            if (string.IsNullOrWhiteSpace(hdnClienteID.Value)) { SetMsg("error", "Error", "No se identificó el cliente a editar."); return; }
+            if (string.IsNullOrWhiteSpace(hdnProveedorID.Value)) { SetMsg("error", "Error", "No se identificó el proveedor a editar."); return; }
 
             string nombreTrim = (txtNombreEdit.Text ?? "").Trim();
             if (string.IsNullOrWhiteSpace(nombreTrim))
             {
-                SetMsg("warning", "Campo obligatorio", "El nombre del cliente es obligatorio.", "modalEditar");
+                SetMsg("warning", "Campo obligatorio", "El nombre del proveedor es obligatorio.", "modalEditar");
                 return;
             }
 
-            int clienteID = Convert.ToInt32(hdnClienteID.Value);
+            int proveedorID = Convert.ToInt32(hdnProveedorID.Value);
 
             using (var db = NuevoDb())
             {
-                if (db.Clientes.Any(c => c.Nombre.ToLower() == nombreTrim.ToLower() && c.ClienteID != clienteID))
+                if (db.Proveedores.Any(p => p.Nombre.ToLower() == nombreTrim.ToLower() && p.ProveedorID != proveedorID))
                 {
-                    SetMsg("error", "Nombre duplicado", "Ya existe otro cliente con el nombre '" + nombreTrim + "'.", "modalEditar");
+                    SetMsg("error", "Nombre duplicado", "Ya existe otro proveedor con el nombre '" + nombreTrim + "'.", "modalEditar");
                     return;
                 }
                 try
                 {
-                    var c2 = db.Clientes.FirstOrDefault(c => c.ClienteID == clienteID);
-                    if (c2 == null) { SetMsg("error", "Error", "No se encontró el cliente a editar."); return; }
+                    var p2 = db.Proveedores.FirstOrDefault(p => p.ProveedorID == proveedorID);
+                    if (p2 == null) { SetMsg("error", "Error", "No se encontró el proveedor a editar."); return; }
 
-                    c2.Nombre            = nombreTrim;
-                    c2.Contacto          = NullIfEmpty(txtContactoEdit.Text);
-                    c2.Telefono          = NullIfEmpty(txtTelefonoEdit.Text);
-                    c2.Email             = NullIfEmpty(txtEmailEdit.Text);
-                    c2.PaginaWeb         = NullIfEmpty(txtPaginaWebEdit.Text);
-                    c2.TipoEmpresa       = NullIfEmpty(ddlTipoEmpresaEdit.SelectedValue);
-                    c2.Nacionalidad      = NullIfEmpty(txtNacionalidadEdit.Text);
-                    c2.TipoPersona       = NullIfEmpty(ddlTipoPersonaEdit.SelectedValue);
-                    c2.RazonSocialFiscal = NullIfEmpty(txtRazonSocialFiscalEdit.Text);
-                    c2.RFC               = NullIfEmpty(txtRFCEdit.Text)?.ToUpper();
-                    c2.RegimenFiscal     = NullIfEmpty(ddlRegimenFiscalEdit.SelectedValue);
-                    c2.UsoCFDI           = NullIfEmpty(ddlUsoCFDIEdit.SelectedValue);
-                    c2.DiasCredito       = ParseNullableInt(txtDiasCreditoEdit.Text);
-                    c2.LimiteCredito     = ParseNullableDecimal(txtLimiteCreditoEdit.Text);
-                    c2.CURP              = NullIfEmpty(txtCURPEdit.Text)?.ToUpper();
-                    c2.Pais              = NullIfEmpty(txtPaisEdit.Text);
-                    c2.CodigoPostal      = NullIfEmpty(txtCodigoPostalEdit.Text);
-                    c2.Estado            = NullIfEmpty(txtEstadoEdit.Text);
-                    c2.Municipio         = NullIfEmpty(txtMunicipioEdit.Text);
-                    c2.Colonia           = NullIfEmpty(txtColoniaEdit.Text);
-                    c2.NumExt            = NullIfEmpty(txtNumExtEdit.Text);
-                    c2.NumInt            = NullIfEmpty(txtNumIntEdit.Text);
-                    c2.Referencia        = NullIfEmpty(txtReferenciaEdit.Text);
+                    p2.Nombre            = nombreTrim;
+                    p2.Contacto          = NullIfEmpty(txtContactoEdit.Text);
+                    p2.Telefono          = NullIfEmpty(txtTelefonoEdit.Text);
+                    p2.Email             = NullIfEmpty(txtEmailEdit.Text);
+                    p2.PaginaWeb         = NullIfEmpty(txtPaginaWebEdit.Text);
+                    p2.TipoEmpresa       = NullIfEmpty(ddlTipoEmpresaEdit.SelectedValue);
+                    p2.Nacionalidad      = NullIfEmpty(txtNacionalidadEdit.Text);
+                    p2.TipoPersona       = NullIfEmpty(ddlTipoPersonaEdit.SelectedValue);
+                    p2.RazonSocialFiscal = NullIfEmpty(txtRazonSocialFiscalEdit.Text);
+                    p2.RFC               = NullIfEmpty(txtRFCEdit.Text)?.ToUpper();
+                    p2.RegimenFiscal     = NullIfEmpty(ddlRegimenFiscalEdit.SelectedValue);
+                    p2.CURP              = NullIfEmpty(txtCURPEdit.Text)?.ToUpper();
+                    p2.Banco             = NullIfEmpty(txtBancoEdit.Text);
+                    p2.CLABE             = NullIfEmpty(txtCLABEEdit.Text);
+                    p2.CuentaBancaria    = NullIfEmpty(txtCuentaBancariaEdit.Text);
+                    p2.TitularCuenta     = NullIfEmpty(txtTitularCuentaEdit.Text);
+                    p2.DiasCredito       = ParseNullableInt(txtDiasCreditoEdit.Text);
+                    p2.LimiteCredito     = ParseNullableDecimal(txtLimiteCreditoEdit.Text);
+                    p2.Pais              = NullIfEmpty(txtPaisEdit.Text);
+                    p2.CodigoPostal      = NullIfEmpty(txtCodigoPostalEdit.Text);
+                    p2.Estado            = NullIfEmpty(txtEstadoEdit.Text);
+                    p2.Municipio         = NullIfEmpty(txtMunicipioEdit.Text);
+                    p2.Colonia           = NullIfEmpty(txtColoniaEdit.Text);
+                    p2.NumExt            = NullIfEmpty(txtNumExtEdit.Text);
+                    p2.NumInt            = NullIfEmpty(txtNumIntEdit.Text);
+                    p2.Referencia        = NullIfEmpty(txtReferenciaEdit.Text);
 
                     db.SubmitChanges();
-                    CargarClientes();
-                    SetMsg("success", "¡Actualizado!", "El cliente fue actualizado correctamente.");
+                    CargarProveedores();
+                    SetMsg("success", "¡Actualizado!", "El proveedor fue actualizado correctamente.");
                 }
                 catch (Exception ex)
                 {
-                    System.Diagnostics.Debug.WriteLine("Error editar cliente: " + ex.Message);
-                    SetMsg("error", "Error del sistema", "No se pudo actualizar el cliente. Contacte al administrador.", "modalEditar");
+                    System.Diagnostics.Debug.WriteLine("Error editar proveedor: " + ex.Message);
+                    SetMsg("error", "Error del sistema", "No se pudo actualizar el proveedor. Contacte al administrador.", "modalEditar");
                 }
             }
         }
@@ -213,23 +219,23 @@ namespace GrupoAnkhalInventario
 
         protected void btnToggleHidden_Click(object sender, EventArgs e)
         {
-            if (string.IsNullOrWhiteSpace(hdnToggleClienteID.Value)) return;
-            int id = Convert.ToInt32(hdnToggleClienteID.Value);
+            if (string.IsNullOrWhiteSpace(hdnToggleProveedorID.Value)) return;
+            int id = Convert.ToInt32(hdnToggleProveedorID.Value);
             using (var db = NuevoDb())
             {
                 try
                 {
-                    var c2 = db.Clientes.FirstOrDefault(c => c.ClienteID == id);
-                    if (c2 == null) return;
-                    c2.Activo = !c2.Activo;
+                    var p2 = db.Proveedores.FirstOrDefault(p => p.ProveedorID == id);
+                    if (p2 == null) return;
+                    p2.Activo = !p2.Activo;
                     db.SubmitChanges();
-                    CargarClientes();
-                    SetMsg("success", "¡Listo!", "El cliente fue " + (c2.Activo ? "activado" : "desactivado") + " correctamente.");
+                    CargarProveedores();
+                    SetMsg("success", "¡Listo!", "El proveedor fue " + (p2.Activo ? "activado" : "desactivado") + " correctamente.");
                 }
                 catch (Exception ex)
                 {
                     System.Diagnostics.Debug.WriteLine("Error toggle: " + ex.Message);
-                    SetMsg("error", "Error", "No se pudo cambiar el estatus del cliente.");
+                    SetMsg("error", "Error", "No se pudo cambiar el estatus del proveedor.");
                 }
             }
         }
@@ -254,10 +260,13 @@ namespace GrupoAnkhalInventario
             txtRazonSocialFiscal.Text       = "";
             txtRFC.Text                     = "";
             ddlRegimenFiscal.SelectedIndex  = 0;
-            ddlUsoCFDI.SelectedIndex        = 0;
+            txtCURP.Text                    = "";
+            txtBanco.Text                   = "";
+            txtCLABE.Text                   = "";
+            txtCuentaBancaria.Text          = "";
+            txtTitularCuenta.Text           = "";
             txtDiasCredito.Text             = "";
             txtLimiteCredito.Text           = "";
-            txtCURP.Text                    = "";
             txtPais.Text                    = "";
             txtCodigoPostal.Text            = "";
             txtEstado.Text                  = "";
