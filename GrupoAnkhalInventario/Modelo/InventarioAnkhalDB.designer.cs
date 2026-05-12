@@ -1020,6 +1020,12 @@ namespace GrupoAnkhalInventario.Modelo
 
 		private string _Email;
 
+		private string _TipoPersona;
+
+		private string _RazonSocialFiscal;
+
+		private string _UsoCFDI;
+
 		private string _RFC;
 
 		private string _RegimenFiscal;
@@ -1072,6 +1078,12 @@ namespace GrupoAnkhalInventario.Modelo
     partial void OnTelefonoChanged();
     partial void OnEmailChanging(string value);
     partial void OnEmailChanged();
+    partial void OnTipoPersonaChanging(string value);
+    partial void OnTipoPersonaChanged();
+    partial void OnRazonSocialFiscalChanging(string value);
+    partial void OnRazonSocialFiscalChanged();
+    partial void OnUsoCFDIChanging(string value);
+    partial void OnUsoCFDIChanged();
     partial void OnRFCChanging(string value);
     partial void OnRFCChanged();
     partial void OnRegimenFiscalChanging(string value);
@@ -1215,6 +1227,57 @@ namespace GrupoAnkhalInventario.Modelo
 			}
 		}
 		
+		[global::System.Data.Linq.Mapping.ColumnAttribute(Storage="_TipoPersona", DbType="VarChar(10)")]
+		public string TipoPersona
+		{
+			get { return this._TipoPersona; }
+			set
+			{
+				if ((this._TipoPersona != value))
+				{
+					this.OnTipoPersonaChanging(value);
+					this.SendPropertyChanging();
+					this._TipoPersona = value;
+					this.SendPropertyChanged("TipoPersona");
+					this.OnTipoPersonaChanged();
+				}
+			}
+		}
+
+		[global::System.Data.Linq.Mapping.ColumnAttribute(Storage="_RazonSocialFiscal", DbType="VarChar(300)")]
+		public string RazonSocialFiscal
+		{
+			get { return this._RazonSocialFiscal; }
+			set
+			{
+				if ((this._RazonSocialFiscal != value))
+				{
+					this.OnRazonSocialFiscalChanging(value);
+					this.SendPropertyChanging();
+					this._RazonSocialFiscal = value;
+					this.SendPropertyChanged("RazonSocialFiscal");
+					this.OnRazonSocialFiscalChanged();
+				}
+			}
+		}
+
+		[global::System.Data.Linq.Mapping.ColumnAttribute(Storage="_UsoCFDI", DbType="VarChar(10)")]
+		public string UsoCFDI
+		{
+			get { return this._UsoCFDI; }
+			set
+			{
+				if ((this._UsoCFDI != value))
+				{
+					this.OnUsoCFDIChanging(value);
+					this.SendPropertyChanging();
+					this._UsoCFDI = value;
+					this.SendPropertyChanged("UsoCFDI");
+					this.OnUsoCFDIChanged();
+				}
+			}
+		}
+
 		[global::System.Data.Linq.Mapping.ColumnAttribute(Storage="_RFC", DbType="VarChar(13)")]
 		public string RFC
 		{
@@ -1232,7 +1295,7 @@ namespace GrupoAnkhalInventario.Modelo
 			}
 		}
 
-		[global::System.Data.Linq.Mapping.ColumnAttribute(Storage="_RegimenFiscal", DbType="VarChar(100)")]
+		[global::System.Data.Linq.Mapping.ColumnAttribute(Storage="_RegimenFiscal", DbType="VarChar(10)")]
 		public string RegimenFiscal
 		{
 			get { return this._RegimenFiscal; }

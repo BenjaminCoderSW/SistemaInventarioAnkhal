@@ -9,7 +9,6 @@
 
 namespace GrupoAnkhalInventario
 {
-
     public partial class RegistrarClientes
     {
         // ── Filtros ────────────────────────────────────────────────────────────
@@ -33,7 +32,8 @@ namespace GrupoAnkhalInventario
         // ── Botón toggle oculto ────────────────────────────────────────────────
         protected global::System.Web.UI.WebControls.Button        btnToggleHidden;
 
-        // ── Modal Nuevo Cliente ────────────────────────────────────────────────
+        // ── Modal Nuevo — Tab Generales ────────────────────────────────────────
+        protected global::System.Web.UI.WebControls.DropDownList  ddlTipoPersona;
         protected global::System.Web.UI.WebControls.TextBox       txtNombre;
         protected global::System.Web.UI.WebControls.TextBox       txtContacto;
         protected global::System.Web.UI.WebControls.TextBox       txtTelefono;
@@ -41,9 +41,15 @@ namespace GrupoAnkhalInventario
         protected global::System.Web.UI.WebControls.TextBox       txtPaginaWeb;
         protected global::System.Web.UI.WebControls.DropDownList  ddlTipoEmpresa;
         protected global::System.Web.UI.WebControls.TextBox       txtNacionalidad;
+
+        // ── Modal Nuevo — Tab Fiscal ───────────────────────────────────────────
+        protected global::System.Web.UI.WebControls.TextBox       txtRazonSocialFiscal;
         protected global::System.Web.UI.WebControls.TextBox       txtRFC;
         protected global::System.Web.UI.WebControls.DropDownList  ddlRegimenFiscal;
+        protected global::System.Web.UI.WebControls.DropDownList  ddlUsoCFDI;
         protected global::System.Web.UI.WebControls.TextBox       txtCURP;
+
+        // ── Modal Nuevo — Tab Dirección ────────────────────────────────────────
         protected global::System.Web.UI.WebControls.TextBox       txtPais;
         protected global::System.Web.UI.WebControls.TextBox       txtCodigoPostal;
         protected global::System.Web.UI.WebControls.TextBox       txtEstado;
@@ -54,7 +60,8 @@ namespace GrupoAnkhalInventario
         protected global::System.Web.UI.WebControls.TextBox       txtReferencia;
         protected global::System.Web.UI.WebControls.Button        btnGuardar;
 
-        // ── Modal Editar Cliente ───────────────────────────────────────────────
+        // ── Modal Editar — Tab Generales ───────────────────────────────────────
+        protected global::System.Web.UI.WebControls.DropDownList  ddlTipoPersonaEdit;
         protected global::System.Web.UI.WebControls.TextBox       txtNombreEdit;
         protected global::System.Web.UI.WebControls.TextBox       txtContactoEdit;
         protected global::System.Web.UI.WebControls.TextBox       txtTelefonoEdit;
@@ -62,9 +69,15 @@ namespace GrupoAnkhalInventario
         protected global::System.Web.UI.WebControls.TextBox       txtPaginaWebEdit;
         protected global::System.Web.UI.WebControls.DropDownList  ddlTipoEmpresaEdit;
         protected global::System.Web.UI.WebControls.TextBox       txtNacionalidadEdit;
+
+        // ── Modal Editar — Tab Fiscal ──────────────────────────────────────────
+        protected global::System.Web.UI.WebControls.TextBox       txtRazonSocialFiscalEdit;
         protected global::System.Web.UI.WebControls.TextBox       txtRFCEdit;
         protected global::System.Web.UI.WebControls.DropDownList  ddlRegimenFiscalEdit;
+        protected global::System.Web.UI.WebControls.DropDownList  ddlUsoCFDIEdit;
         protected global::System.Web.UI.WebControls.TextBox       txtCURPEdit;
+
+        // ── Modal Editar — Tab Dirección ───────────────────────────────────────
         protected global::System.Web.UI.WebControls.TextBox       txtPaisEdit;
         protected global::System.Web.UI.WebControls.TextBox       txtCodigoPostalEdit;
         protected global::System.Web.UI.WebControls.TextBox       txtEstadoEdit;
