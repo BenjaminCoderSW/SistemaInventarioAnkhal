@@ -289,6 +289,14 @@
 
                         <asp:BoundField DataField="BaseDestino" HeaderText="Base Destino" />
 
+                        <asp:TemplateField HeaderText="Proveedor">
+                            <ItemTemplate>
+                                <%# !string.IsNullOrEmpty(Eval("ProveedorNombre") as string)
+                                    ? "<span class='text-muted small'>" + System.Web.HttpUtility.HtmlEncode(Eval("ProveedorNombre").ToString()) + "</span>"
+                                    : "<span class='text-muted small'>—</span>" %>
+                            </ItemTemplate>
+                        </asp:TemplateField>
+
                         <asp:TemplateField HeaderText="Cantidad / Unidad">
                             <ItemTemplate>
                                 <%# FormatCantidadGrilla(
@@ -374,6 +382,18 @@
               <label>Base Destino <span style="color:red">*</span></label>
               <asp:DropDownList ID="ddlBaseDestino" runat="server" CssClass="form-control">
                 <asp:ListItem Value="">-- Seleccione --</asp:ListItem>
+              </asp:DropDownList>
+            </div>
+          </div>
+        </div>
+
+        <!-- ── PROVEEDOR (solo visible en ENTRADA) ─────────────────── -->
+        <div class="row" id="rowProveedor" style="display:none;">
+          <div class="col-md-6">
+            <div class="form-group">
+              <label>Proveedor</label>
+              <asp:DropDownList ID="ddlProveedor" runat="server" CssClass="form-control">
+                <asp:ListItem Value="">-- Sin proveedor --</asp:ListItem>
               </asp:DropDownList>
             </div>
           </div>
@@ -704,12 +724,14 @@
         }
 
         _prevTipoMovimiento = tipo;
-        var divOrigen  = document.getElementById('divBaseOrigen');
-        var divDestino = document.getElementById('divBaseDestino');
-        var txtCosto   = document.getElementById('<%= txtCosto.ClientID %>');
+        var divOrigen    = document.getElementById('divBaseOrigen');
+        var divDestino   = document.getElementById('divBaseDestino');
+        var rowProveedor = document.getElementById('rowProveedor');
+        var txtCosto     = document.getElementById('<%= txtCosto.ClientID %>');
 
-        divOrigen.style.display  = 'none';
-        divDestino.style.display = 'none';
+        divOrigen.style.display    = 'none';
+        divDestino.style.display   = 'none';
+        rowProveedor.style.display = 'none';
 
         if (tipo === '3') {
             txtCosto.value    = '0.00';
@@ -719,7 +741,7 @@
         }
 
         switch (tipo) {
-            case '1': divDestino.style.display = 'block'; break;
+            case '1': divDestino.style.display = 'block'; rowProveedor.style.display = 'block'; break;
             case '3': divOrigen.style.display = 'block'; divDestino.style.display = 'block'; break;
             case '6': divDestino.style.display = 'block'; break;
             case '7': divOrigen.style.display  = 'block'; break;

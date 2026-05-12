@@ -275,6 +275,8 @@ namespace GrupoAnkhalInventario
         /// </remarks>
         protected global::System.Web.UI.WebControls.DropDownList ddlUnidad;
 
+        protected global::System.Web.UI.WebControls.DropDownList ddlProveedorPrincipal;
+
         /// <summary>
         /// Control txtPrecio.
         /// </summary>
@@ -382,6 +384,8 @@ namespace GrupoAnkhalInventario
         /// Para modificarlo, mueva la declaración del campo del archivo del diseñador al archivo de código subyacente.
         /// </remarks>
         protected global::System.Web.UI.WebControls.DropDownList ddlUnidadEdit;
+
+        protected global::System.Web.UI.WebControls.DropDownList ddlProveedorPrincipalEdit;
 
         /// <summary>
         /// Control txtPrecioEdit.

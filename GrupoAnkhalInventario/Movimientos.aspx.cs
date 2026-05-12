@@ -60,6 +60,7 @@ namespace GrupoAnkhalInventario
             public string   RegistradoPor       { get; set; }
             public string   Observaciones       { get; set; }
             public string   FolioLote           { get; set; }
+            public string   ProveedorNombre     { get; set; }
         }
 
         // ══ Page_Load ════════════════════════════════════════════════════════
@@ -68,6 +69,7 @@ namespace GrupoAnkhalInventario
             if (!IsPostBack)
             {
                 CargarCatalogos();
+                CargarProveedores();
                 InjectJsData();
                 // Por defecto mostrar solo hoy en grid y cards
                 string hoy = AppHelper.Hoy.ToString("yyyy-MM-dd");
@@ -113,6 +115,22 @@ namespace GrupoAnkhalInventario
 
                 // ddlItem: materiales por defecto (el JS lo reemplaza al cambiar el radio)
                 CargarDropdownItems(db, "Material");
+            }
+        }
+
+        private void CargarProveedores()
+        {
+            using (var db = NuevoDb(false))
+            {
+                ddlProveedor.Items.Clear();
+                ddlProveedor.Items.Add(new ListItem("-- Sin proveedor --", ""));
+                var provs = db.Proveedores
+                    .Where(p => p.Activo)
+                    .OrderBy(p => p.Nombre)
+                    .Select(p => new { p.ProveedorID, p.Nombre })
+                    .ToList();
+                foreach (var p in provs)
+                    ddlProveedor.Items.Add(new ListItem(p.Nombre, p.ProveedorID.ToString()));
             }
         }
 
@@ -376,6 +394,9 @@ namespace GrupoAnkhalInventario
                            join lm in db.LotesMovimientos
                                on mv.LoteID equals (int?)lm.LoteID into lmG
                            from lm in lmG.DefaultIfEmpty()
+                           join prov in db.Proveedores
+                               on lm.ProveedorID equals (int?)prov.ProveedorID into provG
+                           from prov in provG.DefaultIfEmpty()
                            select new
                            {
                                mv.MovimientoID,
@@ -397,7 +418,8 @@ namespace GrupoAnkhalInventario
                                mv.Costo,
                                mv.RegistradoPorID,
                                LoteObs           = lm.Observaciones ?? mv.Observaciones,
-                               FolioLote         = lm.Folio
+                               FolioLote         = lm.Folio,
+                               ProveedorNombre   = prov.Nombre
                            }).ToList();
 
                 // ── Paso 4a: Nombres de unidades de captura ──────────────────────
@@ -472,8 +494,9 @@ namespace GrupoAnkhalInventario
                         RegistradoPor = nombresUsuario.ContainsKey(r.RegistradoPorID)
                                         ? nombresUsuario[r.RegistradoPorID]
                                         : r.RegistradoPorID.ToString(),
-                        Observaciones = r.LoteObs ?? "",
-                        FolioLote     = r.FolioLote ?? ""
+                        Observaciones   = r.LoteObs ?? "",
+                        FolioLote       = r.FolioLote ?? "",
+                        ProveedorNombre = r.ProveedorNombre ?? ""
                     }).ToList();
 
                 gvMovimientos.DataSource = pagina;
@@ -621,6 +644,9 @@ namespace GrupoAnkhalInventario
                     {
                         // ── 1. Crear LoteMovimiento con folio ─────────────────
                         string folio = GenerarFolioLote(db);
+                        int? proveedorID = claveTipo == "ENTRADA" && !string.IsNullOrEmpty(ddlProveedor.SelectedValue)
+                            ? (int?)int.Parse(ddlProveedor.SelectedValue)
+                            : null;
                         var lote = new Modelo.LotesMovimientos
                         {
                             Folio            = folio,
@@ -630,7 +656,8 @@ namespace GrupoAnkhalInventario
                             Observaciones    = string.IsNullOrEmpty(obs) ? null : obs,
                             RegistradoPorID  = claveID,
                             FechaLote        = AppHelper.Ahora.Date,
-                            FechaRegistro    = AppHelper.Ahora
+                            FechaRegistro    = AppHelper.Ahora,
+                            ProveedorID      = proveedorID
                         };
                         db.LotesMovimientos.InsertOnSubmit(lote);
                         db.SubmitChanges(); // obtener LoteID
@@ -890,6 +917,7 @@ namespace GrupoAnkhalInventario
             ddlItem.SelectedIndex           = 0;
             ddlBaseOrigen.SelectedIndex     = 0;
             ddlBaseDestino.SelectedIndex    = 0;
+            ddlProveedor.SelectedIndex      = 0;
             txtCantidad.Text                = "";
             txtCosto.Text                   = "";
             txtObservaciones.Text           = "";

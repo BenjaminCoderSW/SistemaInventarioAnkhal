@@ -153,6 +153,8 @@
       <Column Name="UsuarioModifID" Type="System.Int32" DbType="Int" CanBeNull="true" />
       <Column Name="RowVersion" Type="System.Data.Linq.Binary" DbType="rowversion NOT NULL" CanBeNull="false" IsVersion="true" />
       <Column Name="UnidadMedidaID" Type="System.Int32" DbType="Int" CanBeNull="true" />
+      <Column Name="ProveedorPrincipalID" Type="System.Nullable&lt;int&gt;" DbType="Int" CanBeNull="true" />
+      <Association Name="Proveedores_Materiales" Member="Proveedores" ThisKey="ProveedorPrincipalID" OtherKey="ProveedorID" Type="Proveedores" IsForeignKey="true" />
       <Association Name="Materiales_ConsumosProduccion" Member="ConsumosProduccion" ThisKey="MaterialID" OtherKey="MaterialID" Type="ConsumosProduccion" />
       <Association Name="Materiales_Movimientos" Member="Movimientos" ThisKey="MaterialID" OtherKey="MaterialID" Type="Movimientos" />
       <Association Name="Materiales_ProductoMateriales" Member="ProductoMateriales" ThisKey="MaterialID" OtherKey="MaterialID" Type="ProductoMateriales" />
@@ -208,7 +210,9 @@
       <Column Name="Observaciones" Type="System.String" DbType="VarChar(500)" CanBeNull="true" />
       <Column Name="RegistradoPorID" Type="System.Int32" DbType="Int NOT NULL" CanBeNull="false" />
       <Column Name="FechaRegistro" Type="System.DateTime" DbType="DateTime2(7) NOT NULL" CanBeNull="false" />
+      <Column Name="ProveedorID" Type="System.Nullable&lt;int&gt;" DbType="Int" CanBeNull="true" />
       <Association Name="LotesMovimientos_Movimientos" Member="Movimientos" ThisKey="LoteID" OtherKey="LoteID" Type="Movimientos" />
+      <Association Name="Proveedores_LotesMovimientos" Member="Proveedores" ThisKey="ProveedorID" OtherKey="ProveedorID" Type="Proveedores" IsForeignKey="true" />
     </Type>
   </Table>
   <Table Name="dbo.Produccion" Member="Produccion">

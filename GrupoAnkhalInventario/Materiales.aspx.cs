@@ -43,6 +43,7 @@ namespace GrupoAnkhalInventario
             public bool Activo { get; set; }
             public List<StockBaseVM> StockBases { get; set; }
             public System.Data.Linq.Binary RowVersion { get; set; }
+            public int? ProveedorPrincipalID { get; set; }
         }
 
         public class StockBaseVM
@@ -77,6 +78,7 @@ namespace GrupoAnkhalInventario
             {
                 CargarTipos();
                 CargarUnidades();
+                CargarProveedores();
                 CargarMateriales();
             }
             else
@@ -110,6 +112,30 @@ namespace GrupoAnkhalInventario
                 ddlFiltrTipo.Items.Add(new ListItem("-- Todos --", ""));
                 foreach (var t in tipos)
                     ddlFiltrTipo.Items.Add(new ListItem(t.Nombre, t.TipoMaterialID.ToString()));
+            }
+        }
+
+        // ── Catálogo proveedores ──────────────────────────────────────────────
+        private void CargarProveedores()
+        {
+            using (var db = NuevoDb(tracking: false))
+            {
+                var provs = db.Proveedores
+                    .Where(p => p.Activo)
+                    .OrderBy(p => p.Nombre)
+                    .Select(p => new { p.ProveedorID, p.Nombre })
+                    .ToList();
+
+                ddlProveedorPrincipal.Items.Clear();
+                ddlProveedorPrincipal.Items.Add(new ListItem("-- Sin proveedor --", ""));
+                ddlProveedorPrincipalEdit.Items.Clear();
+                ddlProveedorPrincipalEdit.Items.Add(new ListItem("-- Sin proveedor --", ""));
+
+                foreach (var p in provs)
+                {
+                    ddlProveedorPrincipal.Items.Add(new ListItem(p.Nombre, p.ProveedorID.ToString()));
+                    ddlProveedorPrincipalEdit.Items.Add(new ListItem(p.Nombre, p.ProveedorID.ToString()));
+                }
             }
         }
 
@@ -172,7 +198,8 @@ namespace GrupoAnkhalInventario
                         StockMaximo = m.StockMaximo,
                         m.StockOptimo,
                         m.Activo,
-                        m.RowVersion
+                        m.RowVersion,
+                        m.ProveedorPrincipalID
                     };
 
                 // ── Filtros ──────────────────────────────────────────────────
@@ -269,7 +296,8 @@ namespace GrupoAnkhalInventario
                             StockGlobal = global,
                             Activo = m.Activo,
                             StockBases = bases,
-                            RowVersion = m.RowVersion
+                            RowVersion = m.RowVersion,
+                            ProveedorPrincipalID = m.ProveedorPrincipalID
                         });
                     }
 
@@ -367,7 +395,8 @@ namespace GrupoAnkhalInventario
                             StockGlobal = global,
                             Activo = m.Activo,
                             StockBases = bases,
-                            RowVersion = m.RowVersion
+                            RowVersion = m.RowVersion,
+                            ProveedorPrincipalID = m.ProveedorPrincipalID
                         });
                     }
 
@@ -589,6 +618,8 @@ namespace GrupoAnkhalInventario
                         StockMinimo = minimo,
                         StockMaximo = maximo,
                         StockOptimo = optimo,
+                        ProveedorPrincipalID = string.IsNullOrEmpty(ddlProveedorPrincipal.SelectedValue)
+                            ? (int?)null : int.Parse(ddlProveedorPrincipal.SelectedValue),
                         Activo = true,
                         FechaAlta = AppHelper.Ahora,
                         UsuarioAltaID = Convert.ToInt32(Session["ClaveID"])
@@ -672,6 +703,8 @@ namespace GrupoAnkhalInventario
                     mat.StockMinimo = minimo;
                     mat.StockMaximo = maximo;
                     mat.StockOptimo = optimo;
+                    mat.ProveedorPrincipalID = string.IsNullOrEmpty(ddlProveedorPrincipalEdit.SelectedValue)
+                        ? (int?)null : int.Parse(ddlProveedorPrincipalEdit.SelectedValue);
                     mat.FechaModif = AppHelper.Ahora;
                     mat.UsuarioModifID = Convert.ToInt32(Session["ClaveID"]);
 
@@ -1115,6 +1148,7 @@ namespace GrupoAnkhalInventario
             ddlTipo.SelectedIndex = 0;
             txtSubtipo.Text = "";
             ddlUnidad.SelectedIndex = 0;
+            ddlProveedorPrincipal.SelectedIndex = 0;
             txtPrecio.Text = "0";
             txtStockMinimo.Text = "0";
             txtStockMaximo.Text = "0";

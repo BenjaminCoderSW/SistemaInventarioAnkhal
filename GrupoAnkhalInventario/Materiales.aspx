@@ -260,7 +260,8 @@
                                         '<%# Eval("StockMinimo") %>',
                                         '<%# Eval("StockMaximo") %>',
                                         '<%# Eval("StockOptimo") %>',
-                                        '<%# RowVersionBase64(Eval("RowVersion")) %>'
+                                        '<%# RowVersionBase64(Eval("RowVersion")) %>',
+                                        '<%# Eval("ProveedorPrincipalID") ?? "" %>'
                                     )">
                                     <i class="fas fa-edit"></i> Editar
                                 </button>
@@ -388,8 +389,16 @@
             </div>
           </div>
         </div>
-        <!-- Fila 3: Precio -->
+        <!-- Fila 3: Proveedor + Precio -->
         <div class="row">
+          <div class="col-md-6">
+            <div class="form-group">
+              <label>Proveedor principal</label>
+              <asp:DropDownList ID="ddlProveedorPrincipal" runat="server" CssClass="form-control">
+                <asp:ListItem Value="">-- Sin proveedor --</asp:ListItem>
+              </asp:DropDownList>
+            </div>
+          </div>
           <div class="col-md-4">
             <div class="form-group">
               <label>Precio unitario <span style="color:red">*</span></label>
@@ -486,6 +495,14 @@
           </div>
         </div>
         <div class="row">
+          <div class="col-md-6">
+            <div class="form-group">
+              <label>Proveedor principal</label>
+              <asp:DropDownList ID="ddlProveedorPrincipalEdit" runat="server" CssClass="form-control">
+                <asp:ListItem Value="">-- Sin proveedor --</asp:ListItem>
+              </asp:DropDownList>
+            </div>
+          </div>
           <div class="col-md-4">
             <div class="form-group">
               <label>Precio unitario <span style="color:red">*</span></label>
@@ -651,7 +668,7 @@
     // ── Abrir modales ─────────────────────────────────────────────
     function abrirModalNuevo() { $('#modalNuevo').modal('show'); }
 
-    function abrirModalEditar(id, codigo, descripcion, tipoID, subtipo, unidadMedidaID, precio, minimo, maximo, optimo, rowVersion) {
+    function abrirModalEditar(id, codigo, descripcion, tipoID, subtipo, unidadMedidaID, precio, minimo, maximo, optimo, rowVersion, proveedorPrincipalID) {
         document.getElementById('<%= hdnMaterialID.ClientID %>').value          = id;
         document.getElementById('<%= hdnRowVersion.ClientID %>').value          = rowVersion;
         document.getElementById('<%= hdnConvMaterialID.ClientID %>').value      = id;
@@ -664,6 +681,7 @@
         document.getElementById('<%= txtStockMinimoEdit.ClientID %>').value     = minimo;
         document.getElementById('<%= txtStockMaximoEdit.ClientID %>').value     = maximo;
         document.getElementById('<%= txtStockOptimoEdit.ClientID %>').value     = optimo;
+        document.getElementById('<%= ddlProveedorPrincipalEdit.ClientID %>').value = proveedorPrincipalID || '';
         // Cargar conversiones via postback (recarga la tabla y el dropdown de unidades)
         document.getElementById('<%= btnCargarConversiones.ClientID %>').click();
     }

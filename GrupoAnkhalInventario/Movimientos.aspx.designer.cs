@@ -266,6 +266,8 @@ namespace GrupoAnkhalInventario
         /// </remarks>
         protected global::System.Web.UI.WebControls.DropDownList ddlBaseDestino;
 
+        protected global::System.Web.UI.WebControls.DropDownList ddlProveedor;
+
         /// <summary>
         /// Control txtCantidad.
         /// </summary>
