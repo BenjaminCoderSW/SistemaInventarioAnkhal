@@ -1011,17 +1011,43 @@ namespace GrupoAnkhalInventario.Modelo
 		private static PropertyChangingEventArgs emptyChangingEventArgs = new PropertyChangingEventArgs(String.Empty);
 		
 		private int _ClienteID;
-		
+
 		private string _Nombre;
-		
+
 		private string _Contacto;
-		
+
 		private string _Telefono;
-		
+
 		private string _Email;
-		
-		private string _Direccion;
-		
+
+		private string _RFC;
+
+		private string _RegimenFiscal;
+
+		private string _PaginaWeb;
+
+		private string _TipoEmpresa;
+
+		private string _CURP;
+
+		private string _Nacionalidad;
+
+		private string _Pais;
+
+		private string _NumExt;
+
+		private string _NumInt;
+
+		private string _CodigoPostal;
+
+		private string _Estado;
+
+		private string _Municipio;
+
+		private string _Colonia;
+
+		private string _Referencia;
+
 		private bool _Activo;
 		
 		private System.DateTime _FechaAlta;
@@ -1046,8 +1072,34 @@ namespace GrupoAnkhalInventario.Modelo
     partial void OnTelefonoChanged();
     partial void OnEmailChanging(string value);
     partial void OnEmailChanged();
-    partial void OnDireccionChanging(string value);
-    partial void OnDireccionChanged();
+    partial void OnRFCChanging(string value);
+    partial void OnRFCChanged();
+    partial void OnRegimenFiscalChanging(string value);
+    partial void OnRegimenFiscalChanged();
+    partial void OnPaginaWebChanging(string value);
+    partial void OnPaginaWebChanged();
+    partial void OnTipoEmpresaChanging(string value);
+    partial void OnTipoEmpresaChanged();
+    partial void OnCURPChanging(string value);
+    partial void OnCURPChanged();
+    partial void OnNacionalidadChanging(string value);
+    partial void OnNacionalidadChanged();
+    partial void OnPaisChanging(string value);
+    partial void OnPaisChanged();
+    partial void OnNumExtChanging(string value);
+    partial void OnNumExtChanged();
+    partial void OnNumIntChanging(string value);
+    partial void OnNumIntChanged();
+    partial void OnCodigoPostalChanging(string value);
+    partial void OnCodigoPostalChanged();
+    partial void OnEstadoChanging(string value);
+    partial void OnEstadoChanged();
+    partial void OnMunicipioChanging(string value);
+    partial void OnMunicipioChanged();
+    partial void OnColoniaChanging(string value);
+    partial void OnColoniaChanged();
+    partial void OnReferenciaChanging(string value);
+    partial void OnReferenciaChanged();
     partial void OnActivoChanging(bool value);
     partial void OnActivoChanged();
     partial void OnFechaAltaChanging(System.DateTime value);
@@ -1163,26 +1215,244 @@ namespace GrupoAnkhalInventario.Modelo
 			}
 		}
 		
-		[global::System.Data.Linq.Mapping.ColumnAttribute(Storage="_Direccion", DbType="VarChar(300)")]
-		public string Direccion
+		[global::System.Data.Linq.Mapping.ColumnAttribute(Storage="_RFC", DbType="VarChar(13)")]
+		public string RFC
 		{
-			get
-			{
-				return this._Direccion;
-			}
+			get { return this._RFC; }
 			set
 			{
-				if ((this._Direccion != value))
+				if ((this._RFC != value))
 				{
-					this.OnDireccionChanging(value);
+					this.OnRFCChanging(value);
 					this.SendPropertyChanging();
-					this._Direccion = value;
-					this.SendPropertyChanged("Direccion");
-					this.OnDireccionChanged();
+					this._RFC = value;
+					this.SendPropertyChanged("RFC");
+					this.OnRFCChanged();
 				}
 			}
 		}
-		
+
+		[global::System.Data.Linq.Mapping.ColumnAttribute(Storage="_RegimenFiscal", DbType="VarChar(100)")]
+		public string RegimenFiscal
+		{
+			get { return this._RegimenFiscal; }
+			set
+			{
+				if ((this._RegimenFiscal != value))
+				{
+					this.OnRegimenFiscalChanging(value);
+					this.SendPropertyChanging();
+					this._RegimenFiscal = value;
+					this.SendPropertyChanged("RegimenFiscal");
+					this.OnRegimenFiscalChanged();
+				}
+			}
+		}
+
+		[global::System.Data.Linq.Mapping.ColumnAttribute(Storage="_PaginaWeb", DbType="VarChar(200)")]
+		public string PaginaWeb
+		{
+			get { return this._PaginaWeb; }
+			set
+			{
+				if ((this._PaginaWeb != value))
+				{
+					this.OnPaginaWebChanging(value);
+					this.SendPropertyChanging();
+					this._PaginaWeb = value;
+					this.SendPropertyChanged("PaginaWeb");
+					this.OnPaginaWebChanged();
+				}
+			}
+		}
+
+		[global::System.Data.Linq.Mapping.ColumnAttribute(Storage="_TipoEmpresa", DbType="VarChar(20)")]
+		public string TipoEmpresa
+		{
+			get { return this._TipoEmpresa; }
+			set
+			{
+				if ((this._TipoEmpresa != value))
+				{
+					this.OnTipoEmpresaChanging(value);
+					this.SendPropertyChanging();
+					this._TipoEmpresa = value;
+					this.SendPropertyChanged("TipoEmpresa");
+					this.OnTipoEmpresaChanged();
+				}
+			}
+		}
+
+		[global::System.Data.Linq.Mapping.ColumnAttribute(Storage="_CURP", DbType="VarChar(18)")]
+		public string CURP
+		{
+			get { return this._CURP; }
+			set
+			{
+				if ((this._CURP != value))
+				{
+					this.OnCURPChanging(value);
+					this.SendPropertyChanging();
+					this._CURP = value;
+					this.SendPropertyChanged("CURP");
+					this.OnCURPChanged();
+				}
+			}
+		}
+
+		[global::System.Data.Linq.Mapping.ColumnAttribute(Storage="_Nacionalidad", DbType="VarChar(100)")]
+		public string Nacionalidad
+		{
+			get { return this._Nacionalidad; }
+			set
+			{
+				if ((this._Nacionalidad != value))
+				{
+					this.OnNacionalidadChanging(value);
+					this.SendPropertyChanging();
+					this._Nacionalidad = value;
+					this.SendPropertyChanged("Nacionalidad");
+					this.OnNacionalidadChanged();
+				}
+			}
+		}
+
+		[global::System.Data.Linq.Mapping.ColumnAttribute(Storage="_Pais", DbType="VarChar(100)")]
+		public string Pais
+		{
+			get { return this._Pais; }
+			set
+			{
+				if ((this._Pais != value))
+				{
+					this.OnPaisChanging(value);
+					this.SendPropertyChanging();
+					this._Pais = value;
+					this.SendPropertyChanged("Pais");
+					this.OnPaisChanged();
+				}
+			}
+		}
+
+		[global::System.Data.Linq.Mapping.ColumnAttribute(Storage="_NumExt", DbType="VarChar(20)")]
+		public string NumExt
+		{
+			get { return this._NumExt; }
+			set
+			{
+				if ((this._NumExt != value))
+				{
+					this.OnNumExtChanging(value);
+					this.SendPropertyChanging();
+					this._NumExt = value;
+					this.SendPropertyChanged("NumExt");
+					this.OnNumExtChanged();
+				}
+			}
+		}
+
+		[global::System.Data.Linq.Mapping.ColumnAttribute(Storage="_NumInt", DbType="VarChar(20)")]
+		public string NumInt
+		{
+			get { return this._NumInt; }
+			set
+			{
+				if ((this._NumInt != value))
+				{
+					this.OnNumIntChanging(value);
+					this.SendPropertyChanging();
+					this._NumInt = value;
+					this.SendPropertyChanged("NumInt");
+					this.OnNumIntChanged();
+				}
+			}
+		}
+
+		[global::System.Data.Linq.Mapping.ColumnAttribute(Storage="_CodigoPostal", DbType="VarChar(10)")]
+		public string CodigoPostal
+		{
+			get { return this._CodigoPostal; }
+			set
+			{
+				if ((this._CodigoPostal != value))
+				{
+					this.OnCodigoPostalChanging(value);
+					this.SendPropertyChanging();
+					this._CodigoPostal = value;
+					this.SendPropertyChanged("CodigoPostal");
+					this.OnCodigoPostalChanged();
+				}
+			}
+		}
+
+		[global::System.Data.Linq.Mapping.ColumnAttribute(Storage="_Estado", DbType="VarChar(100)")]
+		public string Estado
+		{
+			get { return this._Estado; }
+			set
+			{
+				if ((this._Estado != value))
+				{
+					this.OnEstadoChanging(value);
+					this.SendPropertyChanging();
+					this._Estado = value;
+					this.SendPropertyChanged("Estado");
+					this.OnEstadoChanged();
+				}
+			}
+		}
+
+		[global::System.Data.Linq.Mapping.ColumnAttribute(Storage="_Municipio", DbType="VarChar(100)")]
+		public string Municipio
+		{
+			get { return this._Municipio; }
+			set
+			{
+				if ((this._Municipio != value))
+				{
+					this.OnMunicipioChanging(value);
+					this.SendPropertyChanging();
+					this._Municipio = value;
+					this.SendPropertyChanged("Municipio");
+					this.OnMunicipioChanged();
+				}
+			}
+		}
+
+		[global::System.Data.Linq.Mapping.ColumnAttribute(Storage="_Colonia", DbType="VarChar(150)")]
+		public string Colonia
+		{
+			get { return this._Colonia; }
+			set
+			{
+				if ((this._Colonia != value))
+				{
+					this.OnColoniaChanging(value);
+					this.SendPropertyChanging();
+					this._Colonia = value;
+					this.SendPropertyChanged("Colonia");
+					this.OnColoniaChanged();
+				}
+			}
+		}
+
+		[global::System.Data.Linq.Mapping.ColumnAttribute(Storage="_Referencia", DbType="VarChar(300)")]
+		public string Referencia
+		{
+			get { return this._Referencia; }
+			set
+			{
+				if ((this._Referencia != value))
+				{
+					this.OnReferenciaChanging(value);
+					this.SendPropertyChanging();
+					this._Referencia = value;
+					this.SendPropertyChanged("Referencia");
+					this.OnReferenciaChanged();
+				}
+			}
+		}
+
 		[global::System.Data.Linq.Mapping.ColumnAttribute(Storage="_Activo", DbType="Bit NOT NULL")]
 		public bool Activo
 		{

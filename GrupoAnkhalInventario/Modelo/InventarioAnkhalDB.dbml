@@ -35,7 +35,20 @@
       <Column Name="Contacto" Type="System.String" DbType="VarChar(100)" CanBeNull="true" />
       <Column Name="Telefono" Type="System.String" DbType="VarChar(20)" CanBeNull="true" />
       <Column Name="Email" Type="System.String" DbType="VarChar(100)" CanBeNull="true" />
-      <Column Name="Direccion" Type="System.String" DbType="VarChar(300)" CanBeNull="true" />
+      <Column Name="RFC" Type="System.String" DbType="VarChar(13)" CanBeNull="true" />
+      <Column Name="RegimenFiscal" Type="System.String" DbType="VarChar(100)" CanBeNull="true" />
+      <Column Name="PaginaWeb" Type="System.String" DbType="VarChar(200)" CanBeNull="true" />
+      <Column Name="TipoEmpresa" Type="System.String" DbType="VarChar(20)" CanBeNull="true" />
+      <Column Name="CURP" Type="System.String" DbType="VarChar(18)" CanBeNull="true" />
+      <Column Name="Nacionalidad" Type="System.String" DbType="VarChar(100)" CanBeNull="true" />
+      <Column Name="Pais" Type="System.String" DbType="VarChar(100)" CanBeNull="true" />
+      <Column Name="NumExt" Type="System.String" DbType="VarChar(20)" CanBeNull="true" />
+      <Column Name="NumInt" Type="System.String" DbType="VarChar(20)" CanBeNull="true" />
+      <Column Name="CodigoPostal" Type="System.String" DbType="VarChar(10)" CanBeNull="true" />
+      <Column Name="Estado" Type="System.String" DbType="VarChar(100)" CanBeNull="true" />
+      <Column Name="Municipio" Type="System.String" DbType="VarChar(100)" CanBeNull="true" />
+      <Column Name="Colonia" Type="System.String" DbType="VarChar(150)" CanBeNull="true" />
+      <Column Name="Referencia" Type="System.String" DbType="VarChar(300)" CanBeNull="true" />
       <Column Name="Activo" Type="System.Boolean" DbType="Bit NOT NULL" CanBeNull="false" />
       <Column Name="FechaAlta" Type="System.DateTime" DbType="DateTime2 NOT NULL" CanBeNull="false" />
       <Column Name="UsuarioAltaID" Type="System.Int32" DbType="Int" CanBeNull="true" />

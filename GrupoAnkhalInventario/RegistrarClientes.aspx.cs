@@ -46,10 +46,10 @@ namespace GrupoAnkhalInventario
         // ══ CARGA / FILTRADO CON PAGINACIÓN ══════════════════════════════════
         private void CargarClientes()
         {
-            string buscar  = (txtBuscar.Text ?? "").Trim().ToLower();
-            string filEst  = ddlFiltrEstado.SelectedValue;
-            int pageIdx    = gvClientes.PageIndex;
-            int pageSz     = gvClientes.PageSize;
+            string buscar = (txtBuscar.Text ?? "").Trim().ToLower();
+            string filEst = ddlFiltrEstado.SelectedValue;
+            int pageIdx   = gvClientes.PageIndex;
+            int pageSz    = gvClientes.PageSize;
 
             using (var db = NuevoDb(tracking: false))
             {
@@ -130,13 +130,26 @@ namespace GrupoAnkhalInventario
                 {
                     var nuevo = new Clientes
                     {
-                        Nombre       = nombreTrim,
-                        Contacto     = NullIfEmpty(txtContacto.Text),
-                        Telefono     = NullIfEmpty(txtTelefono.Text),
-                        Email        = NullIfEmpty(txtEmail.Text),
-                        Direccion    = NullIfEmpty(txtDireccion.Text),
-                        Activo       = true,
-                        FechaAlta    = AppHelper.Ahora,
+                        Nombre        = nombreTrim,
+                        Contacto      = NullIfEmpty(txtContacto.Text),
+                        Telefono      = NullIfEmpty(txtTelefono.Text),
+                        Email         = NullIfEmpty(txtEmail.Text),
+                        PaginaWeb     = NullIfEmpty(txtPaginaWeb.Text),
+                        TipoEmpresa   = NullIfEmpty(ddlTipoEmpresa.SelectedValue),
+                        Nacionalidad  = NullIfEmpty(txtNacionalidad.Text),
+                        RFC           = NullIfEmpty(txtRFC.Text)?.ToUpper(),
+                        RegimenFiscal = NullIfEmpty(ddlRegimenFiscal.SelectedValue),
+                        CURP          = NullIfEmpty(txtCURP.Text)?.ToUpper(),
+                        Pais          = NullIfEmpty(txtPais.Text),
+                        CodigoPostal  = NullIfEmpty(txtCodigoPostal.Text),
+                        Estado        = NullIfEmpty(txtEstado.Text),
+                        Municipio     = NullIfEmpty(txtMunicipio.Text),
+                        Colonia       = NullIfEmpty(txtColonia.Text),
+                        NumExt        = NullIfEmpty(txtNumExt.Text),
+                        NumInt        = NullIfEmpty(txtNumInt.Text),
+                        Referencia    = NullIfEmpty(txtReferencia.Text),
+                        Activo        = true,
+                        FechaAlta     = AppHelper.Ahora,
                         UsuarioAltaID = Convert.ToInt32(Session["ClaveID"])
                     };
 
@@ -193,11 +206,24 @@ namespace GrupoAnkhalInventario
                         return;
                     }
 
-                    cliente.Nombre    = nombreTrim;
-                    cliente.Contacto  = NullIfEmpty(txtContactoEdit.Text);
-                    cliente.Telefono  = NullIfEmpty(txtTelefonoEdit.Text);
-                    cliente.Email     = NullIfEmpty(txtEmailEdit.Text);
-                    cliente.Direccion = NullIfEmpty(txtDireccionEdit.Text);
+                    cliente.Nombre        = nombreTrim;
+                    cliente.Contacto      = NullIfEmpty(txtContactoEdit.Text);
+                    cliente.Telefono      = NullIfEmpty(txtTelefonoEdit.Text);
+                    cliente.Email         = NullIfEmpty(txtEmailEdit.Text);
+                    cliente.PaginaWeb     = NullIfEmpty(txtPaginaWebEdit.Text);
+                    cliente.TipoEmpresa   = NullIfEmpty(ddlTipoEmpresaEdit.SelectedValue);
+                    cliente.Nacionalidad  = NullIfEmpty(txtNacionalidadEdit.Text);
+                    cliente.RFC           = NullIfEmpty(txtRFCEdit.Text)?.ToUpper();
+                    cliente.RegimenFiscal = NullIfEmpty(ddlRegimenFiscalEdit.SelectedValue);
+                    cliente.CURP          = NullIfEmpty(txtCURPEdit.Text)?.ToUpper();
+                    cliente.Pais          = NullIfEmpty(txtPaisEdit.Text);
+                    cliente.CodigoPostal  = NullIfEmpty(txtCodigoPostalEdit.Text);
+                    cliente.Estado        = NullIfEmpty(txtEstadoEdit.Text);
+                    cliente.Municipio     = NullIfEmpty(txtMunicipioEdit.Text);
+                    cliente.Colonia       = NullIfEmpty(txtColoniaEdit.Text);
+                    cliente.NumExt        = NullIfEmpty(txtNumExtEdit.Text);
+                    cliente.NumInt        = NullIfEmpty(txtNumIntEdit.Text);
+                    cliente.Referencia    = NullIfEmpty(txtReferenciaEdit.Text);
 
                     db.SubmitChanges();
 
@@ -254,11 +280,24 @@ namespace GrupoAnkhalInventario
 
         private void LimpiarNuevo()
         {
-            txtNombre.Text    = "";
-            txtContacto.Text  = "";
-            txtTelefono.Text  = "";
-            txtEmail.Text     = "";
-            txtDireccion.Text = "";
+            txtNombre.Text       = "";
+            txtContacto.Text     = "";
+            txtTelefono.Text     = "";
+            txtEmail.Text        = "";
+            txtPaginaWeb.Text    = "";
+            ddlTipoEmpresa.SelectedIndex    = 0;
+            txtNacionalidad.Text = "";
+            txtRFC.Text          = "";
+            ddlRegimenFiscal.SelectedIndex  = 0;
+            txtCURP.Text         = "";
+            txtPais.Text         = "";
+            txtCodigoPostal.Text = "";
+            txtEstado.Text       = "";
+            txtMunicipio.Text    = "";
+            txtColonia.Text      = "";
+            txtNumExt.Text       = "";
+            txtNumInt.Text       = "";
+            txtReferencia.Text   = "";
         }
 
         private static string NullIfEmpty(string valor)

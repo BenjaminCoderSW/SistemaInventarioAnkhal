@@ -38,7 +38,20 @@ namespace GrupoAnkhalInventario
         protected global::System.Web.UI.WebControls.TextBox       txtContacto;
         protected global::System.Web.UI.WebControls.TextBox       txtTelefono;
         protected global::System.Web.UI.WebControls.TextBox       txtEmail;
-        protected global::System.Web.UI.WebControls.TextBox       txtDireccion;
+        protected global::System.Web.UI.WebControls.TextBox       txtPaginaWeb;
+        protected global::System.Web.UI.WebControls.DropDownList  ddlTipoEmpresa;
+        protected global::System.Web.UI.WebControls.TextBox       txtNacionalidad;
+        protected global::System.Web.UI.WebControls.TextBox       txtRFC;
+        protected global::System.Web.UI.WebControls.DropDownList  ddlRegimenFiscal;
+        protected global::System.Web.UI.WebControls.TextBox       txtCURP;
+        protected global::System.Web.UI.WebControls.TextBox       txtPais;
+        protected global::System.Web.UI.WebControls.TextBox       txtCodigoPostal;
+        protected global::System.Web.UI.WebControls.TextBox       txtEstado;
+        protected global::System.Web.UI.WebControls.TextBox       txtMunicipio;
+        protected global::System.Web.UI.WebControls.TextBox       txtColonia;
+        protected global::System.Web.UI.WebControls.TextBox       txtNumExt;
+        protected global::System.Web.UI.WebControls.TextBox       txtNumInt;
+        protected global::System.Web.UI.WebControls.TextBox       txtReferencia;
         protected global::System.Web.UI.WebControls.Button        btnGuardar;
 
         // ── Modal Editar Cliente ───────────────────────────────────────────────
@@ -46,7 +59,20 @@ namespace GrupoAnkhalInventario
         protected global::System.Web.UI.WebControls.TextBox       txtContactoEdit;
         protected global::System.Web.UI.WebControls.TextBox       txtTelefonoEdit;
         protected global::System.Web.UI.WebControls.TextBox       txtEmailEdit;
-        protected global::System.Web.UI.WebControls.TextBox       txtDireccionEdit;
+        protected global::System.Web.UI.WebControls.TextBox       txtPaginaWebEdit;
+        protected global::System.Web.UI.WebControls.DropDownList  ddlTipoEmpresaEdit;
+        protected global::System.Web.UI.WebControls.TextBox       txtNacionalidadEdit;
+        protected global::System.Web.UI.WebControls.TextBox       txtRFCEdit;
+        protected global::System.Web.UI.WebControls.DropDownList  ddlRegimenFiscalEdit;
+        protected global::System.Web.UI.WebControls.TextBox       txtCURPEdit;
+        protected global::System.Web.UI.WebControls.TextBox       txtPaisEdit;
+        protected global::System.Web.UI.WebControls.TextBox       txtCodigoPostalEdit;
+        protected global::System.Web.UI.WebControls.TextBox       txtEstadoEdit;
+        protected global::System.Web.UI.WebControls.TextBox       txtMunicipioEdit;
+        protected global::System.Web.UI.WebControls.TextBox       txtColoniaEdit;
+        protected global::System.Web.UI.WebControls.TextBox       txtNumExtEdit;
+        protected global::System.Web.UI.WebControls.TextBox       txtNumIntEdit;
+        protected global::System.Web.UI.WebControls.TextBox       txtReferenciaEdit;
         protected global::System.Web.UI.WebControls.Button        btnGuardarEdit;
     }
 }
