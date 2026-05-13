@@ -349,8 +349,8 @@
                                     <th>Material</th>
                                     <th>Unidad base</th>
                                     <th>Unidad captura</th>
-                                    <th>Teórico Mín</th>
-                                    <th>Teórico Máx</th>
+                                    <th>Rango Mín</th>
+                                    <th>Rango Máx</th>
                                     <th>Consumo Real</th>
                                     <th>Stock Actual</th>
                                 </tr>

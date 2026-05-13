@@ -297,6 +297,10 @@
             <i class="fas fa-plus"></i> Agregar componente
           </button>
         </div>
+        <small class="text-muted d-block mb-2" style="font-size:.8rem;">
+          <i class="fas fa-info-circle text-info"></i>
+          Define cuánto de cada material se debe consumir al fabricar <strong>una unidad</strong> del producto (rango mínimo y máximo esperado).
+        </small>
         <div id="divComponentesNuevo">
           <!-- filas de componentes se agregan dinámicamente -->
         </div>
@@ -393,8 +397,8 @@
             <thead>
               <tr>
                 <th>Material</th>
-                <th>Cant. Mín</th>
-                <th>Cant. Máx</th>
+                <th>Rango Mín</th>
+                <th>Rango Máx</th>
                 <th>Notas</th>
                 <th style="width:80px;">Acción</th>
               </tr>
@@ -409,6 +413,10 @@
 
         <hr />
         <h6 style="color:#003366;font-weight:600;"><i class="fas fa-plus-circle"></i> Agregar componente</h6>
+        <small class="text-muted d-block mb-2" style="font-size:.8rem;">
+          <i class="fas fa-info-circle text-info"></i>
+          Define cuánto de cada material se debe consumir al fabricar <strong>una unidad</strong> del producto (rango mínimo y máximo esperado).
+        </small>
         <div class="row align-items-end">
           <div class="col-md-3">
             <label style="font-size:.84rem;">Material <span style="color:red">*</span></label>
@@ -423,11 +431,11 @@
             </select>
           </div>
           <div class="col-md-2">
-            <label style="font-size:.84rem;">Cant. Mín <span style="color:red">*</span></label>
+            <label style="font-size:.84rem;">Rango Mín <span style="color:red">*</span></label>
             <input type="number" id="txtCantMinComp" class="form-control form-control-sm" value="0" min="0" step="0.01" />
           </div>
           <div class="col-md-2">
-            <label style="font-size:.84rem;">Cant. Máx <span style="color:red">*</span></label>
+            <label style="font-size:.84rem;">Rango Máx <span style="color:red">*</span></label>
             <input type="number" id="txtCantMaxComp" class="form-control form-control-sm" value="0" min="0" step="0.01" />
           </div>
           <div class="col-md-2">
@@ -577,12 +585,12 @@
                 unidOpts + '</select>' +
                 '</div>' +
                 '<div class="col-md-2">' +
-                '<label style="font-size:.8rem;">Cant. Mín <span style="color:red">*</span></label>' +
+                '<label style="font-size:.8rem;">Rango Mín <span style="color:red">*</span></label>' +
                 '<input type="number" class="form-control form-control-sm" value="' + c.cantMin + '" min="0" step="0.01" ' +
                 'onchange="_compNuevo[' + i + '].cantMin=parseFloat(this.value)||0;" />' +
                 '</div>' +
                 '<div class="col-md-2">' +
-                '<label style="font-size:.8rem;">Cant. Máx <span style="color:red">*</span></label>' +
+                '<label style="font-size:.8rem;">Rango Máx <span style="color:red">*</span></label>' +
                 '<input type="number" class="form-control form-control-sm" value="' + c.cantMax + '" min="0" step="0.01" ' +
                 'onchange="_compNuevo[' + i + '].cantMax=parseFloat(this.value)||0;" />' +
                 '</div>' +
