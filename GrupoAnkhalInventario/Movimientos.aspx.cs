@@ -391,7 +391,7 @@ namespace GrupoAnkhalInventario
                            join bd in db.Bases
                                on mv.BaseDestinoID equals (int?)bd.BaseID into bdG
                            from bd in bdG.DefaultIfEmpty()
-                           join lm in db.LotesMovimientos
+                           join lm in db.LotesMovimiento
                                on mv.LoteID equals (int?)lm.LoteID into lmG
                            from lm in lmG.DefaultIfEmpty()
                            join prov in db.Proveedores
@@ -647,7 +647,7 @@ namespace GrupoAnkhalInventario
                         int? proveedorID = claveTipo == "ENTRADA" && !string.IsNullOrEmpty(ddlProveedor.SelectedValue)
                             ? (int?)int.Parse(ddlProveedor.SelectedValue)
                             : null;
-                        var lote = new Modelo.LotesMovimientos
+                        var lote = new Modelo.LotesMovimiento
                         {
                             Folio            = folio,
                             TipoMovimientoID = tipoMovID,
@@ -659,7 +659,7 @@ namespace GrupoAnkhalInventario
                             FechaRegistro    = AppHelper.Ahora,
                             ProveedorID      = proveedorID
                         };
-                        db.LotesMovimientos.InsertOnSubmit(lote);
+                        db.LotesMovimiento.InsertOnSubmit(lote);
                         db.SubmitChanges(); // obtener LoteID
 
                         // ── 2. Insertar movimiento + actualizar stock por ítem ─

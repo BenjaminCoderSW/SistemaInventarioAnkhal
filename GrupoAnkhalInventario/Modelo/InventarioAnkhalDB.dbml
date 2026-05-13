@@ -18,8 +18,11 @@
       <Column Name="MetaSemanal" Type="System.Decimal" DbType="Decimal(12,2) NOT NULL" CanBeNull="false" />
       <Column Name="MetaMensual" Type="System.Decimal" DbType="Decimal(12,2) NOT NULL" CanBeNull="false" />
       <Association Name="Bases_Entregas" Member="Entregas" ThisKey="BaseID" OtherKey="BaseOrigenID" Type="Entregas" />
+      <Association Name="Bases_LotesMovimiento" Member="LotesMovimiento" ThisKey="BaseID" OtherKey="BaseDestinoID" Type="LotesMovimiento" />
+      <Association Name="Bases_LotesMovimiento1" Member="LotesMovimiento1" ThisKey="BaseID" OtherKey="BaseOrigenID" Type="LotesMovimiento" />
       <Association Name="Bases_Movimientos" Member="Movimientos" ThisKey="BaseID" OtherKey="BaseDestinoID" Type="Movimientos" />
       <Association Name="Bases_Movimientos1" Member="Movimientos1" ThisKey="BaseID" OtherKey="BaseOrigenID" Type="Movimientos" />
+      <Association Name="Bases_NivelesMaterialBase" Member="NivelesMaterialBase" ThisKey="BaseID" OtherKey="BaseID" Type="NivelesMaterialBase" />
       <Association Name="Bases_Produccion" Member="Produccion" ThisKey="BaseID" OtherKey="BaseID" Type="Produccion" />
       <Association Name="Bases_StockMateriales" Member="StockMateriales" ThisKey="BaseID" OtherKey="BaseID" Type="StockMateriales" />
       <Association Name="Bases_StockProductos" Member="StockProductos" ThisKey="BaseID" OtherKey="BaseID" Type="StockProductos" />
@@ -35,11 +38,9 @@
       <Column Name="Contacto" Type="System.String" DbType="VarChar(100)" CanBeNull="true" />
       <Column Name="Telefono" Type="System.String" DbType="VarChar(20)" CanBeNull="true" />
       <Column Name="Email" Type="System.String" DbType="VarChar(100)" CanBeNull="true" />
-      <Column Name="TipoPersona"       Type="System.String" DbType="VarChar(10)"  CanBeNull="true" />
-      <Column Name="RazonSocialFiscal" Type="System.String" DbType="VarChar(300)" CanBeNull="true" />
-      <Column Name="UsoCFDI"           Type="System.String"             DbType="VarChar(10)"   CanBeNull="true" />
-      <Column Name="DiasCredito"       Type="System.Nullable&lt;int&gt;"    DbType="Int"           CanBeNull="true" />
-      <Column Name="LimiteCredito"     Type="System.Nullable&lt;decimal&gt;" DbType="Decimal(18,2)" CanBeNull="true" />
+      <Column Name="Activo" Type="System.Boolean" DbType="Bit NOT NULL" CanBeNull="false" />
+      <Column Name="FechaAlta" Type="System.DateTime" DbType="DateTime2 NOT NULL" CanBeNull="false" />
+      <Column Name="UsuarioAltaID" Type="System.Int32" DbType="Int" CanBeNull="true" />
       <Column Name="RFC" Type="System.String" DbType="VarChar(13)" CanBeNull="true" />
       <Column Name="RegimenFiscal" Type="System.String" DbType="VarChar(10)" CanBeNull="true" />
       <Column Name="PaginaWeb" Type="System.String" DbType="VarChar(200)" CanBeNull="true" />
@@ -54,46 +55,13 @@
       <Column Name="Municipio" Type="System.String" DbType="VarChar(100)" CanBeNull="true" />
       <Column Name="Colonia" Type="System.String" DbType="VarChar(150)" CanBeNull="true" />
       <Column Name="Referencia" Type="System.String" DbType="VarChar(300)" CanBeNull="true" />
-      <Column Name="Activo" Type="System.Boolean" DbType="Bit NOT NULL" CanBeNull="false" />
-      <Column Name="FechaAlta" Type="System.DateTime" DbType="DateTime2 NOT NULL" CanBeNull="false" />
-      <Column Name="UsuarioAltaID" Type="System.Int32" DbType="Int" CanBeNull="true" />
+      <Column Name="TipoPersona" Type="System.String" DbType="VarChar(10)" CanBeNull="true" />
+      <Column Name="RazonSocialFiscal" Type="System.String" DbType="VarChar(300)" CanBeNull="true" />
+      <Column Name="UsoCFDI" Type="System.String" DbType="VarChar(10)" CanBeNull="true" />
+      <Column Name="DiasCredito" Type="System.Int32" DbType="Int" CanBeNull="true" />
+      <Column Name="LimiteCredito" Type="System.Decimal" DbType="Decimal(18,2)" CanBeNull="true" />
       <Association Name="Clientes_Entregas" Member="Entregas" ThisKey="ClienteID" OtherKey="ClienteID" Type="Entregas" />
       <Association Name="Usuario_Clientes" Member="Usuario" ThisKey="UsuarioAltaID" OtherKey="ClaveID" Type="Usuario" IsForeignKey="true" />
-    </Type>
-  </Table>
-  <Table Name="dbo.Proveedores" Member="Proveedores">
-    <Type Name="Proveedores">
-      <Column Name="ProveedorID"       Type="System.Int32"              DbType="Int NOT NULL IDENTITY" IsPrimaryKey="true" IsDbGenerated="true" CanBeNull="false" />
-      <Column Name="Nombre"            Type="System.String"             DbType="VarChar(200) NOT NULL"  CanBeNull="false" />
-      <Column Name="Contacto"          Type="System.String"             DbType="VarChar(100)"           CanBeNull="true" />
-      <Column Name="Telefono"          Type="System.String"             DbType="VarChar(20)"            CanBeNull="true" />
-      <Column Name="Email"             Type="System.String"             DbType="VarChar(100)"           CanBeNull="true" />
-      <Column Name="PaginaWeb"         Type="System.String"             DbType="VarChar(200)"           CanBeNull="true" />
-      <Column Name="TipoPersona"       Type="System.String"             DbType="VarChar(10)"            CanBeNull="true" />
-      <Column Name="TipoEmpresa"       Type="System.String"             DbType="VarChar(20)"            CanBeNull="true" />
-      <Column Name="Nacionalidad"      Type="System.String"             DbType="VarChar(100)"           CanBeNull="true" />
-      <Column Name="RazonSocialFiscal" Type="System.String"             DbType="VarChar(300)"           CanBeNull="true" />
-      <Column Name="RFC"               Type="System.String"             DbType="VarChar(13)"            CanBeNull="true" />
-      <Column Name="RegimenFiscal"     Type="System.String"             DbType="VarChar(10)"            CanBeNull="true" />
-      <Column Name="CURP"              Type="System.String"             DbType="VarChar(18)"            CanBeNull="true" />
-      <Column Name="Banco"             Type="System.String"             DbType="VarChar(100)"           CanBeNull="true" />
-      <Column Name="CLABE"             Type="System.String"             DbType="VarChar(18)"            CanBeNull="true" />
-      <Column Name="CuentaBancaria"    Type="System.String"             DbType="VarChar(30)"            CanBeNull="true" />
-      <Column Name="TitularCuenta"     Type="System.String"             DbType="VarChar(200)"           CanBeNull="true" />
-      <Column Name="DiasCredito"       Type="System.Nullable&lt;int&gt;"    DbType="Int"                    CanBeNull="true" />
-      <Column Name="LimiteCredito"     Type="System.Nullable&lt;decimal&gt;" DbType="Decimal(18,2)"          CanBeNull="true" />
-      <Column Name="Pais"              Type="System.String"             DbType="VarChar(100)"           CanBeNull="true" />
-      <Column Name="CodigoPostal"      Type="System.String"             DbType="VarChar(10)"            CanBeNull="true" />
-      <Column Name="Estado"            Type="System.String"             DbType="VarChar(100)"           CanBeNull="true" />
-      <Column Name="Municipio"         Type="System.String"             DbType="VarChar(100)"           CanBeNull="true" />
-      <Column Name="Colonia"           Type="System.String"             DbType="VarChar(150)"           CanBeNull="true" />
-      <Column Name="NumExt"            Type="System.String"             DbType="VarChar(20)"            CanBeNull="true" />
-      <Column Name="NumInt"            Type="System.String"             DbType="VarChar(20)"            CanBeNull="true" />
-      <Column Name="Referencia"        Type="System.String"             DbType="VarChar(300)"           CanBeNull="true" />
-      <Column Name="Activo"            Type="System.Boolean"            DbType="Bit NOT NULL"           CanBeNull="false" />
-      <Column Name="FechaAlta"         Type="System.DateTime"           DbType="DateTime2 NOT NULL"     CanBeNull="false" />
-      <Column Name="UsuarioAltaID"     Type="System.Int32"              DbType="Int"                    CanBeNull="true" />
-      <Association Name="Usuario_Proveedores" Member="Usuario" ThisKey="UsuarioAltaID" OtherKey="ClaveID" Type="Usuario" IsForeignKey="true" />
     </Type>
   </Table>
   <Table Name="dbo.ConsumosProduccion" Member="ConsumosProduccion">
@@ -114,6 +82,40 @@
       <Association Name="Produccion_ConsumosProduccion" Member="Produccion" ThisKey="ProduccionID" OtherKey="ProduccionID" Type="Produccion" IsForeignKey="true" />
     </Type>
   </Table>
+  <Table Name="dbo.ConversionesMaterial" Member="ConversionesMaterial">
+    <Type Name="ConversionesMaterial">
+      <Column Name="ConversionID" Type="System.Int32" DbType="Int NOT NULL IDENTITY" IsPrimaryKey="true" IsDbGenerated="true" CanBeNull="false" />
+      <Column Name="MaterialID" Type="System.Int32" DbType="Int NOT NULL" CanBeNull="false" />
+      <Column Name="UnidadOrigenID" Type="System.Int32" DbType="Int NOT NULL" CanBeNull="false" />
+      <Column Name="Factor" Type="System.Decimal" DbType="Decimal(18,6) NOT NULL" CanBeNull="false" />
+      <Column Name="Descripcion" Type="System.String" DbType="VarChar(200)" CanBeNull="true" />
+      <Column Name="Activo" Type="System.Boolean" DbType="Bit NOT NULL" CanBeNull="false" />
+      <Column Name="FechaAlta" Type="System.DateTime" DbType="DateTime2 NOT NULL" CanBeNull="false" />
+      <Column Name="UsuarioAltaID" Type="System.Int32" DbType="Int" CanBeNull="true" />
+      <Association Name="ConversionesMaterial_ProductoMateriales" Member="ProductoMateriales" ThisKey="ConversionID" OtherKey="ConversionID" Type="ProductoMateriales" />
+      <Association Name="Materiales_ConversionesMaterial" Member="Materiales" ThisKey="MaterialID" OtherKey="MaterialID" Type="Materiales" IsForeignKey="true" />
+      <Association Name="UnidadesMedida_ConversionesMaterial" Member="UnidadesMedida" ThisKey="UnidadOrigenID" OtherKey="UnidadMedidaID" Type="UnidadesMedida" IsForeignKey="true" />
+      <Association Name="Usuario_ConversionesMaterial" Member="Usuario" ThisKey="UsuarioAltaID" OtherKey="ClaveID" Type="Usuario" IsForeignKey="true" />
+    </Type>
+  </Table>
+  <Table Name="dbo.DetalleEntregas" Member="DetalleEntregas">
+    <Type Name="DetalleEntregas">
+      <Column Name="DetalleEntregaID" Type="System.Int32" DbType="Int NOT NULL IDENTITY" IsPrimaryKey="true" IsDbGenerated="true" CanBeNull="false" />
+      <Column Name="EntregaID" Type="System.Int32" DbType="Int NOT NULL" CanBeNull="false" />
+      <Column Name="TipoItem" Type="System.String" DbType="VarChar(10) NOT NULL" CanBeNull="false" />
+      <Column Name="ProductoID" Type="System.Int32" DbType="Int" CanBeNull="true" />
+      <Column Name="PaqueteID" Type="System.Int32" DbType="Int" CanBeNull="true" />
+      <Column Name="Cantidad" Type="System.Decimal" DbType="Decimal(12,4) NOT NULL" CanBeNull="false" />
+      <Column Name="PrecioUnitario" Type="System.Decimal" DbType="Decimal(12,4) NOT NULL" CanBeNull="false" />
+      <Column Name="Observaciones" Type="System.String" DbType="VarChar(200)" CanBeNull="true" />
+      <Column Name="MaterialID" Type="System.Int32" DbType="Int" CanBeNull="true" />
+      <Column Name="CantidadCapturada" Type="System.Decimal" DbType="Decimal(12,4)" CanBeNull="true" />
+      <Column Name="UnidadCapturaID" Type="System.Int32" DbType="Int" CanBeNull="true" />
+      <Association Name="Entregas_DetalleEntregas" Member="Entregas" ThisKey="EntregaID" OtherKey="EntregaID" Type="Entregas" IsForeignKey="true" />
+      <Association Name="Materiales_DetalleEntregas" Member="Materiales" ThisKey="MaterialID" OtherKey="MaterialID" Type="Materiales" IsForeignKey="true" />
+      <Association Name="Productos_DetalleEntregas" Member="Productos" ThisKey="ProductoID" OtherKey="ProductoID" Type="Productos" IsForeignKey="true" />
+    </Type>
+  </Table>
   <Table Name="dbo.Entregas" Member="Entregas">
     <Type Name="Entregas">
       <Column Name="EntregaID" Type="System.Int32" DbType="Int NOT NULL IDENTITY" IsPrimaryKey="true" IsDbGenerated="true" CanBeNull="false" />
@@ -127,11 +129,31 @@
       <Column Name="FechaRegistro" Type="System.DateTime" DbType="DateTime2 NOT NULL" CanBeNull="false" />
       <Column Name="FechaModif" Type="System.DateTime" DbType="DateTime2" CanBeNull="true" />
       <Column Name="ClienteID" Type="System.Int32" DbType="Int" CanBeNull="true" />
-      <Association Name="Entregas_Movimientos" Member="Movimientos" ThisKey="EntregaID" OtherKey="EntregaID" Type="Movimientos" />
       <Association Name="Entregas_DetalleEntregas" Member="DetalleEntregas" ThisKey="EntregaID" OtherKey="EntregaID" Type="DetalleEntregas" />
+      <Association Name="Entregas_Movimientos" Member="Movimientos" ThisKey="EntregaID" OtherKey="EntregaID" Type="Movimientos" />
       <Association Name="Bases_Entregas" Member="Bases" ThisKey="BaseOrigenID" OtherKey="BaseID" Type="Bases" IsForeignKey="true" />
       <Association Name="Clientes_Entregas" Member="Clientes" ThisKey="ClienteID" OtherKey="ClienteID" Type="Clientes" IsForeignKey="true" />
       <Association Name="Usuario_Entregas" Member="Usuario" ThisKey="RegistradoPorID" OtherKey="ClaveID" Type="Usuario" IsForeignKey="true" />
+    </Type>
+  </Table>
+  <Table Name="dbo.LotesMovimiento" Member="LotesMovimiento">
+    <Type Name="LotesMovimiento">
+      <Column Name="LoteID" Type="System.Int32" DbType="Int NOT NULL IDENTITY" IsPrimaryKey="true" IsDbGenerated="true" CanBeNull="false" />
+      <Column Name="Folio" Type="System.String" DbType="VarChar(30) NOT NULL" CanBeNull="false" />
+      <Column Name="FechaLote" Type="System.DateTime" DbType="Date NOT NULL" CanBeNull="false" />
+      <Column Name="TipoMovimientoID" Type="System.Int32" DbType="Int NOT NULL" CanBeNull="false" />
+      <Column Name="BaseOrigenID" Type="System.Int32" DbType="Int" CanBeNull="true" />
+      <Column Name="BaseDestinoID" Type="System.Int32" DbType="Int" CanBeNull="true" />
+      <Column Name="Observaciones" Type="System.String" DbType="VarChar(500)" CanBeNull="true" />
+      <Column Name="RegistradoPorID" Type="System.Int32" DbType="Int NOT NULL" CanBeNull="false" />
+      <Column Name="FechaRegistro" Type="System.DateTime" DbType="DateTime2 NOT NULL" CanBeNull="false" />
+      <Column Name="ProveedorID" Type="System.Int32" DbType="Int" CanBeNull="true" />
+      <Association Name="LotesMovimiento_Movimientos" Member="Movimientos" ThisKey="LoteID" OtherKey="LoteID" Type="Movimientos" />
+      <Association Name="Bases_LotesMovimiento" Member="Bases" ThisKey="BaseDestinoID" OtherKey="BaseID" Type="Bases" IsForeignKey="true" />
+      <Association Name="Bases_LotesMovimiento1" Member="Bases1" ThisKey="BaseOrigenID" OtherKey="BaseID" Type="Bases" IsForeignKey="true" />
+      <Association Name="Proveedores_LotesMovimiento" Member="Proveedores" ThisKey="ProveedorID" OtherKey="ProveedorID" Type="Proveedores" IsForeignKey="true" />
+      <Association Name="TiposMovimiento_LotesMovimiento" Member="TiposMovimiento" ThisKey="TipoMovimientoID" OtherKey="TipoMovimientoID" Type="TiposMovimiento" IsForeignKey="true" />
+      <Association Name="Usuario_LotesMovimiento" Member="Usuario" ThisKey="RegistradoPorID" OtherKey="ClaveID" Type="Usuario" IsForeignKey="true" />
     </Type>
   </Table>
   <Table Name="dbo.Materiales" Member="Materiales">
@@ -153,14 +175,15 @@
       <Column Name="UsuarioModifID" Type="System.Int32" DbType="Int" CanBeNull="true" />
       <Column Name="RowVersion" Type="System.Data.Linq.Binary" DbType="rowversion NOT NULL" CanBeNull="false" IsVersion="true" />
       <Column Name="UnidadMedidaID" Type="System.Int32" DbType="Int" CanBeNull="true" />
-      <Column Name="ProveedorPrincipalID" Type="System.Nullable&lt;int&gt;" DbType="Int" CanBeNull="true" />
-      <Association Name="Proveedores_Materiales" Member="Proveedores" ThisKey="ProveedorPrincipalID" OtherKey="ProveedorID" Type="Proveedores" IsForeignKey="true" />
+      <Column Name="ProveedorPrincipalID" Type="System.Int32" DbType="Int" CanBeNull="true" />
       <Association Name="Materiales_ConsumosProduccion" Member="ConsumosProduccion" ThisKey="MaterialID" OtherKey="MaterialID" Type="ConsumosProduccion" />
-      <Association Name="Materiales_Movimientos" Member="Movimientos" ThisKey="MaterialID" OtherKey="MaterialID" Type="Movimientos" />
-      <Association Name="Materiales_ProductoMateriales" Member="ProductoMateriales" ThisKey="MaterialID" OtherKey="MaterialID" Type="ProductoMateriales" />
-      <Association Name="Materiales_StockMateriales" Member="StockMateriales" ThisKey="MaterialID" OtherKey="MaterialID" Type="StockMateriales" />
       <Association Name="Materiales_ConversionesMaterial" Member="ConversionesMaterial" ThisKey="MaterialID" OtherKey="MaterialID" Type="ConversionesMaterial" />
       <Association Name="Materiales_DetalleEntregas" Member="DetalleEntregas" ThisKey="MaterialID" OtherKey="MaterialID" Type="DetalleEntregas" />
+      <Association Name="Materiales_Movimientos" Member="Movimientos" ThisKey="MaterialID" OtherKey="MaterialID" Type="Movimientos" />
+      <Association Name="Materiales_NivelesMaterialBase" Member="NivelesMaterialBase" ThisKey="MaterialID" OtherKey="MaterialID" Type="NivelesMaterialBase" />
+      <Association Name="Materiales_ProductoMateriales" Member="ProductoMateriales" ThisKey="MaterialID" OtherKey="MaterialID" Type="ProductoMateriales" />
+      <Association Name="Materiales_StockMateriales" Member="StockMateriales" ThisKey="MaterialID" OtherKey="MaterialID" Type="StockMateriales" />
+      <Association Name="Proveedores_Materiales" Member="Proveedores" ThisKey="ProveedorPrincipalID" OtherKey="ProveedorID" Type="Proveedores" IsForeignKey="true" />
       <Association Name="TiposMaterial_Materiales" Member="TiposMaterial" ThisKey="TipoMaterialID" OtherKey="TipoMaterialID" Type="TiposMaterial" IsForeignKey="true" />
       <Association Name="UnidadesMedida_Materiales" Member="UnidadesMedida" ThisKey="UnidadMedidaID" OtherKey="UnidadMedidaID" Type="UnidadesMedida" IsForeignKey="true" />
       <Association Name="Usuario_Materiales" Member="Usuario" ThisKey="UsuarioAltaID" OtherKey="ClaveID" Type="Usuario" IsForeignKey="true" />
@@ -190,8 +213,8 @@
       <Association Name="Bases_Movimientos" Member="Bases" ThisKey="BaseDestinoID" OtherKey="BaseID" Type="Bases" IsForeignKey="true" />
       <Association Name="Bases_Movimientos1" Member="Bases1" ThisKey="BaseOrigenID" OtherKey="BaseID" Type="Bases" IsForeignKey="true" />
       <Association Name="Entregas_Movimientos" Member="Entregas" ThisKey="EntregaID" OtherKey="EntregaID" Type="Entregas" IsForeignKey="true" />
-      <Association Name="LotesMovimientos_Movimientos" Member="LotesMovimientos" ThisKey="LoteID" OtherKey="LoteID" Type="LotesMovimientos" IsForeignKey="true" />
       <Association Name="Materiales_Movimientos" Member="Materiales" ThisKey="MaterialID" OtherKey="MaterialID" Type="Materiales" IsForeignKey="true" />
+      <Association Name="LotesMovimiento_Movimientos" Member="LotesMovimiento" ThisKey="LoteID" OtherKey="LoteID" Type="LotesMovimiento" IsForeignKey="true" />
       <Association Name="Produccion_Movimientos" Member="Produccion" ThisKey="ProduccionID" OtherKey="ProduccionID" Type="Produccion" IsForeignKey="true" />
       <Association Name="Productos_Movimientos" Member="Productos" ThisKey="ProductoID" OtherKey="ProductoID" Type="Productos" IsForeignKey="true" />
       <Association Name="TiposMovimiento_Movimientos" Member="TiposMovimiento" ThisKey="TipoMovimientoID" OtherKey="TipoMovimientoID" Type="TiposMovimiento" IsForeignKey="true" />
@@ -199,20 +222,18 @@
       <Association Name="Usuario_Movimientos" Member="Usuario" ThisKey="RegistradoPorID" OtherKey="ClaveID" Type="Usuario" IsForeignKey="true" />
     </Type>
   </Table>
-  <Table Name="dbo.LotesMovimiento" Member="LotesMovimientos">
-    <Type Name="LotesMovimientos">
-      <Column Name="LoteID" Type="System.Int32" DbType="Int NOT NULL IDENTITY" IsPrimaryKey="true" IsDbGenerated="true" CanBeNull="false" />
-      <Column Name="Folio" Type="System.String" DbType="VarChar(30) NOT NULL" CanBeNull="false" />
-      <Column Name="FechaLote" Type="System.DateTime" DbType="Date NOT NULL" CanBeNull="false" />
-      <Column Name="TipoMovimientoID" Type="System.Int32" DbType="Int NOT NULL" CanBeNull="false" />
-      <Column Name="BaseOrigenID" Type="System.Int32" DbType="Int" CanBeNull="true" />
-      <Column Name="BaseDestinoID" Type="System.Int32" DbType="Int" CanBeNull="true" />
-      <Column Name="Observaciones" Type="System.String" DbType="VarChar(500)" CanBeNull="true" />
-      <Column Name="RegistradoPorID" Type="System.Int32" DbType="Int NOT NULL" CanBeNull="false" />
-      <Column Name="FechaRegistro" Type="System.DateTime" DbType="DateTime2(7) NOT NULL" CanBeNull="false" />
-      <Column Name="ProveedorID" Type="System.Nullable&lt;int&gt;" DbType="Int" CanBeNull="true" />
-      <Association Name="LotesMovimientos_Movimientos" Member="Movimientos" ThisKey="LoteID" OtherKey="LoteID" Type="Movimientos" />
-      <Association Name="Proveedores_LotesMovimientos" Member="Proveedores" ThisKey="ProveedorID" OtherKey="ProveedorID" Type="Proveedores" IsForeignKey="true" />
+  <Table Name="dbo.NivelesMaterialBase" Member="NivelesMaterialBase">
+    <Type Name="NivelesMaterialBase">
+      <Column Name="NivelBaseID" Type="System.Int32" DbType="Int NOT NULL IDENTITY" IsPrimaryKey="true" IsDbGenerated="true" CanBeNull="false" />
+      <Column Name="MaterialID" Type="System.Int32" DbType="Int NOT NULL" CanBeNull="false" />
+      <Column Name="BaseID" Type="System.Int32" DbType="Int NOT NULL" CanBeNull="false" />
+      <Column Name="StockMinimo" Type="System.Decimal" DbType="Decimal(12,4) NOT NULL" CanBeNull="false" />
+      <Column Name="StockOptimo" Type="System.Decimal" DbType="Decimal(12,4) NOT NULL" CanBeNull="false" />
+      <Column Name="StockMaximo" Type="System.Decimal" DbType="Decimal(12,4) NOT NULL" CanBeNull="false" />
+      <Column Name="FechaModif" Type="System.DateTime" DbType="DateTime2 NOT NULL" CanBeNull="false" />
+      <Column Name="UsuarioModifID" Type="System.Int32" DbType="Int" CanBeNull="true" />
+      <Association Name="Bases_NivelesMaterialBase" Member="Bases" ThisKey="BaseID" OtherKey="BaseID" Type="Bases" IsForeignKey="true" />
+      <Association Name="Materiales_NivelesMaterialBase" Member="Materiales" ThisKey="MaterialID" OtherKey="MaterialID" Type="Materiales" IsForeignKey="true" />
     </Type>
   </Table>
   <Table Name="dbo.Produccion" Member="Produccion">
@@ -248,9 +269,9 @@
       <Column Name="CantMinCapturada" Type="System.Decimal" DbType="Decimal(12,4)" CanBeNull="true" />
       <Column Name="CantMaxCapturada" Type="System.Decimal" DbType="Decimal(12,4)" CanBeNull="true" />
       <Column Name="Activo" Type="System.Boolean" DbType="Bit NOT NULL" CanBeNull="false" />
+      <Association Name="ConversionesMaterial_ProductoMateriales" Member="ConversionesMaterial" ThisKey="ConversionID" OtherKey="ConversionID" Type="ConversionesMaterial" IsForeignKey="true" />
       <Association Name="Materiales_ProductoMateriales" Member="Materiales" ThisKey="MaterialID" OtherKey="MaterialID" Type="Materiales" IsForeignKey="true" />
       <Association Name="Productos_ProductoMateriales" Member="Productos" ThisKey="ProductoID" OtherKey="ProductoID" Type="Productos" IsForeignKey="true" />
-      <Association Name="ConversionesMaterial_ProductoMateriales" Member="ConversionesMaterial" ThisKey="ConversionID" OtherKey="ConversionID" Type="ConversionesMaterial" IsForeignKey="true" />
     </Type>
   </Table>
   <Table Name="dbo.Productos" Member="Productos">
@@ -266,14 +287,51 @@
       <Column Name="UsuarioAltaID" Type="System.Int32" DbType="Int" CanBeNull="true" />
       <Column Name="UsuarioModifID" Type="System.Int32" DbType="Int" CanBeNull="true" />
       <Column Name="RowVersion" Type="System.Data.Linq.Binary" DbType="rowversion NOT NULL" CanBeNull="false" IsVersion="true" />
+      <Association Name="Productos_DetalleEntregas" Member="DetalleEntregas" ThisKey="ProductoID" OtherKey="ProductoID" Type="DetalleEntregas" />
       <Association Name="Productos_Movimientos" Member="Movimientos" ThisKey="ProductoID" OtherKey="ProductoID" Type="Movimientos" />
       <Association Name="Productos_Produccion" Member="Produccion" ThisKey="ProductoID" OtherKey="ProductoID" Type="Produccion" />
       <Association Name="Productos_ProductoMateriales" Member="ProductoMateriales" ThisKey="ProductoID" OtherKey="ProductoID" Type="ProductoMateriales" />
       <Association Name="Productos_StockProductos" Member="StockProductos" ThisKey="ProductoID" OtherKey="ProductoID" Type="StockProductos" />
-      <Association Name="Productos_DetalleEntregas" Member="DetalleEntregas" ThisKey="ProductoID" OtherKey="ProductoID" Type="DetalleEntregas" />
       <Association Name="TiposProducto_Productos" Member="TiposProducto" ThisKey="TipoProductoID" OtherKey="TipoProductoID" Type="TiposProducto" IsForeignKey="true" />
       <Association Name="Usuario_Productos" Member="Usuario" ThisKey="UsuarioAltaID" OtherKey="ClaveID" Type="Usuario" IsForeignKey="true" />
       <Association Name="Usuario_Productos1" Member="Usuario1" ThisKey="UsuarioModifID" OtherKey="ClaveID" Type="Usuario" IsForeignKey="true" />
+    </Type>
+  </Table>
+  <Table Name="dbo.Proveedores" Member="Proveedores">
+    <Type Name="Proveedores">
+      <Column Name="ProveedorID" Type="System.Int32" DbType="Int NOT NULL IDENTITY" IsPrimaryKey="true" IsDbGenerated="true" CanBeNull="false" />
+      <Column Name="Nombre" Type="System.String" DbType="VarChar(200) NOT NULL" CanBeNull="false" />
+      <Column Name="Contacto" Type="System.String" DbType="VarChar(100)" CanBeNull="true" />
+      <Column Name="Telefono" Type="System.String" DbType="VarChar(20)" CanBeNull="true" />
+      <Column Name="Email" Type="System.String" DbType="VarChar(100)" CanBeNull="true" />
+      <Column Name="PaginaWeb" Type="System.String" DbType="VarChar(200)" CanBeNull="true" />
+      <Column Name="TipoPersona" Type="System.String" DbType="VarChar(10)" CanBeNull="true" />
+      <Column Name="TipoEmpresa" Type="System.String" DbType="VarChar(20)" CanBeNull="true" />
+      <Column Name="Nacionalidad" Type="System.String" DbType="VarChar(100)" CanBeNull="true" />
+      <Column Name="RazonSocialFiscal" Type="System.String" DbType="VarChar(300)" CanBeNull="true" />
+      <Column Name="RFC" Type="System.String" DbType="VarChar(13)" CanBeNull="true" />
+      <Column Name="RegimenFiscal" Type="System.String" DbType="VarChar(10)" CanBeNull="true" />
+      <Column Name="CURP" Type="System.String" DbType="VarChar(18)" CanBeNull="true" />
+      <Column Name="Banco" Type="System.String" DbType="VarChar(100)" CanBeNull="true" />
+      <Column Name="CLABE" Type="System.String" DbType="VarChar(18)" CanBeNull="true" />
+      <Column Name="CuentaBancaria" Type="System.String" DbType="VarChar(30)" CanBeNull="true" />
+      <Column Name="TitularCuenta" Type="System.String" DbType="VarChar(200)" CanBeNull="true" />
+      <Column Name="DiasCredito" Type="System.Int32" DbType="Int" CanBeNull="true" />
+      <Column Name="LimiteCredito" Type="System.Decimal" DbType="Decimal(18,2)" CanBeNull="true" />
+      <Column Name="Pais" Type="System.String" DbType="VarChar(100)" CanBeNull="true" />
+      <Column Name="CodigoPostal" Type="System.String" DbType="VarChar(10)" CanBeNull="true" />
+      <Column Name="Estado" Type="System.String" DbType="VarChar(100)" CanBeNull="true" />
+      <Column Name="Municipio" Type="System.String" DbType="VarChar(100)" CanBeNull="true" />
+      <Column Name="Colonia" Type="System.String" DbType="VarChar(150)" CanBeNull="true" />
+      <Column Name="NumExt" Type="System.String" DbType="VarChar(20)" CanBeNull="true" />
+      <Column Name="NumInt" Type="System.String" DbType="VarChar(20)" CanBeNull="true" />
+      <Column Name="Referencia" Type="System.String" DbType="VarChar(300)" CanBeNull="true" />
+      <Column Name="Activo" Type="System.Boolean" DbType="Bit NOT NULL" CanBeNull="false" />
+      <Column Name="FechaAlta" Type="System.DateTime" DbType="DateTime2 NOT NULL" CanBeNull="false" />
+      <Column Name="UsuarioAltaID" Type="System.Int32" DbType="Int" CanBeNull="true" />
+      <Association Name="Proveedores_LotesMovimiento" Member="LotesMovimiento" ThisKey="ProveedorID" OtherKey="ProveedorID" Type="LotesMovimiento" />
+      <Association Name="Proveedores_Materiales" Member="Materiales" ThisKey="ProveedorID" OtherKey="ProveedorPrincipalID" Type="Materiales" />
+      <Association Name="Usuario_Proveedores" Member="Usuario" ThisKey="UsuarioAltaID" OtherKey="ClaveID" Type="Usuario" IsForeignKey="true" />
     </Type>
   </Table>
   <Table Name="dbo.Roles" Member="Roles">
@@ -325,6 +383,7 @@
       <Column Name="Nombre" Type="System.String" DbType="VarChar(100) NOT NULL" CanBeNull="false" />
       <Column Name="AfectaStock" Type="System.Int16" DbType="SmallInt NOT NULL" CanBeNull="false" />
       <Column Name="Activo" Type="System.Boolean" DbType="Bit NOT NULL" CanBeNull="false" />
+      <Association Name="TiposMovimiento_LotesMovimiento" Member="LotesMovimiento" ThisKey="TipoMovimientoID" OtherKey="TipoMovimientoID" Type="LotesMovimiento" />
       <Association Name="TiposMovimiento_Movimientos" Member="Movimientos" ThisKey="TipoMovimientoID" OtherKey="TipoMovimientoID" Type="Movimientos" />
     </Type>
   </Table>
@@ -343,25 +402,9 @@
       <Column Name="Clave" Type="System.String" DbType="VarChar(20) NOT NULL" CanBeNull="false" />
       <Column Name="Nombre" Type="System.String" DbType="VarChar(100) NOT NULL" CanBeNull="false" />
       <Column Name="Activo" Type="System.Boolean" DbType="Bit NOT NULL" CanBeNull="false" />
+      <Association Name="UnidadesMedida_ConversionesMaterial" Member="ConversionesMaterial" ThisKey="UnidadMedidaID" OtherKey="UnidadOrigenID" Type="ConversionesMaterial" />
       <Association Name="UnidadesMedida_Materiales" Member="Materiales" ThisKey="UnidadMedidaID" OtherKey="UnidadMedidaID" Type="Materiales" />
       <Association Name="UnidadesMedida_Movimientos" Member="Movimientos" ThisKey="UnidadMedidaID" OtherKey="UnidadCapturaID" Type="Movimientos" />
-      <Association Name="UnidadesMedida_ConversionesMaterial" Member="ConversionesMaterial" ThisKey="UnidadMedidaID" OtherKey="UnidadOrigenID" Type="ConversionesMaterial" />
-    </Type>
-  </Table>
-  <Table Name="dbo.ConversionesMaterial" Member="ConversionesMaterial">
-    <Type Name="ConversionesMaterial">
-      <Column Name="ConversionID" Type="System.Int32" DbType="Int NOT NULL IDENTITY" IsPrimaryKey="true" IsDbGenerated="true" CanBeNull="false" />
-      <Column Name="MaterialID" Type="System.Int32" DbType="Int NOT NULL" CanBeNull="false" />
-      <Column Name="UnidadOrigenID" Type="System.Int32" DbType="Int NOT NULL" CanBeNull="false" />
-      <Column Name="Factor" Type="System.Decimal" DbType="Decimal(18,6) NOT NULL" CanBeNull="false" />
-      <Column Name="Descripcion" Type="System.String" DbType="VarChar(200)" CanBeNull="true" />
-      <Column Name="Activo" Type="System.Boolean" DbType="Bit NOT NULL" CanBeNull="false" />
-      <Column Name="FechaAlta" Type="System.DateTime" DbType="DateTime2 NOT NULL" CanBeNull="false" />
-      <Column Name="UsuarioAltaID" Type="System.Int32" DbType="Int" CanBeNull="true" />
-      <Association Name="ConversionesMaterial_ProductoMateriales" Member="ProductoMateriales" ThisKey="ConversionID" OtherKey="ConversionID" Type="ProductoMateriales" />
-      <Association Name="Materiales_ConversionesMaterial" Member="Materiales" ThisKey="MaterialID" OtherKey="MaterialID" Type="Materiales" IsForeignKey="true" />
-      <Association Name="UnidadesMedida_ConversionesMaterial" Member="UnidadesMedida" ThisKey="UnidadOrigenID" OtherKey="UnidadMedidaID" Type="UnidadesMedida" IsForeignKey="true" />
-      <Association Name="Usuario_ConversionesMaterial" Member="Usuario" ThisKey="UsuarioAltaID" OtherKey="ClaveID" Type="Usuario" IsForeignKey="true" />
     </Type>
   </Table>
   <Table Name="dbo.Usuario" Member="Usuario">
@@ -383,13 +426,16 @@
       <Association Name="Usuario_Bases" Member="Bases" ThisKey="ClaveID" OtherKey="UsuarioAltaID" Type="Bases" />
       <Association Name="Usuario_Bases1" Member="Bases1" ThisKey="ClaveID" OtherKey="UsuarioModifID" Type="Bases" />
       <Association Name="Usuario_Clientes" Member="Clientes" ThisKey="ClaveID" OtherKey="UsuarioAltaID" Type="Clientes" />
+      <Association Name="Usuario_ConversionesMaterial" Member="ConversionesMaterial" ThisKey="ClaveID" OtherKey="UsuarioAltaID" Type="ConversionesMaterial" />
       <Association Name="Usuario_Entregas" Member="Entregas" ThisKey="ClaveID" OtherKey="RegistradoPorID" Type="Entregas" />
+      <Association Name="Usuario_LotesMovimiento" Member="LotesMovimiento" ThisKey="ClaveID" OtherKey="RegistradoPorID" Type="LotesMovimiento" />
       <Association Name="Usuario_Materiales" Member="Materiales" ThisKey="ClaveID" OtherKey="UsuarioAltaID" Type="Materiales" />
       <Association Name="Usuario_Materiales1" Member="Materiales1" ThisKey="ClaveID" OtherKey="UsuarioModifID" Type="Materiales" />
       <Association Name="Usuario_Movimientos" Member="Movimientos" ThisKey="ClaveID" OtherKey="RegistradoPorID" Type="Movimientos" />
       <Association Name="Usuario_Produccion" Member="Produccion" ThisKey="ClaveID" OtherKey="RegistradoPorID" Type="Produccion" />
       <Association Name="Usuario_Productos" Member="Productos" ThisKey="ClaveID" OtherKey="UsuarioAltaID" Type="Productos" />
       <Association Name="Usuario_Productos1" Member="Productos1" ThisKey="ClaveID" OtherKey="UsuarioModifID" Type="Productos" />
+      <Association Name="Usuario_Proveedores" Member="Proveedores" ThisKey="ClaveID" OtherKey="UsuarioAltaID" Type="Proveedores" />
       <Association Name="Usuario_Usuario" Member="Usuario3" ThisKey="ClaveID" OtherKey="UsuarioAltaID" Type="Usuario" />
       <Association Name="Usuario_UsuarioBases" Member="UsuarioBases" ThisKey="ClaveID" OtherKey="AsignadoPorID" Type="UsuarioBases" />
       <Association Name="Usuario_UsuarioBases1" Member="UsuarioBases1" ThisKey="ClaveID" OtherKey="ClaveID" Type="UsuarioBases" />
@@ -445,24 +491,6 @@
       <Column Name="UltimoAcceso" Type="System.DateTime" DbType="DateTime2" CanBeNull="true" />
       <Column Name="UsuarioAltaID" Type="System.Int32" DbType="Int" CanBeNull="true" />
       <Column Name="RowVersion" Type="System.Data.Linq.Binary" DbType="rowversion NOT NULL" CanBeNull="false" IsVersion="true" />
-    </Type>
-  </Table>
-  <Table Name="dbo.DetalleEntregas" Member="DetalleEntregas">
-    <Type Name="DetalleEntregas">
-      <Column Name="DetalleEntregaID" Type="System.Int32" DbType="Int NOT NULL IDENTITY" IsPrimaryKey="true" IsDbGenerated="true" CanBeNull="false" />
-      <Column Name="EntregaID" Type="System.Int32" DbType="Int NOT NULL" CanBeNull="false" />
-      <Column Name="TipoItem" Type="System.String" DbType="VarChar(10) NOT NULL" CanBeNull="false" />
-      <Column Name="ProductoID" Type="System.Int32" DbType="Int" CanBeNull="true" />
-      <Column Name="PaqueteID" Type="System.Int32" DbType="Int" CanBeNull="true" />
-      <Column Name="Cantidad" Type="System.Int32" DbType="Int NOT NULL" CanBeNull="false" />
-      <Column Name="PrecioUnitario" Type="System.Decimal" DbType="Decimal(12,4) NOT NULL" CanBeNull="false" />
-      <Column Name="Observaciones" Type="System.String" DbType="VarChar(200)" CanBeNull="true" />
-      <Column Name="MaterialID" Type="System.Int32" DbType="Int" CanBeNull="true" />
-      <Column Name="CantidadCapturada" Type="System.Decimal" DbType="Decimal(12,4)" CanBeNull="true" />
-      <Column Name="UnidadCapturaID" Type="System.Int32" DbType="Int" CanBeNull="true" />
-      <Association Name="Materiales_DetalleEntregas" Member="Materiales" ThisKey="MaterialID" OtherKey="MaterialID" Type="Materiales" IsForeignKey="true" />
-      <Association Name="Entregas_DetalleEntregas" Member="Entregas" ThisKey="EntregaID" OtherKey="EntregaID" Type="Entregas" IsForeignKey="true" />
-      <Association Name="Productos_DetalleEntregas" Member="Productos" ThisKey="ProductoID" OtherKey="ProductoID" Type="Productos" IsForeignKey="true" />
     </Type>
   </Table>
 </Database>

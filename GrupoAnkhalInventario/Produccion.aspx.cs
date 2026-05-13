@@ -869,7 +869,7 @@ namespace GrupoAnkhalInventario
                             db.SubmitChanges(); // ← primer commit para obtener ProduccionID
 
                             // Crear lote que agrupa todos los consumos de esta producción
-                            var loteProd = new Modelo.LotesMovimientos
+                            var loteProd = new Modelo.LotesMovimiento
                             {
                                 Folio            = AppHelper.GenerarFolio(db, "PROD"),
                                 TipoMovimientoID = tipoConsumoID,
@@ -880,7 +880,7 @@ namespace GrupoAnkhalInventario
                                 FechaLote        = AppHelper.Ahora.Date,
                                 FechaRegistro    = AppHelper.Ahora
                             };
-                            db.LotesMovimientos.InsertOnSubmit(loteProd);
+                            db.LotesMovimiento.InsertOnSubmit(loteProd);
                             db.SubmitChanges(); // obtener LoteID
                             int loteProdID = loteProd.LoteID;
 

@@ -1367,7 +1367,7 @@ namespace GrupoAnkhalInventario
             int claveID = Convert.ToInt32(Session["ClaveID"]);
 
             // Crear lote que agrupa todos los movimientos de esta entrega
-            var loteEnt = new Modelo.LotesMovimientos
+            var loteEnt = new Modelo.LotesMovimiento
             {
                 Folio            = AppHelper.GenerarFolio(db, "ENT"),
                 TipoMovimientoID = tipoSalidaID,
@@ -1378,7 +1378,7 @@ namespace GrupoAnkhalInventario
                 FechaLote        = AppHelper.Ahora.Date,
                 FechaRegistro    = AppHelper.Ahora
             };
-            db.LotesMovimientos.InsertOnSubmit(loteEnt);
+            db.LotesMovimiento.InsertOnSubmit(loteEnt);
             db.SubmitChanges(); // obtener LoteID
             int loteEntID = loteEnt.LoteID;
 
