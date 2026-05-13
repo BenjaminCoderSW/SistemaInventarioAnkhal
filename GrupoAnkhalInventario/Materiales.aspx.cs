@@ -522,7 +522,7 @@ namespace GrupoAnkhalInventario
                 var ic = System.Globalization.CultureInfo.InvariantCulture;
                 string btnEditar = string.Format(
                     "<button type='button' class='btn btn-xs btn-outline-primary btn-editar-nivel' " +
-                    "onclick=\"abrirEditorNivel({0},{1},'{2}',{3},{4},{5},{6},{7},{8})\"> " +
+                    "onclick=\"abrirEditorNivel({0},{1},'{2}',{3},{4},{5},{6},{7},{8},'{9}')\"> " +
                     "<i class='fas fa-sliders-h'></i> Editar</button>",
                     vm.MaterialID,
                     b.BaseID,
@@ -532,7 +532,8 @@ namespace GrupoAnkhalInventario
                     dispMax.ToString(ic),
                     b.TieneNivelPropio ? "true" : "false",
                     vm.StockMinimo.ToString(ic),
-                    vm.StockMaximo.ToString(ic));
+                    vm.StockMaximo.ToString(ic),
+                    System.Web.HttpUtility.JavaScriptStringEncode(vm.Unidad ?? ""));
 
                 sb.Append("<tr>");
                 sb.Append("<td>" + System.Web.HttpUtility.HtmlEncode(b.BaseNombre) + "</td>");
@@ -975,9 +976,17 @@ namespace GrupoAnkhalInventario
             // sus elementos en el DOM y no hacen nada.
             CargarMateriales();
 
-            // Re-abrir el modal (mismo patrón que Produccion.aspx)
+            // Re-abrir el modal y restaurar la nota de unidad
             ClientScript.RegisterStartupScript(GetType(), "abrirModalEditar",
-                "window.addEventListener('load',function(){$('#modalEditar').modal('show');});", true);
+                "window.addEventListener('load',function(){" +
+                    "$('#modalEditar').modal('show');" +
+                    "var ddlU=document.getElementById('" + ddlUnidadEdit.ClientID + "');" +
+                    "var nota=document.getElementById('notaUnidadEdit');" +
+                    "if(ddlU&&nota){" +
+                        "var txt=ddlU.options[ddlU.selectedIndex]?ddlU.options[ddlU.selectedIndex].text:'';" +
+                        "nota.innerHTML=txt?'<i class=\"fas fa-info-circle\"></i> Configura los niveles en '+txt:'';" +
+                    "}" +
+                "});", true);
         }
 
         /// <summary>

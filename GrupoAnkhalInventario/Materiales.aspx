@@ -308,7 +308,8 @@
     <h6 style="color:#003366;font-weight:700;margin-bottom:4px;">
         <i class="fas fa-sliders-h"></i> Niveles de stock por base
     </h6>
-    <small id="spanNombreBaseEditor" class="text-muted d-block mb-3"></small>
+    <small id="spanNombreBaseEditor" class="text-muted d-block mb-1"></small>
+    <p id="notaUnidadBase" class="small fw-semibold text-info mb-3" style="margin-top:0;"></p>
     <div class="form-group mb-2">
         <label style="font-size:.82rem;font-weight:600;">
             Stock mínimo <span class="text-danger">(🔴 por debajo = crítico)</span>
@@ -384,7 +385,7 @@
           </div>
           <div class="col-md-4">
             <div class="form-group">
-              <label>Unidad de medida <span style="color:red">*</span></label>
+              <label>Unidad de medida (base) <span style="color:red">*</span></label>
               <asp:DropDownList ID="ddlUnidad" runat="server" CssClass="form-control"></asp:DropDownList>
             </div>
           </div>
@@ -411,11 +412,14 @@
         </div>
         <hr />
         <h6 style="color:#003366;font-weight:600;"><i class="fas fa-layer-group"></i> Niveles de stock General en Ankhal</h6>
-        <small class="text-muted d-block mb-2">
+        <small class="text-muted d-block mb-1">
             Definen el semáforo: <span style="color:#c0392b">🔴 Bajo mínimo</span> si stock &lt; Mínimo &nbsp;|&nbsp;
             <span style="color:#d35400">🟡 Bajo máximo</span> si stock &lt; Máximo &nbsp;|&nbsp;
             <span style="color:#1e8449">🟢 Óptimo</span> si stock ≥ Óptimo
         </small>
+        <p id="notaUnidadNuevo" class="small fw-semibold text-info mb-2" style="margin-top:0;">
+            <i class="fas fa-info-circle"></i> Selecciona una unidad de medida para ver en qué unidad configurar los niveles.
+        </p>
         <div class="row">
           <div class="col-md-4">
             <div class="form-group">
@@ -489,7 +493,7 @@
           </div>
           <div class="col-md-4">
             <div class="form-group">
-              <label>Unidad de medida <span style="color:red">*</span></label>
+              <label>Unidad de medida (base)<span style="color:red">*</span></label>
               <asp:DropDownList ID="ddlUnidadEdit" runat="server" CssClass="form-control"></asp:DropDownList>
             </div>
           </div>
@@ -515,6 +519,7 @@
         </div>
         <hr />
         <h6 style="color:#003366;font-weight:600;"><i class="fas fa-layer-group"></i> Niveles de stock</h6>
+        <p id="notaUnidadEdit" class="small fw-semibold text-info mb-2" style="margin-top:0;"></p>
         <div class="row">
           <div class="col-md-4">
             <div class="form-group">
@@ -663,6 +668,24 @@
             $('body').removeClass('modal-open').css('padding-right', '');
             $('.modal-backdrop').remove();
         });
+
+        // ── Nota de unidad en modal Nuevo: se actualiza al cambiar la unidad ──
+        document.getElementById('<%= ddlUnidad.ClientID %>').addEventListener('change', function () {
+            var texto = this.options[this.selectedIndex].text;
+            var nota  = document.getElementById('notaUnidadNuevo');
+            nota.innerHTML = texto && this.value
+                ? '<i class="fas fa-info-circle"></i> Configura los niveles en ' + texto
+                : '<i class="fas fa-info-circle"></i> Selecciona una unidad de medida para ver en qué unidad configurar los niveles.';
+        });
+
+        // ── Nota de unidad en modal Editar: se actualiza si el usuario cambia la unidad ──
+        document.getElementById('<%= ddlUnidadEdit.ClientID %>').addEventListener('change', function () {
+            var texto = this.options[this.selectedIndex].text;
+            var nota  = document.getElementById('notaUnidadEdit');
+            nota.innerHTML = texto && this.value
+                ? '<i class="fas fa-info-circle"></i> Configura los niveles en ' + texto
+                : '';
+        });
     });
 
     // ── Abrir modales ─────────────────────────────────────────────
@@ -682,6 +705,13 @@
         document.getElementById('<%= txtStockMaximoEdit.ClientID %>').value     = maximo;
         document.getElementById('<%= txtStockOptimoEdit.ClientID %>').value     = optimo;
         document.getElementById('<%= ddlProveedorPrincipalEdit.ClientID %>').value = proveedorPrincipalID || '';
+        // Actualizar nota de unidad
+        var ddlU = document.getElementById('<%= ddlUnidadEdit.ClientID %>');
+        var notaEdit = document.getElementById('notaUnidadEdit');
+        var textoU = ddlU.options[ddlU.selectedIndex] ? ddlU.options[ddlU.selectedIndex].text : '';
+        notaEdit.innerHTML = textoU
+            ? '<i class="fas fa-info-circle"></i> Configura los niveles en ' + textoU
+            : '';
         // Cargar conversiones via postback (recarga la tabla y el dropdown de unidades)
         document.getElementById('<%= btnCargarConversiones.ClientID %>').click();
     }
@@ -766,11 +796,15 @@
     var _editorNivel = { matID: 0, baseID: 0 };
 
     function abrirEditorNivel(matID, baseID, baseNombre, minActual, optActual, maxActual,
-                               tienePropio, globalMin, globalMax) {
+                               tienePropio, globalMin, globalMax, unidadNombre) {
         _editorNivel.matID  = matID;
         _editorNivel.baseID = baseID;
 
         document.getElementById('spanNombreBaseEditor').textContent = baseNombre;
+        var notaBase = document.getElementById('notaUnidadBase');
+        notaBase.innerHTML = unidadNombre
+            ? '<i class="fas fa-info-circle"></i> Configura los niveles en ' + unidadNombre
+            : '';
         document.getElementById('inpNivelMin').value = minActual;
         document.getElementById('inpNivelOpt').value = optActual;
         document.getElementById('inpNivelMax').value = maxActual;
