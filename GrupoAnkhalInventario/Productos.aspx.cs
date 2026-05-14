@@ -667,7 +667,8 @@ namespace GrupoAnkhalInventario
                                 CantMinCapturada = cmiCap,
                                 CantMaxCapturada = cmaCap,
                                 ConversionID     = convIDNullable,
-                                Notas            = hdnCompNotas.Value
+                                Notas            = hdnCompNotas.Value,
+                                Activo           = true
                             };
                             db.ProductoMateriales.InsertOnSubmit(nuevo);
                             db.SubmitChanges();
