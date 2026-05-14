@@ -342,6 +342,17 @@
                 <!-- Consumo de materiales -->
                 <h6 class="text-primary font-weight-bold mt-3 mb-2">Consumo de Materiales</h6>
                 <asp:Panel ID="pnlConsumos" runat="server">
+                    <div class="d-flex align-items-center flex-wrap mb-2" style="gap:.6rem;">
+                        <span id="spanProgresoConsumos" class="badge badge-secondary" style="font-size:.85rem;">
+                            0 de 0 materiales capturados
+                        </span>
+                        <input type="text" id="txtFiltroConsumo"
+                               class="form-control form-control-sm"
+                               placeholder="Buscar por código o nombre de material..."
+                               oninput="filtrarConsumos(this.value)"
+                               style="max-width:320px;" />
+                        <span id="spanResultadosFiltro" class="text-muted small"></span>
+                    </div>
                     <div class="table-responsive">
                         <table class="table table-sm table-bordered consumo-table" id="tblConsumos">
                             <thead>
@@ -482,8 +493,48 @@
     function onProductoChange() {
         var ddl = document.getElementById('<%= ddlProducto.ClientID %>');
         document.getElementById('<%= hdnProductoSeleccionado.ClientID %>').value = ddl.value;
+        var f = document.getElementById('txtFiltroConsumo');
+        if (f) { f.value = ''; filtrarConsumos(''); }
         document.getElementById('<%= btnCargarConsumos.ClientID %>').click();
     }
+
+    // Filtrar filas de tblConsumos por código o nombre de material (JS puro, sin postback)
+    function filtrarConsumos(valor) {
+        var q = valor.trim().toLowerCase();
+        var rows = document.querySelectorAll('#tblConsumos tbody tr');
+        var visibles = 0;
+        rows.forEach(function (tr) {
+            var texto = tr.cells[0].textContent.toLowerCase();
+            var mostrar = !q || texto.indexOf(q) !== -1;
+            tr.style.display = mostrar ? '' : 'none';
+            if (mostrar) visibles++;
+        });
+        var span = document.getElementById('spanResultadosFiltro');
+        if (span) span.textContent = q ? (visibles + ' resultado(s)') : '';
+    }
+
+    // Actualizar badge de progreso de captura de consumos
+    function actualizarProgreso() {
+        var inputs = document.querySelectorAll('#tblConsumos .consumo-input');
+        var total = inputs.length;
+        var capturados = 0;
+        inputs.forEach(function (inp) {
+            var v = inp.value.trim();
+            if (v !== '' && parseFloat(v) !== 0) capturados++;
+        });
+        var badge = document.getElementById('spanProgresoConsumos');
+        if (!badge) return;
+        badge.textContent = capturados + ' de ' + total + ' materiales capturados';
+        badge.className = (capturados === total && total > 0)
+            ? 'badge badge-success'
+            : 'badge badge-secondary';
+        badge.style.fontSize = '.85rem';
+    }
+
+    // Delegación global: detecta cambios en .consumo-input aunque se rendericen después del postback
+    document.addEventListener('input', function (e) {
+        if (e.target.classList.contains('consumo-input')) actualizarProgreso();
+    });
 
     // Recalcular teóricos con la cantidad total
     function recalcConsumosTeoricos() {
