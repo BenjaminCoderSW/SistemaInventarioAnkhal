@@ -63,15 +63,6 @@ namespace GrupoAnkhalInventario
             public int Cantidad { get; set; }
         }
 
-        public class CompNuevoVM
-        {
-            public string materialID { get; set; }
-            public decimal cantMin { get; set; }
-            public decimal cantMax { get; set; }
-            public string notas { get; set; }
-            public int conversionID { get; set; }  // 0 = unidad base
-        }
-
         // ─────────────────────────────────────────────────────────────────────
         protected void Page_Load(object sender, EventArgs e)
         {
@@ -352,9 +343,20 @@ namespace GrupoAnkhalInventario
 
             var conversionesMat = BuildConversionesMat(db);
 
+            var paraClone = db.Productos
+                .Where(p => p.Activo)
+                .OrderBy(p => p.Codigo)
+                .Select(p => new {
+                    productoID       = p.ProductoID,
+                    codigo           = p.Codigo,
+                    descripcion      = p.Descripcion,
+                    totalComponentes = p.ProductoMateriales.Count(pm => pm.Activo)
+                })
+                .ToList();
+
             litJsData.Text = string.Format(
-                "<script>window._materialesData = {0}; window._componentesData = {1}; window._conversionesMat = {2};</script>",
-                _json.Serialize(mats), _json.Serialize(dict), _json.Serialize(conversionesMat));
+                "<script>window._materialesData = {0}; window._componentesData = {1}; window._conversionesMat = {2}; window._productosParaClone = {3};</script>",
+                _json.Serialize(mats), _json.Serialize(dict), _json.Serialize(conversionesMat), _json.Serialize(paraClone));
         }
 
         // Sobrecarga para postbacks donde no hay lista disponible
@@ -399,9 +401,20 @@ namespace GrupoAnkhalInventario
 
                 var conversionesMat = BuildConversionesMat(db);
 
+                var paraClone = db.Productos
+                    .Where(p => p.Activo)
+                    .OrderBy(p => p.Codigo)
+                    .Select(p => new {
+                        productoID       = p.ProductoID,
+                        codigo           = p.Codigo,
+                        descripcion      = p.Descripcion,
+                        totalComponentes = p.ProductoMateriales.Count(pm => pm.Activo)
+                    })
+                    .ToList();
+
                 litJsData.Text = string.Format(
-                    "<script>window._materialesData = {0}; window._componentesData = {1}; window._conversionesMat = {2};</script>",
-                    _json.Serialize(mats), _json.Serialize(dict), _json.Serialize(conversionesMat));
+                    "<script>window._materialesData = {0}; window._componentesData = {1}; window._conversionesMat = {2}; window._productosParaClone = {3};</script>",
+                    _json.Serialize(mats), _json.Serialize(dict), _json.Serialize(conversionesMat), _json.Serialize(paraClone));
             }
         }
 
@@ -502,47 +515,6 @@ namespace GrupoAnkhalInventario
                     };
                     db.Productos.InsertOnSubmit(nuevo);
                     db.SubmitChanges();
-
-                    string jsonComp = hdnComponentesNuevo.Value;
-                    if (!string.IsNullOrEmpty(jsonComp) && jsonComp != "[]")
-                    {
-                        var comps = _json.Deserialize<List<CompNuevoVM>>(jsonComp);
-                        foreach (var c in comps)
-                        {
-                            if (string.IsNullOrEmpty(c.materialID)) continue;
-
-                            // Resolver factor de conversión (igual que en btnGuardarComponentes_Click)
-                            decimal factor = 1m;
-                            int? convIDNullable = null;
-                            if (c.conversionID > 0)
-                            {
-                                var conv = db.ConversionesMaterial
-                                    .FirstOrDefault(x => x.ConversionID == c.conversionID);
-                                if (conv != null)
-                                {
-                                    factor = conv.Factor;
-                                    convIDNullable = c.conversionID;
-                                }
-                            }
-
-                            decimal cantMinBase = c.cantMin * factor;
-                            decimal cantMaxBase = c.cantMax * factor;
-
-                            var pm = new GrupoAnkhalInventario.Modelo.ProductoMateriales
-                            {
-                                ProductoID       = nuevo.ProductoID,
-                                MaterialID       = int.Parse(c.materialID),
-                                CantidadMin      = cantMinBase,
-                                CantidadMax      = cantMaxBase >= cantMinBase ? cantMaxBase : cantMinBase,
-                                CantMinCapturada = c.cantMin,   // valor en la unidad de captura
-                                CantMaxCapturada = c.cantMax,
-                                ConversionID     = convIDNullable,
-                                Notas            = c.notas
-                            };
-                            db.ProductoMateriales.InsertOnSubmit(pm);
-                        }
-                        db.SubmitChanges();
-                    }
 
                     LimpiarNuevo();
                     CargarProductos();
@@ -703,6 +675,52 @@ namespace GrupoAnkhalInventario
                             }
                             SetMsg("success", "¡Eliminado!", "Componente eliminado.", null, true);
                             break;
+
+                        case "CLONE":
+                            int origenID = ParseInt(hdnProductoCloneID.Value);
+                            if (origenID == 0 || origenID == prodID) break;
+
+                            var fuente = db.ProductoMateriales
+                                .Where(pm => pm.ProductoID == origenID && pm.Activo)
+                                .ToList();
+
+                            int agregados = 0, omitidos = 0;
+                            foreach (var src in fuente)
+                            {
+                                bool yaExiste = db.ProductoMateriales
+                                    .Any(pm => pm.ProductoID == prodID &&
+                                               pm.MaterialID == src.MaterialID && pm.Activo);
+                                if (yaExiste) { omitidos++; continue; }
+
+                                db.ProductoMateriales.InsertOnSubmit(new GrupoAnkhalInventario.Modelo.ProductoMateriales
+                                {
+                                    ProductoID       = prodID,
+                                    MaterialID       = src.MaterialID,
+                                    CantidadMin      = src.CantidadMin,
+                                    CantidadMax      = src.CantidadMax,
+                                    CantMinCapturada = src.CantMinCapturada,
+                                    CantMaxCapturada = src.CantMaxCapturada,
+                                    ConversionID     = src.ConversionID,
+                                    Notas            = src.Notas,
+                                    Activo           = true
+                                });
+                                agregados++;
+                            }
+
+                            if (agregados > 0) db.SubmitChanges();
+
+                            string cloneMsg;
+                            if (agregados == 0)
+                                cloneMsg = "Todos los componentes ya existen en este producto.";
+                            else if (omitidos == 0)
+                                cloneMsg = agregados + " componente(s) copiados correctamente.";
+                            else
+                                cloneMsg = agregados + " componente(s) copiados. " + omitidos + " ya existían y se omitieron.";
+
+                            SetMsg(agregados > 0 ? "success" : "info",
+                                   agregados > 0 ? "¡Copia completada!" : "Sin cambios",
+                                   cloneMsg, null, true);
+                            break;
                     }
 
                     CargarProductos();
@@ -780,7 +798,6 @@ namespace GrupoAnkhalInventario
             txtDescripcion.Text = "";
             ddlTipo.SelectedIndex = 0;
             txtPrecio.Text = "0";
-            hdnComponentesNuevo.Value = "[]";
         }
 
         private decimal ParseDec(string v)

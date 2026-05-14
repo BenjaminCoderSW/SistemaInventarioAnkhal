@@ -63,13 +63,6 @@
         }
         .filtros-bar label { font-weight:600; font-size:.84rem; color:#003366; margin-bottom:2px; }
 
-        /* ── Componentes en modal (nuevo/editar) ── */
-        .comp-row { background:#f8f9fa; border-radius:6px; padding:10px 12px; margin-bottom:8px; border:1px solid #dee2e6; }
-        .comp-row:hover { border-color:#003366; }
-        .btn-remove-comp { color:#e74c3c; background:none; border:none; font-size:1.1rem; cursor:pointer; padding:0 4px; }
-        .btn-remove-comp:hover { color:#c0392b; }
-        #divComponentes { max-height:320px; overflow-y:auto; padding-right:4px; }
-
         /* ── Modal componentes (ver/editar) ── */
         .comp-view-table th { background:#003366; color:#fff; }
         .comp-view-table td, .comp-view-table th { padding:8px 12px; vertical-align:middle; }
@@ -287,28 +280,9 @@
           </div>
         </div>
 
-        <hr />
-        <div class="d-flex justify-content-between align-items-center mb-2">
-          <h6 style="color:#003366;font-weight:600;margin:0;">
-            <i class="fas fa-puzzle-piece"></i> Componentes del producto
-            <small class="text-muted font-weight-normal"> (materiales que lo forman — opcional)</small>
-          </h6>
-          <button type="button" class="btn btn-outline-primary btn-sm" onclick="agregarComponenteNuevo()">
-            <i class="fas fa-plus"></i> Agregar componente
-          </button>
+        <div class="callout callout-info mt-2 mb-0" style="font-size:.85rem;">
+          <i class="fas fa-info-circle"></i> Una vez guardado el producto, usa el botón <strong>"Ver"</strong> en la tabla para configurar sus componentes.
         </div>
-        <small class="text-muted d-block mb-2" style="font-size:.8rem;">
-          <i class="fas fa-info-circle text-info"></i>
-          Define cuánto de cada material se debe consumir al fabricar <strong>una unidad</strong> del producto (rango mínimo y máximo esperado).
-        </small>
-        <div id="divComponentesNuevo">
-          <!-- filas de componentes se agregan dinámicamente -->
-        </div>
-        <div id="divSinComponentes" class="text-muted text-center py-2" style="font-size:.88rem;">
-          <i class="fas fa-info-circle"></i> Sin componentes agregados. Puedes dejar vacío o agregar los que necesites.
-        </div>
-
-        <asp:HiddenField ID="hdnComponentesNuevo" runat="server" Value="[]" />
       </div>
       <div class="modal-footer">
         <asp:Button ID="btnGuardar" runat="server" Text="Guardar"
@@ -412,6 +386,32 @@
         </div>
 
         <hr />
+        <h6 style="color:#003366;font-weight:600;"><i class="fas fa-copy"></i> Copiar componentes de otro producto</h6>
+        <small class="text-muted d-block mb-2" style="font-size:.8rem;">
+          <i class="fas fa-info-circle text-info"></i>
+          Busca un producto y copia todos sus componentes a este. Los que ya existen se omiten automáticamente.
+        </small>
+        <div class="row align-items-end mb-3">
+          <div class="col-md-9" style="position:relative;">
+            <label style="font-size:.84rem;">Buscar producto origen</label>
+            <input type="text" id="txtBuscaProductoClone" class="form-control form-control-sm"
+              placeholder="Escribe el código o descripción..." autocomplete="off"
+              oninput="filtrarProductosClone(this.value)"
+              onblur="setTimeout(function(){ var d=document.getElementById('divResultadosClone'); if(d) d.style.display='none'; }, 200)" />
+            <div id="divResultadosClone" style="display:none; position:absolute; z-index:1050;
+              width:calc(100% - 30px); max-height:200px; overflow-y:auto; background:#fff;
+              border:1px solid #ced4da; border-radius:4px; box-shadow:0 4px 8px rgba(0,0,0,.15);">
+            </div>
+          </div>
+          <div class="col-md-3">
+            <button type="button" id="btnEjecutarClone" class="btn btn-info btn-sm w-100"
+              disabled onclick="clonarComponentes()">
+              <i class="fas fa-copy"></i> Copiar
+            </button>
+          </div>
+        </div>
+
+        <hr />
         <h6 style="color:#003366;font-weight:600;"><i class="fas fa-plus-circle"></i> Agregar componente</h6>
         <small class="text-muted d-block mb-2" style="font-size:.8rem;">
           <i class="fas fa-info-circle text-info"></i>
@@ -457,6 +457,7 @@
         <asp:HiddenField ID="hdnCompNotas"        runat="server" Value="" />
         <asp:HiddenField ID="hdnCompPMID"         runat="server" Value="" />
         <asp:HiddenField ID="hdnCompConversionID" runat="server" Value="" />
+        <asp:HiddenField ID="hdnProductoCloneID"  runat="server" Value="" />
 
       </div>
       <div class="modal-footer">
@@ -510,107 +511,8 @@
     // ════════════════════════════════════════════════════
     var _materiales = window._materialesData || [];
 
-    // ════════════════════════════════════════════════════
-    // MODAL NUEVO — componentes dinámicos
-    // ════════════════════════════════════════════════════
-    var _compNuevo = [];
-
     function abrirModalNuevo() {
-        _compNuevo = [];
-        renderComponentesNuevo();
         $('#modalNuevo').modal('show');
-    }
-
-    function agregarComponenteNuevo() {
-        _compNuevo.push({ materialID: '', nombre: '', cantMin: 0, cantMax: 0, notas: '', conversionID: 0 });
-        renderComponentesNuevo();
-    }
-
-    // Construye las <option> del dropdown de unidad para una fila del modal Nuevo Producto.
-    // Si el material no está seleccionado o no tiene conversiones, muestra solo "(base)".
-    function buildUnidadOptsNuevo(materialID, selectedConvID) {
-        var convs = window._conversionesMat && materialID
-            ? window._conversionesMat[materialID.toString()]
-            : null;
-        if (!convs || convs.length === 0) {
-            return '<option value="0">(base)</option>';
-        }
-        var html = '';
-        convs.forEach(function (op) {
-            var sel = String(op.val) === String(selectedConvID || 0) ? ' selected' : '';
-            html += '<option value="' + op.val + '"' + sel + '>' + escHtml(op.txt) + '</option>';
-        });
-        return html;
-    }
-
-    // Se llama al cambiar el material en una fila del modal Nuevo Producto.
-    // Actualiza el array, resetea la unidad a base, y repuebla el dropdown de unidad sin re-renderizar toda la lista.
-    function onMatNuevoChange(sel, idx) {
-        _compNuevo[idx].materialID   = sel.value;
-        _compNuevo[idx].nombre       = sel.options[sel.selectedIndex].text;
-        _compNuevo[idx].conversionID = 0; // resetear a unidad base al cambiar material
-        var row  = sel.closest('.comp-row');
-        var ddlU = row ? row.querySelector('.ddl-unidad-nuevo') : null;
-        if (ddlU) ddlU.innerHTML = buildUnidadOptsNuevo(sel.value, 0);
-    }
-
-    function renderComponentesNuevo() {
-        var div = document.getElementById('divComponentesNuevo');
-        var sinDiv = document.getElementById('divSinComponentes');
-        div.innerHTML = '';
-
-        if (_compNuevo.length === 0) { sinDiv.style.display = 'block'; return; }
-        sinDiv.style.display = 'none';
-
-        _compNuevo.forEach(function (c, i) {
-            var opts = '<option value="">-- Material --</option>';
-            _materiales.forEach(function (m) {
-                var sel = (m.id == c.materialID) ? 'selected' : '';
-                opts += '<option value="' + m.id + '" ' + sel + '>[' + escHtml(m.codigo) + '] ' + escHtml(m.nombre) + ' (' + escHtml(m.unidad) + ')</option>';
-            });
-
-            var unidOpts = buildUnidadOptsNuevo(c.materialID, c.conversionID || 0);
-
-            var row = document.createElement('div');
-            row.className = 'comp-row row align-items-center';
-            row.innerHTML =
-                '<div class="col-md-3">' +
-                '<label style="font-size:.8rem;">Material <span style="color:red">*</span></label>' +
-                '<select class="form-control form-control-sm" onchange="onMatNuevoChange(this,' + i + ')">' +
-                opts + '</select>' +
-                '</div>' +
-                '<div class="col-md-2">' +
-                '<label style="font-size:.8rem;">Unidad</label>' +
-                '<select class="form-control form-control-sm ddl-unidad-nuevo" onchange="_compNuevo[' + i + '].conversionID=parseInt(this.value)||0;">' +
-                unidOpts + '</select>' +
-                '</div>' +
-                '<div class="col-md-2">' +
-                '<label style="font-size:.8rem;">Rango Mín <span style="color:red">*</span></label>' +
-                '<input type="number" class="form-control form-control-sm" value="' + c.cantMin + '" min="0" step="0.01" ' +
-                'onchange="_compNuevo[' + i + '].cantMin=parseFloat(this.value)||0;" />' +
-                '</div>' +
-                '<div class="col-md-2">' +
-                '<label style="font-size:.8rem;">Rango Máx <span style="color:red">*</span></label>' +
-                '<input type="number" class="form-control form-control-sm" value="' + c.cantMax + '" min="0" step="0.01" ' +
-                'onchange="_compNuevo[' + i + '].cantMax=parseFloat(this.value)||0;" />' +
-                '</div>' +
-                '<div class="col-md-2">' +
-                '<label style="font-size:.8rem;">Notas</label>' +
-                '<input type="text" class="form-control form-control-sm" value="' + escHtml(c.notas) + '" maxlength="200" ' +
-                'onchange="_compNuevo[' + i + '].notas=this.value;" />' +
-                '</div>' +
-                '<div class="col-md-1 text-center" style="padding-top:20px;">' +
-                '<button type="button" class="btn-remove-comp" onclick="eliminarCompNuevo(' + i + ')" title="Eliminar">' +
-                '<i class="fas fa-trash-alt"></i>' +
-                '</button>' +
-                '</div>';
-            div.appendChild(row);
-        });
-    }
-
-    function eliminarCompNuevo(idx) {
-        _compNuevo.splice(idx, 1);
-        renderComponentesNuevo();
     }
 
     // ════════════════════════════════════════════════════
@@ -630,11 +532,95 @@
     // MODAL COMPONENTES — Ver y editar
     // ════════════════════════════════════════════════════
     var _compModal = [];
+    var _productoCloneSeleccionado = null;
 
     function verComponentes(productoID, descripcion) {
         document.getElementById('<%= hdnCompProductoID.ClientID %>').value = productoID;
         document.getElementById('spanNombreProducto').innerText = descripcion;
+        // Resetear sección clone
+        var txtClone = document.getElementById('txtBuscaProductoClone');
+        if (txtClone) txtClone.value = '';
+        var divRes = document.getElementById('divResultadosClone');
+        if (divRes) divRes.style.display = 'none';
+        var btnClone = document.getElementById('btnEjecutarClone');
+        if (btnClone) btnClone.disabled = true;
+        _productoCloneSeleccionado = null;
         cargarComponentesModal(productoID, descripcion);
+    }
+
+    // ════════════════════════════════════════════════════
+    // CLONAR BOM
+    // ════════════════════════════════════════════════════
+    function filtrarProductosClone(valor) {
+        var q = valor.trim().toLowerCase();
+        var divRes = document.getElementById('divResultadosClone');
+        var btnClone = document.getElementById('btnEjecutarClone');
+        _productoCloneSeleccionado = null;
+        btnClone.disabled = true;
+        if (q.length < 2) { divRes.style.display = 'none'; return; }
+
+        var prodActualID = document.getElementById('<%= hdnCompProductoID.ClientID %>').value;
+        var lista = (window._productosParaClone || []).filter(function (p) {
+            return String(p.productoID) !== String(prodActualID) &&
+                   (p.codigo.toLowerCase().indexOf(q) !== -1 ||
+                    p.descripcion.toLowerCase().indexOf(q) !== -1);
+        });
+
+        divRes.innerHTML = '';
+        if (lista.length === 0) {
+            var sinRes = document.createElement('div');
+            sinRes.style.cssText = 'padding:8px 10px;';
+            sinRes.className = 'text-muted small';
+            sinRes.textContent = 'Sin resultados.';
+            divRes.appendChild(sinRes);
+            divRes.style.display = 'block';
+            return;
+        }
+
+        lista.slice(0, 50).forEach(function (p) {
+            var item = document.createElement('div');
+            item.style.cssText = 'padding:6px 10px; cursor:pointer; border-bottom:1px solid #f0f0f0; font-size:.88rem;';
+            item.innerHTML = '<strong>[' + escHtml(p.codigo) + ']</strong> ' + escHtml(p.descripcion) +
+                             ' <span class="badge badge-secondary ml-1">' + p.totalComponentes + '</span>';
+            item.addEventListener('mouseenter', function () { this.style.background = '#f0f4f8'; });
+            item.addEventListener('mouseleave', function () { this.style.background = ''; });
+            item.addEventListener('mousedown', function () {
+                selectProductoClone(p.productoID, p.codigo, p.descripcion, p.totalComponentes);
+            });
+            divRes.appendChild(item);
+        });
+        divRes.style.display = 'block';
+    }
+
+    function selectProductoClone(productoID, codigo, descripcion, totalComp) {
+        _productoCloneSeleccionado = { productoID: productoID, codigo: codigo, descripcion: descripcion, totalComp: totalComp };
+        document.getElementById('txtBuscaProductoClone').value = '[' + codigo + '] ' + descripcion;
+        document.getElementById('divResultadosClone').style.display = 'none';
+        document.getElementById('btnEjecutarClone').disabled = false;
+    }
+
+    function clonarComponentes() {
+        if (!_productoCloneSeleccionado) return;
+        var src = _productoCloneSeleccionado;
+        Swal.fire({
+            icon: 'question',
+            title: '¿Copiar componentes?',
+            html: 'Se copiarán los componentes de <b>[' + escHtml(src.codigo) + '] ' + escHtml(src.descripcion) + '</b>.<br>' +
+                  '<small class="text-muted">Los materiales que ya existen en este producto se omitirán.</small>',
+            showCancelButton: true,
+            confirmButtonText: 'Sí, copiar',
+            cancelButtonText: 'Cancelar',
+            confirmButtonColor: '#003366',
+            cancelButtonColor: '#6c757d'
+        }).then(function (r) {
+            if (r.isConfirmed) {
+                document.getElementById('<%= hdnProductoCloneID.ClientID %>').value = src.productoID;
+                document.getElementById('<%= hdnCompAccion.ClientID %>').value = 'CLONE';
+                __doPostBack('<%= btnGuardarComponentes.UniqueID %>', '');
+            } else {
+                $('#modalComponentes').modal('show');
+            }
+        });
     }
 
     function cargarComponentesModal(productoID, descripcion) {
@@ -851,33 +837,12 @@
     // VALIDACIONES
     // ════════════════════════════════════════════════════
     function prepararYValidarNuevo() {
-        if (!_validarProd(
+        return _validarProd(
             '<%= txtCodigo.ClientID %>',
             '<%= txtDescripcion.ClientID %>',
             '<%= ddlTipo.ClientID %>',
             '<%= txtPrecio.ClientID %>',
-            'modalNuevo')) return false;
-
-        for (var i = 0; i < _compNuevo.length; i++) {
-            var c = _compNuevo[i];
-            if (!c.materialID) {
-                Swal.fire({ icon: 'warning', title: 'Componente incompleto',
-                    text: 'El componente #' + (i + 1) + ' no tiene material seleccionado.',
-                    confirmButtonColor: '#003366' }).then(function () { $('#modalNuevo').modal('show'); });
-                return false;
-            }
-            if (c.cantMax < c.cantMin) {
-                Swal.fire({ icon: 'warning', title: 'Rango inválido',
-                    text: 'El componente #' + (i + 1) + ': la cantidad máxima debe ser ≥ a la mínima.',
-                    confirmButtonColor: '#003366' }).then(function () { $('#modalNuevo').modal('show'); });
-                return false;
-            }
-            // Validación de duplicado eliminada: se permite el mismo material
-            // más de una vez con diferentes notas/medidas (ej: cortes distintos)
-        }
-
-        document.getElementById('<%= hdnComponentesNuevo.ClientID %>').value = JSON.stringify(_compNuevo);
-        return true;
+            'modalNuevo');
     }
 
     function validarEditar() {
