@@ -1897,7 +1897,9 @@ namespace GrupoAnkhalInventario.Modelo
 		private System.Nullable<decimal> _CantidadTeoMaxCap;
 		
 		private string _UnidadClaveCap;
-		
+
+		private string _UnidadSeleccionVal;
+
 		private EntityRef<Materiales> _Materiales;
 		
 		private EntityRef<Produccion> _Produccion;
@@ -1930,8 +1932,10 @@ namespace GrupoAnkhalInventario.Modelo
     partial void OnCantidadTeoMaxCapChanged();
     partial void OnUnidadClaveCapChanging(string value);
     partial void OnUnidadClaveCapChanged();
+    partial void OnUnidadSeleccionValChanging(string value);
+    partial void OnUnidadSeleccionValChanged();
     #endregion
-		
+
 		public ConsumosProduccion()
 		{
 			this._Materiales = default(EntityRef<Materiales>);
@@ -2183,6 +2187,26 @@ namespace GrupoAnkhalInventario.Modelo
 					this._UnidadClaveCap = value;
 					this.SendPropertyChanged("UnidadClaveCap");
 					this.OnUnidadClaveCapChanged();
+				}
+			}
+		}
+
+		[global::System.Data.Linq.Mapping.ColumnAttribute(Storage="_UnidadSeleccionVal", DbType="VarChar(30)")]
+		public string UnidadSeleccionVal
+		{
+			get
+			{
+				return this._UnidadSeleccionVal;
+			}
+			set
+			{
+				if ((this._UnidadSeleccionVal != value))
+				{
+					this.OnUnidadSeleccionValChanging(value);
+					this.SendPropertyChanging();
+					this._UnidadSeleccionVal = value;
+					this.SendPropertyChanged("UnidadSeleccionVal");
+					this.OnUnidadSeleccionValChanged();
 				}
 			}
 		}
@@ -6166,7 +6190,9 @@ namespace GrupoAnkhalInventario.Modelo
 		private System.DateTime _FechaRegistro;
 		
 		private decimal _PrecioVenta;
-		
+
+		private string _Estado;
+
 		private EntitySet<ConsumosProduccion> _ConsumosProduccion;
 		
 		private EntitySet<Movimientos> _Movimientos;
@@ -6205,8 +6231,10 @@ namespace GrupoAnkhalInventario.Modelo
     partial void OnFechaRegistroChanged();
     partial void OnPrecioVentaChanging(decimal value);
     partial void OnPrecioVentaChanged();
+    partial void OnEstadoChanging(string value);
+    partial void OnEstadoChanged();
     #endregion
-		
+
 		public Produccion()
 		{
 			this._ConsumosProduccion = new EntitySet<ConsumosProduccion>(new Action<ConsumosProduccion>(this.attach_ConsumosProduccion), new Action<ConsumosProduccion>(this.detach_ConsumosProduccion));
@@ -6469,6 +6497,26 @@ namespace GrupoAnkhalInventario.Modelo
 			}
 		}
 		
+		[global::System.Data.Linq.Mapping.ColumnAttribute(Storage="_Estado", DbType="VarChar(15) NOT NULL", CanBeNull=false)]
+		public string Estado
+		{
+			get
+			{
+				return this._Estado;
+			}
+			set
+			{
+				if ((this._Estado != value))
+				{
+					this.OnEstadoChanging(value);
+					this.SendPropertyChanging();
+					this._Estado = value;
+					this.SendPropertyChanged("Estado");
+					this.OnEstadoChanged();
+				}
+			}
+		}
+
 		[global::System.Data.Linq.Mapping.AssociationAttribute(Name="Produccion_ConsumosProduccion", Storage="_ConsumosProduccion", ThisKey="ProduccionID", OtherKey="ProduccionID")]
 		public EntitySet<ConsumosProduccion> ConsumosProduccion
 		{

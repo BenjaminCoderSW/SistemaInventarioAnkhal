@@ -217,6 +217,7 @@ namespace GrupoAnkhalInventario
                     join pr in db.Productos on p.ProductoID equals pr.ProductoID
                     join b  in db.Bases     on p.BaseID      equals b.BaseID
                     where p.Fecha >= _desde && p.Fecha < _hastaExcl
+                          && p.Estado == "Confirmado"
                     select new { b.BaseID, p.CantidadBuena, p.CantidadRechazo,
                                  Valor = p.CantidadBuena * pr.PrecioVenta };
             if (_basesUsuario != null) q = q.Where(x => _basesUsuario.Contains(x.BaseID));
@@ -261,6 +262,7 @@ namespace GrupoAnkhalInventario
                     join m  in db.Materiales on cp.MaterialID   equals m.MaterialID
                     join b  in db.Bases      on pr.BaseID        equals b.BaseID
                     where pr.Fecha >= _desde && pr.Fecha < _hastaExcl
+                          && pr.Estado == "Confirmado"
                     select new { b.BaseID, Costo = cp.CantidadReal * m.PrecioUnitario };
             if (_basesUsuario != null) q = q.Where(x => _basesUsuario.Contains(x.BaseID));
             if (_baseID.HasValue)      q = q.Where(x => x.BaseID == _baseID.Value);
@@ -341,6 +343,7 @@ namespace GrupoAnkhalInventario
                         join pr in db.Productos on p.ProductoID equals pr.ProductoID
                         join b  in db.Bases     on p.BaseID     equals b.BaseID
                         where p.Fecha >= _desde && p.Fecha < _hastaExcl
+                              && p.Estado == "Confirmado"
                         select new
                         {
                             b.BaseID, BaseNombre = b.Nombre,

@@ -158,6 +158,16 @@ namespace GrupoAnkhalInventario
         /// </remarks>
         protected global::System.Web.UI.WebControls.HiddenField hdnConfirmarSinConsumos;
 
+        protected global::System.Web.UI.WebControls.HiddenField hdnProduccionID;
+
+        protected global::System.Web.UI.WebControls.HiddenField hdnModoEdicion;
+
+        protected global::System.Web.UI.WebControls.CheckBox chkMostrarBorradores;
+
+        protected global::System.Web.UI.WebControls.Label lblModalTitulo;
+
+        protected global::System.Web.UI.WebControls.Button btnGuardarBorrador;
+
         /// <summary>
         /// Control btnCargarConsumos.
         /// </summary>

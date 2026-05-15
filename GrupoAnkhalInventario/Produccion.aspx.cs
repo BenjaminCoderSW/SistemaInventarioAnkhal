@@ -43,6 +43,8 @@ namespace GrupoAnkhalInventario
             public decimal  Valor           { get; set; }
             public string   RegistradoPor   { get; set; }
             public string   Observaciones   { get; set; }
+            public string   Estado          { get; set; }
+            public bool     EsBorrador      { get; set; }
             public List<ConsumoDetalleVM> Consumos { get; set; } = new List<ConsumoDetalleVM>();
         }
 
@@ -186,6 +188,11 @@ namespace GrupoAnkhalInventario
                 int pid = int.Parse(ddlFiltrProducto.SelectedValue);
                 q = q.Where(p => p.ProductoID == pid);
             }
+            // Mostrar borradores solo cuando el checkbox está activo; por defecto solo confirmados
+            if (chkMostrarBorradores.Checked)
+                q = q.Where(p => p.Estado == "Borrador");
+            else
+                q = q.Where(p => p.Estado == "Confirmado");
             return q;
         }
 
@@ -194,7 +201,19 @@ namespace GrupoAnkhalInventario
         {
             using (var db = NuevoDb(false))
             {
-                var q = AplicarFiltros(db.Produccion.AsQueryable());
+                // El dashboard SIEMPRE excluye borradores, sin importar el filtro activo
+                var basesUsuario = AppHelper.ObtenerBasesUsuario(Session);
+                var q = db.Produccion.AsQueryable().Where(p => p.Estado == "Confirmado");
+                if (basesUsuario != null)
+                    q = q.Where(p => basesUsuario.Contains(p.BaseID));
+                if (!string.IsNullOrEmpty(ddlFiltrBase.SelectedValue))
+                    q = q.Where(p => p.BaseID == int.Parse(ddlFiltrBase.SelectedValue));
+                if (!string.IsNullOrEmpty(txtFechaDesde.Text))
+                    q = q.Where(p => p.Fecha >= DateTime.Parse(txtFechaDesde.Text));
+                if (!string.IsNullOrEmpty(txtFechaHasta.Text))
+                    q = q.Where(p => p.Fecha <= DateTime.Parse(txtFechaHasta.Text));
+                if (!string.IsNullOrEmpty(ddlFiltrProducto.SelectedValue))
+                    q = q.Where(p => p.ProductoID == int.Parse(ddlFiltrProducto.SelectedValue));
 
                 var data = q.Select(p => new
                             {
@@ -230,7 +249,9 @@ namespace GrupoAnkhalInventario
 
                 lblResultados.Text = total == 0
                     ? "Sin registros para los filtros aplicados."
-                    : string.Format("{0} registro(s) encontrado(s).", total);
+                    : chkMostrarBorradores.Checked
+                        ? string.Format("{0} borrador(es) encontrado(s).", total)
+                        : string.Format("{0} producción(es) confirmada(s) encontrada(s).", total);
 
                 if (total == 0)
                 {
@@ -266,7 +287,8 @@ namespace GrupoAnkhalInventario
                                p.CantidadRechazo,
                                PrecioVenta     = p.PrecioVenta,
                                p.RegistradoPorID,
-                               p.Observaciones
+                               p.Observaciones,
+                               p.Estado
                            }).ToList();
 
                 // ── Nombres de usuario via API de Asistencia ─────────────────
@@ -321,7 +343,9 @@ namespace GrupoAnkhalInventario
                             RegistradoPor   = nombresUsuario.ContainsKey(r.RegistradoPorID)
                                               ? nombresUsuario[r.RegistradoPorID]
                                               : r.RegistradoPorID.ToString(),
-                            Observaciones   = r.Observaciones ?? ""
+                            Observaciones   = r.Observaciones ?? "",
+                            Estado          = r.Estado ?? "Confirmado",
+                            EsBorrador      = (r.Estado == "Borrador")
                         };
                     }).ToList();
 
@@ -400,6 +424,8 @@ namespace GrupoAnkhalInventario
                 rpt.DataSource = vm.Consumos;
                 rpt.DataBind();
             }
+            if (vm != null && vm.EsBorrador)
+                e.Row.CssClass = (e.Row.CssClass + " fila-borrador").Trim();
         }
 
         // ══ Eventos filtros / paginación ══════════════════════════════════════
@@ -460,6 +486,15 @@ namespace GrupoAnkhalInventario
             int.TryParse(txtCantRechazo.Text, out cantRechazo);
             int totalProd = cantBuena + cantRechazo;
 
+            var bom = CargarConsumosBOM(productoID, baseID, totalProd);
+            BindearConsumos(bom);
+        }
+
+        // ── Construye la lista BOM del producto. Si borradorMap != null, sobreescribe
+        //    ConsumoReal y ConvBOMValor con los valores guardados antes del DataBind.
+        private List<ConsumoVM> CargarConsumosBOM(int productoID, int baseID, int totalProd,
+            Dictionary<int, Tuple<decimal, string>> borradorMap = null)
+        {
             List<ConsumoVM> bom;
             using (var db = NuevoDb(false))
             {
@@ -588,45 +623,59 @@ namespace GrupoAnkhalInventario
                     }
                 }
 
-                if (!bom.Any())
-                {
-                    pnlConsumos.Visible    = false;
-                    lblSinConsumos.Text    = "Este producto no tiene materiales registrados en su BOM.";
-                    lblSinConsumos.Visible = true;
-                }
-                else
-                {
-                    rptConsumos.DataSource = bom;
-                    rptConsumos.DataBind();
-                    pnlConsumos.Visible    = true;
-                    lblSinConsumos.Visible = false;
-                }
-            }
+            }   // end using
 
-            // ── Construir diccionario de factores para validación JS
-            // (no depender de data-factor en <option> que ASP.NET no siempre renderiza)
-            var factorDict = new Dictionary<string, string>();
-            if (bom.Any())
+            // Si hay borrador, sobreescribir ConsumoReal/ConvBOMValor ANTES del DataBind
+            if (borradorMap != null)
             {
                 foreach (var item in bom)
                 {
-                    foreach (var op in item.UnidadesDisponibles)
+                    if (!borradorMap.ContainsKey(item.MaterialID)) continue;
+                    var saved = borradorMap[item.MaterialID];
+                    item.ConsumoReal = saved.Item1;
+                    if (!string.IsNullOrEmpty(saved.Item2))
                     {
-                        if (!factorDict.ContainsKey(op.Valor))
-                            factorDict[op.Valor] = op.Factor.ToString("0.##########",
-                                System.Globalization.CultureInfo.InvariantCulture);
+                        item.ConvBOMValor = saved.Item2;
+                        var opGuardada = item.UnidadesDisponibles
+                            .FirstOrDefault(op => op.Valor == saved.Item2);
+                        if (opGuardada != null)
+                            item.FactorBOMStr = opGuardada.Factor
+                                .ToString("0.##########", System.Globalization.CultureInfo.InvariantCulture);
                     }
                 }
             }
+
+            return bom;
+        }
+
+        // ── Bindea la lista BOM al repeater y registra el script de factores + apertura de modal.
+        private void BindearConsumos(List<ConsumoVM> bom)
+        {
+            if (!bom.Any())
+            {
+                pnlConsumos.Visible    = false;
+                lblSinConsumos.Text    = "Este producto no tiene materiales registrados en su BOM.";
+                lblSinConsumos.Visible = true;
+            }
+            else
+            {
+                rptConsumos.DataSource = bom;
+                rptConsumos.DataBind();
+                pnlConsumos.Visible    = true;
+                lblSinConsumos.Visible = false;
+            }
+
+            var factorDict = new Dictionary<string, string>();
+            foreach (var item in bom)
+                foreach (var op in item.UnidadesDisponibles)
+                    if (!factorDict.ContainsKey(op.Valor))
+                        factorDict[op.Valor] = op.Factor.ToString("0.##########",
+                            System.Globalization.CultureInfo.InvariantCulture);
+
             var sbFactores = new System.Text.StringBuilder("window._factoresProd={");
             sbFactores.Append(string.Join(",", factorDict.Select(kv =>
                 string.Format("\"{0}\":{1}", kv.Key, kv.Value))));
             sbFactores.Append("};");
-
-            // Abrir modal e inicializar hints/validaciones de stock al cargar consumos.
-            // La inicialización corre de forma inmediata (no en window.load) porque al llegar aquí
-            // todos los elementos del DOM ya fueron parseados. Solo la apertura del modal espera
-            // a window.load para que Bootstrap esté listo.
             ClientScript.RegisterStartupScript(GetType(), "abrirModal",
                 sbFactores.ToString() +
                 // Inicializar hints e invocar validación de inmediato (DOM ya disponible)
@@ -637,7 +686,7 @@ namespace GrupoAnkhalInventario
                 "if(hint&&ui)hint.textContent=ui.value||'\u2014';" +
                 "var inp=row.querySelector('.consumo-input');" +
                 "if(inp)validarConsumoStock(inp);" +
-                "});})();" +
+                "});actualizarProgreso();})();" +
                 // Abrir modal cuando Bootstrap esté listo
                 "window.addEventListener('load',function(){$('#modalRegistrar').modal('show');});", true);
         }
@@ -845,28 +894,66 @@ namespace GrupoAnkhalInventario
                                 .Select(m => new { m.MaterialID, m.PrecioUnitario })
                                 .ToDictionary(m => m.MaterialID, m => m.PrecioUnitario);
 
-                            // 1. Insertar Produccion → necesitamos el ProduccionID
+                            // 1. Insertar Produccion (o confirmar borrador existente)
                             decimal precioVentaActual = db.Productos
                                 .Where(p => p.ProductoID == productoID)
                                 .Select(p => p.PrecioVenta)
                                 .FirstOrDefault();
 
-                            var prod = new Produccion
+                            int existingBorradorID = 0;
+                            int.TryParse(hdnProduccionID.Value, out existingBorradorID);
+                            bool esConfirmacionBorrador = existingBorradorID > 0
+                                && hdnModoEdicion.Value == "borrador";
+
+                            Produccion prod;
+                            if (esConfirmacionBorrador)
                             {
-                                BaseID          = baseID,
-                                Fecha           = fecha,
-                                Turno           = turno,
-                                ProductoID      = productoID,
-                                CantidadBuena   = cantBuena,
-                                CantidadRechazo = cantRechazo,
-                                MetaDia         = metaDia,
-                                Observaciones   = string.IsNullOrEmpty(obs) ? null : obs,
-                                RegistradoPorID = claveID,
-                                FechaRegistro   = AppHelper.Ahora,
-                                PrecioVenta     = precioVentaActual
-                            };
-                            db.Produccion.InsertOnSubmit(prod);
-                            db.SubmitChanges(); // ← primer commit para obtener ProduccionID
+                                prod = db.Produccion.FirstOrDefault(p =>
+                                    p.ProduccionID == existingBorradorID && p.Estado == "Borrador");
+                                if (prod == null)
+                                {
+                                    SetMsg("error", "Error",
+                                        "El borrador ya fue confirmado o eliminado.", "modalRegistrar");
+                                    tx.Rollback();
+                                    return;
+                                }
+                                prod.BaseID          = baseID;
+                                prod.Fecha           = fecha;
+                                prod.Turno           = turno;
+                                prod.ProductoID      = productoID;
+                                prod.CantidadBuena   = cantBuena;
+                                prod.CantidadRechazo = cantRechazo;
+                                prod.MetaDia         = metaDia;
+                                prod.Observaciones   = string.IsNullOrEmpty(obs) ? null : obs;
+                                prod.PrecioVenta     = precioVentaActual;
+                                prod.Estado          = "Confirmado";
+
+                                // Eliminar consumos del borrador; se reemplazarán por los confirmados
+                                var viejos = db.ConsumosProduccion
+                                    .Where(c => c.ProduccionID == existingBorradorID).ToList();
+                                db.ConsumosProduccion.DeleteAllOnSubmit(viejos);
+                                db.SubmitChanges();
+                            }
+                            else
+                            {
+                                prod = new Produccion
+                                {
+                                    BaseID          = baseID,
+                                    Fecha           = fecha,
+                                    Turno           = turno,
+                                    ProductoID      = productoID,
+                                    CantidadBuena   = cantBuena,
+                                    CantidadRechazo = cantRechazo,
+                                    MetaDia         = metaDia,
+                                    Observaciones   = string.IsNullOrEmpty(obs) ? null : obs,
+                                    RegistradoPorID = claveID,
+                                    FechaRegistro   = AppHelper.Ahora,
+                                    PrecioVenta     = precioVentaActual,
+                                    Estado          = "Confirmado"
+                                };
+                                db.Produccion.InsertOnSubmit(prod);
+                                db.SubmitChanges();
+                            }
 
                             // Crear lote que agrupa todos los consumos de esta producción
                             var loteProd = new Modelo.LotesMovimiento
@@ -1256,12 +1343,247 @@ namespace GrupoAnkhalInventario
             pnlConsumos.Visible           = false;
             lblSinConsumos.Text           = "Seleccione un producto para cargar los consumos de materiales.";
             lblSinConsumos.Visible        = true;
+            hdnProduccionID.Value         = "0";
+            hdnModoEdicion.Value          = "";
+            lblModalTitulo.Text           = "Registrar Producción";
         }
 
         private void SetMsg(string icon, string title, string text, string modal = null)
         {
             var obj = new { icon, title, text, modal = modal ?? "" };
             hdnMensajePendiente.Value = _json.Serialize(obj);
+        }
+
+        // ══ Guardar Borrador ═════════════════════════════════════════════════
+        protected void btnGuardarBorrador_Click(object sender, EventArgs e)
+        {
+            // Validación mínima: solo los 4 encabezados son requeridos
+            if (string.IsNullOrEmpty(ddlBase.SelectedValue))
+            { SetMsg("warning", "Campo requerido", "Seleccione una base.", "modalRegistrar"); return; }
+            if (string.IsNullOrEmpty(txtFecha.Text))
+            { SetMsg("warning", "Campo requerido", "Seleccione la fecha.", "modalRegistrar"); return; }
+            if (string.IsNullOrEmpty(ddlTurno.SelectedValue))
+            { SetMsg("warning", "Campo requerido", "Seleccione el turno.", "modalRegistrar"); return; }
+            if (string.IsNullOrEmpty(hdnProductoSeleccionado.Value) || hdnProductoSeleccionado.Value == "0")
+            { SetMsg("warning", "Campo requerido", "Seleccione el producto.", "modalRegistrar"); return; }
+
+            int      baseID     = int.Parse(ddlBase.SelectedValue);
+            DateTime fecha      = DateTime.Parse(txtFecha.Text);
+            string   turno      = ddlTurno.SelectedValue;
+            int      productoID = int.Parse(hdnProductoSeleccionado.Value);
+            int      claveID    = Convert.ToInt32(Session["ClaveID"]);
+            string   obs        = txtObservaciones.Text.Trim();
+            int cantBuena = 0, cantRechazo = 0, metaDia = 0;
+            int.TryParse(txtCantBuena.Text,   out cantBuena);
+            int.TryParse(txtCantRechazo.Text, out cantRechazo);
+            int.TryParse(txtMetaDia.Text,     out metaDia);
+
+            // Leer arrays del form — misma lógica que btnGuardar_Click
+            string[] arrMatIDs   = Request.Form.GetValues("matID")       ?? new string[0];
+            string[] arrConsumos = Request.Form.GetValues("consumoReal") ?? new string[0];
+            string[] arrCantMins = Request.Form.GetValues("cantMin")     ?? new string[0];
+            string[] arrCantMaxs = Request.Form.GetValues("cantMax")     ?? new string[0];
+            string[] arrMinCap   = Request.Form.GetValues("cantMinCap")  ?? new string[0];
+            string[] arrMaxCap   = Request.Form.GetValues("cantMaxCap")  ?? new string[0];
+            string[] arrUnidTxt  = Request.Form.GetValues("unidCapTxt")  ?? new string[0];
+            string[] arrUnidades = Request.Form.AllKeys
+                .Where(k => k != null && k.EndsWith("$ddlUnidadConsumo"))
+                .OrderBy(k => k)
+                .Select(k => Request.Form[k])
+                .ToArray();
+
+            int existingID = 0;
+            int.TryParse(hdnProduccionID.Value, out existingID);
+
+            try
+            {
+                using (var db = NuevoDb(true))
+                {
+                    decimal precioVenta = db.Productos
+                        .Where(p => p.ProductoID == productoID)
+                        .Select(p => p.PrecioVenta)
+                        .FirstOrDefault();
+
+                    if (existingID > 0)
+                    {
+                        // Actualizar borrador existente
+                        var prod = db.Produccion.FirstOrDefault(p =>
+                            p.ProduccionID == existingID && p.Estado == "Borrador");
+                        if (prod == null)
+                        { SetMsg("error", "Error", "Borrador no encontrado.", "modalRegistrar"); return; }
+
+                        prod.BaseID          = baseID;
+                        prod.Fecha           = fecha;
+                        prod.Turno           = turno;
+                        prod.ProductoID      = productoID;
+                        prod.CantidadBuena   = cantBuena;
+                        prod.CantidadRechazo = cantRechazo;
+                        prod.MetaDia         = metaDia;
+                        prod.Observaciones   = string.IsNullOrEmpty(obs) ? null : obs;
+                        prod.PrecioVenta     = precioVenta;
+
+                        var viejos = db.ConsumosProduccion
+                            .Where(c => c.ProduccionID == existingID).ToList();
+                        db.ConsumosProduccion.DeleteAllOnSubmit(viejos);
+                        db.SubmitChanges();
+
+                        InsertarConsumosBorrador(db, existingID, arrMatIDs, arrConsumos,
+                            arrCantMins, arrCantMaxs, arrMinCap, arrMaxCap,
+                            arrUnidTxt, arrUnidades, cantBuena + cantRechazo);
+                    }
+                    else
+                    {
+                        // Nuevo borrador
+                        var prod = new Produccion
+                        {
+                            BaseID          = baseID,
+                            Fecha           = fecha,
+                            Turno           = turno,
+                            ProductoID      = productoID,
+                            CantidadBuena   = cantBuena,
+                            CantidadRechazo = cantRechazo,
+                            MetaDia         = metaDia,
+                            Observaciones   = string.IsNullOrEmpty(obs) ? null : obs,
+                            RegistradoPorID = claveID,
+                            FechaRegistro   = AppHelper.Ahora,
+                            PrecioVenta     = precioVenta,
+                            Estado          = "Borrador"
+                        };
+                        db.Produccion.InsertOnSubmit(prod);
+                        db.SubmitChanges();
+
+                        InsertarConsumosBorrador(db, prod.ProduccionID, arrMatIDs, arrConsumos,
+                            arrCantMins, arrCantMaxs, arrMinCap, arrMaxCap,
+                            arrUnidTxt, arrUnidades, cantBuena + cantRechazo);
+                    }
+
+                    db.SubmitChanges();
+                }
+
+                LimpiarModal();
+                SetMsg("success", "Borrador guardado",
+                    "El borrador quedó guardado. Puede continuar la captura cuando regrese.");
+                CargarDashboard();
+                CargarGrid();
+            }
+            catch (Exception ex)
+            {
+                SetMsg("error", "Error al guardar borrador",
+                    "Ocurrió un error: " + ex.Message, "modalRegistrar");
+            }
+        }
+
+        private void InsertarConsumosBorrador(
+            InventarioAnkhalDBDataContext db, int produccionID,
+            string[] arrMatIDs, string[] arrConsumos,
+            string[] arrCantMins, string[] arrCantMaxs,
+            string[] arrMinCap, string[] arrMaxCap,
+            string[] arrUnidTxt, string[] arrUnidades,
+            int totalProd)
+        {
+            for (int i = 0; i < arrMatIDs.Length; i++)
+            {
+                int matID;
+                if (!int.TryParse(arrMatIDs[i], out matID)) continue;
+
+                decimal cantCap  = ParseDecimal(i < arrConsumos.Length ? arrConsumos[i] : "0");
+                decimal cantMin  = ParseDecimal(i < arrCantMins.Length ? arrCantMins[i] : "0");
+                decimal cantMax  = ParseDecimal(i < arrCantMaxs.Length ? arrCantMaxs[i] : "0");
+                decimal minCap   = ParseDecimal(i < arrMinCap.Length   ? arrMinCap[i]   : "0");
+                decimal maxCap   = ParseDecimal(i < arrMaxCap.Length   ? arrMaxCap[i]   : "0");
+                string  unidTxt  = i < arrUnidTxt.Length  ? (arrUnidTxt[i]  ?? "") : "";
+                string  unidVal  = i < arrUnidades.Length ? (arrUnidades[i] ?? "") : "";
+
+                db.ConsumosProduccion.InsertOnSubmit(new ConsumosProduccion
+                {
+                    ProduccionID       = produccionID,
+                    MaterialID         = matID,
+                    CantidadReal       = 0m,                          // sin impacto de stock
+                    CantidadTeoricaMin = cantMin * totalProd,
+                    CantidadTeoricaMax = cantMax * totalProd,
+                    EsMerma            = false,
+                    Notas              = "Borrador",
+                    CantidadRealCap    = cantCap,                     // lo que tecleó el operador
+                    CantidadTeoMinCap  = minCap * totalProd,
+                    CantidadTeoMaxCap  = maxCap * totalProd,
+                    UnidadClaveCap     = string.IsNullOrEmpty(unidTxt) ? null : unidTxt,
+                    UnidadSeleccionVal = string.IsNullOrEmpty(unidVal) ? null : unidVal
+                });
+            }
+        }
+
+        // ══ RowCommand del GridView (Continuar / Eliminar borrador) ══════════
+        protected void gvProduccion_RowCommand(object sender, System.Web.UI.WebControls.GridViewCommandEventArgs e)
+        {
+            int produccionID;
+            if (!int.TryParse(e.CommandArgument.ToString(), out produccionID)) return;
+
+            if (e.CommandName == "EliminarBorrador")
+            {
+                using (var db = NuevoDb(true))
+                {
+                    var prod = db.Produccion.FirstOrDefault(p =>
+                        p.ProduccionID == produccionID && p.Estado == "Borrador");
+                    if (prod == null) return;
+
+                    var consumos = db.ConsumosProduccion
+                        .Where(c => c.ProduccionID == produccionID).ToList();
+                    db.ConsumosProduccion.DeleteAllOnSubmit(consumos);
+                    db.SubmitChanges();
+
+                    db.Produccion.DeleteOnSubmit(prod);
+                    db.SubmitChanges();
+                }
+                SetMsg("success", "Borrador eliminado", "El borrador fue eliminado correctamente.");
+                CargarGrid();
+                return;
+            }
+
+            if (e.CommandName == "ContinuarBorrador")
+                CargarBorradorEnModal(produccionID);
+        }
+
+        // ══ Cargar un borrador existente en el modal ══════════════════════════
+        private void CargarBorradorEnModal(int produccionID)
+        {
+            using (var db = NuevoDb(false))
+            {
+                var prod = db.Produccion.FirstOrDefault(p =>
+                    p.ProduccionID == produccionID && p.Estado == "Borrador");
+                if (prod == null)
+                {
+                    SetMsg("error", "Error", "No se encontró el borrador.");
+                    return;
+                }
+
+                // Llenar encabezado del modal
+                ddlBase.SelectedValue    = prod.BaseID.ToString();
+                txtFecha.Text            = prod.Fecha.ToString("yyyy-MM-dd");
+                ddlTurno.SelectedValue   = prod.Turno;
+                ddlProducto.SelectedValue             = prod.ProductoID.ToString();
+                hdnProductoSeleccionado.Value         = prod.ProductoID.ToString();
+                txtCantBuena.Text        = prod.CantidadBuena.ToString();
+                txtCantRechazo.Text      = prod.CantidadRechazo.ToString();
+                txtMetaDia.Text          = prod.MetaDia > 0 ? prod.MetaDia.ToString() : "";
+                txtObservaciones.Text    = prod.Observaciones ?? "";
+                hdnProduccionID.Value    = produccionID.ToString();
+                hdnModoEdicion.Value     = "borrador";
+                lblModalTitulo.Text      = "Continuar Borrador";
+
+                int cantBuena = prod.CantidadBuena, cantRechazo = prod.CantidadRechazo;
+
+                // Construir mapa de valores guardados: MaterialID → (CantCapturada, UnidadSeleccionVal)
+                var borradorMap = db.ConsumosProduccion
+                    .Where(c => c.ProduccionID == produccionID)
+                    .ToDictionary(
+                        c => c.MaterialID,
+                        c => Tuple.Create(c.CantidadRealCap ?? 0m, c.UnidadSeleccionVal ?? ""));
+
+                // Cargar BOM con los valores del borrador pre-aplicados
+                var bom = CargarConsumosBOM(prod.ProductoID, prod.BaseID,
+                    cantBuena + cantRechazo, borradorMap);
+                BindearConsumos(bom);
+            }
         }
     }
 }

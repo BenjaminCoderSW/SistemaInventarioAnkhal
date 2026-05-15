@@ -65,6 +65,11 @@
         .badge-noche   { background:#2c3e50; color:#fff; }
         .badge-unico   { background:#8e44ad; color:#fff; }
 
+        /* ── Filas borrador ── */
+        .fila-borrador td { background-color:#fff9e6 !important; border-left:3px solid #f39c12; }
+        .badge-warning    { background:#f39c12; color:#fff; }
+        .badge-success    { background:#27ae60; color:#fff; }
+
     </style>
 </asp:Content>
 
@@ -141,6 +146,12 @@
                 <asp:Button ID="btnLimpiar" runat="server" Text="Limpiar"
                     CssClass="btn btn-sm btn-outline-secondary btn-block" OnClick="btnLimpiar_Click" />
             </div>
+            <div class="col-md-2 d-flex align-items-center pt-3">
+                <div class="form-check">
+                    <asp:CheckBox ID="chkMostrarBorradores" runat="server" CssClass="form-check-input" />
+                    <label class="form-check-label font-weight-bold text-warning ml-1">Ver Borradores</label>
+                </div>
+            </div>
         </div>
     </div>
 
@@ -164,6 +175,7 @@
             AllowCustomPaging="True" AllowPaging="True" PageSize="15"
             OnPageIndexChanging="gvProduccion_PageIndexChanging"
             OnRowDataBound="gvProduccion_RowDataBound"
+            OnRowCommand="gvProduccion_RowCommand"
             EmptyDataText="No se encontraron registros de producción."
             PagerStyle-CssClass="pager-custom"
             PagerSettings-Mode="NumericFirstLast"
@@ -264,6 +276,34 @@
                         </asp:Repeater>
                     </ItemTemplate>
                 </asp:TemplateField>
+                <asp:TemplateField HeaderText="Estado">
+                    <HeaderStyle CssClass="text-center" Width="100px" />
+                    <ItemStyle CssClass="text-center" />
+                    <ItemTemplate>
+                        <span class='badge <%# (bool)Eval("EsBorrador") ? "badge-warning" : "badge-success" %>'>
+                            <%# Eval("Estado") %>
+                        </span>
+                    </ItemTemplate>
+                </asp:TemplateField>
+                <asp:TemplateField HeaderText="Acciones">
+                    <HeaderStyle CssClass="text-center" Width="130px" />
+                    <ItemStyle CssClass="text-center" />
+                    <ItemTemplate>
+                        <asp:LinkButton ID="lbContinuar" runat="server"
+                            CommandName="ContinuarBorrador"
+                            CommandArgument='<%# Eval("ProduccionID") %>'
+                            CssClass="btn btn-sm btn-warning"
+                            Visible='<%# (bool)Eval("EsBorrador") %>'
+                            Text="Continuar" />
+                        <asp:LinkButton ID="lbEliminar" runat="server"
+                            CommandName="EliminarBorrador"
+                            CommandArgument='<%# Eval("ProduccionID") %>'
+                            CssClass="btn btn-sm btn-outline-danger ml-1"
+                            Visible='<%# (bool)Eval("EsBorrador") %>'
+                            OnClientClick="return confirm('¿Eliminar este borrador? Esta acción no se puede deshacer.');"
+                            Text="Eliminar" />
+                    </ItemTemplate>
+                </asp:TemplateField>
             </Columns>
         </asp:GridView>
     </div>
@@ -274,6 +314,8 @@
 <asp:HiddenField ID="hdnMensajePendiente" runat="server" Value="" />
 <asp:HiddenField ID="hdnProductoSeleccionado" runat="server" Value="" />
 <asp:HiddenField ID="hdnConfirmarSinConsumos" runat="server" Value="" />
+<asp:HiddenField ID="hdnProduccionID" runat="server" Value="0" />
+<asp:HiddenField ID="hdnModoEdicion" runat="server" Value="" />
 <asp:Button ID="btnCargarConsumos" runat="server" style="display:none" OnClick="btnCargarConsumos_Click" />
 
 <!-- ══════════════════════════════════════════════════════════════════ -->
@@ -283,7 +325,7 @@
     <div class="modal-dialog modal-lg">
         <div class="modal-content">
             <div class="modal-header bg-primary text-white">
-                <h5 class="modal-title">Registrar Producción</h5>
+                <h5 class="modal-title"><asp:Label ID="lblModalTitulo" runat="server" Text="Registrar Producción"></asp:Label></h5>
                 <button type="button" class="close text-white" data-dismiss="modal">&times;</button>
             </div>
             <div class="modal-body">
@@ -435,7 +477,9 @@
             </div>
             <div class="modal-footer">
                 <button type="button" class="btn btn-secondary" data-dismiss="modal">Cancelar</button>
-                <asp:Button ID="btnGuardar" runat="server" Text="Guardar Producción"
+                <asp:Button ID="btnGuardarBorrador" runat="server" Text="Guardar Borrador"
+                    CssClass="btn btn-warning" OnClick="btnGuardarBorrador_Click" />
+                <asp:Button ID="btnGuardar" runat="server" Text="Confirmar Producción"
                     CssClass="btn btn-primary" OnClick="btnGuardar_Click"
                     OnClientClick="return validarAntesDeGuardar();" />
             </div>
@@ -674,6 +718,16 @@
         document.querySelectorAll('.btn-filtro-rapido').forEach(function (b) { b.classList.remove('active'); });
         event.target.classList.add('active');
     }
+
+    // Resetear estado de borrador cuando el modal se cierra sin postback
+    $('#modalRegistrar').on('hidden.bs.modal', function () {
+        var hdnID  = document.getElementById('<%= hdnProduccionID.ClientID %>');
+        var hdnMod = document.getElementById('<%= hdnModoEdicion.ClientID %>');
+        var titulo = document.querySelector('#modalRegistrar .modal-title');
+        if (hdnID)  hdnID.value  = '0';
+        if (hdnMod) hdnMod.value = '';
+        if (titulo) titulo.textContent = 'Registrar Producción';
+    });
 </script>
 
 </asp:Content>
