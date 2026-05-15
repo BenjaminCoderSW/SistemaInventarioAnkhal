@@ -66,7 +66,7 @@
         .badge-unico   { background:#8e44ad; color:#fff; }
 
         /* ── Filas borrador ── */
-        .fila-borrador td { background-color:#fff9e6 !important; border-left:3px solid #f39c12; }
+        .fila-borrador td { background-color:#fff9e6 !important; }
         .badge-warning    { background:#f39c12; color:#fff; }
         .badge-success    { background:#27ae60; color:#fff; }
 
