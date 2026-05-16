@@ -367,6 +367,11 @@
       <div class="modal-body">
 
         <div id="divTablaComponentes">
+          <div class="d-flex justify-content-between align-items-center mb-2" id="divBuscaComp">
+            <input type="text" id="txtBuscaComp" class="form-control form-control-sm w-50"
+                   placeholder="Buscar por código o nombre..." oninput="filtrarComp()" />
+            <div id="divPaginacionComp" style="font-size:.84rem;"></div>
+          </div>
           <table class="table table-bordered comp-view-table" id="tblComponentes">
             <thead>
               <tr>
@@ -531,7 +536,10 @@
     // ════════════════════════════════════════════════════
     // MODAL COMPONENTES — Ver y editar
     // ════════════════════════════════════════════════════
-    var _compModal = [];
+    var _compModal          = [];
+    var _compModalFilter    = '';
+    var _compModalPage      = 0;
+    var _compModalPageSize  = 25;
     var _productoCloneSeleccionado = null;
 
     function verComponentes(productoID, descripcion) {
@@ -624,6 +632,11 @@
     }
 
     function cargarComponentesModal(productoID, descripcion) {
+        _compModalFilter = '';
+        _compModalPage   = 0;
+        var txtB = document.getElementById('txtBuscaComp');
+        if (txtB) txtB.value = '';
+
         var data = window._componentesData || {};
         _compModal = data[productoID] || [];
 
@@ -678,20 +691,34 @@
     }
 
     function renderTablaComp() {
-        var tbody = document.getElementById('tbodyComponentes');
+        var tbody  = document.getElementById('tbodyComponentes');
         var sinDiv = document.getElementById('divSinCompModal');
+        var divPag = document.getElementById('divPaginacionComp');
         tbody.innerHTML = '';
 
-        if (_compModal.length === 0) { sinDiv.style.display = 'block'; return; }
-        sinDiv.style.display = 'none';
+        sinDiv.style.display = (_compModal.length === 0) ? 'block' : 'none';
 
-        _compModal.forEach(function (c) {
-            var abrev = abrevUnidad(c.unidad); // ej. "kg", "L", "pz"
+        // Filtrar
+        var q = (_compModalFilter || '').toLowerCase();
+        var filtered = q
+            ? _compModal.filter(function (c) {
+                  return (c.materialCodigo || '').toLowerCase().indexOf(q) >= 0 ||
+                         (c.materialNombre || '').toLowerCase().indexOf(q) >= 0;
+              })
+            : _compModal.slice();
+
+        var total = filtered.length;
+        var start = _compModalPage * _compModalPageSize;
+        if (start >= total && total > 0) { _compModalPage = 0; start = 0; }
+        var end   = Math.min(start + _compModalPageSize, total);
+        var pag   = filtered.slice(start, end);
+
+        pag.forEach(function (c) {
+            var abrev = abrevUnidad(c.unidad);
             var cantMinDisplay, cantMaxDisplay;
             if (c.conversionID && c.cantMinCap != null) {
-                // Buscar texto de la unidad capturada en las conversiones del material
-                var convs = window._conversionesMat && window._conversionesMat[c.materialID.toString()];
-                var conv  = convs && convs.find(function (op) { return String(op.val) === String(c.conversionID); });
+                var convs   = window._conversionesMat && window._conversionesMat[c.materialID.toString()];
+                var conv    = convs && convs.find(function (op) { return String(op.val) === String(c.conversionID); });
                 var unidTxt = conv ? conv.txt.replace(/\s*\[.*?\]\s*$/, '').trim() : '';
                 cantMinDisplay = '<small class="text-muted d-block">' + escHtml(String(c.cantMinCap)) + ' ' + escHtml(unidTxt) + '</small>' +
                                  '<strong>' + escHtml(String(c.cantMin)) + '</strong> <span class="text-muted">' + escHtml(abrev) + '</span>';
@@ -714,7 +741,25 @@
                 '</td>';
             tbody.appendChild(tr);
         });
+
+        // Controles de paginación
+        if (divPag) {
+            if (total === 0) {
+                divPag.innerHTML = q ? '<small class="text-muted">Sin resultados para "<em>' + escHtml(q) + '</em>".</small>' : '';
+            } else if (total <= _compModalPageSize && !q) {
+                divPag.innerHTML = '<small class="text-muted">' + total + ' componente' + (total !== 1 ? 's' : '') + '</small>';
+            } else {
+                divPag.innerHTML =
+                    '<small class="text-muted mr-2">' + (start + 1) + '–' + end + ' de ' + total + '</small>' +
+                    '<button class="btn btn-sm btn-outline-secondary mr-1" ' + (_compModalPage === 0 ? 'disabled' : '') + ' onclick="compPrevPage()">&#8249; Ant</button>' +
+                    '<button class="btn btn-sm btn-outline-secondary"      ' + (end >= total ? 'disabled' : '')         + ' onclick="compNextPage()">Sig &#8250;</button>';
+            }
+        }
     }
+
+    function filtrarComp()  { _compModalFilter = document.getElementById('txtBuscaComp').value; _compModalPage = 0; renderTablaComp(); }
+    function compPrevPage() { if (_compModalPage > 0) { _compModalPage--; renderTablaComp(); } }
+    function compNextPage() { _compModalPage++; renderTablaComp(); }
 
     function guardarCompExistente(pmID, materialID) {
         var cantMin = parseFloat(document.getElementById('cmin_' + pmID).value) || 0;
