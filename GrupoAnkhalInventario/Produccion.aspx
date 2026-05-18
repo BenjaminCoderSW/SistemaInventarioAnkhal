@@ -224,56 +224,13 @@
                     </ItemTemplate>
                 </asp:TemplateField>
                 <asp:TemplateField HeaderText="Consumo de Materiales">
-                    <HeaderStyle CssClass="text-center" Width="280px" />
+                    <HeaderStyle CssClass="text-center" Width="170px" />
+                    <ItemStyle CssClass="text-center" />
                     <ItemTemplate>
-                        <asp:Repeater ID="rptDetalleConsumos" runat="server">
-                            <HeaderTemplate>
-                                <table class="table table-sm mb-0" style="font-size:0.76rem;">
-                                    <thead>
-                                        <tr class="bg-light">
-                                            <th>Material</th>
-                                            <th class="text-right">Rango</th>
-                                            <th class="text-right">Real</th>
-                                            <th class="text-right">Desviación</th>
-                                        </tr>
-                                    </thead>
-                                    <tbody>
-                            </HeaderTemplate>
-                            <ItemTemplate>
-                                <tr>
-                                    <td style="white-space:nowrap"><%# Eval("MaterialCodigo") %> - <%# Eval("MaterialNombre") %></td>
-                                    <td class="text-right text-muted" style="white-space:nowrap">
-                                        <%# (bool)Eval("TieneCaptura")
-                                            ? string.Format("{0:N0}–{1:N0} <small>{2}</small>",
-                                                Eval("TeoMinCap"), Eval("TeoMaxCap"), Eval("UnidadCap"))
-                                            : string.Format("{0:N0}–{1:N0} <small>{2}</small>",
-                                                Eval("TeoMin"), Eval("TeoMax"),
-                                                string.IsNullOrEmpty(Eval("UnidadClave").ToString())
-                                                    ? Eval("Unidad") : Eval("UnidadClave")) %>
-                                    </td>
-                                    <td class="text-right <%# (bool)Eval("EsMerma") ? "text-danger font-weight-bold" : "" %>"
-                                        style="white-space:nowrap">
-                                        <%# string.Format("{0:N2}", Eval("Real")) %>
-                                        <small class="text-muted"> <%# string.IsNullOrEmpty(Eval("UnidadClave").ToString()) ? Eval("Unidad") : Eval("UnidadClave") %></small>
-                                    </td>
-                                    <td class="text-right" style="white-space:nowrap">
-                                        <%# (decimal)Eval("Excedente") > 0
-                                            ? string.Format("<span class='text-danger font-weight-bold'>+{0:N2} <small class='text-danger'>{1}</small></span>",
-                                                Eval("Excedente"),
-                                                string.IsNullOrEmpty(Eval("UnidadClave").ToString()) ? Eval("Unidad") : Eval("UnidadClave"))
-                                            : (decimal)Eval("Deficit") > 0
-                                                ? string.Format("<span class='text-warning font-weight-bold'>−{0:N2} <small class='text-warning'>{1}</small></span>",
-                                                    Eval("Deficit"),
-                                                    string.IsNullOrEmpty(Eval("UnidadClave").ToString()) ? Eval("Unidad") : Eval("UnidadClave"))
-                                                : "<span class='text-success'>—</span>" %>
-                                    </td>
-                                </tr>
-                            </ItemTemplate>
-                            <FooterTemplate>
-                                    </tbody>
-                                </table>
-                            </FooterTemplate>
-                        </asp:Repeater>
+                        <button type="button" class="btn btn-sm btn-outline-info"
+                            onclick="verConsumos(<%# Eval("ProduccionID") %>, '<%# System.Web.HttpUtility.JavaScriptStringEncode(Eval("ProductoCodigo").ToString() + " " + Eval("ProductoNombre").ToString()) %>')">
+                            <i class="fas fa-list-ul mr-1"></i>Ver consumos (<%# Eval("ConsumoCount") %>)
+                        </button>
                     </ItemTemplate>
                 </asp:TemplateField>
                 <asp:TemplateField HeaderText="Estado">
@@ -517,6 +474,52 @@
     </div>
 </div>
 
+<%-- ══ MODAL: Consumo de Materiales (lazy AJAX) ══ --%>
+<div class="modal fade" id="modalConsumos" tabindex="-1">
+    <div class="modal-dialog modal-xl">
+        <div class="modal-content">
+            <div class="modal-header" style="background:#003366;">
+                <h5 class="modal-title text-white">
+                    <i class="fas fa-list-ul mr-2"></i>
+                    Consumo de Materiales —
+                    <span id="spanConsumoProducto"></span>
+                </h5>
+                <button type="button" class="close text-white" data-dismiss="modal">&times;</button>
+            </div>
+            <div class="modal-body">
+                <div id="divConsumoSpinner" class="text-center py-4">
+                    <div class="spinner-border text-primary" role="status">
+                        <span class="sr-only">Cargando...</span>
+                    </div>
+                    <p class="mt-2 text-muted">Cargando consumos...</p>
+                </div>
+                <div id="divConsumoError" class="alert alert-danger d-none"></div>
+                <div id="divConsumoTabla" class="d-none">
+                    <div class="table-responsive">
+                        <table class="table table-sm table-bordered mb-0">
+                            <thead class="bg-light">
+                                <tr>
+                                    <th>Material</th>
+                                    <th class="text-right">Rango</th>
+                                    <th class="text-right">Real</th>
+                                    <th class="text-right">Desviación</th>
+                                </tr>
+                            </thead>
+                            <tbody id="tbodyConsumoModal"></tbody>
+                        </table>
+                    </div>
+                    <p id="pConsumoVacio" class="text-muted mt-2 d-none">
+                        Este registro no tiene consumos de materiales capturados.
+                    </p>
+                </div>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-dismiss="modal">Cerrar</button>
+            </div>
+        </div>
+    </div>
+</div>
+
 <!-- ══ SCRIPTS ══ -->
 <script>
     // SweetAlert mensajes
@@ -728,6 +731,79 @@
         if (hdnMod) hdnMod.value = '';
         if (titulo) titulo.textContent = 'Registrar Producción';
     });
+
+    // ══ Modal de consumos — carga lazy vía AJAX ══════════════════════════
+
+    function verConsumos(produccionID, producto) {
+        document.getElementById('spanConsumoProducto').textContent = producto;
+        document.getElementById('divConsumoSpinner').classList.remove('d-none');
+        document.getElementById('divConsumoError').classList.add('d-none');
+        document.getElementById('divConsumoTabla').classList.add('d-none');
+        document.getElementById('tbodyConsumoModal').innerHTML = '';
+        document.getElementById('pConsumoVacio').classList.add('d-none');
+        $('#modalConsumos').modal('show');
+
+        $.ajax({
+            type: 'POST',
+            url: 'Produccion.aspx/ObtenerConsumos',
+            data: JSON.stringify({ produccionID: produccionID }),
+            contentType: 'application/json; charset=utf-8',
+            dataType: 'json',
+            success: function (resp) {
+                var consumos = resp.d;
+                document.getElementById('divConsumoSpinner').classList.add('d-none');
+                if (!consumos || consumos.length === 0) {
+                    document.getElementById('divConsumoTabla').classList.remove('d-none');
+                    document.getElementById('pConsumoVacio').classList.remove('d-none');
+                    return;
+                }
+                var tbody = document.getElementById('tbodyConsumoModal');
+                consumos.forEach(function (c) {
+                    tbody.insertAdjacentHTML('beforeend', buildConsumoRow(c));
+                });
+                document.getElementById('divConsumoTabla').classList.remove('d-none');
+            },
+            error: function (xhr) {
+                document.getElementById('divConsumoSpinner').classList.add('d-none');
+                var msg = 'Error al cargar los consumos.';
+                try { var p = JSON.parse(xhr.responseText); if (p && p.Message) msg = p.Message; } catch (e) { }
+                var errDiv = document.getElementById('divConsumoError');
+                errDiv.textContent = msg;
+                errDiv.classList.remove('d-none');
+            }
+        });
+    }
+
+    function buildConsumoRow(c) {
+        var col1 = '<td style="white-space:nowrap">' + escHtml(c.MaterialCodigo) + ' - ' + escHtml(c.MaterialNombre) + '</td>';
+
+        var rango = c.TieneCaptura
+            ? fmtN0(c.TeoMinCap) + '–' + fmtN0(c.TeoMaxCap) + ' <small>' + escHtml(c.UnidadCap) + '</small>'
+            : fmtN0(c.TeoMin)    + '–' + fmtN0(c.TeoMax)    + ' <small>' + escHtml(c.UnidadClave) + '</small>';
+        var col2 = '<td class="text-right text-muted" style="white-space:nowrap">' + rango + '</td>';
+
+        var realCls = c.EsMerma ? ' text-danger font-weight-bold' : '';
+        var col3 = '<td class="text-right' + realCls + '" style="white-space:nowrap">'
+                 + fmtN2(c.Real) + ' <small class="text-muted">' + escHtml(c.UnidadClave) + '</small></td>';
+
+        var desv;
+        if (c.Excedente > 0)
+            desv = '<span class="text-danger font-weight-bold">+' + fmtN2(c.Excedente) + ' <small>' + escHtml(c.UnidadClave) + '</small></span>';
+        else if (c.Deficit > 0)
+            desv = '<span class="text-warning font-weight-bold">−' + fmtN2(c.Deficit) + ' <small>' + escHtml(c.UnidadClave) + '</small></span>';
+        else
+            desv = '<span class="text-success">—</span>';
+        var col4 = '<td class="text-right" style="white-space:nowrap">' + desv + '</td>';
+
+        return '<tr>' + col1 + col2 + col3 + col4 + '</tr>';
+    }
+
+    function fmtN0(n) { return Number(n).toLocaleString('es-MX', { minimumFractionDigits: 0, maximumFractionDigits: 0 }); }
+    function fmtN2(n) { return Number(n).toLocaleString('es-MX', { minimumFractionDigits: 2, maximumFractionDigits: 2 }); }
+    function escHtml(s) {
+        if (!s) return '';
+        return String(s).replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;').replace(/"/g, '&quot;');
+    }
 </script>
 
 </asp:Content>

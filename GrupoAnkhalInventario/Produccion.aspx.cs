@@ -3,7 +3,9 @@ using System.Collections.Generic;
 using System.Configuration;
 using System.Linq;
 using System.Text;
+using System.Web;
 using System.Web.Script.Serialization;
+using System.Web.Services;
 using System.Web.UI.WebControls;
 using GrupoAnkhalInventario.Helpers;
 using GrupoAnkhalInventario.Modelo;
@@ -45,6 +47,7 @@ namespace GrupoAnkhalInventario
             public string   Observaciones   { get; set; }
             public string   Estado          { get; set; }
             public bool     EsBorrador      { get; set; }
+            public int      ConsumoCount    { get; set; }
             public List<ConsumoDetalleVM> Consumos { get; set; } = new List<ConsumoDetalleVM>();
         }
 
@@ -349,65 +352,16 @@ namespace GrupoAnkhalInventario
                         };
                     }).ToList();
 
-                // ── Cargar detalle de consumos para los IDs de esta página
-                var consumosRaw = (from cp in db.ConsumosProduccion
-                                   where ids.Contains(cp.ProduccionID)
-                                   join m in db.Materiales on cp.MaterialID equals m.MaterialID
-                                   select new
-                                   {
-                                       cp.ProduccionID,
-                                       m.MaterialID,
-                                       m.Codigo,
-                                       m.Descripcion,
-                                       m.Unidad,
-                                       m.UnidadMedidaID,
-                                       cp.CantidadTeoricaMin,
-                                       cp.CantidadTeoricaMax,
-                                       cp.CantidadReal,
-                                       cp.EsMerma,
-                                       cp.CantidadTeoMinCap,
-                                       cp.CantidadTeoMaxCap,
-                                       cp.CantidadRealCap,
-                                       cp.UnidadClaveCap
-                                   }).ToList();
-
-                // ── Cargar abreviaturas de unidades base (para columnas Real/Excedente)
-                var unidMedidaIDs = consumosRaw
-                    .Where(c => c.UnidadMedidaID.HasValue)
-                    .Select(c => c.UnidadMedidaID.Value).Distinct().ToList();
-                var unidClaveMap = unidMedidaIDs.Any()
-                    ? db.UnidadesMedida
-                        .Where(u => unidMedidaIDs.Contains(u.UnidadMedidaID))
-                        .ToDictionary(u => u.UnidadMedidaID, u => u.Clave)
-                    : new Dictionary<int, string>();
+                // ── Conteo de consumos por producción (detalle carga lazy vía WebMethod)
+                var consumoCounts = db.ConsumosProduccion
+                    .Where(cp => ids.Contains(cp.ProduccionID))
+                    .GroupBy(cp => cp.ProduccionID)
+                    .Select(g => new { ProduccionID = g.Key, Cuenta = g.Count() })
+                    .ToDictionary(x => x.ProduccionID, x => x.Cuenta);
 
                 foreach (var vm in pagina)
-                {
-                    vm.Consumos = consumosRaw
-                        .Where(c => c.ProduccionID == vm.ProduccionID)
-                        .Select(c => new ConsumoDetalleVM
-                        {
-                            MaterialCodigo = c.Codigo,
-                            MaterialNombre = c.Descripcion,
-                            Unidad         = c.Unidad ?? "",
-                            UnidadClave    = c.UnidadMedidaID.HasValue &&
-                                             unidClaveMap.ContainsKey(c.UnidadMedidaID.Value)
-                                             ? unidClaveMap[c.UnidadMedidaID.Value] : "",
-                            TeoMin         = c.CantidadTeoricaMin,
-                            TeoMax         = c.CantidadTeoricaMax,
-                            Real           = c.CantidadReal,
-                            Excedente      = c.CantidadReal > c.CantidadTeoricaMax
-                                             ? c.CantidadReal - c.CantidadTeoricaMax : 0m,
-                            Deficit        = c.CantidadReal < c.CantidadTeoricaMin
-                                             ? c.CantidadTeoricaMin - c.CantidadReal : 0m,
-                            EsMerma        = c.EsMerma,
-                            TeoMinCap      = c.CantidadTeoMinCap ?? 0m,
-                            TeoMaxCap      = c.CantidadTeoMaxCap ?? 0m,
-                            RealCap        = c.CantidadRealCap   ?? 0m,
-                            UnidadCap      = c.UnidadClaveCap    ?? "",
-                            TieneCaptura   = c.UnidadClaveCap    != null
-                        }).ToList();
-                }
+                    vm.ConsumoCount = consumoCounts.ContainsKey(vm.ProduccionID)
+                                      ? consumoCounts[vm.ProduccionID] : 0;
 
                 gvProduccion.DataSource = pagina;
                 gvProduccion.DataBind();
@@ -417,13 +371,7 @@ namespace GrupoAnkhalInventario
         protected void gvProduccion_RowDataBound(object sender, GridViewRowEventArgs e)
         {
             if (e.Row.RowType != DataControlRowType.DataRow) return;
-            var vm  = e.Row.DataItem as ProduccionVM;
-            var rpt = e.Row.FindControl("rptDetalleConsumos") as Repeater;
-            if (vm != null && rpt != null)
-            {
-                rpt.DataSource = vm.Consumos;
-                rpt.DataBind();
-            }
+            var vm = e.Row.DataItem as ProduccionVM;
             if (vm != null && vm.EsBorrador)
                 e.Row.CssClass = (e.Row.CssClass + " fila-borrador").Trim();
         }
@@ -1294,6 +1242,75 @@ namespace GrupoAnkhalInventario
             }
         }
 
+        // ══ WebMethod: carga lazy de consumos para el modal ══════════════════════
+        [WebMethod]
+        public static object ObtenerConsumos(int produccionID)
+        {
+            if (HttpContext.Current.Session["ClaveID"] == null)
+                throw new Exception("No autorizado");
+
+            string connStr = ConfigurationManager
+                .ConnectionStrings["InventarioAnkhalDBConnectionString"].ConnectionString;
+
+            using (var db = new InventarioAnkhalDBDataContext(connStr))
+            {
+                db.ObjectTrackingEnabled = false;
+
+                var raw = (from cp in db.ConsumosProduccion
+                           where cp.ProduccionID == produccionID
+                           join m in db.Materiales on cp.MaterialID equals m.MaterialID
+                           select new
+                           {
+                               m.Codigo,
+                               m.Descripcion,
+                               m.UnidadMedidaID,
+                               cp.CantidadTeoricaMin,
+                               cp.CantidadTeoricaMax,
+                               cp.CantidadReal,
+                               cp.EsMerma,
+                               cp.CantidadTeoMinCap,
+                               cp.CantidadTeoMaxCap,
+                               cp.CantidadRealCap,
+                               cp.UnidadClaveCap
+                           }).ToList();
+
+                var uids = raw.Where(c => c.UnidadMedidaID.HasValue)
+                              .Select(c => c.UnidadMedidaID.Value).Distinct().ToList();
+                var claves = uids.Any()
+                    ? db.UnidadesMedida
+                        .Where(u => uids.Contains(u.UnidadMedidaID))
+                        .ToDictionary(u => u.UnidadMedidaID, u => u.Clave)
+                    : new Dictionary<int, string>();
+
+                return raw.Select(c =>
+                {
+                    string uc  = c.UnidadMedidaID.HasValue && claves.ContainsKey(c.UnidadMedidaID.Value)
+                                 ? claves[c.UnidadMedidaID.Value] : "";
+                    decimal exc = c.CantidadReal > c.CantidadTeoricaMax
+                                  ? c.CantidadReal - c.CantidadTeoricaMax : 0m;
+                    decimal def = c.CantidadReal < c.CantidadTeoricaMin
+                                  ? c.CantidadTeoricaMin - c.CantidadReal : 0m;
+                    return new
+                    {
+                        MaterialCodigo = c.Codigo,
+                        MaterialNombre = c.Descripcion,
+                        UnidadClave    = uc,
+                        TeoMin         = c.CantidadTeoricaMin,
+                        TeoMax         = c.CantidadTeoricaMax,
+                        Real           = c.CantidadReal,
+                        Excedente      = exc,
+                        Deficit        = def,
+                        EsMerma        = c.EsMerma,
+                        TeoMinCap      = c.CantidadTeoMinCap ?? 0m,
+                        TeoMaxCap      = c.CantidadTeoMaxCap ?? 0m,
+                        RealCap        = c.CantidadRealCap   ?? 0m,
+                        UnidadCap      = c.UnidadClaveCap    ?? "",
+                        TieneCaptura   = c.UnidadClaveCap    != null
+                    };
+                }).ToList();
+            }
+        }
+
         /// <summary>
         /// Retorna el UnidadMedidaID de la unidad en que se capturó.
         /// null si se capturó directamente en la unidad base del material.
@@ -1573,11 +1590,14 @@ namespace GrupoAnkhalInventario
                 int cantBuena = prod.CantidadBuena, cantRechazo = prod.CantidadRechazo;
 
                 // Construir mapa de valores guardados: MaterialID → (CantCapturada, UnidadSeleccionVal)
+                // GroupBy para tolerar materiales repetidos en el BOM (se queda con el último guardado)
                 var borradorMap = db.ConsumosProduccion
                     .Where(c => c.ProduccionID == produccionID)
+                    .AsEnumerable()
+                    .GroupBy(c => c.MaterialID)
                     .ToDictionary(
-                        c => c.MaterialID,
-                        c => Tuple.Create(c.CantidadRealCap ?? 0m, c.UnidadSeleccionVal ?? ""));
+                        g => g.Key,
+                        g => { var u = g.Last(); return Tuple.Create(u.CantidadRealCap ?? 0m, u.UnidadSeleccionVal ?? ""); });
 
                 // Cargar BOM con los valores del borrador pre-aplicados
                 var bom = CargarConsumosBOM(prod.ProductoID, prod.BaseID,
