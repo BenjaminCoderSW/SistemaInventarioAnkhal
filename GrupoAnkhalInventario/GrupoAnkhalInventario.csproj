@@ -155,6 +155,7 @@
     <Content Include="ImprimirInventario.ashx" />
     <Content Include="Login.aspx" />
     <Content Include="Materiales.aspx" />
+    <Content Include="Mermas.aspx" />
     <Content Include="MetasProduccion.aspx" />
     <Content Include="Movimientos.aspx" />
     <Content Include="plugins\bootstrap-colorpicker\css\bootstrap-colorpicker.css" />
@@ -2060,6 +2061,13 @@
       <DependentUpon>Global.asax</DependentUpon>
     </Compile>
     <Compile Include="Helpers\AppHelper.cs" />
+    <Compile Include="Mermas.aspx.cs">
+      <DependentUpon>Mermas.aspx</DependentUpon>
+      <SubType>ASPXCodeBehind</SubType>
+    </Compile>
+    <Compile Include="Mermas.aspx.designer.cs">
+      <DependentUpon>Mermas.aspx</DependentUpon>
+    </Compile>
     <Compile Include="RegistrarProveedores.aspx.cs">
       <DependentUpon>RegistrarProveedores.aspx</DependentUpon>
       <SubType>ASPXCodeBehind</SubType>

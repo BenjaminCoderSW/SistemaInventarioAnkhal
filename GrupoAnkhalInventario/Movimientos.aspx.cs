@@ -696,7 +696,10 @@ namespace GrupoAnkhalInventario
                                     UpsertStock(db, it.tipoItem, it.itemId, baseOrigenID,  -cantBase);
                                     UpsertStock(db, it.tipoItem, it.itemId, baseDestinoID, +cantBase); break;
                                 case "MERMA":
-                                    UpsertStock(db, it.tipoItem, it.itemId, baseOrigenID,  -cantBase); break;
+                                    UpsertStock(db, it.tipoItem, it.itemId, baseOrigenID, -cantBase);
+                                    if (it.tipoItem == "Material")
+                                        UpsertStockMerma(db.Connection, tx, it.itemId, baseOrigenID.Value, cantBase);
+                                    break;
                                 case "AJUSTE_POS":
                                     UpsertStock(db, it.tipoItem, it.itemId, baseDestinoID, +cantBase); break;
                                 case "AJUSTE_NEG":
@@ -813,6 +816,35 @@ namespace GrupoAnkhalInventario
                 {
                     s.CantidadBuenas   += deltaInt;
                     s.FechaUltimaModif  = AppHelper.Ahora;
+                }
+            }
+        }
+
+        private void UpsertStockMerma(System.Data.IDbConnection conn, System.Data.IDbTransaction tx,
+            int materialID, int baseID, decimal delta)
+        {
+            using (var cmd = conn.CreateCommand())
+            {
+                cmd.Transaction = tx;
+                cmd.CommandText = @"
+                    UPDATE dbo.StockMerma
+                       SET CantidadActual   = CantidadActual + @delta,
+                           FechaUltimaModif = SYSUTCDATETIME()
+                     WHERE BaseID = @baseID AND MaterialID = @materialID";
+                var p1 = cmd.CreateParameter(); p1.ParameterName = "@delta";      p1.Value = delta;      cmd.Parameters.Add(p1);
+                var p2 = cmd.CreateParameter(); p2.ParameterName = "@baseID";     p2.Value = baseID;     cmd.Parameters.Add(p2);
+                var p3 = cmd.CreateParameter(); p3.ParameterName = "@materialID"; p3.Value = materialID; cmd.Parameters.Add(p3);
+                int filas = cmd.ExecuteNonQuery();
+                if (filas == 0 && delta > 0)
+                {
+                    cmd.Parameters.Clear();
+                    cmd.CommandText = @"
+                        INSERT INTO dbo.StockMerma (BaseID, MaterialID, CantidadActual, FechaUltimaModif)
+                        VALUES (@baseID, @materialID, @delta, SYSUTCDATETIME())";
+                    var q1 = cmd.CreateParameter(); q1.ParameterName = "@baseID";     q1.Value = baseID;     cmd.Parameters.Add(q1);
+                    var q2 = cmd.CreateParameter(); q2.ParameterName = "@materialID"; q2.Value = materialID; cmd.Parameters.Add(q2);
+                    var q3 = cmd.CreateParameter(); q3.ParameterName = "@delta";      q3.Value = delta;      cmd.Parameters.Add(q3);
+                    cmd.ExecuteNonQuery();
                 }
             }
         }
