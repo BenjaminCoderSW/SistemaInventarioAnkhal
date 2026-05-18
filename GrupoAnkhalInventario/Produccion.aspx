@@ -325,12 +325,12 @@
                     <div class="col-md-4">
                         <label class="font-weight-bold">Cantidad buena <span class="text-danger">*</span></label>
                         <asp:TextBox ID="txtCantBuena" runat="server" CssClass="form-control" TextMode="Number"
-                            min="0" placeholder="0" onchange="recalcConsumosTeoricos()"></asp:TextBox>
+                            min="0" placeholder="0" onchange="actualizarTotalProd()"></asp:TextBox>
                     </div>
                     <div class="col-md-4">
                         <label class="font-weight-bold">Cantidad rechazo</label>
                         <asp:TextBox ID="txtCantRechazo" runat="server" CssClass="form-control" TextMode="Number"
-                            min="0" placeholder="0" onchange="recalcConsumosTeoricos()"></asp:TextBox>
+                            min="0" placeholder="0" onchange="actualizarTotalProd()"></asp:TextBox>
                     </div>
                     <div class="col-md-4">
                         <label class="font-weight-bold">Total producido</label>
@@ -342,9 +342,6 @@
                 <h6 class="text-primary font-weight-bold mt-3 mb-2">Consumo de Materiales</h6>
                 <asp:Panel ID="pnlConsumos" runat="server">
                     <div class="d-flex align-items-center flex-wrap mb-2" style="gap:.6rem;">
-                        <span id="spanProgresoConsumos" class="badge badge-secondary" style="font-size:.85rem;">
-                            0 de 0 materiales capturados
-                        </span>
                         <input type="text" id="txtFiltroConsumo"
                                class="form-control form-control-sm"
                                placeholder="Buscar por código o nombre de material..."
@@ -358,11 +355,8 @@
                                 <tr>
                                     <th>Material</th>
                                     <th>Unidad base</th>
-                                    <th>Unidad captura</th>
-                                    <th>Rango Mín</th>
-                                    <th>Rango Máx</th>
-                                    <th>Consumo Real</th>
-                                    <th>Stock Actual</th>
+                                    <th class="text-right">Consumo a descontar</th>
+                                    <th class="text-right">Stock Actual</th>
                                 </tr>
                             </thead>
                             <tbody>
@@ -372,42 +366,14 @@
                                         <tr>
                                             <td>
                                                 <%# Eval("MaterialCodigo") %> - <%# Eval("MaterialNombre") %>
-                                                <input type="hidden" name="matID"       value='<%# Eval("MaterialID") %>' />
-                                                <input type="hidden" name="cantMin"     value='<%# Eval("CantidadMin") %>' />
-                                                <input type="hidden" name="cantMax"     value='<%# Eval("CantidadMax") %>' />
-                                                <input type="hidden" name="cantMinCap"  value='<%# Eval("CantMinCap") %>' />
-                                                <input type="hidden" name="cantMaxCap"  value='<%# Eval("CantMaxCap") %>' />
-                                                <input type="hidden" name="unidCapTxt"  value='<%# Eval("UnidadCapTexto") %>' />
+                                                <input type="hidden" name="matID" value='<%# Eval("MaterialID") %>' />
                                             </td>
                                             <td><%# Eval("Unidad") %></td>
-                                            <td>
-                                                <asp:DropDownList ID="ddlUnidadConsumo" runat="server"
-                                                    CssClass="form-control form-control-sm">
-                                                </asp:DropDownList>
-                                            </td>
-                                            <td class="text-right teorico-min">
-                                                <strong><%# Eval("TeoricoMinCap", "{0:0.####}") %></strong>
+                                            <td class="text-right consumo-cell"
+                                                data-percap='<%# Eval("CantConsumoCapturada", "{0:0.####}") %>'
+                                                data-unid='<%# Eval("UnidadCapTexto") %>'>
+                                                <strong class="consumo-total">0</strong>
                                                 <span class="text-muted" style="font-size:.8rem;"> <%# Eval("UnidadCapTexto") %></span>
-                                            </td>
-                                            <td class="text-right teorico-max">
-                                                <strong><%# Eval("TeoricoMaxCap", "{0:0.####}") %></strong>
-                                                <span class="text-muted" style="font-size:.8rem;"> <%# Eval("UnidadCapTexto") %></span>
-                                            </td>
-                                            <td>
-                                                <input type="number" name="consumoReal" step="0.01" min="0"
-                                                    class="form-control form-control-sm consumo-input"
-                                                    value='<%# Eval("ConsumoReal", "{0:0.##}") %>'
-                                                    data-stock='<%# Eval("StockActual") %>'
-                                                    onchange="validarConsumoStock(this)" />
-                                                <%-- Factor de la unidad pre-seleccionada, puesto por el servidor con InvariantCulture.
-                                                     JS lo lee con parseFloat() — no depende de texto de opciones ni de atributos
-                                                     data-* en <option> que WebForms no siempre emite.
-                                                     El onchange del DDL actualiza este valor cuando el usuario cambia la unidad. --%>
-                                                <input type="hidden" class="factor-bom-input"
-                                                       value='<%# Eval("FactorBOMStr") %>' />
-                                                <small class="text-muted consumo-hint" style="font-size:.75rem;">
-                                                    Ingresar en: <span class="consumo-hint-unid">—</span>
-                                                </small>
                                             </td>
                                             <td class="text-right stock-cell <%# Convert.ToDecimal(Eval("StockActual")) > 0 ? "stock-ok" : "stock-warn" %>">
                                                 <%# Eval("StockActual", "{0:N2}") %>
@@ -418,9 +384,6 @@
                                 </asp:Repeater>
                             </tbody>
                         </table>
-                    </div>
-                    <div id="divAlertaStock" class="alert alert-warning d-none">
-                        <i class="fas fa-exclamation-triangle"></i> Algunos consumos exceden el stock disponible.
                     </div>
                 </asp:Panel>
                 <asp:Label ID="lblSinConsumos" runat="server" Text="Seleccione un producto para cargar los consumos de materiales."
@@ -437,8 +400,7 @@
                 <asp:Button ID="btnGuardarBorrador" runat="server" Text="Guardar Borrador"
                     CssClass="btn btn-warning" OnClick="btnGuardarBorrador_Click" />
                 <asp:Button ID="btnGuardar" runat="server" Text="Confirmar Producción"
-                    CssClass="btn btn-primary" OnClick="btnGuardar_Click"
-                    OnClientClick="return validarAntesDeGuardar();" />
+                    CssClass="btn btn-primary" OnClick="btnGuardar_Click" />
             </div>
         </div>
     </div>
@@ -500,9 +462,7 @@
                             <thead class="bg-light">
                                 <tr>
                                     <th>Material</th>
-                                    <th class="text-right">Rango</th>
-                                    <th class="text-right">Real</th>
-                                    <th class="text-right">Desviación</th>
+                                    <th class="text-right">Consumo real</th>
                                 </tr>
                             </thead>
                             <tbody id="tbodyConsumoModal"></tbody>
@@ -560,134 +520,19 @@
         if (span) span.textContent = q ? (visibles + ' resultado(s)') : '';
     }
 
-    // Actualizar badge de progreso de captura de consumos
-    function actualizarProgreso() {
-        var inputs = document.querySelectorAll('#tblConsumos .consumo-input');
-        var total = inputs.length;
-        var capturados = 0;
-        inputs.forEach(function (inp) {
-            var v = inp.value.trim();
-            if (v !== '' && parseFloat(v) !== 0) capturados++;
-        });
-        var badge = document.getElementById('spanProgresoConsumos');
-        if (!badge) return;
-        badge.textContent = capturados + ' de ' + total + ' materiales capturados';
-        badge.className = (capturados === total && total > 0)
-            ? 'badge badge-success'
-            : 'badge badge-secondary';
-        badge.style.fontSize = '.85rem';
-    }
-
-    // Delegación global: detecta cambios en .consumo-input aunque se rendericen después del postback
-    document.addEventListener('input', function (e) {
-        if (e.target.classList.contains('consumo-input')) actualizarProgreso();
-    });
-
-    // Recalcular teóricos con la cantidad total
-    function recalcConsumosTeoricos() {
-        var buena = parseInt(document.getElementById('<%= txtCantBuena.ClientID %>').value) || 0;
+    // Actualizar el total producido y recalcular consumos a descontar
+    function actualizarTotalProd() {
+        var buena   = parseInt(document.getElementById('<%= txtCantBuena.ClientID %>').value) || 0;
         var rechazo = parseInt(document.getElementById('<%= txtCantRechazo.ClientID %>').value) || 0;
-        var total = buena + rechazo;
+        var total   = buena + rechazo;
         document.getElementById('divTotalProd').innerText = total;
 
-        var rows = document.querySelectorAll('#tblConsumos tbody tr');
-        rows.forEach(function (row) {
-            var cantMinCap = parseFloat(row.querySelector('input[name="cantMinCap"]').value) || 0;
-            var cantMaxCap = parseFloat(row.querySelector('input[name="cantMaxCap"]').value) || 0;
-            var unidTxt    = (row.querySelector('input[name="unidCapTxt"]').value || '').trim();
-            var sufijo     = unidTxt ? ' <span class="text-muted" style="font-size:.8rem;">' + unidTxt + '</span>' : '';
-            row.querySelector('.teorico-min').innerHTML = '<strong>' + (cantMinCap * total).toFixed(4).replace(/\.?0+$/, '') + '</strong>' + sufijo;
-            row.querySelector('.teorico-max').innerHTML = '<strong>' + (cantMaxCap * total).toFixed(4).replace(/\.?0+$/, '') + '</strong>' + sufijo;
+        document.querySelectorAll('#tblConsumos tbody .consumo-cell').forEach(function (td) {
+            var perCap = parseFloat(td.dataset.percap) || 0;
+            var resultado = perCap * total;
+            var txt = resultado === 0 ? '0' : resultado.toFixed(4).replace(/\.?0+$/, '');
+            td.querySelector('.consumo-total').textContent = txt;
         });
-    }
-
-    // Confirmar si todos los consumos reales están en cero antes de guardar
-    function validarAntesDeGuardar() {
-        var hdnConfirmar = document.getElementById('<%= hdnConfirmarSinConsumos.ClientID %>');
-
-        // Si el usuario ya confirmó en el diálogo anterior, permitir el postback y limpiar la bandera
-        if (hdnConfirmar.value === '1') {
-            hdnConfirmar.value = '';
-            return true;
-        }
-
-        var inputs = document.querySelectorAll('input.consumo-input');
-        if (inputs.length === 0) return true; // Sin materiales → dejar pasar
-
-        var todosEnCero = true;
-        inputs.forEach(function (inp) {
-            if ((parseFloat(inp.value) || 0) > 0) todosEnCero = false;
-        });
-
-        if (todosEnCero) {
-            Swal.fire({
-                title: '¿Registrar sin consumos de materiales?',
-                text: 'No capturaste la cantidad real de ningún material. El sistema no descontará materiales del inventario. ¿Deseas continuar de todas formas?',
-                icon: 'warning',
-                showCancelButton: true,
-                confirmButtonColor: '#e08e0b',
-                cancelButtonColor: '#6c757d',
-                confirmButtonText: '<i class="fas fa-check mr-1"></i> Sí, registrar así',
-                cancelButtonText: 'Cancelar, voy a capturar'
-            }).then(function (result) {
-                if (result.isConfirmed) {
-                    hdnConfirmar.value = '1';
-                    document.getElementById('<%= btnGuardar.ClientID %>').click();
-                }
-            });
-            return false; // Detener postback hasta que el usuario confirme
-        }
-
-        return true;
-    }
-
-    // Actualizar hint de unidad debajo del input de consumo real
-    function actualizarHint(ddl) {
-        var row  = ddl.closest('tr');
-        var hint = row.querySelector('.consumo-hint-unid');
-        if (!hint || ddl.selectedIndex < 0) return;
-        var txt = ddl.options[ddl.selectedIndex].text
-            .replace(/\s*\[×[^\]]+\]/, '')   // quita "[×0.001000]"
-            .replace(/\s*—\s*base\s*$/i, '') // quita "— base"
-            .trim();
-        hint.textContent = txt || '—';
-    }
-
-    // Lee el factor de conversión del <input hidden class="factor-bom-input"> de la fila.
-    // El servidor lo escribe con InvariantCulture (siempre punto decimal) al hacer DataBind,
-    // y el onchange del DDL lo actualiza cuando el usuario cambia la unidad.
-    // Este enfoque no depende de texto de <option>, atributos data-* en <option>
-    // (que WebForms no siempre emite), ni de regex sujeto a encoding/cultura.
-    function getFactorFromRow(row) {
-        if (!row) return 1;
-        var fi = row.querySelector('input.factor-bom-input');
-        return fi ? (parseFloat(fi.value) || 1) : 1;
-    }
-
-    // Validar consumo vs stock aplicando el factor de conversión de la fila
-    function validarConsumoStock(input) {
-        var row         = input.closest('tr');
-        var factor      = getFactorFromRow(row);
-        var stock       = parseFloat(input.dataset.stock) || 0;
-        var consumo     = parseFloat(input.value) || 0;
-        var consumoBase = consumo * factor;   // convertir a unidad base antes de comparar
-
-        var cell = row.querySelector('.stock-cell');
-        if (consumoBase > stock) {
-            cell.className = 'text-right stock-cell stock-warn';
-            document.getElementById('divAlertaStock').classList.remove('d-none');
-        } else {
-            cell.className = 'text-right stock-cell stock-ok';
-            // Verificar si queda alguna fila con alerta
-            var hayAlerta = false;
-            document.querySelectorAll('.consumo-input').forEach(function (inp) {
-                var r2 = inp.closest('tr');
-                if ((parseFloat(inp.value) || 0) * getFactorFromRow(r2) >
-                    (parseFloat(inp.dataset.stock) || 0))
-                    hayAlerta = true;
-            });
-            if (!hayAlerta) document.getElementById('divAlertaStock').classList.add('d-none');
-        }
     }
 
 
@@ -723,13 +568,15 @@
     }
 
     // Resetear estado de borrador cuando el modal se cierra sin postback
-    $('#modalRegistrar').on('hidden.bs.modal', function () {
-        var hdnID  = document.getElementById('<%= hdnProduccionID.ClientID %>');
-        var hdnMod = document.getElementById('<%= hdnModoEdicion.ClientID %>');
-        var titulo = document.querySelector('#modalRegistrar .modal-title');
-        if (hdnID)  hdnID.value  = '0';
-        if (hdnMod) hdnMod.value = '';
-        if (titulo) titulo.textContent = 'Registrar Producción';
+    window.addEventListener('load', function () {
+        $('#modalRegistrar').on('hidden.bs.modal', function () {
+            var hdnID  = document.getElementById('<%= hdnProduccionID.ClientID %>');
+            var hdnMod = document.getElementById('<%= hdnModoEdicion.ClientID %>');
+            var titulo = document.querySelector('#modalRegistrar .modal-title');
+            if (hdnID)  hdnID.value  = '0';
+            if (hdnMod) hdnMod.value = '';
+            if (titulo) titulo.textContent = 'Registrar Producción';
+        });
     });
 
     // ══ Modal de consumos — carga lazy vía AJAX ══════════════════════════
@@ -777,28 +624,14 @@
     function buildConsumoRow(c) {
         var col1 = '<td style="white-space:nowrap">' + escHtml(c.MaterialCodigo) + ' - ' + escHtml(c.MaterialNombre) + '</td>';
 
-        var rango = c.TieneCaptura
-            ? fmtN0(c.TeoMinCap) + '–' + fmtN0(c.TeoMaxCap) + ' <small>' + escHtml(c.UnidadCap) + '</small>'
-            : fmtN0(c.TeoMin)    + '–' + fmtN0(c.TeoMax)    + ' <small>' + escHtml(c.UnidadClave) + '</small>';
-        var col2 = '<td class="text-right text-muted" style="white-space:nowrap">' + rango + '</td>';
+        var realStr = c.TieneCaptura
+            ? fmtN2(c.RealCap) + ' <small class="text-muted">' + escHtml(c.UnidadCap) + '</small>'
+            : fmtN2(c.Real)    + ' <small class="text-muted">' + escHtml(c.UnidadClave) + '</small>';
+        var col2 = '<td class="text-right" style="white-space:nowrap">' + realStr + '</td>';
 
-        var realCls = c.EsMerma ? ' text-danger font-weight-bold' : '';
-        var col3 = '<td class="text-right' + realCls + '" style="white-space:nowrap">'
-                 + fmtN2(c.Real) + ' <small class="text-muted">' + escHtml(c.UnidadClave) + '</small></td>';
-
-        var desv;
-        if (c.Excedente > 0)
-            desv = '<span class="text-danger font-weight-bold">+' + fmtN2(c.Excedente) + ' <small>' + escHtml(c.UnidadClave) + '</small></span>';
-        else if (c.Deficit > 0)
-            desv = '<span class="text-warning font-weight-bold">−' + fmtN2(c.Deficit) + ' <small>' + escHtml(c.UnidadClave) + '</small></span>';
-        else
-            desv = '<span class="text-success">—</span>';
-        var col4 = '<td class="text-right" style="white-space:nowrap">' + desv + '</td>';
-
-        return '<tr>' + col1 + col2 + col3 + col4 + '</tr>';
+        return '<tr>' + col1 + col2 + '</tr>';
     }
 
-    function fmtN0(n) { return Number(n).toLocaleString('es-MX', { minimumFractionDigits: 0, maximumFractionDigits: 0 }); }
     function fmtN2(n) { return Number(n).toLocaleString('es-MX', { minimumFractionDigits: 2, maximumFractionDigits: 2 }); }
     function escHtml(s) {
         if (!s) return '';

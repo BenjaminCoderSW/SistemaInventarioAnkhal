@@ -303,22 +303,13 @@ namespace GrupoAnkhalInventario
         protected global::System.Web.UI.WebControls.HiddenField hdnCompMaterialID;
 
         /// <summary>
-        /// Control hdnCompCantMin.
+        /// Control hdnCompCantConsumo.
         /// </summary>
         /// <remarks>
         /// Campo generado automáticamente.
         /// Para modificarlo, mueva la declaración del campo del archivo del diseñador al archivo de código subyacente.
         /// </remarks>
-        protected global::System.Web.UI.WebControls.HiddenField hdnCompCantMin;
-
-        /// <summary>
-        /// Control hdnCompCantMax.
-        /// </summary>
-        /// <remarks>
-        /// Campo generado automáticamente.
-        /// Para modificarlo, mueva la declaración del campo del archivo del diseñador al archivo de código subyacente.
-        /// </remarks>
-        protected global::System.Web.UI.WebControls.HiddenField hdnCompCantMax;
+        protected global::System.Web.UI.WebControls.HiddenField hdnCompCantConsumo;
 
         /// <summary>
         /// Control hdnCompNotas.

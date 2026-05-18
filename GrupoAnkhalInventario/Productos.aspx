@@ -376,8 +376,7 @@
             <thead>
               <tr>
                 <th>Material</th>
-                <th>Rango Mín</th>
-                <th>Rango Máx</th>
+                <th>Consumo por unidad</th>
                 <th>Notas</th>
                 <th style="width:80px;">Acción</th>
               </tr>
@@ -420,10 +419,10 @@
         <h6 style="color:#003366;font-weight:600;"><i class="fas fa-plus-circle"></i> Agregar componente</h6>
         <small class="text-muted d-block mb-2" style="font-size:.8rem;">
           <i class="fas fa-info-circle text-info"></i>
-          Define cuánto de cada material se debe consumir al fabricar <strong>una unidad</strong> del producto (rango mínimo y máximo esperado).
+          Define cuánto de cada material se consume al fabricar <strong>una unidad</strong> del producto.
         </small>
         <div class="row align-items-end">
-          <div class="col-md-3">
+          <div class="col-md-4">
             <label style="font-size:.84rem;">Material <span style="color:red">*</span></label>
             <select id="ddlMaterialComp" class="form-control form-control-sm" onchange="onMaterialCompChange()">
               <option value="">-- Seleccione --</option>
@@ -436,14 +435,10 @@
             </select>
           </div>
           <div class="col-md-2">
-            <label style="font-size:.84rem;">Rango Mín <span style="color:red">*</span></label>
-            <input type="number" id="txtCantMinComp" class="form-control form-control-sm" value="0" min="0" step="0.01" />
+            <label style="font-size:.84rem;">Consumo <span style="color:red">*</span></label>
+            <input type="number" id="txtCantConsumoComp" class="form-control form-control-sm" value="0" min="0" step="0.01" />
           </div>
-          <div class="col-md-2">
-            <label style="font-size:.84rem;">Rango Máx <span style="color:red">*</span></label>
-            <input type="number" id="txtCantMaxComp" class="form-control form-control-sm" value="0" min="0" step="0.01" />
-          </div>
-          <div class="col-md-2">
+          <div class="col-md-3">
             <label style="font-size:.84rem;">Notas</label>
             <input type="text" id="txtNotasComp" class="form-control form-control-sm" placeholder="Opcional" maxlength="200" />
           </div>
@@ -454,15 +449,14 @@
           </div>
         </div>
 
-        <asp:HiddenField ID="hdnCompProductoID"   runat="server" Value="" />
-        <asp:HiddenField ID="hdnCompAccion"       runat="server" Value="" />
-        <asp:HiddenField ID="hdnCompMaterialID"   runat="server" Value="" />
-        <asp:HiddenField ID="hdnCompCantMin"      runat="server" Value="" />
-        <asp:HiddenField ID="hdnCompCantMax"      runat="server" Value="" />
-        <asp:HiddenField ID="hdnCompNotas"        runat="server" Value="" />
-        <asp:HiddenField ID="hdnCompPMID"         runat="server" Value="" />
-        <asp:HiddenField ID="hdnCompConversionID" runat="server" Value="" />
-        <asp:HiddenField ID="hdnProductoCloneID"  runat="server" Value="" />
+        <asp:HiddenField ID="hdnCompProductoID"    runat="server" Value="" />
+        <asp:HiddenField ID="hdnCompAccion"        runat="server" Value="" />
+        <asp:HiddenField ID="hdnCompMaterialID"    runat="server" Value="" />
+        <asp:HiddenField ID="hdnCompCantConsumo"   runat="server" Value="" />
+        <asp:HiddenField ID="hdnCompNotas"         runat="server" Value="" />
+        <asp:HiddenField ID="hdnCompPMID"          runat="server" Value="" />
+        <asp:HiddenField ID="hdnCompConversionID"  runat="server" Value="" />
+        <asp:HiddenField ID="hdnProductoCloneID"   runat="server" Value="" />
 
       </div>
       <div class="modal-footer">
@@ -651,8 +645,7 @@
 
         renderTablaComp();
         document.getElementById('spanNombreProducto').innerText = descripcion || '';
-        document.getElementById('txtCantMinComp').value = '0';
-        document.getElementById('txtCantMaxComp').value = '0';
+        document.getElementById('txtCantConsumoComp').value = '0';
         document.getElementById('txtNotasComp').value = '';
         document.getElementById('ddlMaterialComp').value = '';
 
@@ -715,26 +708,22 @@
 
         pag.forEach(function (c) {
             var abrev = abrevUnidad(c.unidad);
-            var cantMinDisplay, cantMaxDisplay;
-            if (c.conversionID && c.cantMinCap != null) {
+            var consumoDisplay;
+            if (c.conversionID && c.cantConsumoCap != null) {
                 var convs   = window._conversionesMat && window._conversionesMat[c.materialID.toString()];
                 var conv    = convs && convs.find(function (op) { return String(op.val) === String(c.conversionID); });
                 var unidTxt = conv ? conv.txt.replace(/\s*\[.*?\]\s*$/, '').trim() : '';
-                cantMinDisplay = '<small class="text-muted d-block">' + escHtml(String(c.cantMinCap)) + ' ' + escHtml(unidTxt) + '</small>' +
-                                 '<strong>' + escHtml(String(c.cantMin)) + '</strong> <span class="text-muted">' + escHtml(abrev) + '</span>';
-                cantMaxDisplay = '<small class="text-muted d-block">' + escHtml(String(c.cantMaxCap)) + ' ' + escHtml(unidTxt) + '</small>' +
-                                 '<strong>' + escHtml(String(c.cantMax)) + '</strong> <span class="text-muted">' + escHtml(abrev) + '</span>';
+                consumoDisplay = '<small class="text-muted d-block">' + escHtml(String(c.cantConsumoCap)) + ' ' + escHtml(unidTxt) + '</small>' +
+                                 '<strong>' + escHtml(String(c.cantConsumo)) + '</strong> <span class="text-muted">' + escHtml(abrev) + '</span>';
             } else {
-                cantMinDisplay = '<strong>' + escHtml(String(c.cantMin)) + '</strong> <span class="text-muted">' + escHtml(abrev) + '</span>';
-                cantMaxDisplay = '<strong>' + escHtml(String(c.cantMax)) + '</strong> <span class="text-muted">' + escHtml(abrev) + '</span>';
+                consumoDisplay = '<strong>' + escHtml(String(c.cantConsumo)) + '</strong> <span class="text-muted">' + escHtml(abrev) + '</span>';
             }
 
             var tr = document.createElement('tr');
             tr.innerHTML =
                 '<td><strong>[' + escHtml(c.materialCodigo) + '] ' + escHtml(c.materialNombre) + '</strong><br><small class="text-muted">' + escHtml(c.unidad) + '</small></td>' +
-                '<td>' + cantMinDisplay + '<input type="number" class="form-control form-control-sm comp-edit-row mt-1" value="' + c.cantMin + '" min="0" step="0.01" id="cmin_' + c.pmID + '" /></td>' +
-                '<td>' + cantMaxDisplay + '<input type="number" class="form-control form-control-sm comp-edit-row mt-1" value="' + c.cantMax + '" min="0" step="0.01" id="cmax_' + c.pmID + '" /></td>' +
-                '<td><input type="text"   class="form-control form-control-sm comp-edit-row" value="' + escHtml(c.notas) + '" maxlength="200" id="cnot_' + c.pmID + '" /></td>' +
+                '<td>' + consumoDisplay + '<input type="number" class="form-control form-control-sm comp-edit-row mt-1" value="' + c.cantConsumo + '" min="0" step="0.01" id="ccons_' + c.pmID + '" /></td>' +
+                '<td><input type="text" class="form-control form-control-sm comp-edit-row" value="' + escHtml(c.notas) + '" maxlength="200" id="cnot_' + c.pmID + '" /></td>' +
                 '<td class="text-center">' +
                 '<button type="button" class="btn btn-success btn-xs btn-sm mr-1" onclick="guardarCompExistente(' + c.pmID + ', ' + c.materialID + ')" title="Guardar"><i class="fas fa-save"></i></button>' +
                 '<button type="button" class="btn btn-danger  btn-xs btn-sm"      onclick="eliminarComp(' + c.pmID + ')" title="Eliminar"><i class="fas fa-trash"></i></button>' +
@@ -762,25 +751,14 @@
     function compNextPage() { _compModalPage++; renderTablaComp(); }
 
     function guardarCompExistente(pmID, materialID) {
-        var cantMin = parseFloat(document.getElementById('cmin_' + pmID).value) || 0;
-        var cantMax = parseFloat(document.getElementById('cmax_' + pmID).value) || 0;
+        var cantConsumo = parseFloat(document.getElementById('ccons_' + pmID).value) || 0;
         var notas = document.getElementById('cnot_' + pmID).value;
 
-        if (cantMax < cantMin) {
-            Swal.fire({
-                icon: 'warning', title: 'Rango inválido',
-                text: 'La cantidad máxima debe ser ≥ a la mínima.', confirmButtonColor: '#003366'
-            })
-                .then(function () { $('#modalComponentes').modal('show'); });
-            return;
-        }
-
-        document.getElementById('<%= hdnCompAccion.ClientID %>').value       = 'UPDATE';
-        document.getElementById('<%= hdnCompPMID.ClientID %>').value          = pmID;
-        document.getElementById('<%= hdnCompCantMin.ClientID %>').value       = cantMin;
-        document.getElementById('<%= hdnCompCantMax.ClientID %>').value       = cantMax;
-        document.getElementById('<%= hdnCompNotas.ClientID %>').value         = notas;
-        document.getElementById('<%= hdnCompConversionID.ClientID %>').value  = '0'; // edición inline = unidad base
+        document.getElementById('<%= hdnCompAccion.ClientID %>').value          = 'UPDATE';
+        document.getElementById('<%= hdnCompPMID.ClientID %>').value             = pmID;
+        document.getElementById('<%= hdnCompCantConsumo.ClientID %>').value      = cantConsumo;
+        document.getElementById('<%= hdnCompNotas.ClientID %>').value            = notas;
+        document.getElementById('<%= hdnCompConversionID.ClientID %>').value     = '0'; // edición inline = unidad base
         __doPostBack('<%= btnGuardarComponentes.UniqueID %>', '');
     }
 
@@ -800,22 +778,15 @@
     }
 
     function agregarComponenteModal() {
-        var matID   = document.getElementById('ddlMaterialComp').value;
-        var cantMin = parseFloat(document.getElementById('txtCantMinComp').value) || 0;
-        var cantMax = parseFloat(document.getElementById('txtCantMaxComp').value) || 0;
-        var notas   = document.getElementById('txtNotasComp').value;
-        var ddlU    = document.getElementById('ddlUnidadComp');
-        var convID  = ddlU ? ddlU.value : '';   // '' = unidad base, otro = ConversionID
+        var matID       = document.getElementById('ddlMaterialComp').value;
+        var cantConsumo = parseFloat(document.getElementById('txtCantConsumoComp').value) || 0;
+        var notas       = document.getElementById('txtNotasComp').value;
+        var ddlU        = document.getElementById('ddlUnidadComp');
+        var convID      = ddlU ? ddlU.value : '';   // '' = unidad base, otro = ConversionID
 
         if (!matID) {
             Swal.fire({ icon: 'warning', title: 'Material requerido',
                 text: 'Seleccione un material.', confirmButtonColor: '#003366' })
-                .then(function () { $('#modalComponentes').modal('show'); });
-            return;
-        }
-        if (cantMax < cantMin) {
-            Swal.fire({ icon: 'warning', title: 'Rango inválido',
-                text: 'La cantidad máxima debe ser ≥ a la mínima.', confirmButtonColor: '#003366' })
                 .then(function () { $('#modalComponentes').modal('show'); });
             return;
         }
@@ -826,12 +797,11 @@
         }).length;
 
         function doInsert() {
-            document.getElementById('<%= hdnCompAccion.ClientID %>').value        = 'INSERT';
-            document.getElementById('<%= hdnCompMaterialID.ClientID %>').value    = matID;
-            document.getElementById('<%= hdnCompCantMin.ClientID %>').value       = cantMin;
-            document.getElementById('<%= hdnCompCantMax.ClientID %>').value       = cantMax;
-            document.getElementById('<%= hdnCompNotas.ClientID %>').value         = notas;
-            document.getElementById('<%= hdnCompConversionID.ClientID %>').value  = convID;
+            document.getElementById('<%= hdnCompAccion.ClientID %>').value           = 'INSERT';
+            document.getElementById('<%= hdnCompMaterialID.ClientID %>').value       = matID;
+            document.getElementById('<%= hdnCompCantConsumo.ClientID %>').value      = cantConsumo;
+            document.getElementById('<%= hdnCompNotas.ClientID %>').value            = notas;
+            document.getElementById('<%= hdnCompConversionID.ClientID %>').value     = convID;
             __doPostBack('<%= btnGuardarComponentes.UniqueID %>', '');
         }
 

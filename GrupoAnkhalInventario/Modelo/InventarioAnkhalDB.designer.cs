@@ -1882,20 +1882,12 @@ namespace GrupoAnkhalInventario.Modelo
 		
 		private decimal _CantidadReal;
 		
-		private decimal _CantidadTeoricaMin;
-		
-		private decimal _CantidadTeoricaMax;
-		
-		private bool _EsMerma;
-		
+
 		private string _Notas;
 		
 		private System.Nullable<decimal> _CantidadRealCap;
 		
-		private System.Nullable<decimal> _CantidadTeoMinCap;
-		
-		private System.Nullable<decimal> _CantidadTeoMaxCap;
-		
+
 		private string _UnidadClaveCap;
 
 		private string _UnidadSeleccionVal;
@@ -1916,20 +1908,12 @@ namespace GrupoAnkhalInventario.Modelo
     partial void OnMaterialIDChanged();
     partial void OnCantidadRealChanging(decimal value);
     partial void OnCantidadRealChanged();
-    partial void OnCantidadTeoricaMinChanging(decimal value);
-    partial void OnCantidadTeoricaMinChanged();
-    partial void OnCantidadTeoricaMaxChanging(decimal value);
-    partial void OnCantidadTeoricaMaxChanged();
-    partial void OnEsMermaChanging(bool value);
-    partial void OnEsMermaChanged();
+
     partial void OnNotasChanging(string value);
     partial void OnNotasChanged();
     partial void OnCantidadRealCapChanging(System.Nullable<decimal> value);
     partial void OnCantidadRealCapChanged();
-    partial void OnCantidadTeoMinCapChanging(System.Nullable<decimal> value);
-    partial void OnCantidadTeoMinCapChanged();
-    partial void OnCantidadTeoMaxCapChanging(System.Nullable<decimal> value);
-    partial void OnCantidadTeoMaxCapChanged();
+
     partial void OnUnidadClaveCapChanging(string value);
     partial void OnUnidadClaveCapChanged();
     partial void OnUnidadSeleccionValChanging(string value);
@@ -2031,66 +2015,6 @@ namespace GrupoAnkhalInventario.Modelo
 			}
 		}
 		
-		[global::System.Data.Linq.Mapping.ColumnAttribute(Storage="_CantidadTeoricaMin", DbType="Decimal(12,4) NOT NULL")]
-		public decimal CantidadTeoricaMin
-		{
-			get
-			{
-				return this._CantidadTeoricaMin;
-			}
-			set
-			{
-				if ((this._CantidadTeoricaMin != value))
-				{
-					this.OnCantidadTeoricaMinChanging(value);
-					this.SendPropertyChanging();
-					this._CantidadTeoricaMin = value;
-					this.SendPropertyChanged("CantidadTeoricaMin");
-					this.OnCantidadTeoricaMinChanged();
-				}
-			}
-		}
-		
-		[global::System.Data.Linq.Mapping.ColumnAttribute(Storage="_CantidadTeoricaMax", DbType="Decimal(12,4) NOT NULL")]
-		public decimal CantidadTeoricaMax
-		{
-			get
-			{
-				return this._CantidadTeoricaMax;
-			}
-			set
-			{
-				if ((this._CantidadTeoricaMax != value))
-				{
-					this.OnCantidadTeoricaMaxChanging(value);
-					this.SendPropertyChanging();
-					this._CantidadTeoricaMax = value;
-					this.SendPropertyChanged("CantidadTeoricaMax");
-					this.OnCantidadTeoricaMaxChanged();
-				}
-			}
-		}
-		
-		[global::System.Data.Linq.Mapping.ColumnAttribute(Storage="_EsMerma", DbType="Bit NOT NULL")]
-		public bool EsMerma
-		{
-			get
-			{
-				return this._EsMerma;
-			}
-			set
-			{
-				if ((this._EsMerma != value))
-				{
-					this.OnEsMermaChanging(value);
-					this.SendPropertyChanging();
-					this._EsMerma = value;
-					this.SendPropertyChanged("EsMerma");
-					this.OnEsMermaChanged();
-				}
-			}
-		}
-		
 		[global::System.Data.Linq.Mapping.ColumnAttribute(Storage="_Notas", DbType="VarChar(200)")]
 		public string Notas
 		{
@@ -2127,46 +2051,6 @@ namespace GrupoAnkhalInventario.Modelo
 					this._CantidadRealCap = value;
 					this.SendPropertyChanged("CantidadRealCap");
 					this.OnCantidadRealCapChanged();
-				}
-			}
-		}
-		
-		[global::System.Data.Linq.Mapping.ColumnAttribute(Storage="_CantidadTeoMinCap", DbType="Decimal(12,4)")]
-		public System.Nullable<decimal> CantidadTeoMinCap
-		{
-			get
-			{
-				return this._CantidadTeoMinCap;
-			}
-			set
-			{
-				if ((this._CantidadTeoMinCap != value))
-				{
-					this.OnCantidadTeoMinCapChanging(value);
-					this.SendPropertyChanging();
-					this._CantidadTeoMinCap = value;
-					this.SendPropertyChanged("CantidadTeoMinCap");
-					this.OnCantidadTeoMinCapChanged();
-				}
-			}
-		}
-		
-		[global::System.Data.Linq.Mapping.ColumnAttribute(Storage="_CantidadTeoMaxCap", DbType="Decimal(12,4)")]
-		public System.Nullable<decimal> CantidadTeoMaxCap
-		{
-			get
-			{
-				return this._CantidadTeoMaxCap;
-			}
-			set
-			{
-				if ((this._CantidadTeoMaxCap != value))
-				{
-					this.OnCantidadTeoMaxCapChanging(value);
-					this.SendPropertyChanging();
-					this._CantidadTeoMaxCap = value;
-					this.SendPropertyChanged("CantidadTeoMaxCap");
-					this.OnCantidadTeoMaxCapChanged();
 				}
 			}
 		}
@@ -6702,18 +6586,15 @@ namespace GrupoAnkhalInventario.Modelo
 		
 		private int _MaterialID;
 		
-		private decimal _CantidadMin;
+		private decimal _CantidadConsumo;
 		
-		private decimal _CantidadMax;
+		private System.Nullable<decimal> _CantConsumoCapturada;
 		
 		private string _Notas;
 		
 		private System.Nullable<int> _ConversionID;
 		
-		private System.Nullable<decimal> _CantMinCapturada;
-		
-		private System.Nullable<decimal> _CantMaxCapturada;
-		
+
 		private bool _Activo;
 		
 		private EntityRef<ConversionesMaterial> _ConversionesMaterial;
@@ -6732,18 +6613,15 @@ namespace GrupoAnkhalInventario.Modelo
     partial void OnProductoIDChanged();
     partial void OnMaterialIDChanging(int value);
     partial void OnMaterialIDChanged();
-    partial void OnCantidadMinChanging(decimal value);
-    partial void OnCantidadMinChanged();
-    partial void OnCantidadMaxChanging(decimal value);
-    partial void OnCantidadMaxChanged();
+    partial void OnCantidadConsumoChanging(decimal value);
+    partial void OnCantidadConsumoChanged();
+    partial void OnCantConsumoCapturadaChanging(System.Nullable<decimal> value);
+    partial void OnCantConsumoCapturadaChanged();
     partial void OnNotasChanging(string value);
     partial void OnNotasChanged();
     partial void OnConversionIDChanging(System.Nullable<int> value);
     partial void OnConversionIDChanged();
-    partial void OnCantMinCapturadaChanging(System.Nullable<decimal> value);
-    partial void OnCantMinCapturadaChanged();
-    partial void OnCantMaxCapturadaChanging(System.Nullable<decimal> value);
-    partial void OnCantMaxCapturadaChanged();
+
     partial void OnActivoChanging(bool value);
     partial void OnActivoChanged();
     #endregion
@@ -6824,42 +6702,42 @@ namespace GrupoAnkhalInventario.Modelo
 			}
 		}
 		
-		[global::System.Data.Linq.Mapping.ColumnAttribute(Storage="_CantidadMin", DbType="Decimal(12,4) NOT NULL")]
-		public decimal CantidadMin
+		[global::System.Data.Linq.Mapping.ColumnAttribute(Storage="_CantidadConsumo", DbType="Decimal(12,4) NOT NULL")]
+		public decimal CantidadConsumo
 		{
 			get
 			{
-				return this._CantidadMin;
+				return this._CantidadConsumo;
 			}
 			set
 			{
-				if ((this._CantidadMin != value))
+				if ((this._CantidadConsumo != value))
 				{
-					this.OnCantidadMinChanging(value);
+					this.OnCantidadConsumoChanging(value);
 					this.SendPropertyChanging();
-					this._CantidadMin = value;
-					this.SendPropertyChanged("CantidadMin");
-					this.OnCantidadMinChanged();
+					this._CantidadConsumo = value;
+					this.SendPropertyChanged("CantidadConsumo");
+					this.OnCantidadConsumoChanged();
 				}
 			}
 		}
 		
-		[global::System.Data.Linq.Mapping.ColumnAttribute(Storage="_CantidadMax", DbType="Decimal(12,4) NOT NULL")]
-		public decimal CantidadMax
+		[global::System.Data.Linq.Mapping.ColumnAttribute(Storage="_CantConsumoCapturada", DbType="Decimal(12,4)")]
+		public System.Nullable<decimal> CantConsumoCapturada
 		{
 			get
 			{
-				return this._CantidadMax;
+				return this._CantConsumoCapturada;
 			}
 			set
 			{
-				if ((this._CantidadMax != value))
+				if ((this._CantConsumoCapturada != value))
 				{
-					this.OnCantidadMaxChanging(value);
+					this.OnCantConsumoCapturadaChanging(value);
 					this.SendPropertyChanging();
-					this._CantidadMax = value;
-					this.SendPropertyChanged("CantidadMax");
-					this.OnCantidadMaxChanged();
+					this._CantConsumoCapturada = value;
+					this.SendPropertyChanged("CantConsumoCapturada");
+					this.OnCantConsumoCapturadaChanged();
 				}
 			}
 		}
@@ -6904,46 +6782,6 @@ namespace GrupoAnkhalInventario.Modelo
 					this._ConversionID = value;
 					this.SendPropertyChanged("ConversionID");
 					this.OnConversionIDChanged();
-				}
-			}
-		}
-		
-		[global::System.Data.Linq.Mapping.ColumnAttribute(Storage="_CantMinCapturada", DbType="Decimal(12,4)")]
-		public System.Nullable<decimal> CantMinCapturada
-		{
-			get
-			{
-				return this._CantMinCapturada;
-			}
-			set
-			{
-				if ((this._CantMinCapturada != value))
-				{
-					this.OnCantMinCapturadaChanging(value);
-					this.SendPropertyChanging();
-					this._CantMinCapturada = value;
-					this.SendPropertyChanged("CantMinCapturada");
-					this.OnCantMinCapturadaChanged();
-				}
-			}
-		}
-		
-		[global::System.Data.Linq.Mapping.ColumnAttribute(Storage="_CantMaxCapturada", DbType="Decimal(12,4)")]
-		public System.Nullable<decimal> CantMaxCapturada
-		{
-			get
-			{
-				return this._CantMaxCapturada;
-			}
-			set
-			{
-				if ((this._CantMaxCapturada != value))
-				{
-					this.OnCantMaxCapturadaChanging(value);
-					this.SendPropertyChanging();
-					this._CantMaxCapturada = value;
-					this.SendPropertyChanged("CantMaxCapturada");
-					this.OnCantMaxCapturadaChanged();
 				}
 			}
 		}

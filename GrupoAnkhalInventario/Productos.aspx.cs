@@ -332,10 +332,8 @@ namespace GrupoAnkhalInventario
                     materialCodigo = mat.Codigo,
                     materialNombre = mat.Descripcion,
                     unidad         = mat.Unidad,
-                    cantMin        = pm.CantidadMin,
-                    cantMax        = pm.CantidadMax,
-                    cantMinCap     = pm.CantMinCapturada ?? pm.CantidadMin,
-                    cantMaxCap     = pm.CantMaxCapturada ?? pm.CantidadMax,
+                    cantConsumo    = pm.CantidadConsumo,
+                    cantConsumoCap = pm.CantConsumoCapturada ?? pm.CantidadConsumo,
                     conversionID   = pm.ConversionID ?? 0,
                     notas          = pm.Notas ?? ""
                 });
@@ -390,10 +388,8 @@ namespace GrupoAnkhalInventario
                         materialCodigo = mat.codigo,
                         materialNombre = mat.nombre,
                         unidad         = mat.unidad,
-                        cantMin        = pm.CantidadMin,
-                        cantMax        = pm.CantidadMax,
-                        cantMinCap     = pm.CantMinCapturada ?? pm.CantidadMin,
-                        cantMaxCap     = pm.CantMaxCapturada ?? pm.CantidadMax,
+                        cantConsumo    = pm.CantidadConsumo,
+                        cantConsumoCap = pm.CantConsumoCapturada ?? pm.CantidadConsumo,
                         conversionID   = pm.ConversionID ?? 0,
                         notas          = pm.Notas ?? ""
                     });
@@ -625,22 +621,18 @@ namespace GrupoAnkhalInventario
                     {
                         case "INSERT":
                             int matID = ParseInt(hdnCompMaterialID.Value);
-                            decimal cmiCap = ParseDec(hdnCompCantMin.Value);
-                            decimal cmaCap = ParseDec(hdnCompCantMax.Value);
-                            decimal cmiBase = cmiCap * factor;
-                            decimal cmaBase = cmaCap * factor;
+                            decimal consumoCap = ParseDec(hdnCompCantConsumo.Value);
+                            decimal consumoBase = consumoCap * factor;
 
                             var nuevo = new GrupoAnkhalInventario.Modelo.ProductoMateriales
                             {
-                                ProductoID       = prodID,
-                                MaterialID       = matID,
-                                CantidadMin      = cmiBase,
-                                CantidadMax      = cmaBase >= cmiBase ? cmaBase : cmiBase,
-                                CantMinCapturada = cmiCap,
-                                CantMaxCapturada = cmaCap,
-                                ConversionID     = convIDNullable,
-                                Notas            = hdnCompNotas.Value,
-                                Activo           = true
+                                ProductoID           = prodID,
+                                MaterialID           = matID,
+                                CantidadConsumo      = consumoBase,
+                                CantConsumoCapturada = consumoCap,
+                                ConversionID         = convIDNullable,
+                                Notas                = hdnCompNotas.Value,
+                                Activo               = true
                             };
                             db.ProductoMateriales.InsertOnSubmit(nuevo);
                             db.SubmitChanges();
@@ -651,16 +643,12 @@ namespace GrupoAnkhalInventario
                             int pmID = ParseInt(hdnCompPMID.Value);
                             var pm2 = db.ProductoMateriales.FirstOrDefault(x => x.ProductoMaterialID == pmID);
                             if (pm2 == null) break;
-                            decimal cmi2Cap = ParseDec(hdnCompCantMin.Value);
-                            decimal cma2Cap = ParseDec(hdnCompCantMax.Value);
-                            decimal cmi2Base = cmi2Cap * factor;
-                            decimal cma2Base = cma2Cap * factor;
-                            pm2.CantidadMin      = cmi2Base;
-                            pm2.CantidadMax      = cma2Base >= cmi2Base ? cma2Base : cmi2Base;
-                            pm2.CantMinCapturada = cmi2Cap;
-                            pm2.CantMaxCapturada = cma2Cap;
-                            pm2.ConversionID     = convIDNullable;
-                            pm2.Notas            = hdnCompNotas.Value;
+                            decimal consumo2Cap = ParseDec(hdnCompCantConsumo.Value);
+                            decimal consumo2Base = consumo2Cap * factor;
+                            pm2.CantidadConsumo      = consumo2Base;
+                            pm2.CantConsumoCapturada = consumo2Cap;
+                            pm2.ConversionID         = convIDNullable;
+                            pm2.Notas                = hdnCompNotas.Value;
                             db.SubmitChanges();
                             SetMsg("success", "¡Actualizado!", "Componente actualizado.", null, true);
                             break;
@@ -694,15 +682,13 @@ namespace GrupoAnkhalInventario
 
                                 db.ProductoMateriales.InsertOnSubmit(new GrupoAnkhalInventario.Modelo.ProductoMateriales
                                 {
-                                    ProductoID       = prodID,
-                                    MaterialID       = src.MaterialID,
-                                    CantidadMin      = src.CantidadMin,
-                                    CantidadMax      = src.CantidadMax,
-                                    CantMinCapturada = src.CantMinCapturada,
-                                    CantMaxCapturada = src.CantMaxCapturada,
-                                    ConversionID     = src.ConversionID,
-                                    Notas            = src.Notas,
-                                    Activo           = true
+                                    ProductoID           = prodID,
+                                    MaterialID           = src.MaterialID,
+                                    CantidadConsumo      = src.CantidadConsumo,
+                                    CantConsumoCapturada = src.CantConsumoCapturada,
+                                    ConversionID         = src.ConversionID,
+                                    Notas                = src.Notas,
+                                    Activo               = true
                                 });
                                 agregados++;
                             }
