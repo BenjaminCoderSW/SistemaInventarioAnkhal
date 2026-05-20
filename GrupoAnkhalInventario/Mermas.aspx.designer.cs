@@ -41,5 +41,9 @@ namespace GrupoAnkhalInventario {
         protected global::System.Web.UI.WebControls.TextBox txtConvObs;
 
         protected global::System.Web.UI.WebControls.Button btnGuardarConversion;
+
+        protected global::System.Web.UI.WebControls.HiddenField hdnOrigenUnidadVal;
+
+        protected global::System.Web.UI.WebControls.HiddenField hdnOrigenFactor;
     }
 }

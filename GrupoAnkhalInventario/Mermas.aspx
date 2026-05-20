@@ -68,7 +68,10 @@
                 <div class="num" style="font-size:1.8rem;">
                     <asp:Label ID="lblValorMerma" runat="server" Text="$0.00"></asp:Label>
                 </div>
-                <div class="lbl">Valor estimado en merma</div>
+                <div class="lbl">Valor estimado en merma
+                    <i class="fas fa-info-circle ml-1" style="font-size:.85rem; opacity:.8; cursor:default;"
+                       title="Fórmula: suma de (cantidad actual en merma × precio unitario del material) para todos los materiales con stock en merma mayor a 0. El precio unitario se configura en el catálogo de Materiales."></i>
+                </div>
             </div>
         </div>
     </div>
@@ -137,7 +140,7 @@
                         <asp:TemplateField HeaderText="Cant. en Merma">
                             <ItemTemplate>
                                 <span style="font-weight:700; color:#922b21; font-size:1.05rem;">
-                                    <%# string.Format("{0:N4}", Eval("CantidadActual")) %>
+                                    <%# string.Format("{0:0.####}", Eval("CantidadActual")) %>
                                 </span>
                             </ItemTemplate>
                         </asp:TemplateField>
@@ -176,10 +179,8 @@
                         </asp:TemplateField>
                         <asp:TemplateField HeaderText="Cant. Convertida">
                             <ItemTemplate>
-                                <span style="color:#922b21;font-weight:700;">
-                                    <%# string.Format("{0:N4}", Eval("CantidadOrigen")) %>
-                                </span>
-                                <small class="text-muted"><%# Eval("UnidadOrigen") %></small>
+                                <%# FormatCantidadHistorial(Eval("CantidadOrigen"), Eval("CantidadCapturadaOrigen"),
+                                        Eval("UnidadCapturaNombre"), Eval("UnidadOrigen"), Eval("TuvoConversion")) %>
                             </ItemTemplate>
                         </asp:TemplateField>
                         <asp:TemplateField HeaderText="Materiales Recuperados">
@@ -206,7 +207,9 @@
 
 <!-- ── HIDDEN FIELDS ── -->
 <asp:HiddenField ID="hdnMensajePendiente" runat="server" Value="" />
-<asp:HiddenField ID="hdnOutputsJson"     runat="server" Value="" />
+<asp:HiddenField ID="hdnOutputsJson"      runat="server" Value="" />
+<asp:HiddenField ID="hdnOrigenUnidadVal"  runat="server" Value="" />
+<asp:HiddenField ID="hdnOrigenFactor"     runat="server" Value="" />
 
 <!-- ══ MODAL CONVERSIÓN ═════════════════════════════════════════════ -->
 <div class="modal fade" id="modalConversion" tabindex="-1" role="dialog" data-backdrop="static">
@@ -251,7 +254,16 @@
             <div class="form-group">
               <label>Cantidad a convertir <span style="color:red">*</span></label>
               <asp:TextBox ID="txtConvCantOrigen" runat="server" CssClass="form-control"
-                  placeholder="0.00" oninput="this.value=this.value.replace(/[^0-9.]/g,'')"></asp:TextBox>
+                  placeholder="0.00"
+                  oninput="this.value=this.value.replace(/[^0-9.]/g,''); onOrigenCantChange();"></asp:TextBox>
+            </div>
+          </div>
+          <div class="col-md-4" id="divOrigenUnidad" style="display:none;">
+            <div class="form-group">
+              <label>Unidad de captura</label>
+              <select id="ddlOrigenUnidad" class="form-control" onchange="onOrigenUnidadChange();">
+              </select>
+              <small id="lblOrigenConvInfo" class="text-muted d-block mt-1"></small>
             </div>
           </div>
         </div>
@@ -263,7 +275,8 @@
           <thead>
             <tr>
               <th>Material destino</th>
-              <th style="width:160px">Cantidad resultante</th>
+              <th style="width:160px">Unidad</th>
+              <th style="width:150px">Cantidad resultante</th>
               <th style="width:60px"></th>
             </tr>
           </thead>
@@ -339,6 +352,7 @@
 <script>
     window._stockMermaData    = <%= GetStockMermaJson() %>;
     window._materialesActivos = <%= GetMaterialesActivosJson() %>;
+    window._conversionesMat   = <%= GetConversionesMatJson() %>;
 </script>
 
 <!-- ══ LÓGICA JS ════════════════════════════════════════════════════ -->
@@ -346,7 +360,6 @@
 var _outputCounter = 0;
 
 function abrirModalConversion() {
-    // reset modal
     document.getElementById('<%: ddlConvBase.ClientID %>').value = '';
     document.getElementById('<%: hdnConvMatOrigenID.ClientID %>').value = '';
     var selOrigen = document.getElementById('ddlConvMatOrigen');
@@ -355,9 +368,15 @@ function abrirModalConversion() {
     document.getElementById('<%: txtConvCantOrigen.ClientID %>').value = '';
     document.getElementById('<%: txtConvObs.ClientID %>').value = '';
     document.getElementById('<%: hdnOutputsJson.ClientID %>').value = '';
+    document.getElementById('<%: hdnOrigenUnidadVal.ClientID %>').value = '';
+    document.getElementById('<%: hdnOrigenFactor.ClientID %>').value = '';
+    // Reset unidad origen
+    document.getElementById('divOrigenUnidad').style.display = 'none';
+    document.getElementById('ddlOrigenUnidad').innerHTML = '';
+    document.getElementById('lblOrigenConvInfo').innerText = '';
     document.getElementById('tbodyOutputs').innerHTML = '';
     _outputCounter = 0;
-    agregarFilaOutput();   // empieza con una fila
+    agregarFilaOutput();
     $('#modalConversion').modal('show');
 }
 
@@ -367,12 +386,16 @@ function onConvBaseChange() {
     sel.innerHTML = '<option value="">-- Seleccione --</option>';
     document.getElementById('divDisponible').textContent = '— seleccione material —';
     document.getElementById('<%: hdnConvMatOrigenID.ClientID %>').value = '';
+    document.getElementById('divOrigenUnidad').style.display = 'none';
+    document.getElementById('lblOrigenConvInfo').innerText = '';
     if (!baseID || !window._stockMermaData[baseID]) return;
     window._stockMermaData[baseID].forEach(function(m) {
         var opt = document.createElement('option');
         opt.value = m.matID;
         opt.textContent = m.codigo + ' — ' + m.descripcion + ' (' + m.unidad + ')';
         opt.setAttribute('data-cant', m.cantDisponible);
+        opt.setAttribute('data-unidad', m.unidad);
+        opt.setAttribute('data-matid', m.matID);
         sel.appendChild(opt);
     });
 }
@@ -381,15 +404,59 @@ function onConvMatOrigenChange() {
     var sel = document.getElementById('ddlConvMatOrigen');
     var opt = sel.options[sel.selectedIndex];
     document.getElementById('<%: hdnConvMatOrigenID.ClientID %>').value = sel.value || '';
+    document.getElementById('divOrigenUnidad').style.display = 'none';
+    document.getElementById('ddlOrigenUnidad').innerHTML = '';
+    document.getElementById('lblOrigenConvInfo').innerText = '';
+
     if (!sel.value) {
         document.getElementById('divDisponible').textContent = '— seleccione material —';
         return;
     }
-    var cant = parseFloat(opt.getAttribute('data-cant') || 0);
+
+    var cant    = parseFloat(opt.getAttribute('data-cant')   || 0);
+    var unidTxt = opt.getAttribute('data-unidad') || '';
     document.getElementById('divDisponible').textContent =
-        cant.toLocaleString('es-MX', {minimumFractionDigits: 4}) + ' ' +
-        (opt.textContent.match(/\(([^)]+)\)/) || ['',''])[1];
+        cant.toLocaleString('es-MX', {minimumFractionDigits: 0, maximumFractionDigits: 4}) + ' ' + unidTxt;
+
+    // Poblar dropdown de unidad de captura si el material tiene conversiones
+    var matID = parseInt(sel.value) || 0;
+    var convKey = matID.toString();
+    if (window._conversionesMat && window._conversionesMat[convKey] &&
+        window._conversionesMat[convKey].length > 1) {
+        var ddlU = document.getElementById('ddlOrigenUnidad');
+        ddlU.innerHTML = '';
+        window._conversionesMat[convKey].forEach(function(op) {
+            var o = document.createElement('option');
+            o.value = op.val;
+            o.text  = op.txt;
+            o.setAttribute('data-factor', op.factor);
+            ddlU.appendChild(o);
+        });
+        document.getElementById('divOrigenUnidad').style.display = '';
+        onOrigenUnidadChange();
+    }
 }
+
+function onOrigenUnidadChange() {
+    var ddlU = document.getElementById('ddlOrigenUnidad');
+    if (!ddlU || ddlU.options.length === 0) return;
+    var selOpt = ddlU.options[ddlU.selectedIndex];
+    var factor = parseFloat(selOpt.getAttribute('data-factor')) || 1;
+    var cant   = parseFloat(document.getElementById('<%: txtConvCantOrigen.ClientID %>').value) || 0;
+    var label  = document.getElementById('lblOrigenConvInfo');
+    if (factor === 1 || cant === 0) { label.innerText = ''; return; }
+    var cantBase = cant * factor;
+    label.innerText = 'Captura: ' + cant.toLocaleString('es-MX', {minimumFractionDigits:4}) +
+                      ' → ' + cantBase.toLocaleString('es-MX', {minimumFractionDigits:4}) +
+                      ' (unidad base) en merma';
+}
+
+function onOrigenCantChange() {
+    var divU = document.getElementById('divOrigenUnidad');
+    if (divU && divU.style.display !== 'none') onOrigenUnidadChange();
+}
+
+// ── Tabla de destino ──────────────────────────────────────────────
 
 function agregarFilaOutput() {
     _outputCounter++;
@@ -397,20 +464,26 @@ function agregarFilaOutput() {
     var tr = document.createElement('tr');
     tr.id = 'rowOut_' + _outputCounter;
 
-    var opts = '<option value="">-- Seleccione --</option>';
+    var optsmat = '<option value="">-- Seleccione --</option>';
     (window._materialesActivos || []).forEach(function(m) {
-        opts += '<option value="' + m.matID + '">' +
-                m.codigo + ' — ' + m.descripcion + ' (' + m.unidad + ')</option>';
+        optsmat += '<option value="' + m.matID + '">' +
+                   m.codigo + ' — ' + m.descripcion + ' (' + m.unidad + ')</option>';
     });
 
+    var n = _outputCounter;
     tr.innerHTML =
         '<td><select class="form-control form-control-sm sel-mat-dest" ' +
-             'id="selDest_' + _outputCounter + '">' + opts + '</select></td>' +
+             'id="selDest_' + n + '" onchange="onDestMatChange(' + n + ')">' +
+             optsmat + '</select></td>' +
+        '<td><select class="form-control form-control-sm sel-unidad-dest" ' +
+             'id="selUnidDest_' + n + '" disabled>' +
+             '<option value="0" data-factor="1">— seleccione material —</option>' +
+             '</select></td>' +
         '<td><input type="text" class="form-control form-control-sm inp-cant-dest" ' +
-             'id="cantDest_' + _outputCounter + '" placeholder="0.00" ' +
+             'id="cantDest_' + n + '" placeholder="0.00" ' +
              'oninput="this.value=this.value.replace(/[^0-9.]/g,\'\')"/></td>' +
         '<td><button type="button" class="btn btn-danger btn-sm btn-quitar-output" ' +
-             'onclick="quitarFilaOutput(' + _outputCounter + ')">✕</button></td>';
+             'onclick="quitarFilaOutput(' + n + ')">✕</button></td>';
     tbody.appendChild(tr);
 }
 
@@ -418,6 +491,31 @@ function quitarFilaOutput(n) {
     var tr = document.getElementById('rowOut_' + n);
     if (tr) tr.parentNode.removeChild(tr);
 }
+
+function onDestMatChange(n) {
+    var selMat  = document.getElementById('selDest_' + n);
+    var selUnid = document.getElementById('selUnidDest_' + n);
+    var matID   = parseInt(selMat.value) || 0;
+
+    selUnid.innerHTML = '';
+    if (!matID || !window._conversionesMat || !window._conversionesMat[matID.toString()]) {
+        selUnid.disabled = true;
+        selUnid.innerHTML = '<option value="0" data-factor="1">— sin unidad —</option>';
+        return;
+    }
+
+    var opts = window._conversionesMat[matID.toString()];
+    opts.forEach(function(op) {
+        var o = document.createElement('option');
+        o.value = op.val;
+        o.text  = op.txt;
+        o.setAttribute('data-factor', op.factor);
+        selUnid.appendChild(o);
+    });
+    selUnid.disabled = (selUnid.options.length <= 1);
+}
+
+// ── Preparar y validar antes de postback ───────────────────────────
 
 function prepararGuardar() {
     var baseID    = document.getElementById('<%: ddlConvBase.ClientID %>').value;
@@ -428,14 +526,29 @@ function prepararGuardar() {
     if (!matOrigen) { Swal.fire({icon:'warning',title:'Material requerido',text:'Seleccione el material en merma.',confirmButtonColor:'#003366'}); return false; }
     if (!cantOrig || cantOrig <= 0) { Swal.fire({icon:'warning',title:'Cantidad inválida',text:'Ingrese la cantidad a convertir.',confirmButtonColor:'#003366'}); return false; }
 
+    // Leer unidad/factor del origen
+    var divOU = document.getElementById('divOrigenUnidad');
+    var origenUnidVal = '';
+    var origenFactor  = '1';
+    if (divOU && divOU.style.display !== 'none') {
+        var ddlOU = document.getElementById('ddlOrigenUnidad');
+        if (ddlOU && ddlOU.options.length > 0) {
+            origenUnidVal = ddlOU.options[ddlOU.selectedIndex].value;
+            origenFactor  = ddlOU.options[ddlOU.selectedIndex].getAttribute('data-factor') || '1';
+        }
+    }
+    document.getElementById('<%: hdnOrigenUnidadVal.ClientID %>').value = origenUnidVal;
+    document.getElementById('<%: hdnOrigenFactor.ClientID %>').value    = origenFactor;
 
+    // Recoger filas destino
     var outputs = [];
-    var filas = document.querySelectorAll('#tbodyOutputs tr');
+    var filas   = document.querySelectorAll('#tbodyOutputs tr');
     for (var i = 0; i < filas.length; i++) {
-        var sel  = filas[i].querySelector('.sel-mat-dest');
-        var inp  = filas[i].querySelector('.inp-cant-dest');
-        if (!sel || !inp) continue;
-        var mID  = parseInt(sel.value || '0');
+        var selMat  = filas[i].querySelector('.sel-mat-dest');
+        var selUnid = filas[i].querySelector('.sel-unidad-dest');
+        var inp     = filas[i].querySelector('.inp-cant-dest');
+        if (!selMat || !inp) continue;
+        var mID  = parseInt(selMat.value || '0');
         var cant = parseFloat(inp.value || '0');
         if (!mID || cant <= 0) {
             Swal.fire({icon:'warning',title:'Fila incompleta',
@@ -443,7 +556,14 @@ function prepararGuardar() {
                 confirmButtonColor:'#003366'});
             return false;
         }
-        outputs.push({matID: mID, cant: cant});
+        var unidId = 0;
+        var factor = 1;
+        if (selUnid && !selUnid.disabled && selUnid.options.length > 0) {
+            var selOpt = selUnid.options[selUnid.selectedIndex];
+            unidId = parseInt(selOpt.value) || 0;
+            factor = parseFloat(selOpt.getAttribute('data-factor')) || 1;
+        }
+        outputs.push({ matID: mID, cant: cant, unidadId: unidId, factor: factor });
     }
     if (outputs.length === 0) {
         Swal.fire({icon:'warning',title:'Sin materiales destino',
@@ -481,9 +601,19 @@ function verDetalle(conversionID, origen) {
             }
             var tbody = document.getElementById('tbodyDetalleModal');
             items.forEach(function(r) {
-                var col1 = '<td><strong style="color:#003366;">' + escHtml(r.Codigo) + '</strong> ' + escHtml(r.Descripcion) + '</td>';
-                var col2 = '<td class="text-right" style="white-space:nowrap"><strong>' +
-                           fmtN4(r.Cantidad) + '</strong> <small class="text-muted">' + escHtml(r.Unidad) + '</small></td>';
+                var col1 = '<td><strong style="color:#003366;">' + escHtml(r.Codigo) + '</strong> ' +
+                           escHtml(r.Descripcion) + '</td>';
+                var cantStr;
+                if (r.TuvoConversion && r.CantidadCapturada !== null) {
+                    cantStr = '<strong>' + fmtN4(r.CantidadCapturada) + '</strong> ' +
+                              '<small class="text-muted">' + escHtml(r.UnidadCapturaNombre || '') + '</small>' +
+                              '<br/><small class="text-muted">= ' + fmtN4(r.Cantidad) + ' ' +
+                              escHtml(r.Unidad) + ' (base)</small>';
+                } else {
+                    cantStr = '<strong>' + fmtN4(r.Cantidad) + '</strong> ' +
+                              '<small class="text-muted">' + escHtml(r.Unidad) + '</small>';
+                }
+                var col2 = '<td class="text-right" style="white-space:nowrap">' + cantStr + '</td>';
                 tbody.insertAdjacentHTML('beforeend', '<tr>' + col1 + col2 + '</tr>');
             });
             document.getElementById('divDetalleTabla').classList.remove('d-none');
@@ -498,11 +628,12 @@ function verDetalle(conversionID, origen) {
         }
     });
 }
+
 function escHtml(s) {
     return String(s).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;');
 }
 function fmtN4(n) {
-    return Number(n).toLocaleString('es-MX', {minimumFractionDigits:4, maximumFractionDigits:4});
+    return Number(n).toLocaleString('es-MX', {minimumFractionDigits:0, maximumFractionDigits:4});
 }
 
 // ── SweetAlert pendiente ──────────────────────────────────────────
