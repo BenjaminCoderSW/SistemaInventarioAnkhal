@@ -25,6 +25,7 @@
         .inv-card.mats    { background: linear-gradient(135deg,#1e6e4a,#27ae60); }
         .inv-card.buenos  { background: linear-gradient(135deg,#1a5276,#2980b9); }
         .inv-card.rechazo { background: linear-gradient(135deg,#6e2c00,#d35400); }
+        .inv-card.merma   { background: linear-gradient(135deg,#4a1942,#922b21); }
 
         /* ── Sección títulos ─────────────────────────────── */
         .seccion-titulo {
@@ -98,7 +99,12 @@
         <div class="inv-dashboard">
             <div class="inv-card total">
                 <i class="fas fa-warehouse icon-big"></i>
-                <div class="lbl">Valor Total Inventario</div>
+                <div class="lbl">Valor Total Inventario
+                    <i class="fas fa-info-circle"
+                       style="font-size:0.8rem;opacity:0.85;cursor:help;margin-left:4px;"
+                       data-toggle="tooltip" data-placement="right"
+                       title="Suma de todo el inventario: valor de materiales en stock + valor de productos buenos + valor de productos rechazo (al 50%) + valor de merma de materia prima."></i>
+                </div>
                 <div class="num">$<asp:Label ID="lblValorTotal" runat="server" Text="0.00"></asp:Label></div>
             </div>
             <div class="inv-card mats">
@@ -113,13 +119,33 @@
             </div>
             <div class="inv-card buenos">
                 <i class="fas fa-check-circle icon-big"></i>
-                <div class="lbl">Valor Productos Buenos</div>
+                <div class="lbl">Valor Productos Buenos
+                    <i class="fas fa-info-circle"
+                       style="font-size:0.8rem;opacity:0.85;cursor:help;margin-left:4px;"
+                       data-toggle="tooltip" data-placement="right"
+                       title="Valor de las unidades buenas en stock: cantidad buenas × precio de venta por producto."></i>
+                </div>
                 <div class="num">$<asp:Label ID="lblValorBuenos" runat="server" Text="0.00"></asp:Label></div>
             </div>
             <div class="inv-card rechazo">
                 <i class="fas fa-times-circle icon-big"></i>
-                <div class="lbl">Valor Productos Rechazo</div>
+                <div class="lbl">Valor Productos Rechazo
+                    <i class="fas fa-info-circle"
+                       style="font-size:0.8rem;opacity:0.85;cursor:help;margin-left:4px;"
+                       data-toggle="tooltip" data-placement="right"
+                       title="Valor de las unidades de rechazo en stock: cantidad rechazo × (precio de venta × 50%). Las unidades de rechazo se valúan al 50% del precio normal."></i>
+                </div>
                 <div class="num">$<asp:Label ID="lblValorRechazo" runat="server" Text="0.00"></asp:Label></div>
+            </div>
+            <div class="inv-card merma">
+                <i class="fas fa-exclamation-triangle icon-big"></i>
+                <div class="lbl">Merma Materia Prima ($)
+                    <i class="fas fa-info-circle"
+                       style="font-size:0.8rem;opacity:0.85;cursor:help;margin-left:4px;"
+                       data-toggle="tooltip" data-placement="right"
+                       title="Valor monetario de la materia prima acumulada en merma (StockMerma): cantidad en merma × precio unitario de cada material."></i>
+                </div>
+                <div class="num">$<asp:Label ID="lblValorMermaMP" runat="server" Text="0.00"></asp:Label></div>
             </div>
         </div>
 
@@ -191,6 +217,17 @@
                             <asp:TemplateField HeaderText="Valor ($)" ItemStyle-Width="110px" ItemStyle-CssClass="text-right" HeaderStyle-CssClass="text-right">
                                 <ItemTemplate>
                                     <strong><%# ((decimal)Eval("StockGlobal") * (decimal)Eval("PrecioUnitario")).ToString("C2") %></strong>
+                                </ItemTemplate>
+                            </asp:TemplateField>
+                            <asp:TemplateField HeaderText="Merma" ItemStyle-Width="110px" ItemStyle-CssClass="text-right" HeaderStyle-CssClass="text-right">
+                                <ItemTemplate>
+                                    <span style="color:#922b21; font-weight:600;"><%# ((decimal)Eval("MermaGlobal")).ToString("N2") %></span>
+                                    <small class="text-muted"> <%# Eval("Unidad") %></small>
+                                </ItemTemplate>
+                            </asp:TemplateField>
+                            <asp:TemplateField HeaderText="Valor Merma ($)" ItemStyle-Width="120px" ItemStyle-CssClass="text-right" HeaderStyle-CssClass="text-right">
+                                <ItemTemplate>
+                                    <span style="color:#922b21; font-weight:600;"><%# ((decimal)Eval("MermaGlobal") * (decimal)Eval("PrecioUnitario")).ToString("C2") %></span>
                                 </ItemTemplate>
                             </asp:TemplateField>
                             <asp:TemplateField HeaderText="Por Base" ItemStyle-Width="90px" ItemStyle-CssClass="text-center" HeaderStyle-CssClass="text-center">
@@ -300,9 +337,14 @@
                             <asp:TemplateField HeaderText="Prod. Rechazo ($)" ItemStyle-CssClass="text-right" HeaderStyle-CssClass="text-right" FooterStyle-CssClass="text-right">
                                 <ItemTemplate><%# ((decimal)Eval("ValorRechazo")).ToString("C2") %></ItemTemplate>
                             </asp:TemplateField>
+                            <asp:TemplateField HeaderText="Merma MP ($)" ItemStyle-CssClass="text-right" HeaderStyle-CssClass="text-right" FooterStyle-CssClass="text-right">
+                                <ItemTemplate>
+                                    <span style="color:#922b21;"><%# ((decimal)Eval("ValorMerma")).ToString("C2") %></span>
+                                </ItemTemplate>
+                            </asp:TemplateField>
                             <asp:TemplateField HeaderText="TOTAL ($)" ItemStyle-CssClass="text-right font-weight-bold" HeaderStyle-CssClass="text-right" FooterStyle-CssClass="text-right font-weight-bold">
                                 <ItemTemplate>
-                                    <strong><%# ((decimal)Eval("ValorMateriales") + (decimal)Eval("ValorBuenos") + (decimal)Eval("ValorRechazo")).ToString("C2") %></strong>
+                                    <strong><%# ((decimal)Eval("ValorMateriales") + (decimal)Eval("ValorBuenos") + (decimal)Eval("ValorRechazo") + (decimal)Eval("ValorMerma")).ToString("C2") %></strong>
                                 </ItemTemplate>
                             </asp:TemplateField>
                         </Columns>

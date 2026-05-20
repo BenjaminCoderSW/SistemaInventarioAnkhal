@@ -3,6 +3,7 @@ using GrupoAnkhalInventario.Modelo;
 using System;
 using System.Collections.Generic;
 using System.Configuration;
+using System.Data.SqlClient;
 using System.Linq;
 using System.Text;
 using System.Web;
@@ -24,6 +25,83 @@ namespace GrupoAnkhalInventario
             return ctx;
         }
 
+        // ── Helpers ADO.NET para StockMerma (no mapeado en DBML) ─────────────
+
+        private void AgregarFiltroMerma(List<string> where, List<SqlParameter> parms,
+            List<int> basesUsuario, int? baseFiltraID)
+        {
+            if (basesUsuario != null && basesUsuario.Count > 0)
+            {
+                var pNames = basesUsuario
+                    .Select((id, i) => { parms.Add(new SqlParameter("@bu" + i, id)); return "@bu" + i; })
+                    .ToList();
+                where.Add("sm.BaseID IN (" + string.Join(",", pNames) + ")");
+            }
+            if (baseFiltraID.HasValue)
+            {
+                where.Add("sm.BaseID = @baseFiltraID");
+                parms.Add(new SqlParameter("@baseFiltraID", baseFiltraID.Value));
+            }
+        }
+
+        private Dictionary<int, Dictionary<int, decimal>> ObtenerMermaDict(
+            List<int> basesUsuario, int? baseFiltraID)
+        {
+            var dict = new Dictionary<int, Dictionary<int, decimal>>();
+            var where = new List<string> { "b.Activo = 1", "sm.CantidadActual > 0" };
+            var parms = new List<SqlParameter>();
+            AgregarFiltroMerma(where, parms, basesUsuario, baseFiltraID);
+
+            string sql = "SELECT sm.MaterialID, sm.BaseID, sm.CantidadActual " +
+                         "FROM dbo.StockMerma sm INNER JOIN dbo.Bases b ON b.BaseID = sm.BaseID " +
+                         "WHERE " + string.Join(" AND ", where);
+
+            using (var conn = new SqlConnection(_connStr))
+            {
+                conn.Open();
+                using (var cmd = new SqlCommand(sql, conn))
+                {
+                    cmd.Parameters.AddRange(parms.ToArray());
+                    using (var rd = cmd.ExecuteReader())
+                        while (rd.Read())
+                        {
+                            int mat = rd.GetInt32(0), bas = rd.GetInt32(1);
+                            if (!dict.ContainsKey(mat)) dict[mat] = new Dictionary<int, decimal>();
+                            dict[mat][bas] = rd.GetDecimal(2);
+                        }
+                }
+            }
+            return dict;
+        }
+
+        private Dictionary<int, decimal> ObtenerValorMermaPorBase(
+            List<int> basesUsuario, int? baseFiltraID)
+        {
+            var dict = new Dictionary<int, decimal>();
+            var where = new List<string> { "b.Activo = 1" };
+            var parms = new List<SqlParameter>();
+            AgregarFiltroMerma(where, parms, basesUsuario, baseFiltraID);
+
+            string sql =
+                "SELECT sm.BaseID, SUM(sm.CantidadActual * m.PrecioUnitario) " +
+                "FROM dbo.StockMerma sm " +
+                "INNER JOIN dbo.Materiales m ON m.MaterialID = sm.MaterialID " +
+                "INNER JOIN dbo.Bases b ON b.BaseID = sm.BaseID " +
+                "WHERE " + string.Join(" AND ", where) + " GROUP BY sm.BaseID";
+
+            using (var conn = new SqlConnection(_connStr))
+            {
+                conn.Open();
+                using (var cmd = new SqlCommand(sql, conn))
+                {
+                    cmd.Parameters.AddRange(parms.ToArray());
+                    using (var rd = cmd.ExecuteReader())
+                        while (rd.Read()) dict[rd.GetInt32(0)] = rd.GetDecimal(1);
+                }
+            }
+            return dict;
+        }
+
         // ── DTOs ─────────────────────────────────────────────────────────────
 
         public class MaterialInvVM
@@ -38,6 +116,7 @@ namespace GrupoAnkhalInventario
             public decimal StockMaximo { get; set; }
             public decimal StockOptimo { get; set; }
             public decimal StockGlobal { get; set; }
+            public decimal MermaGlobal { get; set; }
             public List<StockBaseInvVM> StockBases { get; set; }
         }
 
@@ -47,6 +126,7 @@ namespace GrupoAnkhalInventario
             public string BaseNombre { get; set; }
             public string BaseCodigo { get; set; }
             public decimal Cantidad { get; set; }
+            public decimal MermaBase { get; set; }
         }
 
         public class ProductoInvVM
@@ -77,6 +157,7 @@ namespace GrupoAnkhalInventario
             public decimal ValorMateriales { get; set; }
             public decimal ValorBuenos { get; set; }
             public decimal ValorRechazo { get; set; }
+            public decimal ValorMerma { get; set; }
         }
 
         // ─────────────────────────────────────────────────────────────────────
@@ -193,6 +274,8 @@ namespace GrupoAnkhalInventario
 
             var stockTodos = stockQuery.ToList();
 
+            var mermaDict = ObtenerMermaDict(basesUsuario, baseFiltraID);
+
             // Construir VMs con stock global filtrado
             var vms = new List<MaterialInvVM>();
             foreach (var m in listaMat)
@@ -204,10 +287,13 @@ namespace GrupoAnkhalInventario
                         BaseID = s.BaseID,
                         BaseNombre = s.Nombre,
                         BaseCodigo = s.Codigo,
-                        Cantidad = s.CantidadActual
+                        Cantidad = s.CantidadActual,
+                        MermaBase = mermaDict.ContainsKey(m.MaterialID) && mermaDict[m.MaterialID].ContainsKey(s.BaseID)
+                                    ? mermaDict[m.MaterialID][s.BaseID] : 0m
                     }).ToList();
 
                 decimal global = basesStock.Sum(s => s.Cantidad);
+                decimal mermaGlobal = mermaDict.ContainsKey(m.MaterialID) ? mermaDict[m.MaterialID].Values.Sum() : 0m;
 
                 // Solo incluir si tiene stock (o si no hay filtro de base)
                 if (!baseFiltraID.HasValue || global > 0 || basesStock.Any())
@@ -224,6 +310,7 @@ namespace GrupoAnkhalInventario
                         StockMaximo = m.StockMaximo,
                         StockOptimo = m.StockOptimo,
                         StockGlobal = global,
+                        MermaGlobal = mermaGlobal,
                         StockBases = basesStock
                     });
                 }
@@ -341,12 +428,15 @@ namespace GrupoAnkhalInventario
                                   ValorRechazo = sp.CantidadRechazo * (p.PrecioVenta * 0.5m)
                               }).ToList();
 
+            var valorMermaBase = ObtenerValorMermaPorBase(basesUsuario, baseFiltraID);
+
             var resumen = new List<ResumenBaseVM>();
             foreach (var b in bases)
             {
                 decimal valMat = stockMats.Where(s => s.BaseID == b.BaseID).Sum(s => s.Valor);
                 decimal valBuenos = stockProds.Where(s => s.BaseID == b.BaseID).Sum(s => s.ValorBuenos);
                 decimal valRechazo = stockProds.Where(s => s.BaseID == b.BaseID).Sum(s => s.ValorRechazo);
+                decimal valMerma = valorMermaBase.ContainsKey(b.BaseID) ? valorMermaBase[b.BaseID] : 0m;
 
                 resumen.Add(new ResumenBaseVM
                 {
@@ -354,7 +444,8 @@ namespace GrupoAnkhalInventario
                     BaseNombre = b.Nombre,
                     ValorMateriales = valMat,
                     ValorBuenos = valBuenos,
-                    ValorRechazo = valRechazo
+                    ValorRechazo = valRechazo,
+                    ValorMerma = valMerma
                 });
             }
 
@@ -363,7 +454,8 @@ namespace GrupoAnkhalInventario
             {
                 resumen.Sum(r => r.ValorMateriales),
                 resumen.Sum(r => r.ValorBuenos),
-                resumen.Sum(r => r.ValorRechazo)
+                resumen.Sum(r => r.ValorRechazo),
+                resumen.Sum(r => r.ValorMerma)
             };
 
             gvResumen.DataSource = resumen;
@@ -401,10 +493,32 @@ namespace GrupoAnkhalInventario
             decimal valBuenos = spQuery.Sum(s => (decimal?)s.ValBuenos) ?? 0m;
             decimal valRechazo = spQuery.Sum(s => (decimal?)s.ValRechazo) ?? 0m;
 
+            decimal valMerma;
+            {
+                var where = new List<string> { "b.Activo = 1" };
+                var parms = new List<SqlParameter>();
+                AgregarFiltroMerma(where, parms, basesUsuario, baseFiltraID);
+                string sql = "SELECT ISNULL(SUM(sm.CantidadActual * m.PrecioUnitario),0) " +
+                             "FROM dbo.StockMerma sm " +
+                             "INNER JOIN dbo.Materiales m ON m.MaterialID = sm.MaterialID " +
+                             "INNER JOIN dbo.Bases b ON b.BaseID = sm.BaseID " +
+                             "WHERE " + string.Join(" AND ", where);
+                using (var conn = new SqlConnection(_connStr))
+                {
+                    conn.Open();
+                    using (var cmd = new SqlCommand(sql, conn))
+                    {
+                        cmd.Parameters.AddRange(parms.ToArray());
+                        valMerma = (decimal)cmd.ExecuteScalar();
+                    }
+                }
+            }
+
             lblValorMateriales.Text = valMat.ToString("N2");
             lblValorBuenos.Text = valBuenos.ToString("N2");
             lblValorRechazo.Text = valRechazo.ToString("N2");
-            lblValorTotal.Text = (valMat + valBuenos + valRechazo).ToString("N2");
+            lblValorMermaMP.Text = valMerma.ToString("N2");
+            lblValorTotal.Text = (valMat + valBuenos + valRechazo + valMerma).ToString("N2");
         }
 
         // ══ PAGINACIÓN ════════════════════════════════════════════════════════
@@ -478,7 +592,7 @@ namespace GrupoAnkhalInventario
         {
             var sb = new StringBuilder();
             sb.Append("<table class='table table-sm mb-0 mt-1'>");
-            sb.Append("<thead><tr><th>Base</th><th>Código</th><th>Cantidad</th><th>Nivel</th><th>Valor ($)</th></tr></thead><tbody>");
+            sb.Append("<thead><tr><th>Base</th><th>Código</th><th>Cantidad</th><th>Nivel</th><th>Valor ($)</th><th style='color:#922b21'>Merma</th><th style='color:#922b21'>Valor Merma ($)</th></tr></thead><tbody>");
 
             foreach (var b in vm.StockBases)
             {
@@ -486,6 +600,7 @@ namespace GrupoAnkhalInventario
                 string icon = GetNivelIcon(b.Cantidad, vm.StockMinimo, vm.StockMaximo, vm.StockOptimo);
                 string nivelTxt = GetNivelTextoCorto(b.Cantidad, vm.StockMinimo, vm.StockMaximo, vm.StockOptimo);
                 decimal valor = b.Cantidad * vm.PrecioUnitario;
+                decimal valorMerma = b.MermaBase * vm.PrecioUnitario;
 
                 sb.Append("<tr>");
                 sb.Append("<td>" + HttpUtility.HtmlEncode(b.BaseNombre) + "</td>");
@@ -493,6 +608,8 @@ namespace GrupoAnkhalInventario
                 sb.Append("<td><strong>" + b.Cantidad.ToString("N2") + "</strong> " + HttpUtility.HtmlEncode(vm.Unidad) + "</td>");
                 sb.Append("<td><span class='nivel-badge " + nivelCss + "'>" + icon + " " + nivelTxt + "</span></td>");
                 sb.Append("<td class='text-right'>" + valor.ToString("C2") + "</td>");
+                sb.Append("<td style='color:#922b21; text-align:right;'>" + b.MermaBase.ToString("N2") + " " + HttpUtility.HtmlEncode(vm.Unidad) + "</td>");
+                sb.Append("<td style='color:#922b21; text-align:right; font-weight:600;'>" + valorMerma.ToString("C2") + "</td>");
                 sb.Append("</tr>");
             }
 
@@ -554,13 +671,14 @@ namespace GrupoAnkhalInventario
                 return;
 
             var totales = ViewState["ResumenTotales"] as decimal[];
-            if (totales == null || totales.Length < 3) return;
+            if (totales == null || totales.Length < 4) return;
 
             e.Row.Cells[0].Text = "<strong>TOTAL</strong>";
             e.Row.Cells[1].Text = totales[0].ToString("C2");
             e.Row.Cells[2].Text = totales[1].ToString("C2");
             e.Row.Cells[3].Text = totales[2].ToString("C2");
-            e.Row.Cells[4].Text = "<strong>" + (totales[0] + totales[1] + totales[2]).ToString("C2") + "</strong>";
+            e.Row.Cells[4].Text = "<span style='color:#922b21'>" + totales[3].ToString("C2") + "</span>";
+            e.Row.Cells[5].Text = "<strong>" + (totales[0] + totales[1] + totales[2] + totales[3]).ToString("C2") + "</strong>";
         }
 
         // ══ EXPORTAR EXCEL ════════════════════════════════════════════════════
@@ -582,7 +700,7 @@ namespace GrupoAnkhalInventario
                 {
                     sb.Append("<h3>Materiales</h3>");
                     sb.Append("<table border='1' cellpadding='4' cellspacing='0'>");
-                    sb.Append("<tr style='background:#003366;color:white'><th>Código</th><th>Descripción</th><th>Tipo</th><th>Unidad</th><th>Stock Global</th><th>Nivel</th><th>Precio Unit.</th><th>Valor ($)</th></tr>");
+                    sb.Append("<tr style='background:#003366;color:white'><th>Código</th><th>Descripción</th><th>Tipo</th><th>Unidad</th><th>Stock Global</th><th>Nivel</th><th>Precio Unit.</th><th>Valor ($)</th><th>Merma</th><th>Valor Merma ($)</th></tr>");
 
                     var mats = ObtenerTodosMateriales(db, basesUsuario, baseFiltraID);
                     foreach (var m in mats)
@@ -597,6 +715,8 @@ namespace GrupoAnkhalInventario
                         sb.Append("<td>" + nivel + "</td>");
                         sb.Append("<td>" + m.PrecioUnitario.ToString("C2") + "</td>");
                         sb.Append("<td>" + (m.StockGlobal * m.PrecioUnitario).ToString("C2") + "</td>");
+                        sb.Append("<td>" + m.MermaGlobal.ToString("N2") + "</td>");
+                        sb.Append("<td>" + (m.MermaGlobal * m.PrecioUnitario).ToString("C2") + "</td>");
                         sb.Append("</tr>");
                     }
                     sb.Append("</table><br/>");
@@ -675,17 +795,27 @@ namespace GrupoAnkhalInventario
             if (baseFiltraID.HasValue) stockQ = stockQ.Where(s => s.BaseID == baseFiltraID.Value);
             var stock = stockQ.ToList();
 
+            var mermaDict = ObtenerMermaDict(basesUsuario, baseFiltraID);
+
             var result = new List<MaterialInvVM>();
             foreach (var m in mats)
             {
                 var bases = stock.Where(s => s.MaterialID == m.MaterialID)
-                    .Select(s => new StockBaseInvVM { BaseID = s.BaseID, BaseNombre = s.Nombre, BaseCodigo = s.Codigo, Cantidad = s.CantidadActual }).ToList();
+                    .Select(s => new StockBaseInvVM
+                    {
+                        BaseID = s.BaseID, BaseNombre = s.Nombre, BaseCodigo = s.Codigo,
+                        Cantidad = s.CantidadActual,
+                        MermaBase = mermaDict.ContainsKey(m.MaterialID) && mermaDict[m.MaterialID].ContainsKey(s.BaseID)
+                                    ? mermaDict[m.MaterialID][s.BaseID] : 0m
+                    }).ToList();
                 result.Add(new MaterialInvVM
                 {
                     MaterialID = m.MaterialID, Codigo = m.Codigo, Descripcion = m.Descripcion,
                     TipoNombre = m.TipoNombre, Unidad = m.Unidad, PrecioUnitario = m.PrecioUnitario,
                     StockMinimo = m.StockMinimo, StockMaximo = m.StockMaximo, StockOptimo = m.StockOptimo,
-                    StockGlobal = bases.Sum(s => s.Cantidad), StockBases = bases
+                    StockGlobal = bases.Sum(s => s.Cantidad),
+                    MermaGlobal = mermaDict.ContainsKey(m.MaterialID) ? mermaDict[m.MaterialID].Values.Sum() : 0m,
+                    StockBases = bases
                 });
             }
             return result;

@@ -37,6 +37,11 @@ namespace GrupoAnkhalInventario
         protected global::System.Web.UI.WebControls.Label lblValorRechazo;
 
         /// <summary>
+        /// lblValorMermaMP control.
+        /// </summary>
+        protected global::System.Web.UI.WebControls.Label lblValorMermaMP;
+
+        /// <summary>
         /// ddlBase control.
         /// </summary>
         protected global::System.Web.UI.WebControls.DropDownList ddlBase;

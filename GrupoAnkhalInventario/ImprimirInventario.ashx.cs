@@ -3,6 +3,7 @@ using GrupoAnkhalInventario.Modelo;
 using System;
 using System.Collections.Generic;
 using System.Configuration;
+using System.Data.SqlClient;
 using System.Linq;
 using System.Text;
 using System.Web;
@@ -51,7 +52,7 @@ namespace GrupoAnkhalInventario
             List<MaterialRow> materiales = new List<MaterialRow>();
             List<ProductoRow> productos = new List<ProductoRow>();
             List<ResumenRow> resumen = new List<ResumenRow>();
-            decimal valMat = 0, valBuenos = 0, valRechazo = 0;
+            decimal valMat = 0, valBuenos = 0, valRechazo = 0, valMermaTotal = 0;
             string baseNombre = "Todas las bases";
 
             using (var db = NuevoDb())
@@ -79,9 +80,13 @@ namespace GrupoAnkhalInventario
                     if (baseFiltraID.HasValue) smQ = smQ.Where(s => s.BaseID == baseFiltraID.Value);
                     var stockMat = smQ.ToList();
 
+                    // Merma de materiales por materialID (raw ADO.NET)
+                    var mermaMatDict = ObtenerMermaPorMaterial(basesUsuario, baseFiltraID);
+
                     foreach (var m in mats)
                     {
                         decimal global = stockMat.Where(s => s.MaterialID == m.MaterialID).Sum(s => s.CantidadActual);
+                        decimal merma = mermaMatDict.ContainsKey(m.MaterialID) ? mermaMatDict[m.MaterialID] : 0m;
                         string nivel = GetNivel(global, m.StockMinimo, m.StockMaximo, m.StockOptimo);
                         materiales.Add(new MaterialRow
                         {
@@ -92,9 +97,12 @@ namespace GrupoAnkhalInventario
                             Stock = global,
                             Nivel = nivel,
                             Precio = m.PrecioUnitario,
-                            Valor = global * m.PrecioUnitario
+                            Valor = global * m.PrecioUnitario,
+                            Merma = merma,
+                            ValorMerma = merma * m.PrecioUnitario
                         });
                         valMat += global * m.PrecioUnitario;
+                        valMermaTotal += merma * m.PrecioUnitario;
                     }
                 }
 
@@ -151,6 +159,8 @@ namespace GrupoAnkhalInventario
                                join p in db.Productos on sp.ProductoID equals p.ProductoID
                                select new { sp.BaseID, VB = sp.CantidadBuenas * p.PrecioVenta, VR = sp.CantidadRechazo * (p.PrecioVenta * 0.5m) }).ToList();
 
+                var mermaBaseDict = ObtenerMermaPorBase(basesUsuario, baseFiltraID);
+
                 foreach (var b in bases)
                 {
                     resumen.Add(new ResumenRow
@@ -158,14 +168,15 @@ namespace GrupoAnkhalInventario
                         Base = b.Nombre,
                         Materiales = smTodos.Where(s => s.BaseID == b.BaseID).Sum(s => s.Valor),
                         ProdBuenos = spTodos.Where(s => s.BaseID == b.BaseID).Sum(s => s.VB),
-                        ProdRechazo = spTodos.Where(s => s.BaseID == b.BaseID).Sum(s => s.VR)
+                        ProdRechazo = spTodos.Where(s => s.BaseID == b.BaseID).Sum(s => s.VR),
+                        MermaMP = mermaBaseDict.ContainsKey(b.BaseID) ? mermaBaseDict[b.BaseID] : 0m
                     });
                 }
             }
 
             // ── Generar HTML ──────────────────────────────────────────────────
             string html = BuildHtml(baseNombre, tipoFiltro, materiales, productos, resumen,
-                                    valMat, valBuenos, valRechazo);
+                                    valMat, valBuenos, valRechazo, valMermaTotal);
 
             context.Response.ContentType = "text/html";
             context.Response.ContentEncoding = Encoding.UTF8;
@@ -175,11 +186,11 @@ namespace GrupoAnkhalInventario
         // ── Construcción del HTML de impresión ────────────────────────────────
         private string BuildHtml(string baseNombre, string tipoFiltro,
             List<MaterialRow> mats, List<ProductoRow> prods, List<ResumenRow> resumen,
-            decimal valMat, decimal valBuenos, decimal valRechazo)
+            decimal valMat, decimal valBuenos, decimal valRechazo, decimal valMermaMP)
         {
             var sb = new StringBuilder();
             string fecha = AppHelper.Ahora.ToString("dd/MM/yyyy HH:mm");
-            decimal total = valMat + valBuenos + valRechazo;
+            decimal total = valMat + valBuenos + valRechazo + valMermaMP;
 
             sb.Append(@"<!DOCTYPE html>
 <html lang='es'>
@@ -206,6 +217,7 @@ namespace GrupoAnkhalInventario
   .nivel-bajo    { color: #d35400; font-weight: 600; }
   .nivel-optimo  { color: #1e8449; font-weight: 600; }
   .nivel-sin     { color: #7f8c8d; }
+  .merma         { color: #922b21; font-weight: 600; }
   .footer-print { margin-top: 20px; border-top: 1px solid #ccc; padding-top: 8px; font-size: 9px; color: #888; }
   @media print {
     body { padding: 10px; }
@@ -219,12 +231,16 @@ namespace GrupoAnkhalInventario
             sb.Append("<h1>Inventario General &mdash; Grupo ANKHAL</h1>");
             sb.Append("<div class='meta'>Base: <strong>" + HttpUtility.HtmlEncode(baseNombre) + "</strong> &nbsp;|&nbsp; Generado: <strong>" + fecha + "</strong></div>");
 
-            // Cards resumen
+            // Cards resumen — fila 1: Materiales, Prod. Buenos, Prod. Rechazo
             sb.Append("<div class='cards'>");
-            sb.Append("<div class='card'><div class='lbl'>Valor Total</div><div class='num'>" + total.ToString("C2") + "</div></div>");
             sb.Append("<div class='card'><div class='lbl'>Materiales</div><div class='num'>" + valMat.ToString("C2") + "</div></div>");
             sb.Append("<div class='card'><div class='lbl'>Prod. Buenos</div><div class='num'>" + valBuenos.ToString("C2") + "</div></div>");
             sb.Append("<div class='card'><div class='lbl'>Prod. Rechazo</div><div class='num'>" + valRechazo.ToString("C2") + "</div></div>");
+            sb.Append("</div>");
+            // Cards resumen — fila 2: Merma MP, Valor Total
+            sb.Append("<div class='cards'>");
+            sb.Append("<div class='card'><div class='lbl'>Merma MP</div><div class='num merma'>" + valMermaMP.ToString("C2") + "</div></div>");
+            sb.Append("<div class='card'><div class='lbl'>Valor Total</div><div class='num'>" + total.ToString("C2") + "</div></div>");
             sb.Append("</div>");
 
             // Tabla Materiales
@@ -232,29 +248,34 @@ namespace GrupoAnkhalInventario
             {
                 sb.Append("<h2>Materiales (" + mats.Count + " registros)</h2>");
                 sb.Append("<table><thead><tr>");
-                sb.Append("<th>C&oacute;digo</th><th>Descripci&oacute;n</th><th>Tipo</th><th>Unidad</th>");
+                sb.Append("<th>C&oacute;digo</th><th>Tipo</th><th>Unidad</th>");
                 sb.Append("<th class='text-right'>Stock Global</th><th>Nivel</th>");
                 sb.Append("<th class='text-right'>Precio Unit.</th><th class='text-right'>Valor ($)</th>");
+                sb.Append("<th class='text-right'>Merma</th><th class='text-right'>Valor Merma ($)</th>");
                 sb.Append("</tr></thead><tbody>");
-                decimal totalValMat = 0;
+                decimal totalValMat = 0, totalValMerma = 0;
                 foreach (var m in mats)
                 {
                     string nivelCls = "nivel-" + m.Nivel;
                     sb.Append("<tr>");
                     sb.Append("<td>" + HttpUtility.HtmlEncode(m.Codigo) + "</td>");
-                    sb.Append("<td>" + HttpUtility.HtmlEncode(m.Descripcion) + "</td>");
                     sb.Append("<td>" + HttpUtility.HtmlEncode(m.Tipo) + "</td>");
                     sb.Append("<td>" + HttpUtility.HtmlEncode(m.Unidad) + "</td>");
                     sb.Append("<td class='text-right'>" + m.Stock.ToString("N2") + "</td>");
                     sb.Append("<td class='" + nivelCls + "'>" + NivelTexto(m.Nivel) + "</td>");
                     sb.Append("<td class='text-right'>" + m.Precio.ToString("C2") + "</td>");
                     sb.Append("<td class='text-right'><strong>" + m.Valor.ToString("C2") + "</strong></td>");
+                    sb.Append("<td class='text-right merma'>" + m.Merma.ToString("N2") + "</td>");
+                    sb.Append("<td class='text-right merma'>" + m.ValorMerma.ToString("C2") + "</td>");
                     sb.Append("</tr>");
                     totalValMat += m.Valor;
+                    totalValMerma += m.ValorMerma;
                 }
                 sb.Append("</tbody><tfoot><tr>");
-                sb.Append("<td colspan='7' class='text-right'><strong>Total Materiales</strong></td>");
+                sb.Append("<td colspan='6' class='text-right'><strong>Total Materiales</strong></td>");
                 sb.Append("<td class='text-right'><strong>" + totalValMat.ToString("C2") + "</strong></td>");
+                sb.Append("<td class='text-right merma'></td>");
+                sb.Append("<td class='text-right merma'><strong>" + totalValMerma.ToString("C2") + "</strong></td>");
                 sb.Append("</tr></tfoot></table>");
             }
 
@@ -263,7 +284,7 @@ namespace GrupoAnkhalInventario
             {
                 sb.Append("<h2>Productos (" + prods.Count + " registros)</h2>");
                 sb.Append("<table><thead><tr>");
-                sb.Append("<th>C&oacute;digo</th><th>Descripci&oacute;n</th><th>Tipo</th>");
+                sb.Append("<th>C&oacute;digo</th><th>Tipo</th>");
                 sb.Append("<th class='text-right'>Buenos</th><th class='text-right'>Rechazo</th><th class='text-right'>Total</th>");
                 sb.Append("<th class='text-right'>Precio Venta</th><th class='text-right'>Valor Buenos</th><th class='text-right'>Valor Rechazo</th>");
                 sb.Append("</tr></thead><tbody>");
@@ -272,7 +293,6 @@ namespace GrupoAnkhalInventario
                 {
                     sb.Append("<tr>");
                     sb.Append("<td>" + HttpUtility.HtmlEncode(p.Codigo) + "</td>");
-                    sb.Append("<td>" + HttpUtility.HtmlEncode(p.Descripcion) + "</td>");
                     sb.Append("<td>" + HttpUtility.HtmlEncode(p.Tipo) + "</td>");
                     sb.Append("<td class='text-right'>" + p.Buenos + "</td>");
                     sb.Append("<td class='text-right'>" + p.Rechazo + "</td>");
@@ -284,7 +304,7 @@ namespace GrupoAnkhalInventario
                     tVB += p.ValorBuenos; tVR += p.ValorRechazo;
                 }
                 sb.Append("</tbody><tfoot><tr>");
-                sb.Append("<td colspan='7' class='text-right'><strong>Total Productos</strong></td>");
+                sb.Append("<td colspan='6' class='text-right'><strong>Total Productos</strong></td>");
                 sb.Append("<td class='text-right'><strong>" + tVB.ToString("C2") + "</strong></td>");
                 sb.Append("<td class='text-right'><strong>" + tVR.ToString("C2") + "</strong></td>");
                 sb.Append("</tr></tfoot></table>");
@@ -295,27 +315,29 @@ namespace GrupoAnkhalInventario
             {
                 sb.Append("<h2>Resumen por Base / Planta</h2>");
                 sb.Append("<table><thead><tr>");
-                sb.Append("<th>Base / Planta</th><th class='text-right'>Materiales ($)</th><th class='text-right'>Prod. Buenos ($)</th><th class='text-right'>Prod. Rechazo ($)</th><th class='text-right'>TOTAL ($)</th>");
+                sb.Append("<th>Base / Planta</th><th class='text-right'>Materiales ($)</th><th class='text-right'>Prod. Buenos ($)</th><th class='text-right'>Prod. Rechazo ($)</th><th class='text-right'>Merma MP ($)</th><th class='text-right'>TOTAL ($)</th>");
                 sb.Append("</tr></thead><tbody>");
-                decimal tMat = 0, tBuenos = 0, tRec = 0;
+                decimal tMat = 0, tBuenos = 0, tRec = 0, tMerma = 0;
                 foreach (var r in resumen)
                 {
-                    decimal tot = r.Materiales + r.ProdBuenos + r.ProdRechazo;
+                    decimal tot = r.Materiales + r.ProdBuenos + r.ProdRechazo + r.MermaMP;
                     sb.Append("<tr>");
                     sb.Append("<td>" + HttpUtility.HtmlEncode(r.Base) + "</td>");
                     sb.Append("<td class='text-right'>" + r.Materiales.ToString("C2") + "</td>");
                     sb.Append("<td class='text-right'>" + r.ProdBuenos.ToString("C2") + "</td>");
                     sb.Append("<td class='text-right'>" + r.ProdRechazo.ToString("C2") + "</td>");
+                    sb.Append("<td class='text-right merma'>" + r.MermaMP.ToString("C2") + "</td>");
                     sb.Append("<td class='text-right'><strong>" + tot.ToString("C2") + "</strong></td>");
                     sb.Append("</tr>");
-                    tMat += r.Materiales; tBuenos += r.ProdBuenos; tRec += r.ProdRechazo;
+                    tMat += r.Materiales; tBuenos += r.ProdBuenos; tRec += r.ProdRechazo; tMerma += r.MermaMP;
                 }
-                decimal grandTotal = tMat + tBuenos + tRec;
+                decimal grandTotal = tMat + tBuenos + tRec + tMerma;
                 sb.Append("</tbody><tfoot><tr>");
                 sb.Append("<td><strong>TOTAL</strong></td>");
                 sb.Append("<td class='text-right'><strong>" + tMat.ToString("C2") + "</strong></td>");
                 sb.Append("<td class='text-right'><strong>" + tBuenos.ToString("C2") + "</strong></td>");
                 sb.Append("<td class='text-right'><strong>" + tRec.ToString("C2") + "</strong></td>");
+                sb.Append("<td class='text-right merma'><strong>" + tMerma.ToString("C2") + "</strong></td>");
                 sb.Append("<td class='text-right'><strong>" + grandTotal.ToString("C2") + "</strong></td>");
                 sb.Append("</tr></tfoot></table>");
             }
@@ -328,6 +350,75 @@ namespace GrupoAnkhalInventario
 </body></html>");
 
             return sb.ToString();
+        }
+
+        // ── Helpers StockMerma (ADO.NET, tabla no mapeada en DBML) ───────────
+
+        private Dictionary<int, decimal> ObtenerMermaPorMaterial(List<int> basesUsuario, int? baseFiltraID)
+        {
+            var dict = new Dictionary<int, decimal>();
+            var where = new List<string> { "b.Activo = 1", "sm.CantidadActual > 0" };
+            var parms = new List<SqlParameter>();
+            AgregarFiltroMerma(where, parms, basesUsuario, baseFiltraID);
+
+            string sql = "SELECT sm.MaterialID, SUM(sm.CantidadActual) " +
+                         "FROM dbo.StockMerma sm INNER JOIN dbo.Bases b ON b.BaseID = sm.BaseID " +
+                         "WHERE " + string.Join(" AND ", where) + " GROUP BY sm.MaterialID";
+
+            using (var conn = new SqlConnection(_connStr))
+            {
+                conn.Open();
+                using (var cmd = new SqlCommand(sql, conn))
+                {
+                    cmd.Parameters.AddRange(parms.ToArray());
+                    using (var rd = cmd.ExecuteReader())
+                        while (rd.Read()) dict[rd.GetInt32(0)] = rd.GetDecimal(1);
+                }
+            }
+            return dict;
+        }
+
+        private Dictionary<int, decimal> ObtenerMermaPorBase(List<int> basesUsuario, int? baseFiltraID)
+        {
+            var dict = new Dictionary<int, decimal>();
+            var where = new List<string> { "b.Activo = 1" };
+            var parms = new List<SqlParameter>();
+            AgregarFiltroMerma(where, parms, basesUsuario, baseFiltraID);
+
+            string sql = "SELECT sm.BaseID, SUM(sm.CantidadActual * m.PrecioUnitario) " +
+                         "FROM dbo.StockMerma sm " +
+                         "INNER JOIN dbo.Materiales m ON m.MaterialID = sm.MaterialID " +
+                         "INNER JOIN dbo.Bases b ON b.BaseID = sm.BaseID " +
+                         "WHERE " + string.Join(" AND ", where) + " GROUP BY sm.BaseID";
+
+            using (var conn = new SqlConnection(_connStr))
+            {
+                conn.Open();
+                using (var cmd = new SqlCommand(sql, conn))
+                {
+                    cmd.Parameters.AddRange(parms.ToArray());
+                    using (var rd = cmd.ExecuteReader())
+                        while (rd.Read()) dict[rd.GetInt32(0)] = rd.GetDecimal(1);
+                }
+            }
+            return dict;
+        }
+
+        private void AgregarFiltroMerma(List<string> where, List<SqlParameter> parms,
+            List<int> basesUsuario, int? baseFiltraID)
+        {
+            if (basesUsuario != null && basesUsuario.Count > 0)
+            {
+                var pNames = basesUsuario
+                    .Select((id, i) => { parms.Add(new SqlParameter("@bu" + i, id)); return "@bu" + i; })
+                    .ToList();
+                where.Add("sm.BaseID IN (" + string.Join(",", pNames) + ")");
+            }
+            if (baseFiltraID.HasValue)
+            {
+                where.Add("sm.BaseID = @baseFiltraID");
+                parms.Add(new SqlParameter("@baseFiltraID", baseFiltraID.Value));
+            }
         }
 
         // ── Helpers nivel ─────────────────────────────────────────────────────
@@ -356,7 +447,7 @@ namespace GrupoAnkhalInventario
         private class MaterialRow
         {
             public string Codigo, Descripcion, Tipo, Unidad, Nivel;
-            public decimal Stock, Precio, Valor;
+            public decimal Stock, Precio, Valor, Merma, ValorMerma;
         }
         private class ProductoRow
         {
@@ -367,7 +458,7 @@ namespace GrupoAnkhalInventario
         private class ResumenRow
         {
             public string Base;
-            public decimal Materiales, ProdBuenos, ProdRechazo;
+            public decimal Materiales, ProdBuenos, ProdRechazo, MermaMP;
         }
     }
 }
