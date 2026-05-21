@@ -699,6 +699,9 @@ namespace GrupoAnkhalInventario
                                     UpsertStock(db, it.tipoItem, it.itemId, baseOrigenID, -cantBase);
                                     if (it.tipoItem == "Material")
                                         UpsertStockMerma(db.Connection, tx, it.itemId, baseOrigenID.Value, cantBase);
+                                    else if (it.tipoItem == "Producto" && baseOrigenID.HasValue)
+                                        UpsertRechazoProducto(db, it.itemId, baseOrigenID.Value,
+                                            (int)Math.Round(cantBase, MidpointRounding.AwayFromZero));
                                     break;
                                 case "AJUSTE_POS":
                                     UpsertStock(db, it.tipoItem, it.itemId, baseDestinoID, +cantBase); break;
@@ -817,6 +820,30 @@ namespace GrupoAnkhalInventario
                     s.CantidadBuenas   += deltaInt;
                     s.FechaUltimaModif  = AppHelper.Ahora;
                 }
+            }
+        }
+
+        private void UpsertRechazoProducto(InventarioAnkhalDBDataContext db,
+            int productoID, int baseID, int delta)
+        {
+            var s = db.StockProductos
+                .FirstOrDefault(x => x.BaseID == baseID && x.ProductoID == productoID);
+
+            if (s == null)
+            {
+                db.StockProductos.InsertOnSubmit(new StockProductos
+                {
+                    BaseID           = baseID,
+                    ProductoID       = productoID,
+                    CantidadBuenas   = 0,
+                    CantidadRechazo  = delta > 0 ? delta : 0,
+                    FechaUltimaModif = AppHelper.Ahora
+                });
+            }
+            else
+            {
+                s.CantidadRechazo  += delta;
+                s.FechaUltimaModif  = AppHelper.Ahora;
             }
         }
 

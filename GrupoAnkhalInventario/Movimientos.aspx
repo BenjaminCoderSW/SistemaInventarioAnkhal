@@ -387,6 +387,12 @@
           </div>
         </div>
 
+        <!-- Nota merma producto -->
+        <p id="pMermaNote" class="small fw-semibold text-info mb-2" style="display:none; margin-top:0;">
+            <i class="fas fa-info-circle"></i>
+            La cantidad ingresada se restar&aacute; de las unidades buenas de la base y se sumar&aacute; a las unidades en rechazo.
+        </p>
+
         <!-- ── PROVEEDOR (solo visible en ENTRADA) ─────────────────── -->
         <div class="row" id="rowProveedor" style="display:none;">
           <div class="col-md-6">
@@ -558,6 +564,7 @@
         document.getElementById('<%= ddlTipoMovimiento.ClientID %>').value = '';
         document.getElementById('rbMaterial').checked = true;
         document.getElementById('<%= hdnTipoItemSeleccionado.ClientID %>').value = 'Material';
+        document.getElementById('pMermaNote').style.display = 'none';
         document.getElementById('<%= ddlItem.ClientID %>').selectedIndex = 0;
         document.getElementById('<%= ddlBaseOrigen.ClientID %>').selectedIndex = 0;
         document.getElementById('<%= ddlBaseDestino.ClientID %>').selectedIndex = 0;
@@ -745,8 +752,9 @@
             case '3': divOrigen.style.display = 'block'; divDestino.style.display = 'block'; break;
             case '6': divDestino.style.display = 'block'; break;
             case '7': divOrigen.style.display  = 'block'; break;
-            case '5': divOrigen.style.display  = 'block'; break;
+            case '5': divOrigen.style.display = 'block'; break;
         }
+        actualizarNotaMerma();
         calcularTotal();
     }
 
@@ -768,6 +776,15 @@
         }
         document.getElementById('divUnidadCaptura').style.display = 'none';
         document.getElementById('<%= lblConversionInfo.ClientID %>').innerText = '';
+        actualizarNotaMerma();
+    }
+
+    // ── Nota merma producto ─────────────────────────────────────────
+    function actualizarNotaMerma() {
+        var tipo     = document.getElementById('<%= ddlTipoMovimiento.ClientID %>').value;
+        var tipoItem = document.querySelector('input[name="rbTipoItem"]:checked').value;
+        var nota     = document.getElementById('pMermaNote');
+        nota.style.display = (tipo === '5' && tipoItem === 'Producto') ? 'block' : 'none';
     }
 
     // ── Auto-llenar costo al seleccionar item ───────────────────────
