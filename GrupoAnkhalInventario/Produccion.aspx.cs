@@ -765,16 +765,24 @@ namespace GrupoAnkhalInventario
                     var unidClavesVal = dbVal.UnidadesMedida
                         .ToDictionary(u => u.UnidadMedidaID, u => u.Clave);
 
-                    foreach (var c in listaConsumos.Where(c => c.CantBase > 0))
-                    {
-                        var infoMat = matInfoVal.FirstOrDefault(x => x.MaterialID == c.MatID);
-                        string uclave = infoMat?.UnidadMedidaID.HasValue == true &&
-                                        unidClavesVal.ContainsKey(infoMat.UnidadMedidaID.Value)
-                                        ? unidClavesVal[infoMat.UnidadMedidaID.Value] : "";
+                    // Agrupar por material y sumar total requerido antes de validar,
+                        // porque el mismo material puede aparecer varias veces en el BOM.
+                        var requerimientos = listaConsumos
+                            .Where(c => c.CantBase > 0)
+                            .GroupBy(c => c.MatID)
+                            .Select(g => new { MatID = g.Key, TotalBase = g.Sum(x => x.CantBase) })
+                            .ToList();
 
-                        if (!ValidarStockSuficiente(dbVal, c.MatID, baseID, c.CantBase, uclave))
-                            return;
-                    }
+                        foreach (var req in requerimientos)
+                        {
+                            var infoMat = matInfoVal.FirstOrDefault(x => x.MaterialID == req.MatID);
+                            string uclave = infoMat?.UnidadMedidaID.HasValue == true &&
+                                            unidClavesVal.ContainsKey(infoMat.UnidadMedidaID.Value)
+                                            ? unidClavesVal[infoMat.UnidadMedidaID.Value] : "";
+
+                            if (!ValidarStockSuficiente(dbVal, req.MatID, baseID, req.TotalBase, uclave))
+                                return;
+                        }
                 }
             }
             catch (InvalidOperationException ex)

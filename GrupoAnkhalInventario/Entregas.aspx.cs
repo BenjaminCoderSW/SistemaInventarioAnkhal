@@ -1288,46 +1288,60 @@ namespace GrupoAnkhalInventario
         private string ValidarStockItems(InventarioAnkhalDBDataContext db,
             List<ItemEntregaModel> items, int baseID)
         {
-            foreach (var it in items)
+            // Agrupar por producto/material y sumar el total requerido antes de comparar
+            // con el stock. Sin esto, el mismo item en diferente unidad genera filas separadas
+            // que pasan la validación individual pero juntas superan el stock disponible.
+
+            var reqProductos = items
+                .Where(it => it.TipoItem == "PRODUCTO")
+                .GroupBy(it => it.ItemID)
+                .Select(g => new { ItemID = g.Key, Total = g.Sum(x => x.Cantidad) })
+                .ToList();
+
+            foreach (var req in reqProductos)
             {
-                if (it.TipoItem == "PRODUCTO")
-                {
-                    decimal disponible = db.StockProductos
-                        .Where(s => s.BaseID == baseID && s.ProductoID == it.ItemID)
-                        .Select(s => (decimal)s.CantidadBuenas)
-                        .FirstOrDefault();
+                decimal disponible = db.StockProductos
+                    .Where(s => s.BaseID == baseID && s.ProductoID == req.ItemID)
+                    .Select(s => (decimal)s.CantidadBuenas)
+                    .FirstOrDefault();
 
-                    if (disponible < it.Cantidad)
-                    {
-                        string nombre = db.Productos
-                            .Where(p => p.ProductoID == it.ItemID)
-                            .Select(p => p.Descripcion)
-                            .FirstOrDefault() ?? "Producto";
-                        return string.Format(
-                            "Stock insuficiente para '{0}': disponible {1:N0}, requerido {2:N0}.",
-                            nombre, disponible, it.Cantidad);
-                    }
-                }
-                else if (it.TipoItem == "MATERIAL")
+                if (disponible < req.Total)
                 {
-                    decimal disponible = db.StockMateriales
-                        .Where(s => s.BaseID == baseID && s.MaterialID == it.ItemID)
-                        .Select(s => s.CantidadActual)
-                        .FirstOrDefault();
-
-                    decimal cantBase = it.Cantidad * it.Factor;
-                    if (disponible < cantBase)
-                    {
-                        string nombre = db.Materiales
-                            .Where(m => m.MaterialID == it.ItemID)
-                            .Select(m => m.Descripcion)
-                            .FirstOrDefault() ?? "Material";
-                        return string.Format(
-                            "Stock insuficiente para '{0}': disponible {1:N4}, requerido {2:N4}.",
-                            nombre, disponible, cantBase);
-                    }
+                    string nombre = db.Productos
+                        .Where(p => p.ProductoID == req.ItemID)
+                        .Select(p => p.Descripcion)
+                        .FirstOrDefault() ?? "Producto";
+                    return string.Format(
+                        "Stock insuficiente para '{0}': disponible {1:N0}, requerido {2:N0}.",
+                        nombre, disponible, req.Total);
                 }
             }
+
+            var reqMateriales = items
+                .Where(it => it.TipoItem == "MATERIAL")
+                .GroupBy(it => it.ItemID)
+                .Select(g => new { ItemID = g.Key, TotalBase = g.Sum(x => x.Cantidad * x.Factor) })
+                .ToList();
+
+            foreach (var req in reqMateriales)
+            {
+                decimal disponible = db.StockMateriales
+                    .Where(s => s.BaseID == baseID && s.MaterialID == req.ItemID)
+                    .Select(s => s.CantidadActual)
+                    .FirstOrDefault();
+
+                if (disponible < req.TotalBase)
+                {
+                    string nombre = db.Materiales
+                        .Where(m => m.MaterialID == req.ItemID)
+                        .Select(m => m.Descripcion)
+                        .FirstOrDefault() ?? "Material";
+                    return string.Format(
+                        "Stock insuficiente para '{0}': disponible {1:N4}, requerido {2:N4}.",
+                        nombre, disponible, req.TotalBase);
+                }
+            }
+
             return null; // null = todo bien
         }
 
@@ -1521,11 +1535,15 @@ namespace GrupoAnkhalInventario
                 }
                 else if (it.TipoItem == "MATERIAL")
                 {
+                    // La cantidad original deducida fue en unidad base (it.Cantidad × it.Factor).
+                    // it.Cantidad es la cantidad capturada (ej. cubetas); hay que devolver en base.
+                    decimal cantBaseDevolver = it.Cantidad * it.Factor;
+
                     var stock = db.StockMateriales
                         .FirstOrDefault(s => s.BaseID == baseID && s.MaterialID == it.ItemID);
                     if (stock != null)
                     {
-                        stock.CantidadActual  += it.Cantidad;
+                        stock.CantidadActual  += cantBaseDevolver;
                         stock.FechaUltimaModif = AppHelper.Ahora;
                     }
                     else
@@ -1534,7 +1552,7 @@ namespace GrupoAnkhalInventario
                         {
                             BaseID           = baseID,
                             MaterialID       = it.ItemID,
-                            CantidadActual   = it.Cantidad,
+                            CantidadActual   = cantBaseDevolver,
                             FechaUltimaModif = AppHelper.Ahora
                         });
                     }
@@ -1547,7 +1565,7 @@ namespace GrupoAnkhalInventario
                         ProductoID       = null,
                         BaseOrigenID     = null,
                         BaseDestinoID    = baseID,
-                        Cantidad         = it.Cantidad,
+                        Cantidad         = cantBaseDevolver,
                         Costo            = it.PrecioUnitario,
                         EntregaID        = entregaID,
                         ProduccionID     = null,
