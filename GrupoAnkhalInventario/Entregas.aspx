@@ -259,15 +259,20 @@
                             <option value="MATERIAL">Material</option>
                         </select>
                     </div>
-                    <div class="col-md-4" id="divSelProducto">
-                        <label class="font-weight-bold small">Producto</label>
-                        <asp:DropDownList ID="ddlItemProducto" runat="server" CssClass="form-control form-control-sm"
-                            onchange="onItemChange()"></asp:DropDownList>
-                    </div>
-                    <div class="col-md-4" id="divSelMaterial" style="display:none;">
-                        <label class="font-weight-bold small">Material</label>
-                        <asp:DropDownList ID="ddlItemMaterial" runat="server" CssClass="form-control form-control-sm"
-                            onchange="onItemChange()"></asp:DropDownList>
+                    <div class="col-md-4">
+                        <label class="font-weight-bold small">Buscar <span id="lblTipoBusqueda">Producto</span></label>
+                        <div style="position:relative;">
+                            <input type="text" id="txtBuscarItem" class="form-control form-control-sm"
+                                   placeholder="Escribe para buscar..." autocomplete="off"
+                                   oninput="onBuscarItem()" />
+                            <div id="divResultadosBusqueda"
+                                 style="display:none; position:absolute; z-index:9999; width:100%;
+                                        background:#fff; border:1px solid #ccc; border-radius:4px;
+                                        max-height:220px; overflow-y:auto;
+                                        box-shadow:0 2px 8px rgba(0,0,0,.18);">
+                            </div>
+                        </div>
+                        <input type="hidden" id="hdnItemID" />
                     </div>
                     <div class="col-md-2">
                         <label class="font-weight-bold small">Cantidad <span class="text-danger">*</span></label>
@@ -443,45 +448,97 @@
 
     function onTipoItemChange() {
         var tipo = document.getElementById('selTipoItem').value;
-        document.getElementById('divSelProducto').style.display = tipo === 'PRODUCTO' ? '' : 'none';
-        document.getElementById('divSelMaterial').style.display = tipo === 'MATERIAL' ? '' : 'none';
-        document.getElementById('divUnidadMaterial').style.display = tipo === 'MATERIAL' ? '' : 'none';
-        onItemChange();
+        document.getElementById('divUnidadMaterial').style.display = 'none';
+        document.getElementById('txtBuscarItem').value = '';
+        document.getElementById('hdnItemID').value     = '';
+        _itemSeleccionado = null;
+        ocultarResultados();
+        document.getElementById('lblTipoBusqueda').textContent =
+            tipo === 'PRODUCTO' ? 'Producto' : 'Material';
     }
 
-    function onItemChange() {
+    // \u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500
+    // Autocomplete AJAX
+    // \u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500
+    var _buscarTimer      = null;
+    var _itemSeleccionado = null;
+
+    function onBuscarItem() {
+        clearTimeout(_buscarTimer);
+        var q = document.getElementById('txtBuscarItem').value.trim();
+        _itemSeleccionado = null;
+        document.getElementById('hdnItemID').value = '';
+        if (q.length < 2) { ocultarResultados(); return; }
+        _buscarTimer = setTimeout(function () { ejecutarBusqueda(q); }, 300);
+    }
+
+    function ejecutarBusqueda(query) {
         var tipo = document.getElementById('selTipoItem').value;
-        var precio = 0;
-        if (tipo === 'PRODUCTO') {
-            var sel = document.getElementById('<%= ddlItemProducto.ClientID %>');
-            var id = sel.value;
-            precio = (window.prodPrecios && window.prodPrecios[id]) ? window.prodPrecios[id] : 0;
-        } else {
-            var sel2 = document.getElementById('<%= ddlItemMaterial.ClientID %>');
-            var id2 = sel2.value;
-            precio = (window.matPrecios && window.matPrecios[id2]) ? window.matPrecios[id2] : 0;
-            poblarUnidadesMaterial(id2);
-        }
-        document.getElementById('txtItemPrecio').value = precio.toFixed(2);
+        fetch('<%= ResolveUrl("~/Entregas.aspx/BuscarItems") %>', {
+            method:  'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body:    JSON.stringify({ query: query, tipo: tipo })
+        })
+        .then(function (r) { return r.json(); })
+        .then(function (data) { mostrarResultados(data.d); })
+        .catch(function () { ocultarResultados(); });
     }
 
-    function poblarUnidadesMaterial(matID) {
+    function mostrarResultados(items) {
+        var div = document.getElementById('divResultadosBusqueda');
+        div.innerHTML = '';
+        if (!items || items.length === 0) {
+            div.innerHTML = '<div style="padding:8px 10px;color:#888;font-size:.84rem;">Sin resultados</div>';
+            div.style.display = '';
+            return;
+        }
+        items.forEach(function (item) {
+            var el = document.createElement('div');
+            el.style.cssText = 'padding:7px 10px;cursor:pointer;font-size:.84rem;border-bottom:1px solid #f0f0f0;';
+            el.textContent   = item.nombre;
+            el.onmouseenter  = function () { el.style.background = '#e8f0fe'; };
+            el.onmouseleave  = function () { el.style.background = ''; };
+            el.onmousedown   = function (e) { e.preventDefault(); seleccionarItem(item); };
+            div.appendChild(el);
+        });
+        div.style.display = '';
+    }
+
+    function ocultarResultados() {
+        document.getElementById('divResultadosBusqueda').style.display = 'none';
+    }
+
+    function seleccionarItem(item) {
+        _itemSeleccionado = item;
+        document.getElementById('txtBuscarItem').value = item.nombre;
+        document.getElementById('hdnItemID').value     = item.id;
+        document.getElementById('txtItemPrecio').value = item.precio;
+        ocultarResultados();
+
+        var tipo = document.getElementById('selTipoItem').value;
+        if (tipo === 'MATERIAL') {
+            poblarUnidadesMaterial(item.conversiones || []);
+            document.getElementById('divUnidadMaterial').style.display = '';
+        } else {
+            document.getElementById('divUnidadMaterial').style.display = 'none';
+        }
+    }
+
+    function poblarUnidadesMaterial(conversiones) {
         var sel = document.getElementById('selUnidadMaterial');
         sel.innerHTML = '';
-        var opciones = (window.matConversiones && window.matConversiones[matID])
-            ? window.matConversiones[matID] : [];
-        if (opciones.length === 0) {
+        if (!conversiones || conversiones.length === 0) {
             var opt = document.createElement('option');
             opt.value = '';
-            opt.text = '\u2014 sin unidad \u2014';
+            opt.text  = '\u2014 sin unidad \u2014';
             opt.setAttribute('data-factor', '1');
             sel.appendChild(opt);
             return;
         }
-        opciones.forEach(function (op) {
+        conversiones.forEach(function (op) {
             var opt = document.createElement('option');
             opt.value = op.valor;
-            opt.text = op.texto;
+            opt.text  = op.texto;
             opt.setAttribute('data-factor', op.factor);
             sel.appendChild(opt);
         });
@@ -489,21 +546,25 @@
 
     function onUnidadMaterialChange() { /* factor se lee al agregar */ }
 
+    // Cerrar lista al hacer clic fuera del autocomplete
+    document.addEventListener('click', function (e) {
+        var inp = document.getElementById('txtBuscarItem');
+        var res = document.getElementById('divResultadosBusqueda');
+        if (inp && res && !inp.contains(e.target) && !res.contains(e.target))
+            ocultarResultados();
+    });
+
     function agregarItem() {
         var tipo = document.getElementById('selTipoItem').value;
-        var itemID, nombre;
 
-        if (tipo === 'PRODUCTO') {
-            var sel = document.getElementById('<%= ddlItemProducto.ClientID %>');
-            if (!sel.value) { alert('Seleccione un producto.'); return; }
-            itemID = parseInt(sel.value);
-            nombre = sel.options[sel.selectedIndex].text;
-        } else {
-            var sel2 = document.getElementById('<%= ddlItemMaterial.ClientID %>');
-            if (!sel2.value) { alert('Seleccione un material.'); return; }
-            itemID = parseInt(sel2.value);
-            nombre = sel2.options[sel2.selectedIndex].text;
+        if (!_itemSeleccionado || !_itemSeleccionado.id) {
+            Swal.fire('Campo requerido',
+                'Busque y seleccione un ' + (tipo === 'PRODUCTO' ? 'producto' : 'material') + ' de la lista.',
+                'warning');
+            return;
         }
+        var itemID = parseInt(_itemSeleccionado.id);
+        var nombre = _itemSeleccionado.nombre;
 
         var cantidad = parseFloat(document.getElementById('txtItemCantidad').value) || 0;
         var precio   = parseFloat(document.getElementById('txtItemPrecio').value) || 0;

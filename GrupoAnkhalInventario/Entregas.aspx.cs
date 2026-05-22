@@ -4,6 +4,7 @@ using System.Configuration;
 using System.Linq;
 using System.Text;
 using System.Web.Script.Serialization;
+using System.Web.Services;
 using System.Web.UI.WebControls;
 using GrupoAnkhalInventario.Helpers;
 using GrupoAnkhalInventario.Modelo;
@@ -84,9 +85,6 @@ namespace GrupoAnkhalInventario
         {
             if (Session["ClaveID"] == null) { Response.Redirect("~/Login.aspx"); return; }
 
-            RegistrarPreciosJS();
-            RegistrarConversionesJS();
-
             if (!IsPostBack)
             {
                 CargarCatalogos();
@@ -136,133 +134,9 @@ namespace GrupoAnkhalInventario
                 foreach (var c in clientes)
                     ddlNuevoCliente.Items.Add(new ListItem(c.Nombre, c.ClienteID.ToString()));
 
-                // Productos para item selector (con precio como data-attribute)
-                var productos = db.Productos
-                    .Where(p => p.Activo)
-                    .OrderBy(p => p.Codigo)
-                    .Select(p => new { p.ProductoID, p.Descripcion, p.PrecioVenta, p.Codigo })
-                    .ToList();
-
-                ddlItemProducto.Items.Clear();
-                ddlItemProducto.Items.Add(new ListItem("-- Seleccione --", ""));
-                foreach (var p in productos)
-                {
-                    var li = new ListItem(string.Format("[{0}] {1}", p.Codigo, p.Descripcion), p.ProductoID.ToString());
-                    li.Attributes["data-precio"] = p.PrecioVenta.ToString("F2", System.Globalization.CultureInfo.InvariantCulture);
-                    ddlItemProducto.Items.Add(li);
-                }
-
-                // Materiales para item selector
-                var materiales = db.Materiales
-                    .Where(m => m.Activo)
-                    .OrderBy(m => m.Codigo)
-                    .Select(m => new { m.MaterialID, m.Descripcion, m.PrecioUnitario, m.Codigo })
-                    .ToList();
-
-                ddlItemMaterial.Items.Clear();
-                ddlItemMaterial.Items.Add(new ListItem("-- Seleccione --", ""));
-                foreach (var m in materiales)
-                {
-                    var li = new ListItem(string.Format("[{0}] {1}", m.Codigo, m.Descripcion), m.MaterialID.ToString());
-                    li.Attributes["data-precio"] = m.PrecioUnitario.ToString("F2", System.Globalization.CultureInfo.InvariantCulture);
-                    ddlItemMaterial.Items.Add(li);
-                }
             }
         }
 
-        // Inyecta window.prodPrecios y window.matPrecios como JS globals en cada carga
-        private void RegistrarPreciosJS()
-        {
-            using (var db = NuevoDb(false))
-            {
-                var prods = db.Productos
-                    .Where(p => p.Activo)
-                    .Select(p => new { p.ProductoID, p.PrecioVenta })
-                    .ToList();
-
-                var mats = db.Materiales
-                    .Where(m => m.Activo)
-                    .Select(m => new { m.MaterialID, m.PrecioUnitario })
-                    .ToList();
-
-                var ci = System.Globalization.CultureInfo.InvariantCulture;
-                string prodJson = "{" + string.Join(",",
-                    prods.Select(p => $"\"{p.ProductoID}\":{p.PrecioVenta.ToString("F2", ci)}")) + "}";
-                string matJson  = "{" + string.Join(",",
-                    mats.Select(m => $"\"{m.MaterialID}\":{m.PrecioUnitario.ToString("F2", ci)}")) + "}";
-
-                string js = $"window.prodPrecios={prodJson};window.matPrecios={matJson};";
-                ClientScript.RegisterStartupScript(GetType(), "preciosJS", js, true);
-            }
-        }
-
-        // Inyecta window.matUnidadBase y window.matConversiones para el selector de unidades
-        private void RegistrarConversionesJS()
-        {
-            using (var db = NuevoDb(false))
-            {
-                var ci = System.Globalization.CultureInfo.InvariantCulture;
-
-                var mats = db.Materiales
-                    .Where(m => m.Activo && m.UnidadMedidaID.HasValue)
-                    .Select(m => new { m.MaterialID, m.Unidad, m.UnidadMedidaID })
-                    .ToList();
-
-                var unidades = db.UnidadesMedida
-                    .ToDictionary(u => u.UnidadMedidaID, u => u.Clave);
-
-                var convs = (from c in db.ConversionesMaterial
-                             where c.Activo
-                             join u in db.UnidadesMedida on c.UnidadOrigenID equals u.UnidadMedidaID
-                             select new { c.MaterialID, c.ConversionID, c.Factor, u.Clave, u.Nombre })
-                            .ToList();
-
-                // matUnidadBase: { "matID": { id: X, clave: "ml" } }
-                var baseEntries = mats
-                    .Where(m => unidades.ContainsKey(m.UnidadMedidaID.Value))
-                    .Select(m => string.Format(ci, "\"{0}\":{{\"id\":{1},\"clave\":\"{2}\"}}",
-                        m.MaterialID, m.UnidadMedidaID.Value,
-                        unidades[m.UnidadMedidaID.Value].Replace("\"", "\\\"")));
-
-                // matConversiones: { "matID": [{valor, texto, factor}, ...] }
-                var convEntries = new List<string>();
-                foreach (var m in mats)
-                {
-                    var opciones = new List<string>();
-                    // Opción base
-                    string clave = unidades.ContainsKey(m.UnidadMedidaID.Value)
-                        ? unidades[m.UnidadMedidaID.Value] : m.Unidad ?? "";
-                    opciones.Add(string.Format(ci,
-                        "{{\"valor\":\"base:{0}\",\"texto\":\"{1} (base)\",\"factor\":1}}",
-                        m.UnidadMedidaID.Value, clave.Replace("\"", "\\\"")));
-
-                    // Opciones de conversión
-                    foreach (var c in convs.Where(c => c.MaterialID == m.MaterialID))
-                    {
-                        string texto = string.IsNullOrEmpty(c.Nombre) ? c.Clave : c.Nombre;
-                        string factorDisplay = (c.Factor == Math.Floor(c.Factor))
-                            ? ((long)c.Factor).ToString(ci)
-                            : c.Factor.ToString("G6", ci);
-                        string textoConEq = string.Format("{0} (= {1} {2})",
-                            texto, factorDisplay, clave);
-                        opciones.Add(string.Format(ci,
-                            "{{\"valor\":\"conv:{0}\",\"texto\":\"{1}\",\"factor\":{2}}}",
-                            c.ConversionID, textoConEq.Replace("\"", "\\\""),
-                            c.Factor.ToString("F6", ci)));
-                    }
-
-                    convEntries.Add(string.Format("\"{0}\":[{1}]", m.MaterialID,
-                        string.Join(",", opciones)));
-                }
-
-                string js = string.Format(
-                    "window.matUnidadBase={{{0}}};window.matConversiones={{{1}}};",
-                    string.Join(",", baseEntries),
-                    string.Join(",", convEntries));
-
-                ClientScript.RegisterStartupScript(GetType(), "conversionesJS", js, true);
-            }
-        }
 
         // ══ Filtros ══════════════════════════════════════════════════════════
         private IQueryable<Modelo.Entregas> AplicarFiltros(IQueryable<Modelo.Entregas> q)
@@ -1592,6 +1466,89 @@ namespace GrupoAnkhalInventario
         {
             var obj = new { icon, title, text, modal = modal ?? "" };
             hdnMensajePendiente.Value = _json.Serialize(obj);
+        }
+
+        // ══ WebMethod: búsqueda AJAX de productos / materiales ════════════════
+        [WebMethod(EnableSession = true)]
+        public static object BuscarItems(string query, string tipo)
+        {
+            if (System.Web.HttpContext.Current.Session["ClaveID"] == null)
+                throw new Exception("No autorizado.");
+
+            query = (query ?? "").Trim();
+            var ci = System.Globalization.CultureInfo.InvariantCulture;
+
+            using (var db = new InventarioAnkhalDBDataContext(_connStr))
+            {
+                db.ObjectTrackingEnabled = false;
+
+                if (tipo == "PRODUCTO")
+                {
+                    return db.Productos
+                        .Where(p => p.Activo &&
+                            (p.Descripcion.Contains(query) || p.Codigo.Contains(query)))
+                        .OrderBy(p => p.Codigo)
+                        .Take(15)
+                        .Select(p => new
+                        {
+                            id     = p.ProductoID,
+                            nombre = "[" + p.Codigo + "] " + p.Descripcion,
+                            precio = p.PrecioVenta
+                        })
+                        .ToList();
+                }
+
+                // MATERIAL: devuelve materiales + sus conversiones en una sola respuesta
+                var mats = db.Materiales
+                    .Where(m => m.Activo &&
+                        (m.Descripcion.Contains(query) || m.Codigo.Contains(query)))
+                    .OrderBy(m => m.Codigo)
+                    .Take(15)
+                    .ToList();
+
+                if (!mats.Any()) return new object[0];
+
+                var matIDs   = mats.Select(m => m.MaterialID).ToList();
+                var unidades = db.UnidadesMedida.ToDictionary(u => u.UnidadMedidaID, u => u.Clave);
+                var convs    = (from c in db.ConversionesMaterial
+                                where c.Activo && matIDs.Contains(c.MaterialID)
+                                join u in db.UnidadesMedida on c.UnidadOrigenID equals u.UnidadMedidaID
+                                select new { c.MaterialID, c.ConversionID, c.Factor, u.Clave, u.Nombre })
+                               .ToList();
+
+                var resultado = new List<object>();
+                foreach (var m in mats)
+                {
+                    string claveBase = (m.UnidadMedidaID.HasValue && unidades.ContainsKey(m.UnidadMedidaID.Value))
+                        ? unidades[m.UnidadMedidaID.Value] : (m.Unidad ?? "");
+
+                    var opciones = new List<object>();
+                    if (m.UnidadMedidaID.HasValue)
+                        opciones.Add(new { valor = "base:" + m.UnidadMedidaID.Value, texto = claveBase + " (base)", factor = 1.0 });
+
+                    foreach (var c in convs.Where(x => x.MaterialID == m.MaterialID))
+                    {
+                        string textoConv = string.IsNullOrEmpty(c.Nombre) ? c.Clave : c.Nombre;
+                        string factorStr = (c.Factor == Math.Floor(c.Factor))
+                            ? ((long)c.Factor).ToString(ci) : c.Factor.ToString("G6", ci);
+                        opciones.Add(new
+                        {
+                            valor  = "conv:" + c.ConversionID,
+                            texto  = textoConv + " (= " + factorStr + " " + claveBase + ")",
+                            factor = (double)c.Factor
+                        });
+                    }
+
+                    resultado.Add(new
+                    {
+                        id           = m.MaterialID,
+                        nombre       = "[" + m.Codigo + "] " + m.Descripcion,
+                        precio       = m.PrecioUnitario,
+                        conversiones = opciones
+                    });
+                }
+                return resultado;
+            }
         }
     }
 }
