@@ -5,6 +5,7 @@ using System.Collections.Generic;
 using System.Configuration;
 using System.Linq;
 using System.Web.Script.Serialization;
+using System.Web.Services;
 using System.Web.UI;
 using System.Web.UI.WebControls;
 
@@ -304,12 +305,6 @@ namespace GrupoAnkhalInventario
         // ── Inyectar datos JS ─────────────────────────────────────────────────
         private void InjectJsData(InventarioAnkhalDBDataContext db, List<ProductoVM> lista)
         {
-            var mats = db.Materiales
-                .Where(m => m.Activo == true)
-                .OrderBy(m => m.Descripcion)
-                .Select(m => new { id = m.MaterialID, nombre = m.Descripcion, unidad = m.Unidad, codigo = m.Codigo })
-                .ToList();
-
             var idsPagina = lista.Select(p => p.ProductoID).ToList();
             var pms = db.ProductoMateriales
                 .Where(pm => idsPagina.Contains(pm.ProductoID) && pm.Activo)
@@ -339,7 +334,7 @@ namespace GrupoAnkhalInventario
                 });
             }
 
-            var conversionesMat = BuildConversionesMat(db);
+            var conversionesMat = BuildConversionesMat(db, matIds);
 
             var paraClone = db.Productos
                 .Where(p => p.Activo)
@@ -353,8 +348,8 @@ namespace GrupoAnkhalInventario
                 .ToList();
 
             litJsData.Text = string.Format(
-                "<script>window._materialesData = {0}; window._componentesData = {1}; window._conversionesMat = {2}; window._productosParaClone = {3};</script>",
-                _json.Serialize(mats), _json.Serialize(dict), _json.Serialize(conversionesMat), _json.Serialize(paraClone));
+                "<script>window._componentesData = {0}; window._conversionesMat = {1}; window._productosParaClone = {2};</script>",
+                _json.Serialize(dict), _json.Serialize(conversionesMat), _json.Serialize(paraClone));
         }
 
         // Sobrecarga para postbacks donde no hay lista disponible
@@ -362,15 +357,15 @@ namespace GrupoAnkhalInventario
         {
             using (var db = NuevoDb(tracking: false))
             {
-                var mats = db.Materiales
-                    .Where(m => m.Activo == true)
-                    .OrderBy(m => m.Codigo)
-                    .Select(m => new { id = m.MaterialID, nombre = m.Descripcion, unidad = m.Unidad, codigo = m.Codigo })
-                    .ToList();
-
                 var idsPag = ViewState["IdsPagina"] as List<int> ?? new List<int>();
                 var pms = db.ProductoMateriales
                     .Where(pm => idsPag.Contains(pm.ProductoID) && pm.Activo)
+                    .ToList();
+
+                var pmsMatIds = pms.Select(pm => pm.MaterialID).Distinct().ToList();
+                var mats = db.Materiales
+                    .Where(m => pmsMatIds.Contains(m.MaterialID))
+                    .Select(m => new { id = m.MaterialID, nombre = m.Descripcion, unidad = m.Unidad, codigo = m.Codigo })
                     .ToList();
 
                 var dict = new Dictionary<string, object>();
@@ -395,7 +390,7 @@ namespace GrupoAnkhalInventario
                     });
                 }
 
-                var conversionesMat = BuildConversionesMat(db);
+                var conversionesMat = BuildConversionesMat(db, pmsMatIds);
 
                 var paraClone = db.Productos
                     .Where(p => p.Activo)
@@ -409,8 +404,8 @@ namespace GrupoAnkhalInventario
                     .ToList();
 
                 litJsData.Text = string.Format(
-                    "<script>window._materialesData = {0}; window._componentesData = {1}; window._conversionesMat = {2}; window._productosParaClone = {3};</script>",
-                    _json.Serialize(mats), _json.Serialize(dict), _json.Serialize(conversionesMat), _json.Serialize(paraClone));
+                    "<script>window._componentesData = {0}; window._conversionesMat = {1}; window._productosParaClone = {2};</script>",
+                    _json.Serialize(dict), _json.Serialize(conversionesMat), _json.Serialize(paraClone));
             }
         }
 
@@ -797,6 +792,74 @@ namespace GrupoAnkhalInventario
         {
             int r;
             return int.TryParse(v, out r) ? r : 0;
+        }
+
+        // ══ WebMethod: búsqueda AJAX de materiales ════════════════════════════
+        [WebMethod(EnableSession = true)]
+        public static object BuscarMateriales(string query)
+        {
+            if (System.Web.HttpContext.Current.Session["ClaveID"] == null)
+                throw new Exception("No autorizado.");
+
+            query = (query ?? "").Trim();
+            if (query.Length < 2) return new object[0];
+
+            var ci = System.Globalization.CultureInfo.InvariantCulture;
+
+            using (var db = new InventarioAnkhalDBDataContext(
+                ConfigurationManager.ConnectionStrings["InventarioAnkhalDBConnectionString"].ConnectionString))
+            {
+                db.ObjectTrackingEnabled = false;
+
+                var mats = db.Materiales
+                    .Where(m => m.Activo == true &&
+                        (m.Descripcion.Contains(query) || m.Codigo.Contains(query)))
+                    .OrderBy(m => m.Codigo)
+                    .Take(15)
+                    .ToList();
+
+                if (!mats.Any()) return new object[0];
+
+                var matIDs   = mats.Select(m => m.MaterialID).ToList();
+                var unidades = db.UnidadesMedida.ToDictionary(u => u.UnidadMedidaID, u => u.Clave);
+                var convs    = (from c in db.ConversionesMaterial
+                                where c.Activo && matIDs.Contains(c.MaterialID)
+                                join u in db.UnidadesMedida on c.UnidadOrigenID equals u.UnidadMedidaID
+                                select new { c.MaterialID, c.ConversionID, c.Factor, u.Clave, u.Nombre })
+                               .ToList();
+
+                var resultado = new List<object>();
+                foreach (var m in mats)
+                {
+                    string claveBase = (m.UnidadMedidaID.HasValue && unidades.ContainsKey(m.UnidadMedidaID.Value))
+                        ? unidades[m.UnidadMedidaID.Value] : (m.Unidad ?? "");
+
+                    var opciones = new List<object>();
+                    if (m.UnidadMedidaID.HasValue)
+                        opciones.Add(new { valor = "base:" + m.UnidadMedidaID.Value, texto = claveBase + " (base)", factor = 1.0 });
+
+                    foreach (var c in convs.Where(x => x.MaterialID == m.MaterialID))
+                    {
+                        string textoConv = string.IsNullOrEmpty(c.Nombre) ? c.Clave : c.Nombre;
+                        string factorStr = (c.Factor == Math.Floor(c.Factor))
+                            ? ((long)c.Factor).ToString(ci) : c.Factor.ToString("G6", ci);
+                        opciones.Add(new
+                        {
+                            valor  = "conv:" + c.ConversionID,
+                            texto  = textoConv + " (= " + factorStr + " " + claveBase + ")",
+                            factor = (double)c.Factor
+                        });
+                    }
+
+                    resultado.Add(new
+                    {
+                        id           = m.MaterialID,
+                        nombre       = "[" + m.Codigo + "] " + m.Descripcion,
+                        conversiones = opciones
+                    });
+                }
+                return resultado;
+            }
         }
     }
 }

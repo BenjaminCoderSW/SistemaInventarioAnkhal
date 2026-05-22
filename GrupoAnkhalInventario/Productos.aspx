@@ -424,9 +424,17 @@
         <div class="row align-items-end">
           <div class="col-md-4">
             <label style="font-size:.84rem;">Material <span style="color:red">*</span></label>
-            <select id="ddlMaterialComp" class="form-control form-control-sm" onchange="onMaterialCompChange()">
-              <option value="">-- Seleccione --</option>
-            </select>
+            <div style="position:relative;">
+              <input type="text" id="txtBuscarMatComp" class="form-control form-control-sm"
+                     placeholder="Escribe código o nombre..." autocomplete="off"
+                     oninput="onBuscarMatComp()" />
+              <div id="divResultadosMatComp"
+                   style="display:none; position:absolute; z-index:9999; width:100%;
+                          background:#fff; border:1px solid #ccc; border-radius:4px;
+                          max-height:220px; overflow-y:auto;
+                          box-shadow:0 2px 8px rgba(0,0,0,.18);">
+              </div>
+            </div>
           </div>
           <div class="col-md-2">
             <label style="font-size:.84rem;">Unidad</label>
@@ -504,11 +512,6 @@
             }
         } catch (e) { }
     });
-
-    // ════════════════════════════════════════════════════
-    // DATOS DE MATERIALES
-    // ════════════════════════════════════════════════════
-    var _materiales = window._materialesData || [];
 
     function abrirModalNuevo() {
         $('#modalNuevo').modal('show');
@@ -634,48 +637,100 @@
         var data = window._componentesData || {};
         _compModal = data[productoID] || [];
 
-        var sel = document.getElementById('ddlMaterialComp');
-        sel.innerHTML = '<option value="">-- Seleccione --</option>';
-        _materiales.forEach(function (m) {
-            sel.innerHTML += '<option value="' + m.id + '">[' + escHtml(m.codigo) + '] ' + escHtml(m.nombre) + ' (' + escHtml(m.unidad) + ')</option>';
-        });
-
-        // Resetear dropdown de unidad
+        // Resetear autocomplete de material
+        document.getElementById('txtBuscarMatComp').value = '';
+        document.getElementById('<%= hdnCompMaterialID.ClientID %>').value = '';
+        _matCompSeleccionado = null;
+        ocultarResultadosMatComp();
         document.getElementById('ddlUnidadComp').innerHTML = '<option value="">(base)</option>';
 
         renderTablaComp();
         document.getElementById('spanNombreProducto').innerText = descripcion || '';
         document.getElementById('txtCantConsumoComp').value = '0';
         document.getElementById('txtNotasComp').value = '';
-        document.getElementById('ddlMaterialComp').value = '';
 
         $('#modalComponentes').modal('show');
     }
 
-    // ── Poblar unidades al cambiar material en modal BOM ────────────
-    function onMaterialCompChange() {
-        var matID = document.getElementById('ddlMaterialComp').value;
-        var ddlU  = document.getElementById('ddlUnidadComp');
+    // ── Autocomplete AJAX de material en modal BOM ──────────────────
+    var _matCompSeleccionado = null;
+    var _buscarMatCompTimer  = null;
 
-        // Texto del primer option: mostrar la unidad base del material seleccionado
-        var mat = _materiales.find(function (m) { return String(m.id) === String(matID); });
-        var baseLabel = mat ? abrevUnidad(mat.unidad) + ' (base)' : '(base)';
-        ddlU.innerHTML = '<option value="">' + escHtml(baseLabel) + '</option>';
-        if (!matID) return;
-
-        var convs = window._conversionesMat && window._conversionesMat[matID.toString()];
-        if (!convs || convs.length <= 1) return; // solo unidad base, sin opciones extra
-
-        // Saltar la primera opción (unidad base, ya está) y agregar conversiones
-        for (var i = 1; i < convs.length; i++) {
-            var op = convs[i];
-            var opt = document.createElement('option');
-            opt.value = op.val;
-            opt.text  = op.txt;
-            opt.setAttribute('data-factor', op.factor);
-            ddlU.appendChild(opt);
-        }
+    function onBuscarMatComp() {
+        clearTimeout(_buscarMatCompTimer);
+        var q = document.getElementById('txtBuscarMatComp').value.trim();
+        _matCompSeleccionado = null;
+        document.getElementById('<%= hdnCompMaterialID.ClientID %>').value = '';
+        if (q.length < 2) { ocultarResultadosMatComp(); return; }
+        _buscarMatCompTimer = setTimeout(function () { ejecutarBusquedaMatComp(q); }, 300);
     }
+
+    function ejecutarBusquedaMatComp(query) {
+        fetch('<%= ResolveUrl("~/Productos.aspx/BuscarMateriales") %>', {
+            method:  'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body:    JSON.stringify({ query: query })
+        })
+        .then(function (r) { return r.json(); })
+        .then(function (data) { mostrarResultadosMatComp(data.d); })
+        .catch(function () { ocultarResultadosMatComp(); });
+    }
+
+    function mostrarResultadosMatComp(items) {
+        var div = document.getElementById('divResultadosMatComp');
+        div.innerHTML = '';
+        if (!items || items.length === 0) {
+            div.innerHTML = '<div style="padding:8px 10px;color:#888;font-size:.84rem;">Sin resultados</div>';
+            div.style.display = '';
+            return;
+        }
+        items.forEach(function (item) {
+            var el = document.createElement('div');
+            el.style.cssText = 'padding:7px 10px;cursor:pointer;font-size:.84rem;border-bottom:1px solid #f0f0f0;';
+            el.textContent   = item.nombre;
+            el.onmouseenter  = function () { el.style.background = '#e8f0fe'; };
+            el.onmouseleave  = function () { el.style.background = ''; };
+            el.onmousedown   = function (e) { e.preventDefault(); seleccionarMatComp(item); };
+            div.appendChild(el);
+        });
+        div.style.display = '';
+    }
+
+    function seleccionarMatComp(item) {
+        _matCompSeleccionado = item;
+        document.getElementById('txtBuscarMatComp').value  = item.nombre;
+        document.getElementById('<%= hdnCompMaterialID.ClientID %>').value = item.id;
+        ocultarResultadosMatComp();
+        poblarUnidadesMatComp(item.conversiones || []);
+    }
+
+    function ocultarResultadosMatComp() {
+        var d = document.getElementById('divResultadosMatComp');
+        if (d) d.style.display = 'none';
+    }
+
+    function poblarUnidadesMatComp(conversiones) {
+        var sel = document.getElementById('ddlUnidadComp');
+        sel.innerHTML = '';
+        if (!conversiones || conversiones.length === 0) {
+            sel.innerHTML = '<option value="">(base)</option>';
+            return;
+        }
+        conversiones.forEach(function (op) {
+            var opt = document.createElement('option');
+            opt.value = op.valor;
+            opt.text  = op.texto;
+            opt.setAttribute('data-factor', op.factor);
+            sel.appendChild(opt);
+        });
+    }
+
+    document.addEventListener('click', function (e) {
+        var inp = document.getElementById('txtBuscarMatComp');
+        var res = document.getElementById('divResultadosMatComp');
+        if (inp && res && !inp.contains(e.target) && !res.contains(e.target))
+            ocultarResultadosMatComp();
+    });
 
     // Extrae la abreviatura entre paréntesis: "Litro/s (L)" → "L"
     function abrevUnidad(unidadStr) {
@@ -778,11 +833,16 @@
     }
 
     function agregarComponenteModal() {
-        var matID       = document.getElementById('ddlMaterialComp').value;
+        var matID       = document.getElementById('<%= hdnCompMaterialID.ClientID %>').value;
         var cantConsumo = parseFloat(document.getElementById('txtCantConsumoComp').value) || 0;
         var notas       = document.getElementById('txtNotasComp').value;
         var ddlU        = document.getElementById('ddlUnidadComp');
-        var convID      = ddlU ? ddlU.value : '';   // '' = unidad base, otro = ConversionID
+
+        // Extraer ConversionID numérico: "conv:456" → 456, "base:..." → 0
+        var rawVal = ddlU ? ddlU.value : '';
+        var convID = 0;
+        if (rawVal && rawVal.indexOf('conv:') === 0)
+            convID = parseInt(rawVal.substring(5)) || 0;
 
         if (!matID) {
             Swal.fire({ icon: 'warning', title: 'Material requerido',
@@ -807,8 +867,7 @@
 
         if (vecesAgregado >= 1) {
             var veces = vecesAgregado === 1 ? '1 vez' : vecesAgregado + ' veces';
-            var mat = _materiales.find(function (m) { return String(m.id) === String(matID); });
-            var nomMat = mat ? '[' + mat.codigo + '] ' + mat.nombre : 'Este material';
+            var nomMat = _matCompSeleccionado ? _matCompSeleccionado.nombre : 'Este material';
             Swal.fire({
                 icon: 'question',
                 title: 'Material duplicado',
