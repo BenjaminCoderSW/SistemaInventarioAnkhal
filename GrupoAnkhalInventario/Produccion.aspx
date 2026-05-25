@@ -123,8 +123,19 @@
             </div>
             <div class="col-md-2">
                 <label>Producto</label>
-                <asp:DropDownList ID="ddlFiltrProducto" runat="server" CssClass="form-control form-control-sm">
-                </asp:DropDownList>
+                <div style="position:relative;">
+                    <input type="text" id="txtFiltrProducto" class="form-control form-control-sm"
+                           placeholder="Buscar producto..." autocomplete="off"
+                           oninput="onBuscarFiltrProducto()" />
+                    <div id="divResultadosFiltrProducto"
+                         style="display:none; position:absolute; z-index:9999; width:100%;
+                                background:#fff; border:1px solid #ccc; border-radius:4px;
+                                max-height:200px; overflow-y:auto;
+                                box-shadow:0 2px 8px rgba(0,0,0,.18);">
+                    </div>
+                </div>
+                <input type="hidden" name="hdnFiltrProductoID"     id="hdnFiltrProductoID"     value="<%= HttpUtility.HtmlEncode(Request.Form["hdnFiltrProductoID"]     ?? "") %>" />
+                <input type="hidden" name="hdnFiltrProductoNombre" id="hdnFiltrProductoNombre" value="<%= HttpUtility.HtmlEncode(Request.Form["hdnFiltrProductoNombre"] ?? "") %>" />
             </div>
             <div class="col-md-3">
                 <label>Per&iacute;odo r&aacute;pido</label><br />
@@ -144,7 +155,8 @@
                 <asp:Button ID="btnBuscar" runat="server" Text="Buscar"
                     CssClass="btn btn-sm btn-primary btn-block mb-1" OnClick="btnBuscar_Click" />
                 <asp:Button ID="btnLimpiar" runat="server" Text="Limpiar"
-                    CssClass="btn btn-sm btn-outline-secondary btn-block" OnClick="btnLimpiar_Click" />
+                    CssClass="btn btn-sm btn-outline-secondary btn-block" OnClick="btnLimpiar_Click"
+                    OnClientClick="document.getElementById('hdnFiltrProductoID').value=''; document.getElementById('hdnFiltrProductoNombre').value=''; document.getElementById('txtFiltrProducto').value='';" />
             </div>
             <div class="col-md-2 d-flex align-items-center pt-3">
                 <div class="form-check">
@@ -637,6 +649,72 @@
         if (!s) return '';
         return String(s).replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;').replace(/"/g, '&quot;');
     }
+
+    // ── Autocomplete filtro producto ──────────────────────────────────────────
+    var _filtrProductoTimer = null;
+
+    function onBuscarFiltrProducto() {
+        clearTimeout(_filtrProductoTimer);
+        var q = document.getElementById('txtFiltrProducto').value.trim();
+        document.getElementById('hdnFiltrProductoID').value     = '';
+        document.getElementById('hdnFiltrProductoNombre').value = '';
+        if (q.length < 2) { ocultarResultadosFiltrProducto(); return; }
+        _filtrProductoTimer = setTimeout(function () { buscarFiltrProducto(q); }, 300);
+    }
+
+    function buscarFiltrProducto(query) {
+        fetch('<%= ResolveUrl("~/Produccion.aspx/BuscarProductosFiltro") %>', {
+            method:  'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body:    JSON.stringify({ query: query })
+        })
+        .then(function (r) { return r.json(); })
+        .then(function (data) { mostrarResultadosFiltrProducto(data.d); })
+        .catch(function () { ocultarResultadosFiltrProducto(); });
+    }
+
+    function mostrarResultadosFiltrProducto(items) {
+        var div = document.getElementById('divResultadosFiltrProducto');
+        div.innerHTML = '';
+        if (!items || items.length === 0) {
+            div.innerHTML = '<div style="padding:8px 10px;color:#888;font-size:.84rem;">Sin resultados</div>';
+            div.style.display = '';
+            return;
+        }
+        items.forEach(function (item) {
+            var el = document.createElement('div');
+            el.style.cssText = 'padding:7px 10px;cursor:pointer;font-size:.84rem;border-bottom:1px solid #f0f0f0;';
+            el.textContent   = item.nombre;
+            el.onmouseenter  = function () { el.style.background = '#e8f0fe'; };
+            el.onmouseleave  = function () { el.style.background = ''; };
+            el.onmousedown   = function (e) {
+                e.preventDefault();
+                document.getElementById('txtFiltrProducto').value       = item.nombre;
+                document.getElementById('hdnFiltrProductoID').value     = item.id;
+                document.getElementById('hdnFiltrProductoNombre').value = item.nombre;
+                ocultarResultadosFiltrProducto();
+            };
+            div.appendChild(el);
+        });
+        div.style.display = '';
+    }
+
+    function ocultarResultadosFiltrProducto() {
+        document.getElementById('divResultadosFiltrProducto').style.display = 'none';
+    }
+
+    document.addEventListener('click', function (e) {
+        var txt = document.getElementById('txtFiltrProducto');
+        var div = document.getElementById('divResultadosFiltrProducto');
+        if (txt && !txt.contains(e.target) && div && !div.contains(e.target))
+            ocultarResultadosFiltrProducto();
+    });
+
+    // Restaurar texto del filtro producto tras postback
+    (function () {
+        var nombre = document.getElementById('hdnFiltrProductoNombre').value;
+        if (nombre) document.getElementById('txtFiltrProducto').value = nombre;
+    })();
 </script>
 
 </asp:Content>

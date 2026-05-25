@@ -136,14 +136,11 @@ namespace GrupoAnkhalInventario
                 ddlProducto.Items.Add(new ListItem("-- Seleccione --", ""));
                 ddlProductoHoja.Items.Clear();
                 ddlProductoHoja.Items.Add(new ListItem("-- Seleccione --", ""));
-                ddlFiltrProducto.Items.Clear();
-                ddlFiltrProducto.Items.Add(new ListItem("-- Todos --", ""));
                 foreach (var p in productos)
                 {
                     string textoProducto = string.Format("[{0}] {1}", p.Codigo, p.Descripcion);
                     ddlProducto.Items.Add(new ListItem(textoProducto, p.ProductoID.ToString()));
                     ddlProductoHoja.Items.Add(new ListItem(textoProducto, p.ProductoID.ToString()));
-                    ddlFiltrProducto.Items.Add(new ListItem(textoProducto, p.ProductoID.ToString()));
                 }
             }
         }
@@ -171,11 +168,9 @@ namespace GrupoAnkhalInventario
                 DateTime h = DateTime.Parse(txtFechaHasta.Text);
                 q = q.Where(p => p.Fecha <= h);
             }
-            if (!string.IsNullOrEmpty(ddlFiltrProducto.SelectedValue))
-            {
-                int pid = int.Parse(ddlFiltrProducto.SelectedValue);
+            string filtrProdID = Request.Form["hdnFiltrProductoID"];
+            if (!string.IsNullOrEmpty(filtrProdID) && int.TryParse(filtrProdID, out int pid))
                 q = q.Where(p => p.ProductoID == pid);
-            }
             // Mostrar borradores solo cuando el checkbox está activo; por defecto solo confirmados
             if (chkMostrarBorradores.Checked)
                 q = q.Where(p => p.Estado == "Borrador");
@@ -200,8 +195,9 @@ namespace GrupoAnkhalInventario
                     q = q.Where(p => p.Fecha >= DateTime.Parse(txtFechaDesde.Text));
                 if (!string.IsNullOrEmpty(txtFechaHasta.Text))
                     q = q.Where(p => p.Fecha <= DateTime.Parse(txtFechaHasta.Text));
-                if (!string.IsNullOrEmpty(ddlFiltrProducto.SelectedValue))
-                    q = q.Where(p => p.ProductoID == int.Parse(ddlFiltrProducto.SelectedValue));
+                string filtrProdIDDash = Request.Form["hdnFiltrProductoID"];
+                if (!string.IsNullOrEmpty(filtrProdIDDash) && int.TryParse(filtrProdIDDash, out int pidDash))
+                    q = q.Where(p => p.ProductoID == pidDash);
 
                 var data = q.Select(p => new
                             {
@@ -371,8 +367,7 @@ namespace GrupoAnkhalInventario
 
         protected void btnLimpiar_Click(object sender, EventArgs e)
         {
-            ddlFiltrBase.SelectedIndex    = 0;
-            ddlFiltrProducto.SelectedIndex = 0;
+            ddlFiltrBase.SelectedIndex = 0;
             string hoy = AppHelper.Hoy.ToString("yyyy-MM-dd");
             txtFechaDesde.Text = hoy;
             txtFechaHasta.Text = hoy;
@@ -1525,6 +1520,28 @@ namespace GrupoAnkhalInventario
                 var bom = CargarConsumosBOM(prod.ProductoID, prod.BaseID,
                     cantBuena + cantRechazo, borradorMap);
                 BindearConsumos(bom);
+            }
+        }
+
+        // ══ WebMethods ═══════════════════════════════════════════════════════
+        [System.Web.Services.WebMethod(EnableSession = true)]
+        public static object BuscarProductosFiltro(string query)
+        {
+            string connStr = System.Configuration.ConfigurationManager
+                .ConnectionStrings["InventarioAnkhalDBConnectionString"].ConnectionString;
+            using (var db = new InventarioAnkhalDBDataContext(connStr))
+            {
+                return db.Productos
+                    .Where(p => p.Activo &&
+                        (p.Descripcion.Contains(query) || p.Codigo.Contains(query)))
+                    .OrderBy(p => p.Codigo)
+                    .Take(15)
+                    .Select(p => new
+                    {
+                        id     = p.ProductoID,
+                        nombre = "[" + p.Codigo + "] " + p.Descripcion
+                    })
+                    .ToList();
             }
         }
     }
