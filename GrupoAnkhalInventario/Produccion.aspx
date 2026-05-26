@@ -282,6 +282,7 @@
 <!-- ══════════════════════════════════════════════════════════════════ -->
 <asp:HiddenField ID="hdnMensajePendiente" runat="server" Value="" />
 <asp:HiddenField ID="hdnProductoSeleccionado" runat="server" Value="" />
+<asp:HiddenField ID="hdnProductoNombre"      runat="server" Value="" />
 <asp:HiddenField ID="hdnConfirmarSinConsumos" runat="server" Value="" />
 <asp:HiddenField ID="hdnProduccionID" runat="server" Value="0" />
 <asp:HiddenField ID="hdnModoEdicion" runat="server" Value="" />
@@ -323,9 +324,17 @@
                 <div class="row mb-3">
                     <div class="col-md-6">
                         <label class="font-weight-bold">Producto <span class="text-danger">*</span></label>
-                        <asp:DropDownList ID="ddlProducto" runat="server" CssClass="form-control"
-                            onchange="onProductoChange()">
-                        </asp:DropDownList>
+                        <div style="position:relative;">
+                            <input type="text" id="txtProducto" class="form-control"
+                                   placeholder="Buscar producto..." autocomplete="off"
+                                   oninput="onTxtProductoInput()" />
+                            <div id="divResultadosProducto"
+                                 style="display:none; position:absolute; z-index:9999; width:100%;
+                                        background:#fff; border:1px solid #ccc; border-radius:4px;
+                                        max-height:200px; overflow-y:auto;
+                                        box-shadow:0 2px 8px rgba(0,0,0,.18);">
+                            </div>
+                        </div>
                     </div>
                     <div class="col-md-6">
                         <label class="font-weight-bold">Tu meta de unidades buenas</label>
@@ -431,8 +440,18 @@
             <div class="modal-body">
                 <div class="form-group">
                     <label class="font-weight-bold">Producto</label>
-                    <asp:DropDownList ID="ddlProductoHoja" runat="server" CssClass="form-control">
-                    </asp:DropDownList>
+                    <div style="position:relative;">
+                        <input type="text" id="txtProductoHoja" class="form-control"
+                               placeholder="Buscar producto..." autocomplete="off"
+                               oninput="onTxtProductoHojaInput()" />
+                        <div id="divResultadosProductoHoja"
+                             style="display:none; position:absolute; z-index:9999; width:100%;
+                                    background:#fff; border:1px solid #ccc; border-radius:4px;
+                                    max-height:200px; overflow-y:auto;
+                                    box-shadow:0 2px 8px rgba(0,0,0,.18);">
+                        </div>
+                    </div>
+                    <input type="hidden" name="hdnProductoHojaID" id="hdnProductoHojaID" />
                 </div>
                 <div class="form-group">
                     <label class="font-weight-bold">Cantidad a fabricar</label>
@@ -508,14 +527,132 @@
         }
     });
 
-    // Al cambiar producto, hacer postback para cargar consumos
-    function onProductoChange() {
-        var ddl = document.getElementById('<%= ddlProducto.ClientID %>');
-        document.getElementById('<%= hdnProductoSeleccionado.ClientID %>').value = ddl.value;
-        var f = document.getElementById('txtFiltroConsumo');
-        if (f) { f.value = ''; filtrarConsumos(''); }
-        document.getElementById('<%= btnCargarConsumos.ClientID %>').click();
+    // ── Autocomplete modal "Registrar nueva producción" ──────────────────────
+    var _prodTimer = null;
+
+    function onTxtProductoInput() {
+        clearTimeout(_prodTimer);
+        var q = document.getElementById('txtProducto').value.trim();
+        document.getElementById('<%= hdnProductoSeleccionado.ClientID %>').value = '';
+        document.getElementById('<%= hdnProductoNombre.ClientID %>').value = '';
+        if (q.length < 2) { ocultarResultadosProducto(); return; }
+        _prodTimer = setTimeout(function () { buscarProductoModal(q); }, 300);
     }
+
+    function buscarProductoModal(query) {
+        fetch('<%= ResolveUrl("~/Produccion.aspx/BuscarProductosFiltro") %>', {
+            method:  'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body:    JSON.stringify({ query: query })
+        })
+        .then(function (r) { return r.json(); })
+        .then(function (data) { mostrarResultadosProducto(data.d); })
+        .catch(function () { ocultarResultadosProducto(); });
+    }
+
+    function mostrarResultadosProducto(items) {
+        var div = document.getElementById('divResultadosProducto');
+        div.innerHTML = '';
+        if (!items || items.length === 0) {
+            div.innerHTML = '<div style="padding:8px 10px;color:#888;font-size:.84rem;">Sin resultados</div>';
+            div.style.display = '';
+            return;
+        }
+        items.forEach(function (item) {
+            var el = document.createElement('div');
+            el.style.cssText = 'padding:7px 10px;cursor:pointer;font-size:.84rem;border-bottom:1px solid #f0f0f0;';
+            el.textContent   = item.nombre;
+            el.onmouseenter  = function () { el.style.background = '#e8f0fe'; };
+            el.onmouseleave  = function () { el.style.background = ''; };
+            el.onmousedown   = function (e) {
+                e.preventDefault();
+                document.getElementById('txtProducto').value = item.nombre;
+                document.getElementById('<%= hdnProductoSeleccionado.ClientID %>').value = item.id;
+                document.getElementById('<%= hdnProductoNombre.ClientID %>').value = item.nombre;
+                ocultarResultadosProducto();
+                var f = document.getElementById('txtFiltroConsumo');
+                if (f) { f.value = ''; filtrarConsumos(''); }
+                document.getElementById('<%= btnCargarConsumos.ClientID %>').click();
+            };
+            div.appendChild(el);
+        });
+        div.style.display = '';
+    }
+
+    function ocultarResultadosProducto() {
+        document.getElementById('divResultadosProducto').style.display = 'none';
+    }
+
+    document.addEventListener('click', function (e) {
+        var txt = document.getElementById('txtProducto');
+        var div = document.getElementById('divResultadosProducto');
+        if (txt && !txt.contains(e.target) && div && !div.contains(e.target))
+            ocultarResultadosProducto();
+    });
+
+    // Restaurar texto del producto tras postback (carga BOM, continuar borrador)
+    (function () {
+        var nombre = document.getElementById('<%= hdnProductoNombre.ClientID %>').value;
+        if (nombre) document.getElementById('txtProducto').value = nombre;
+    })();
+
+    // ── Autocomplete modal "Hoja de Fabricación" ──────────────────────────────
+    var _hojaTimer = null;
+
+    function onTxtProductoHojaInput() {
+        clearTimeout(_hojaTimer);
+        var q = document.getElementById('txtProductoHoja').value.trim();
+        document.getElementById('hdnProductoHojaID').value = '';
+        if (q.length < 2) { ocultarResultadosProductoHoja(); return; }
+        _hojaTimer = setTimeout(function () { buscarProductoHoja(q); }, 300);
+    }
+
+    function buscarProductoHoja(query) {
+        fetch('<%= ResolveUrl("~/Produccion.aspx/BuscarProductosFiltro") %>', {
+            method:  'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body:    JSON.stringify({ query: query })
+        })
+        .then(function (r) { return r.json(); })
+        .then(function (data) { mostrarResultadosProductoHoja(data.d); })
+        .catch(function () { ocultarResultadosProductoHoja(); });
+    }
+
+    function mostrarResultadosProductoHoja(items) {
+        var div = document.getElementById('divResultadosProductoHoja');
+        div.innerHTML = '';
+        if (!items || items.length === 0) {
+            div.innerHTML = '<div style="padding:8px 10px;color:#888;font-size:.84rem;">Sin resultados</div>';
+            div.style.display = '';
+            return;
+        }
+        items.forEach(function (item) {
+            var el = document.createElement('div');
+            el.style.cssText = 'padding:7px 10px;cursor:pointer;font-size:.84rem;border-bottom:1px solid #f0f0f0;';
+            el.textContent   = item.nombre;
+            el.onmouseenter  = function () { el.style.background = '#e8f0fe'; };
+            el.onmouseleave  = function () { el.style.background = ''; };
+            el.onmousedown   = function (e) {
+                e.preventDefault();
+                document.getElementById('txtProductoHoja').value   = item.nombre;
+                document.getElementById('hdnProductoHojaID').value = item.id;
+                ocultarResultadosProductoHoja();
+            };
+            div.appendChild(el);
+        });
+        div.style.display = '';
+    }
+
+    function ocultarResultadosProductoHoja() {
+        document.getElementById('divResultadosProductoHoja').style.display = 'none';
+    }
+
+    document.addEventListener('click', function (e) {
+        var txt2 = document.getElementById('txtProductoHoja');
+        var div2 = document.getElementById('divResultadosProductoHoja');
+        if (txt2 && !txt2.contains(e.target) && div2 && !div2.contains(e.target))
+            ocultarResultadosProductoHoja();
+    });
 
     // Filtrar filas de tblConsumos por código o nombre de material (JS puro, sin postback)
     function filtrarConsumos(valor) {

@@ -132,16 +132,7 @@ namespace GrupoAnkhalInventario
                     .Select(p => new { p.ProductoID, p.Descripcion, p.Codigo })
                     .ToList();
 
-                ddlProducto.Items.Clear();
-                ddlProducto.Items.Add(new ListItem("-- Seleccione --", ""));
-                ddlProductoHoja.Items.Clear();
-                ddlProductoHoja.Items.Add(new ListItem("-- Seleccione --", ""));
-                foreach (var p in productos)
-                {
-                    string textoProducto = string.Format("[{0}] {1}", p.Codigo, p.Descripcion);
-                    ddlProducto.Items.Add(new ListItem(textoProducto, p.ProductoID.ToString()));
-                    ddlProductoHoja.Items.Add(new ListItem(textoProducto, p.ProductoID.ToString()));
-                }
+                // ddlProducto y ddlProductoHoja eliminados — reemplazados por autocomplete AJAX
             }
         }
 
@@ -673,7 +664,7 @@ namespace GrupoAnkhalInventario
                 SetMsg("warning", "Campo requerido", "Seleccione el turno.", "modalRegistrar");
                 return;
             }
-            if (string.IsNullOrEmpty(ddlProducto.SelectedValue))
+            if (string.IsNullOrEmpty(hdnProductoSeleccionado.Value))
             {
                 SetMsg("warning", "Campo requerido", "Seleccione el producto.", "modalRegistrar");
                 return;
@@ -698,7 +689,7 @@ namespace GrupoAnkhalInventario
             int      baseID     = int.Parse(ddlBase.SelectedValue);
             DateTime fecha      = DateTime.Parse(txtFecha.Text);
             string   turno      = ddlTurno.SelectedValue;
-            int      productoID = int.Parse(ddlProducto.SelectedValue);
+            int      productoID = int.Parse(hdnProductoSeleccionado.Value);
             int      claveID    = Convert.ToInt32(Session["ClaveID"]);
             string   obs        = txtObservaciones.Text.Trim();
             int      totalProd  = cantBuena + cantRechazo;
@@ -965,7 +956,8 @@ namespace GrupoAnkhalInventario
         // ══ Hoja de fabricación — ventana imprimible ══════════════════════════
         protected void btnGenerarHoja_Click(object sender, EventArgs e)
         {
-            if (string.IsNullOrEmpty(ddlProductoHoja.SelectedValue))
+            string prodHojaIDStr = Request.Form["hdnProductoHojaID"];
+            if (string.IsNullOrEmpty(prodHojaIDStr))
             {
                 SetMsg("warning", "Campo requerido", "Seleccione un producto.");
                 ClientScript.RegisterStartupScript(GetType(), "abrirHoja",
@@ -973,7 +965,7 @@ namespace GrupoAnkhalInventario
                 return;
             }
 
-            int productoID = int.Parse(ddlProductoHoja.SelectedValue);
+            int productoID = int.Parse(prodHojaIDStr);
             int cantidad   = 0;
             if (!int.TryParse(txtCantidadHoja.Text, out cantidad) || cantidad <= 0)
                 cantidad = 1;
@@ -1276,8 +1268,8 @@ namespace GrupoAnkhalInventario
             ddlBase.SelectedIndex         = 0;
             txtFecha.Text                 = AppHelper.Hoy.ToString("yyyy-MM-dd");
             ddlTurno.SelectedIndex        = 0;
-            ddlProducto.SelectedIndex     = 0;
             hdnProductoSeleccionado.Value = "";
+            hdnProductoNombre.Value       = "";
             txtMetaDia.Text               = "";
             txtCantBuena.Text             = "";
             txtCantRechazo.Text           = "";
@@ -1494,8 +1486,12 @@ namespace GrupoAnkhalInventario
                 ddlBase.SelectedValue    = prod.BaseID.ToString();
                 txtFecha.Text            = prod.Fecha.ToString("yyyy-MM-dd");
                 ddlTurno.SelectedValue   = prod.Turno;
-                ddlProducto.SelectedValue             = prod.ProductoID.ToString();
-                hdnProductoSeleccionado.Value         = prod.ProductoID.ToString();
+                hdnProductoSeleccionado.Value = prod.ProductoID.ToString();
+                var prd = db.Productos.Where(p => p.ProductoID == prod.ProductoID)
+                             .Select(p => new { p.Codigo, p.Descripcion })
+                             .FirstOrDefault();
+                hdnProductoNombre.Value = prd != null
+                    ? string.Format("[{0}] {1}", prd.Codigo, prd.Descripcion) : "";
                 txtCantBuena.Text        = prod.CantidadBuena.ToString();
                 txtCantRechazo.Text      = prod.CantidadRechazo.ToString();
                 txtMetaDia.Text          = prod.MetaDia > 0 ? prod.MetaDia.ToString() : "";

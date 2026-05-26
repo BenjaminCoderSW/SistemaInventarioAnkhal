@@ -149,6 +149,8 @@ namespace GrupoAnkhalInventario
         /// </remarks>
         protected global::System.Web.UI.WebControls.HiddenField hdnProductoSeleccionado;
 
+        protected global::System.Web.UI.WebControls.HiddenField hdnProductoNombre;
+
         /// <summary>
         /// Control hdnConfirmarSinConsumos.
         /// </summary>
