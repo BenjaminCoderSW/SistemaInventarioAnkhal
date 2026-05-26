@@ -429,10 +429,17 @@
           <div class="col-md-9">
             <div class="form-group">
               <label>Item <span style="color:red">*</span></label>
-              <asp:DropDownList ID="ddlItem" runat="server" CssClass="form-control"
-                  onchange="onItemChange();">
-                <asp:ListItem Value="">-- Seleccione un item --</asp:ListItem>
-              </asp:DropDownList>
+              <div style="position:relative;">
+                  <input type="text" id="txtItem" class="form-control"
+                         placeholder="Buscar item..." autocomplete="off"
+                         oninput="onTxtItemInput()" />
+                  <div id="divResultadosItem"
+                       style="display:none; position:absolute; z-index:9999; width:100%;
+                              background:#fff; border:1px solid #ccc; border-radius:4px;
+                              max-height:220px; overflow-y:auto;
+                              box-shadow:0 2px 8px rgba(0,0,0,.18);">
+                  </div>
+              </div>
             </div>
           </div>
         </div>
@@ -535,6 +542,8 @@
     // ── Array acumulado de ítems del lote ───────────────────────────
     var _items = [];
     var _prevTipoMovimiento = "";
+    var _itemSeleccionado = null;
+    var _itemTimer = null;
 
     // ── Mensaje pendiente (SweetAlert) ──────────────────────────────
     window.addEventListener('load', function () {
@@ -565,7 +574,9 @@
         document.getElementById('rbMaterial').checked = true;
         document.getElementById('<%= hdnTipoItemSeleccionado.ClientID %>').value = 'Material';
         document.getElementById('pMermaNote').style.display = 'none';
-        document.getElementById('<%= ddlItem.ClientID %>').selectedIndex = 0;
+        _itemSeleccionado = null;
+        document.getElementById('txtItem').value = '';
+        ocultarResultadosItem();
         document.getElementById('<%= ddlBaseOrigen.ClientID %>').selectedIndex = 0;
         document.getElementById('<%= ddlBaseDestino.ClientID %>').selectedIndex = 0;
         document.getElementById('<%= txtCantidad.ClientID %>').value = '';
@@ -587,17 +598,16 @@
     // ── Agregar ítem al array _items ────────────────────────────────
     function agregarItemAlLote() {
         var tipo     = document.getElementById('<%= hdnTipoItemSeleccionado.ClientID %>').value;
-        var ddlItem  = document.getElementById('<%= ddlItem.ClientID %>');
-        var itemId   = parseInt(ddlItem.value);
         var cant     = parseFloat(document.getElementById('<%= txtCantidad.ClientID %>').value) || 0;
         var costo    = parseFloat(document.getElementById('<%= txtCosto.ClientID %>').value) || 0;
-        var itemText = ddlItem.options[ddlItem.selectedIndex] ? ddlItem.options[ddlItem.selectedIndex].text : '';
 
         function warn(txt) {
             Swal.fire({ icon: 'warning', title: 'Campo inválido', text: txt, confirmButtonColor: '#003366' })
                 .then(function () { $('#modalNuevo').modal('show'); });
         }
-        if (!itemId)     { warn('Debe seleccionar un item.'); return; }
+        if (!_itemSeleccionado) { warn('Debe seleccionar un item.'); return; }
+        var itemId   = _itemSeleccionado.id;
+        var itemText = _itemSeleccionado.nombre;
         if (cant <= 0)   { warn('La cantidad debe ser mayor a cero.'); return; }
         var tipoMov = document.getElementById('<%= ddlTipoMovimiento.ClientID %>').value;
         if (!tipoMov)    { warn('Debe seleccionar el tipo de movimiento primero.'); return; }
@@ -704,7 +714,9 @@
 
     // ── Limpiar campos de ítem (después de agregar) ─────────────────
     function limpiarCamposItem() {
-        document.getElementById('<%= ddlItem.ClientID %>').selectedIndex = 0;
+        _itemSeleccionado = null;
+        document.getElementById('txtItem').value = '';
+        ocultarResultadosItem();
         document.getElementById('<%= txtCantidad.ClientID %>').value = '';
         document.getElementById('<%= txtCosto.ClientID %>').value = '';
         document.getElementById('<%= lblTotal.ClientID %>').innerText = '0.00';
@@ -758,22 +770,13 @@
         calcularTotal();
     }
 
-    // ── Cambio tipo item (radio) → poblar ddlItem ──────────────────
+    // ── Cambio tipo item (radio) → limpiar autocomplete ────────────
     function onTipoItemChange() {
         var seleccion = document.querySelector('input[name="rbTipoItem"]:checked').value;
         document.getElementById('<%= hdnTipoItemSeleccionado.ClientID %>').value = seleccion;
-        var ddl = document.getElementById('<%= ddlItem.ClientID %>');
-        ddl.innerHTML = '<option value="">-- Seleccione un item --</option>';
-        var lista = seleccion === 'Producto' ? window._productosData
-                  : window._materialesData;
-        if (lista) {
-            lista.forEach(function (item) {
-                var opt = document.createElement('option');
-                opt.value = item.id;
-                opt.text  = '[' + item.codigo + '] ' + item.nombre + (item.unidad ? ' (' + item.unidad + ')' : '');
-                ddl.appendChild(opt);
-            });
-        }
+        _itemSeleccionado = null;
+        document.getElementById('txtItem').value = '';
+        ocultarResultadosItem();
         document.getElementById('divUnidadCaptura').style.display = 'none';
         document.getElementById('<%= lblConversionInfo.ClientID %>').innerText = '';
         actualizarNotaMerma();
@@ -787,34 +790,66 @@
         nota.style.display = (tipo === '5' && tipoItem === 'Producto') ? 'block' : 'none';
     }
 
-    // ── Auto-llenar costo al seleccionar item ───────────────────────
-    function onItemChange() {
+    // ── Autocomplete item (reemplaza ddlItem) ──────────────────────
+    function onTxtItemInput() {
+        clearTimeout(_itemTimer);
+        _itemSeleccionado = null;
+        var q = document.getElementById('txtItem').value.trim();
+        if (q.length < 2) { ocultarResultadosItem(); return; }
+        _itemTimer = setTimeout(function () { buscarItem(q); }, 300);
+    }
+
+    function buscarItem(query) {
+        var tipo = document.querySelector('input[name="rbTipoItem"]:checked').value;
+        fetch('<%= ResolveUrl("~/Movimientos.aspx/BuscarItems") %>', {
+            method:  'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body:    JSON.stringify({ query: query, tipo: tipo })
+        })
+        .then(function (r) { return r.json(); })
+        .then(function (data) { mostrarResultadosItem(data.d); })
+        .catch(function () { ocultarResultadosItem(); });
+    }
+
+    function mostrarResultadosItem(items) {
+        var div = document.getElementById('divResultadosItem');
+        div.innerHTML = '';
+        if (!items || items.length === 0) {
+            div.innerHTML = '<div style="padding:8px 10px;color:#888;font-size:.84rem;">Sin resultados</div>';
+            div.style.display = '';
+            return;
+        }
+        items.forEach(function (item) {
+            var el = document.createElement('div');
+            el.style.cssText = 'padding:7px 10px;cursor:pointer;font-size:.84rem;border-bottom:1px solid #f0f0f0;';
+            el.textContent   = item.nombre;
+            el.onmouseenter  = function () { el.style.background = '#e8f0fe'; };
+            el.onmouseleave  = function () { el.style.background = ''; };
+            el.onmousedown   = function (e) { e.preventDefault(); seleccionarItem(item); };
+            div.appendChild(el);
+        });
+        div.style.display = '';
+    }
+
+    function seleccionarItem(item) {
+        _itemSeleccionado = item;
+        document.getElementById('txtItem').value = item.nombre;
+        ocultarResultadosItem();
+
         var txtCosto = document.getElementById('<%= txtCosto.ClientID %>');
-        var ddl  = document.getElementById('<%= ddlItem.ClientID %>');
-        var id   = parseInt(ddl.value);
+        if (!txtCosto.disabled) {
+            txtCosto.value = (item.precio || 0).toFixed(2);
+            calcularTotal();
+        }
+
+        var tipo  = document.querySelector('input[name="rbTipoItem"]:checked').value;
         var divUC = document.getElementById('divUnidadCaptura');
         var ddlUC = document.getElementById('<%= ddlUnidadCaptura.ClientID %>');
         var lblCI = document.getElementById('<%= lblConversionInfo.ClientID %>');
 
-        if (!id) {
-            divUC.style.display = 'none';
-            lblCI.innerText = '';
-            return;
-        }
-        var tipo  = document.getElementById('<%= hdnTipoItemSeleccionado.ClientID %>').value;
-        var lista = tipo === 'Producto' ? window._productosData
-                  : window._materialesData;
-        var item  = lista && lista.find(function (i) { return i.id === id; });
-        if (item && !txtCosto.disabled) {
-            txtCosto.value = (item.costo || 0).toFixed(2);
-            calcularTotal();
-        }
-
-        var convKey = id.toString();
-        if (tipo === 'Material' && window._conversionesMat &&
-            window._conversionesMat[convKey] && window._conversionesMat[convKey].length > 1) {
+        if (tipo === 'Material' && item.conversiones && item.conversiones.length > 1) {
             ddlUC.innerHTML = '';
-            window._conversionesMat[convKey].forEach(function (op) {
+            item.conversiones.forEach(function (op) {
                 var opt = document.createElement('option');
                 opt.value = op.val;
                 opt.text  = op.txt;
@@ -828,6 +863,17 @@
             lblCI.innerText = '';
         }
     }
+
+    function ocultarResultadosItem() {
+        document.getElementById('divResultadosItem').style.display = 'none';
+    }
+
+    document.addEventListener('click', function (e) {
+        var txt = document.getElementById('txtItem');
+        var div = document.getElementById('divResultadosItem');
+        if (txt && !txt.contains(e.target) && div && !div.contains(e.target))
+            ocultarResultadosItem();
+    });
 
     // ── Actualizar label de conversión en tiempo real ───────────────
     function actualizarInfoConversion() {
