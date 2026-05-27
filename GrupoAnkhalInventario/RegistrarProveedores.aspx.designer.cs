@@ -101,5 +101,23 @@ namespace GrupoAnkhalInventario
         protected global::System.Web.UI.WebControls.TextBox       txtNumIntEdit;
         protected global::System.Web.UI.WebControls.TextBox       txtReferenciaEdit;
         protected global::System.Web.UI.WebControls.Button        btnGuardarEdit;
+
+        // ── Modal Materiales — HiddenFields y botones servidor ─────────────────
+        protected global::System.Web.UI.WebControls.HiddenField   hdnMaterialesProveedorID;
+        protected global::System.Web.UI.WebControls.HiddenField   hdnProveedorMaterialID;
+        protected global::System.Web.UI.WebControls.HiddenField   hdnAccionMateriales;
+        protected global::System.Web.UI.WebControls.HiddenField   hdnNuevoPrecio;
+        protected global::System.Web.UI.WebControls.HiddenField   hdnNuevaNotaPrecio;
+        protected global::System.Web.UI.WebControls.Button        btnGuardarProveedorMaterial;
+        protected global::System.Web.UI.WebControls.Button        btnActualizarPrecio;
+        protected global::System.Web.UI.WebControls.Button        btnAccionMateriales;
+
+        // ── Modal Materiales — Controles del modal ─────────────────────────────
+        protected global::System.Web.UI.WebControls.Label         lblProveedorNombreMat;
+        protected global::System.Web.UI.WebControls.DropDownList  ddlMaterialAgregar;
+        protected global::System.Web.UI.WebControls.TextBox       txtPrecioAgregar;
+        protected global::System.Web.UI.WebControls.GridView      gvMaterialesProveedor;
+        protected global::System.Web.UI.WebControls.GridView      gvHistorial;
+        protected global::System.Web.UI.WebControls.Label         lblHistorialMaterial;
     }
 }

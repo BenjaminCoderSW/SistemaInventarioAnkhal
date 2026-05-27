@@ -73,6 +73,7 @@
       <Column Name="Notas" Type="System.String" DbType="VarChar(200)" CanBeNull="true" />
       <Column Name="CantidadRealCap" Type="System.Decimal" DbType="Decimal(12,4)" CanBeNull="true" />
       <Column Name="UnidadClaveCap" Type="System.String" DbType="VarChar(20)" CanBeNull="true" />
+      <Column Name="UnidadSeleccionVal" Type="System.String" DbType="NVarChar(100)" CanBeNull="true" />
       <Association Name="Materiales_ConsumosProduccion" Member="Materiales" ThisKey="MaterialID" OtherKey="MaterialID" Type="Materiales" IsForeignKey="true" />
       <Association Name="Produccion_ConsumosProduccion" Member="Produccion" ThisKey="ProduccionID" OtherKey="ProduccionID" Type="Produccion" IsForeignKey="true" />
     </Type>
@@ -178,6 +179,7 @@
       <Association Name="Materiales_NivelesMaterialBase" Member="NivelesMaterialBase" ThisKey="MaterialID" OtherKey="MaterialID" Type="NivelesMaterialBase" />
       <Association Name="Materiales_ProductoMateriales" Member="ProductoMateriales" ThisKey="MaterialID" OtherKey="MaterialID" Type="ProductoMateriales" />
       <Association Name="Materiales_StockMateriales" Member="StockMateriales" ThisKey="MaterialID" OtherKey="MaterialID" Type="StockMateriales" />
+      <Association Name="Materiales_ProveedorMateriales" Member="ProveedorMateriales" ThisKey="MaterialID" OtherKey="MaterialID" Type="ProveedorMateriales" />
       <Association Name="Proveedores_Materiales" Member="Proveedores" ThisKey="ProveedorPrincipalID" OtherKey="ProveedorID" Type="Proveedores" IsForeignKey="true" />
       <Association Name="TiposMaterial_Materiales" Member="TiposMaterial" ThisKey="TipoMaterialID" OtherKey="TipoMaterialID" Type="TiposMaterial" IsForeignKey="true" />
       <Association Name="UnidadesMedida_Materiales" Member="UnidadesMedida" ThisKey="UnidadMedidaID" OtherKey="UnidadMedidaID" Type="UnidadesMedida" IsForeignKey="true" />
@@ -245,6 +247,7 @@
       <Column Name="RegistradoPorID" Type="System.Int32" DbType="Int NOT NULL" CanBeNull="false" />
       <Column Name="FechaRegistro" Type="System.DateTime" DbType="DateTime2 NOT NULL" CanBeNull="false" />
       <Column Name="PrecioVenta" Type="System.Decimal" DbType="Decimal(12,4) NOT NULL" CanBeNull="false" />
+      <Column Name="Estado" Type="System.String" DbType="VarChar(20) NOT NULL" CanBeNull="false" />
       <Association Name="Produccion_ConsumosProduccion" Member="ConsumosProduccion" ThisKey="ProduccionID" OtherKey="ProduccionID" Type="ConsumosProduccion" />
       <Association Name="Produccion_Movimientos" Member="Movimientos" ThisKey="ProduccionID" OtherKey="ProduccionID" Type="Movimientos" />
       <Association Name="Bases_Produccion" Member="Bases" ThisKey="BaseID" OtherKey="BaseID" Type="Bases" IsForeignKey="true" />
@@ -324,6 +327,7 @@
       <Column Name="UsuarioAltaID" Type="System.Int32" DbType="Int" CanBeNull="true" />
       <Association Name="Proveedores_LotesMovimiento" Member="LotesMovimiento" ThisKey="ProveedorID" OtherKey="ProveedorID" Type="LotesMovimiento" />
       <Association Name="Proveedores_Materiales" Member="Materiales" ThisKey="ProveedorID" OtherKey="ProveedorPrincipalID" Type="Materiales" />
+      <Association Name="Proveedores_ProveedorMateriales" Member="ProveedorMateriales" ThisKey="ProveedorID" OtherKey="ProveedorID" Type="ProveedorMateriales" />
       <Association Name="Usuario_Proveedores" Member="Usuario" ThisKey="UsuarioAltaID" OtherKey="ClaveID" Type="Usuario" IsForeignKey="true" />
     </Type>
   </Table>
@@ -484,6 +488,31 @@
       <Column Name="UltimoAcceso" Type="System.DateTime" DbType="DateTime2" CanBeNull="true" />
       <Column Name="UsuarioAltaID" Type="System.Int32" DbType="Int" CanBeNull="true" />
       <Column Name="RowVersion" Type="System.Data.Linq.Binary" DbType="rowversion NOT NULL" CanBeNull="false" IsVersion="true" />
+    </Type>
+  </Table>
+  <Table Name="dbo.ProveedorMateriales" Member="ProveedorMateriales">
+    <Type Name="ProveedorMateriales">
+      <Column Name="ProveedorMaterialID" Type="System.Int32" DbType="Int NOT NULL IDENTITY" IsPrimaryKey="true" IsDbGenerated="true" CanBeNull="false" />
+      <Column Name="ProveedorID" Type="System.Int32" DbType="Int NOT NULL" CanBeNull="false" />
+      <Column Name="MaterialID" Type="System.Int32" DbType="Int NOT NULL" CanBeNull="false" />
+      <Column Name="Activo" Type="System.Boolean" DbType="Bit NOT NULL" CanBeNull="false" />
+      <Column Name="FechaAlta" Type="System.DateTime" DbType="DateTime2 NOT NULL" CanBeNull="false" />
+      <Column Name="UsuarioAltaID" Type="System.Int32" DbType="Int" CanBeNull="true" />
+      <Association Name="ProveedorMateriales_HistorialPrecios" Member="HistorialPrecios" ThisKey="ProveedorMaterialID" OtherKey="ProveedorMaterialID" Type="HistorialPrecios" />
+      <Association Name="Materiales_ProveedorMateriales" Member="Materiales" ThisKey="MaterialID" OtherKey="MaterialID" Type="Materiales" IsForeignKey="true" />
+      <Association Name="Proveedores_ProveedorMateriales" Member="Proveedores" ThisKey="ProveedorID" OtherKey="ProveedorID" Type="Proveedores" IsForeignKey="true" />
+    </Type>
+  </Table>
+  <Table Name="dbo.HistorialPrecios" Member="HistorialPrecios">
+    <Type Name="HistorialPrecios">
+      <Column Name="HistorialPrecioID" Type="System.Int32" DbType="Int NOT NULL IDENTITY" IsPrimaryKey="true" IsDbGenerated="true" CanBeNull="false" />
+      <Column Name="ProveedorMaterialID" Type="System.Int32" DbType="Int NOT NULL" CanBeNull="false" />
+      <Column Name="Precio" Type="System.Decimal" DbType="Decimal(12,4) NOT NULL" CanBeNull="false" />
+      <Column Name="FechaInicio" Type="System.DateTime" DbType="Date NOT NULL" CanBeNull="false" />
+      <Column Name="Notas" Type="System.String" DbType="NVarChar(300)" CanBeNull="true" />
+      <Column Name="RegistradoPorID" Type="System.Int32" DbType="Int NOT NULL" CanBeNull="false" />
+      <Column Name="FechaRegistro" Type="System.DateTime" DbType="DateTime2 NOT NULL" CanBeNull="false" />
+      <Association Name="ProveedorMateriales_HistorialPrecios" Member="ProveedorMateriales" ThisKey="ProveedorMaterialID" OtherKey="ProveedorMaterialID" Type="ProveedorMateriales" IsForeignKey="true" />
     </Type>
   </Table>
 </Database>

@@ -155,6 +155,10 @@
                                                 CommandArgument='<%# Eval("ProveedorID") %>'
                                                 OnClientClick='<%# "return confirmarToggle(\"" + Eval("ProveedorID") + "\", \"" + Server.HtmlEncode((Eval("Nombre") ?? "").ToString()) + "\", " + Eval("Activo").ToString().ToLower() + ");" %>'
                                                 OnClick="btnToggle_Click" />
+                                            <button type="button" class="btn btn-info btn-sm"
+                                                onclick="abrirModalMateriales('<%# Eval("ProveedorID") %>','<%# Server.HtmlEncode((Eval("Nombre") ?? "").ToString()) %>')">
+                                                <i class="fas fa-boxes"></i> Materiales
+                                            </button>
                                         </ItemTemplate>
                                     </asp:TemplateField>
                                 </Columns>
@@ -170,6 +174,17 @@
     <asp:HiddenField ID="hdnToggleProveedorID" runat="server" Value="" />
     <asp:Button ID="btnToggleHidden" runat="server" CssClass="d-none" OnClick="btnToggleHidden_Click" />
     <asp:HiddenField ID="hdnMensajePendiente" runat="server" Value="" />
+
+    <%-- ── HiddenFields para el módulo de materiales por proveedor ── --%>
+    <asp:HiddenField ID="hdnMaterialesProveedorID" runat="server" Value="" />
+    <asp:HiddenField ID="hdnProveedorMaterialID"   runat="server" Value="" />
+    <asp:HiddenField ID="hdnAccionMateriales"      runat="server" Value="" />
+    <asp:HiddenField ID="hdnNuevoPrecio"           runat="server" Value="" />
+    <asp:HiddenField ID="hdnNuevaNotaPrecio"       runat="server" Value="" />
+    <%-- Botones servidor invisibles disparados por __doPostBack desde JS --%>
+    <asp:Button ID="btnAgregarMaterial"  runat="server" CssClass="d-none" OnClick="btnAgregarMaterial_Click" />
+    <asp:Button ID="btnActualizarPrecio" runat="server" CssClass="d-none" OnClick="btnActualizarPrecio_Click" />
+    <asp:Button ID="btnAccionMateriales" runat="server" CssClass="d-none" OnClick="btnAccionMateriales_Click" />
 
     <!-- ══════════════════════════════════════════════════════════════════════
          MODAL NUEVO PROVEEDOR
@@ -773,6 +788,178 @@
         </div>
     </div>
 
+    <!-- ══════════════════════════════════════════════════════════════════════
+         MODAL MATERIALES DEL PROVEEDOR
+    ══════════════════════════════════════════════════════════════════════ -->
+    <div class="modal fade" id="modalMateriales" tabindex="-1" role="dialog" data-backdrop="static">
+        <div class="modal-dialog" style="max-width:900px;" role="document">
+            <div class="modal-content">
+                <div class="modal-header" style="background-color:#003366;color:white;">
+                    <h5 class="modal-title">
+                        <i class="fas fa-boxes"></i>
+                        Materiales de <asp:Label ID="lblProveedorNombreMat" runat="server" Text=""></asp:Label>
+                    </h5>
+                    <button type="button" class="close text-white" data-dismiss="modal"><span>&times;</span></button>
+                </div>
+                <div class="modal-body">
+
+                    <%-- ── AGREGAR MATERIAL NUEVO ── --%>
+                    <div class="card mb-3">
+                        <div class="card-header" style="background:#eaf2f8;color:#003366;font-weight:600;font-size:.9rem;">
+                            <i class="fas fa-plus-circle"></i> Agregar material a este proveedor
+                        </div>
+                        <div class="card-body pb-2">
+                            <div class="row align-items-end">
+                                <div class="col-md-6">
+                                    <div class="form-group mb-2">
+                                        <label style="font-size:.85rem;font-weight:600;">Material <span style="color:red">*</span></label>
+                                        <asp:DropDownList ID="ddlMaterialAgregar" runat="server" CssClass="form-control form-control-sm">
+                                            <asp:ListItem Value="">-- Seleccionar --</asp:ListItem>
+                                        </asp:DropDownList>
+                                    </div>
+                                </div>
+                                <div class="col-md-3">
+                                    <div class="form-group mb-2">
+                                        <label style="font-size:.85rem;font-weight:600;">Precio inicial ($) <span style="color:red">*</span></label>
+                                        <div class="input-group input-group-sm">
+                                            <div class="input-group-prepend"><span class="input-group-text">$</span></div>
+                                            <asp:TextBox ID="txtPrecioAgregar" runat="server" CssClass="form-control"
+                                                TextMode="Number" Placeholder="0.0000" min="0" step="0.0001"></asp:TextBox>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="col-md-3 pb-2">
+                                    <button type="button" class="btn btn-success btn-sm btn-block"
+                                        onclick="confirmarAgregarMaterial()">
+                                        <i class="fas fa-plus"></i> Agregar
+                                    </button>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <%-- ── LISTA DE MATERIALES ── --%>
+                    <div class="table-responsive">
+                        <asp:GridView ID="gvMaterialesProveedor" runat="server"
+                            AutoGenerateColumns="False"
+                            CssClass="table table-bordered table-sm"
+                            EmptyDataText="Este proveedor no tiene materiales registrados."
+                            EmptyDataRowStyle-CssClass="text-center text-muted">
+                            <Columns>
+                                <asp:BoundField DataField="ProveedorMaterialID" Visible="false" />
+                                <asp:BoundField DataField="Codigo"        HeaderText="Código" ItemStyle-Width="90px" />
+                                <asp:BoundField DataField="Material"      HeaderText="Material" />
+                                <asp:BoundField DataField="Unidad"        HeaderText="Unidad base" ItemStyle-Width="90px" />
+                                <asp:BoundField DataField="PrecioVigente" HeaderText="Precio vigente ($)"
+                                    DataFormatString="{0:N4}" ItemStyle-Width="130px" ItemStyle-CssClass="text-right font-weight-bold" />
+                                <asp:BoundField DataField="FechaVigente"  HeaderText="Vigente desde"
+                                    DataFormatString="{0:dd/MM/yyyy}" ItemStyle-Width="110px" />
+                                <asp:TemplateField HeaderText="Estado" ItemStyle-Width="80px" ItemStyle-CssClass="text-center">
+                                    <ItemTemplate>
+                                        <span class="badge badge-<%# Convert.ToBoolean(Eval("Activo")) ? "success" : "secondary" %>">
+                                            <%# Convert.ToBoolean(Eval("Activo")) ? "Activo" : "Inactivo" %>
+                                        </span>
+                                    </ItemTemplate>
+                                </asp:TemplateField>
+                                <asp:TemplateField HeaderText="Acciones" ItemStyle-Width="230px">
+                                    <ItemTemplate>
+                                        <button type="button" class="btn btn-warning btn-sm"
+                                            onclick="abrirModalActualizarPrecio('<%# Eval("ProveedorMaterialID") %>','<%# Server.HtmlEncode((Eval("Material") ?? "").ToString()) %>')">
+                                            <i class="fas fa-dollar-sign"></i> Precio
+                                        </button>
+                                        <button type="button" class="btn btn-secondary btn-sm"
+                                            onclick="verHistorial('<%# Eval("ProveedorMaterialID") %>')">
+                                            <i class="fas fa-history"></i> Historial
+                                        </button>
+                                        <button type="button" class="btn btn-<%# Convert.ToBoolean(Eval("Activo")) ? "outline-danger" : "outline-success" %> btn-sm"
+                                            onclick="confirmarToggleMaterial('<%# Eval("ProveedorMaterialID") %>','<%# Server.HtmlEncode((Eval("Material") ?? "").ToString()) %>',<%# Eval("Activo").ToString().ToLower() %>)">
+                                            <%# Convert.ToBoolean(Eval("Activo")) ? "Desactivar" : "Activar" %>
+                                        </button>
+                                    </ItemTemplate>
+                                </asp:TemplateField>
+                            </Columns>
+                        </asp:GridView>
+                    </div>
+
+                    <%-- ── HISTORIAL DE PRECIOS (inline, oculto por default) ── --%>
+                    <div id="divHistorial" style="display:none;" class="mt-3">
+                        <h6 style="color:#003366;">
+                            <i class="fas fa-history"></i>
+                            Historial de precios: <strong><asp:Label ID="lblHistorialMaterial" runat="server" Text=""></asp:Label></strong>
+                        </h6>
+                        <div class="table-responsive">
+                            <asp:GridView ID="gvHistorial" runat="server"
+                                AutoGenerateColumns="False"
+                                CssClass="table table-bordered table-sm table-striped"
+                                EmptyDataText="Sin historial de precios registrado."
+                                EmptyDataRowStyle-CssClass="text-center text-muted">
+                                <Columns>
+                                    <asp:BoundField DataField="FechaInicio"    HeaderText="Vigente desde"
+                                        DataFormatString="{0:dd/MM/yyyy}" ItemStyle-Width="120px" />
+                                    <asp:BoundField DataField="Precio"         HeaderText="Precio ($)"
+                                        DataFormatString="{0:N4}" ItemStyle-Width="120px" ItemStyle-CssClass="text-right" />
+                                    <asp:BoundField DataField="RegistradoPor"  HeaderText="Registrado por" />
+                                    <asp:BoundField DataField="Notas"          HeaderText="Notas" />
+                                </Columns>
+                            </asp:GridView>
+                        </div>
+                        <button type="button" class="btn btn-secondary btn-sm mt-1"
+                            onclick="document.getElementById('divHistorial').style.display='none';">
+                            <i class="fas fa-times"></i> Cerrar historial
+                        </button>
+                    </div>
+
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-dismiss="modal">Cerrar</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- ══════════════════════════════════════════════════════════════════════
+         SUB-MODAL: ACTUALIZAR PRECIO
+    ══════════════════════════════════════════════════════════════════════ -->
+    <div class="modal fade" id="modalPrecio" tabindex="-1" role="dialog" data-backdrop="static">
+        <div class="modal-dialog" style="max-width:400px;" role="document">
+            <div class="modal-content">
+                <div class="modal-header" style="background-color:#d35400;color:white;">
+                    <h5 class="modal-title"><i class="fas fa-dollar-sign"></i> Nuevo precio</h5>
+                    <button type="button" class="close text-white" data-dismiss="modal"><span>&times;</span></button>
+                </div>
+                <div class="modal-body">
+                    <p class="small text-muted mb-2">
+                        Material: <strong id="spnMaterialPrecio"></strong>
+                    </p>
+                    <div class="form-group">
+                        <label style="font-size:.85rem;font-weight:600;">Precio nuevo ($) <span style="color:red">*</span></label>
+                        <div class="input-group input-group-sm">
+                            <div class="input-group-prepend"><span class="input-group-text">$</span></div>
+                            <input type="number" id="txtNuevoPrecioInput" class="form-control"
+                                min="0" step="0.0001" placeholder="0.0000" />
+                        </div>
+                    </div>
+                    <div class="form-group">
+                        <label style="font-size:.85rem;font-weight:600;">Fecha de vigencia <span style="color:red">*</span></label>
+                        <input type="date" id="txtFechaVigenciaInput" class="form-control form-control-sm" />
+                        <small class="text-muted">El precio será vigente a partir de esta fecha.</small>
+                    </div>
+                    <div class="form-group mb-0">
+                        <label style="font-size:.85rem;font-weight:600;">Notas <small class="text-muted">(opcional)</small></label>
+                        <textarea id="txtNotaPrecioInput" class="form-control form-control-sm" rows="2" maxlength="300"
+                            placeholder="Ej: Aumento por inflación, precio de temporada..."></textarea>
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-warning" onclick="guardarNuevoPrecio()">
+                        <i class="fas fa-save"></i> Guardar precio
+                    </button>
+                    <button type="button" class="btn btn-secondary" onclick="cerrarModalPrecio()">Cancelar</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
     <script>
         // ── Mensaje pendiente (postback) ───────────────────────────────────────
         window.addEventListener('load', function () {
@@ -783,11 +970,26 @@
             try {
                 var msg = JSON.parse(raw);
                 hdnMsg.value = '';
+
+                // icon === '' → apertura silenciosa de modal (sin SweetAlert)
+                if (msg.icon === '') {
+                    if (msg.modal) $('#' + msg.modal).modal('show');
+                    if (msg.showHistorial) {
+                        document.getElementById('divHistorial').style.display = 'block';
+                    }
+                    return;
+                }
+
                 var opts = { icon: msg.icon, title: msg.title, text: msg.text, confirmButtonColor: '#003366' };
                 if (msg.icon === 'success') { opts.showConfirmButton = false; opts.timer = 2000; }
                 if (msg.modal) {
                     opts.showConfirmButton = true;
-                    Swal.fire(opts).then(function () { $('#' + msg.modal).modal('show'); });
+                    Swal.fire(opts).then(function () {
+                        $('#' + msg.modal).modal('show');
+                        if (msg.showHistorial) {
+                            document.getElementById('divHistorial').style.display = 'block';
+                        }
+                    });
                 } else {
                     Swal.fire(opts);
                 }
@@ -968,6 +1170,115 @@
                 return false;
             }
             return true;
+        }
+
+        // ══ FUNCIONES MÓDULO MATERIALES POR PROVEEDOR ══════════════════════════
+
+        var _proveedorMaterialIDActual = 0;
+
+        // ── Abrir modal de materiales de un proveedor ──────────────────────────
+        function abrirModalMateriales(proveedorID, nombreProveedor) {
+            document.getElementById('<%= hdnMaterialesProveedorID.ClientID %>').value = proveedorID;
+            document.getElementById('divHistorial').style.display = 'none';
+            document.getElementById('<%= hdnAccionMateriales.ClientID %>').value = 'cargar';
+            __doPostBack('<%= btnAccionMateriales.UniqueID %>', '');
+        }
+
+        // ── Confirmar y disparar agregar material ──────────────────────────────
+        function confirmarAgregarMaterial() {
+            var mat    = document.getElementById('<%= ddlMaterialAgregar.ClientID %>').value;
+            var precio = parseFloat(document.getElementById('<%= txtPrecioAgregar.ClientID %>').value);
+            if (!mat) {
+                Swal.fire({ icon: 'warning', title: 'Material requerido',
+                    text: 'Seleccione un material de la lista.', confirmButtonColor: '#003366' })
+                    .then(function () { $('#modalMateriales').modal('show'); });
+                return;
+            }
+            if (isNaN(precio) || precio < 0) {
+                Swal.fire({ icon: 'warning', title: 'Precio inválido',
+                    text: 'Ingrese un precio inicial mayor o igual a cero.', confirmButtonColor: '#003366' })
+                    .then(function () { $('#modalMateriales').modal('show'); });
+                return;
+            }
+            // Disparar postback al botón de servidor invisible
+            __doPostBack('<%= btnAgregarMaterial.UniqueID %>', '');
+        }
+
+        // ── Abrir sub-modal para actualizar precio ─────────────────────────────
+        function abrirModalActualizarPrecio(proveedorMaterialID, materialNombre) {
+            _proveedorMaterialIDActual = proveedorMaterialID;
+            document.getElementById('spnMaterialPrecio').innerText = materialNombre;
+            document.getElementById('txtNuevoPrecioInput').value   = '';
+            document.getElementById('txtNotaPrecioInput').value    = '';
+            // Fecha de vigencia por defecto = hoy
+            var hoy = new Date();
+            var iso = hoy.getFullYear() + '-' +
+                      String(hoy.getMonth() + 1).padStart(2, '0') + '-' +
+                      String(hoy.getDate()).padStart(2, '0');
+            document.getElementById('txtFechaVigenciaInput').value = iso;
+            $('#modalMateriales').modal('hide');
+            $('#modalPrecio').modal('show');
+        }
+
+        function cerrarModalPrecio() {
+            $('#modalPrecio').modal('hide');
+            $('#modalMateriales').modal('show');
+        }
+
+        // ── Guardar nuevo precio (desde sub-modal) ─────────────────────────────
+        function guardarNuevoPrecio() {
+            var precio = parseFloat(document.getElementById('txtNuevoPrecioInput').value);
+            var fecha  = document.getElementById('txtFechaVigenciaInput').value;
+            var nota   = document.getElementById('txtNotaPrecioInput').value.trim();
+
+            if (isNaN(precio) || precio < 0) {
+                Swal.fire({ icon: 'warning', title: 'Precio inválido',
+                    text: 'Ingrese un precio mayor o igual a cero.', confirmButtonColor: '#003366' })
+                    .then(function () { $('#modalPrecio').modal('show'); });
+                return;
+            }
+            if (!fecha) {
+                Swal.fire({ icon: 'warning', title: 'Fecha requerida',
+                    text: 'Ingrese la fecha de vigencia del precio.', confirmButtonColor: '#003366' })
+                    .then(function () { $('#modalPrecio').modal('show'); });
+                return;
+            }
+            document.getElementById('<%= hdnProveedorMaterialID.ClientID %>').value  = _proveedorMaterialIDActual;
+            document.getElementById('<%= hdnNuevoPrecio.ClientID %>').value          = precio.toFixed(4);
+            // Empacar fecha y nota separadas por pipe (nota máx 300 chars, no puede contener pipe)
+            document.getElementById('<%= hdnNuevaNotaPrecio.ClientID %>').value      = fecha + '|' + nota;
+            $('#modalPrecio').modal('hide');
+            __doPostBack('<%= btnActualizarPrecio.UniqueID %>', '');
+        }
+
+        // ── Ver historial de precios de un material ────────────────────────────
+        function verHistorial(proveedorMaterialID) {
+            document.getElementById('<%= hdnProveedorMaterialID.ClientID %>').value = proveedorMaterialID;
+            document.getElementById('<%= hdnAccionMateriales.ClientID %>').value    = 'historial';
+            __doPostBack('<%= btnAccionMateriales.UniqueID %>', '');
+        }
+
+        // ── Confirmar y disparar toggle activo/inactivo de material ───────────
+        function confirmarToggleMaterial(proveedorMaterialID, materialNombre, activo) {
+            var accion = activo ? 'desactivar' : 'activar';
+            Swal.fire({
+                icon: activo ? 'warning' : 'question',
+                title: '¿' + (activo ? 'Desactivar' : 'Activar') + ' material?',
+                html: '¿Desea <b>' + accion + '</b> a <b>' + materialNombre + '</b> de este proveedor?',
+                showCancelButton: true,
+                confirmButtonText: 'Sí, ' + accion,
+                cancelButtonText: 'Cancelar',
+                confirmButtonColor: activo ? '#e0a800' : '#28a745',
+                cancelButtonColor: '#6c757d'
+            }).then(function (r) {
+                if (r.isConfirmed) {
+                    document.getElementById('<%= hdnProveedorMaterialID.ClientID %>').value = proveedorMaterialID;
+                    document.getElementById('<%= hdnAccionMateriales.ClientID %>').value    = 'toggle';
+                    __doPostBack('<%= btnAccionMateriales.UniqueID %>', '');
+                } else {
+                    $('#modalMateriales').modal('show');
+                }
+            });
         }
 
         // ── Toggle Activo/Inactivo ─────────────────────────────────────────────

@@ -398,7 +398,8 @@
           <div class="col-md-6">
             <div class="form-group">
               <label>Proveedor</label>
-              <asp:DropDownList ID="ddlProveedor" runat="server" CssClass="form-control">
+              <asp:DropDownList ID="ddlProveedor" runat="server" CssClass="form-control"
+                  onchange="onProveedorChange();">
                 <asp:ListItem Value="">-- Sin proveedor --</asp:ListItem>
               </asp:DropDownList>
             </div>
@@ -472,6 +473,7 @@
                     Placeholder="0.00" min="0" step="0.01"
                     onkeyup="calcularTotal();" onchange="calcularTotal();"></asp:TextBox>
               </div>
+              <small id="spnPrecioIndicador" class="mt-1 d-block" style="font-size:.75rem;min-height:1rem;"></small>
             </div>
           </div>
           <div class="col-md-2">
@@ -579,6 +581,7 @@
         ocultarResultadosItem();
         document.getElementById('<%= ddlBaseOrigen.ClientID %>').selectedIndex = 0;
         document.getElementById('<%= ddlBaseDestino.ClientID %>').selectedIndex = 0;
+        document.getElementById('<%= ddlProveedor.ClientID %>').selectedIndex = 0;
         document.getElementById('<%= txtCantidad.ClientID %>').value = '';
         var txtCosto = document.getElementById('<%= txtCosto.ClientID %>');
         txtCosto.value = '';
@@ -591,6 +594,7 @@
         document.getElementById('<%= lblConversionInfo.ClientID %>').innerText = '';
         var ddlUC = document.getElementById('<%= ddlUnidadCaptura.ClientID %>');
         if (ddlUC) ddlUC.innerHTML = '';
+        limpiarIndicadorPrecio();
         renderTablaItems();
         $('#modalNuevo').modal('show');
     }
@@ -724,6 +728,13 @@
         document.getElementById('<%= lblConversionInfo.ClientID %>').innerText = '';
         var ddlUC = document.getElementById('<%= ddlUnidadCaptura.ClientID %>');
         if (ddlUC) ddlUC.innerHTML = '';
+        limpiarIndicadorPrecio();
+    }
+
+    // ── Helpers del indicador de precio ────────────────────────────
+    function limpiarIndicadorPrecio() {
+        var spn = document.getElementById('spnPrecioIndicador');
+        if (spn) { spn.textContent = ''; spn.className = 'mt-1 d-block'; }
     }
 
     // ── Mostrar/ocultar bases y bloquear costo en transferencia ────
@@ -838,8 +849,17 @@
 
         var txtCosto = document.getElementById('<%= txtCosto.ClientID %>');
         if (!txtCosto.disabled) {
+            // Precio fallback: PrecioUnitario / PrecioVenta del catálogo
             txtCosto.value = (item.precio || 0).toFixed(2);
+            limpiarIndicadorPrecio();
             calcularTotal();
+
+            // Si es Entrada de proveedor y hay proveedor seleccionado, buscar precio vigente
+            var tipoMov     = document.getElementById('<%= ddlTipoMovimiento.ClientID %>').value;
+            var proveedorID = document.getElementById('<%= ddlProveedor.ClientID %>').value;
+            if (tipoMov === '1' && proveedorID && item.id) {
+                buscarPrecioProveedor(item.id, parseInt(proveedorID));
+            }
         }
 
         var tipo  = document.querySelector('input[name="rbTipoItem"]:checked').value;
@@ -913,6 +933,62 @@
             }
         }
         document.getElementById('<%= lblTotal.ClientID %>').innerText = (cantBase * costo).toFixed(2);
+    }
+
+    // ── Autocomplete de precio por proveedor ───────────────────────
+    // Llamado cuando: (a) se selecciona un ítem con proveedor ya elegido,
+    //                 (b) se cambia el proveedor con ítem ya seleccionado.
+    function buscarPrecioProveedor(materialID, proveedorID) {
+        if (!materialID || !proveedorID) return;
+        var spn      = document.getElementById('spnPrecioIndicador');
+        var txtCosto = document.getElementById('<%= txtCosto.ClientID %>');
+        if (!spn || !txtCosto || txtCosto.disabled) return;
+
+        spn.textContent = 'Buscando precio del proveedor...';
+        spn.className   = 'mt-1 d-block text-muted';
+
+        fetch('<%= ResolveUrl("~/Movimientos.aspx/ObtenerPrecioProveedor") %>', {
+            method:  'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body:    JSON.stringify({ materialID: materialID, proveedorID: proveedorID })
+        })
+        .then(function (r) { return r.json(); })
+        .then(function (data) {
+            var res = data.d;
+            if (res && res.encontrado && res.precio !== null) {
+                txtCosto.value  = parseFloat(res.precio).toFixed(2);
+                spn.textContent = '✓ Precio vigente del proveedor';
+                spn.className   = 'mt-1 d-block text-success font-weight-bold';
+            } else {
+                // Fallback: ya tiene PrecioUnitario; solo informar
+                spn.textContent = '⚠ Sin precio registrado para este proveedor';
+                spn.className   = 'mt-1 d-block text-warning';
+            }
+            calcularTotal();
+        })
+        .catch(function () { limpiarIndicadorPrecio(); });
+    }
+
+    // ── Reaccionar al cambio de proveedor en el dropdown ─────────
+    function onProveedorChange() {
+        var tipoMov     = document.getElementById('<%= ddlTipoMovimiento.ClientID %>').value;
+        var proveedorID = document.getElementById('<%= ddlProveedor.ClientID %>').value;
+        var txtCosto    = document.getElementById('<%= txtCosto.ClientID %>');
+
+        // Solo aplica en Entrada de proveedor, con ítem ya seleccionado y costo editable
+        if (tipoMov !== '1' || txtCosto.disabled) { limpiarIndicadorPrecio(); return; }
+
+        if (!proveedorID) {
+            // Sin proveedor: limpiar indicador (queda el precio base del material)
+            limpiarIndicadorPrecio();
+            return;
+        }
+
+        if (_itemSeleccionado && _itemSeleccionado.id) {
+            buscarPrecioProveedor(_itemSeleccionado.id, parseInt(proveedorID));
+        } else {
+            limpiarIndicadorPrecio();
+        }
     }
 
     // ── Validación antes de postback de guardar ─────────────────────

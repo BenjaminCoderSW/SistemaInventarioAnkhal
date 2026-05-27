@@ -894,6 +894,49 @@ namespace GrupoAnkhalInventario
         }
 
         // ══ WebMethods ═══════════════════════════════════════════════════════
+
+        /// <summary>
+        /// Devuelve el precio vigente de un material para un proveedor dado.
+        /// "Vigente" = registro con MAX(FechaInicio) donde FechaInicio &lt;= hoy.
+        /// Retorna { precio: decimal?, encontrado: bool }.
+        /// Si no existe vínculo activo o no hay precio, encontrado = false.
+        /// </summary>
+        [System.Web.Services.WebMethod(EnableSession = true)]
+        public static object ObtenerPrecioProveedor(int materialID, int proveedorID)
+        {
+            if (materialID <= 0 || proveedorID <= 0)
+                return new { precio = (decimal?)null, encontrado = false };
+
+            string connStr = System.Configuration.ConfigurationManager
+                .ConnectionStrings["InventarioAnkhalDBConnectionString"].ConnectionString;
+
+            using (var db = new InventarioAnkhalDBDataContext(connStr))
+            {
+                // Buscar vínculo activo entre este proveedor y este material
+                var pm = db.ProveedorMateriales.FirstOrDefault(x =>
+                    x.ProveedorID == proveedorID &&
+                    x.MaterialID  == materialID  &&
+                    x.Activo);
+
+                if (pm == null)
+                    return new { precio = (decimal?)null, encontrado = false };
+
+                // Precio vigente: TOP 1 donde FechaInicio <= hoy.
+                // Desempate por HistorialPrecioID DESC para que, cuando dos precios
+                // comparten la misma FechaInicio, gane el registrado más recientemente.
+                DateTime hoy = AppHelper.Hoy;
+                decimal? precioV = db.HistorialPrecios
+                    .Where(hp => hp.ProveedorMaterialID == pm.ProveedorMaterialID
+                              && hp.FechaInicio         <= hoy)
+                    .OrderByDescending(hp => hp.FechaInicio)
+                    .ThenByDescending(hp => hp.HistorialPrecioID)
+                    .Select(hp => (decimal?)hp.Precio)
+                    .FirstOrDefault();
+
+                return new { precio = precioV, encontrado = precioV.HasValue };
+            }
+        }
+
         [System.Web.Services.WebMethod(EnableSession = true)]
         public static object BuscarItems(string query, string tipo)
         {
