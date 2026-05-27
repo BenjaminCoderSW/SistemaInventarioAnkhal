@@ -730,6 +730,46 @@ namespace GrupoAnkhalInventario
             }
         }
 
+        // ── WebMethod: búsqueda de materiales para autocomplete Campo B ───
+        [WebMethod]
+        public static object BuscarMaterialesMerma(string query)
+        {
+            if (HttpContext.Current.Session["ClaveID"] == null)
+                throw new Exception("No autorizado");
+
+            string connStr = ConfigurationManager
+                .ConnectionStrings["InventarioAnkhalDBConnectionString"].ConnectionString;
+
+            var result = new List<object>();
+            using (var conn = new SqlConnection(connStr))
+            {
+                conn.Open();
+                const string sql = @"
+                    SELECT TOP 15 MaterialID, Codigo, Descripcion, Unidad
+                    FROM   dbo.Materiales
+                    WHERE  Activo = 1
+                      AND  (Codigo LIKE @q OR Descripcion LIKE @q)
+                    ORDER  BY Codigo";
+                using (var cmd = new SqlCommand(sql, conn))
+                {
+                    cmd.Parameters.AddWithValue("@q", "%" + query + "%");
+                    using (var rd = cmd.ExecuteReader())
+                    {
+                        while (rd.Read())
+                        {
+                            result.Add(new
+                            {
+                                id     = rd.GetInt32(0),
+                                nombre = "[" + rd.GetString(1) + "] " + rd.GetString(2),
+                                unidad = rd.GetString(3)
+                            });
+                        }
+                    }
+                }
+            }
+            return result;
+        }
+
         // ── WebMethod: detalle de una conversión (llamado vía AJAX) ───────
         [WebMethod]
         public static object ObtenerDetalleConversion(int conversionID)

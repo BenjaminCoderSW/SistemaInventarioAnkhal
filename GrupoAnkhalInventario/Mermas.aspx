@@ -41,6 +41,12 @@
         #tblOutputs { font-size:.88rem; }
         #tblOutputs thead th { background:#003366; color:#fff; font-size:.8rem; }
         .btn-quitar-output { padding:2px 7px; font-size:.78rem; }
+        .autocomplete-results {
+            display:none; position:absolute; z-index:9999; width:100%;
+            background:#fff; border:1px solid #ccc; border-radius:4px;
+            max-height:200px; overflow-y:auto;
+            box-shadow:0 2px 8px rgba(0,0,0,.18);
+        }
         .disponible-badge {
             background:#fdf2e9; border:1px solid #e67e22; color:#784212;
             border-radius:6px; padding:5px 12px; font-weight:600; font-size:.9rem;
@@ -236,9 +242,12 @@
           <div class="col-md-4">
             <div class="form-group">
               <label>Material en merma <span style="color:red">*</span></label>
-              <select id="ddlConvMatOrigen" class="form-control" onchange="onConvMatOrigenChange();">
-                <option value="">-- Seleccione base primero --</option>
-              </select>
+              <div style="position:relative;">
+                <input type="text" id="txtConvMatOrigen" class="form-control"
+                       placeholder="Buscar material en merma..." autocomplete="off"
+                       oninput="onTxtConvMatOrigenInput()" />
+                <div id="divResultadosConvMatOrigen" class="autocomplete-results"></div>
+              </div>
               <asp:HiddenField ID="hdnConvMatOrigenID" runat="server" Value="" />
             </div>
           </div>
@@ -358,68 +367,56 @@
 <!-- ══ LÓGICA JS ════════════════════════════════════════════════════ -->
 <script>
 var _outputCounter = 0;
+var _destTimers    = {};
 
 function abrirModalConversion() {
     document.getElementById('<%: ddlConvBase.ClientID %>').value = '';
+    // Campo A: reset autocomplete origen
+    document.getElementById('txtConvMatOrigen').value = '';
     document.getElementById('<%: hdnConvMatOrigenID.ClientID %>').value = '';
-    var selOrigen = document.getElementById('ddlConvMatOrigen');
-    selOrigen.innerHTML = '<option value="">-- Seleccione base primero --</option>';
+    ocultarResultadosConvMatOrigen();
     document.getElementById('divDisponible').textContent = '— seleccione material —';
     document.getElementById('<%: txtConvCantOrigen.ClientID %>').value = '';
     document.getElementById('<%: txtConvObs.ClientID %>').value = '';
     document.getElementById('<%: hdnOutputsJson.ClientID %>').value = '';
     document.getElementById('<%: hdnOrigenUnidadVal.ClientID %>').value = '';
     document.getElementById('<%: hdnOrigenFactor.ClientID %>').value = '';
-    // Reset unidad origen
     document.getElementById('divOrigenUnidad').style.display = 'none';
     document.getElementById('ddlOrigenUnidad').innerHTML = '';
     document.getElementById('lblOrigenConvInfo').innerText = '';
+    // Campo B: destruir filas y resetear timers
     document.getElementById('tbodyOutputs').innerHTML = '';
     _outputCounter = 0;
+    _destTimers = {};
     agregarFilaOutput();
     $('#modalConversion').modal('show');
 }
 
 function onConvBaseChange() {
-    var baseID = document.getElementById('<%: ddlConvBase.ClientID %>').value;
-    var sel    = document.getElementById('ddlConvMatOrigen');
-    sel.innerHTML = '<option value="">-- Seleccione --</option>';
-    document.getElementById('divDisponible').textContent = '— seleccione material —';
+    document.getElementById('txtConvMatOrigen').value = '';
     document.getElementById('<%: hdnConvMatOrigenID.ClientID %>').value = '';
+    ocultarResultadosConvMatOrigen();
+    document.getElementById('divDisponible').textContent = '— seleccione material —';
     document.getElementById('divOrigenUnidad').style.display = 'none';
+    document.getElementById('ddlOrigenUnidad').innerHTML = '';
     document.getElementById('lblOrigenConvInfo').innerText = '';
-    if (!baseID || !window._stockMermaData[baseID]) return;
-    window._stockMermaData[baseID].forEach(function(m) {
-        var opt = document.createElement('option');
-        opt.value = m.matID;
-        opt.textContent = m.codigo + ' — ' + m.descripcion + ' (' + m.unidad + ')';
-        opt.setAttribute('data-cant', m.cantDisponible);
-        opt.setAttribute('data-unidad', m.unidad);
-        opt.setAttribute('data-matid', m.matID);
-        sel.appendChild(opt);
-    });
 }
 
-function onConvMatOrigenChange() {
-    var sel = document.getElementById('ddlConvMatOrigen');
-    var opt = sel.options[sel.selectedIndex];
-    document.getElementById('<%: hdnConvMatOrigenID.ClientID %>').value = sel.value || '';
+function onConvMatOrigenChange(matID, cantDisponible, unidTxt) {
+    document.getElementById('<%: hdnConvMatOrigenID.ClientID %>').value = matID || '';
     document.getElementById('divOrigenUnidad').style.display = 'none';
     document.getElementById('ddlOrigenUnidad').innerHTML = '';
     document.getElementById('lblOrigenConvInfo').innerText = '';
 
-    if (!sel.value) {
+    if (!matID) {
         document.getElementById('divDisponible').textContent = '— seleccione material —';
         return;
     }
 
-    var cant    = parseFloat(opt.getAttribute('data-cant')   || 0);
-    var unidTxt = opt.getAttribute('data-unidad') || '';
+    var cant = parseFloat(cantDisponible || 0);
     document.getElementById('divDisponible').textContent =
-        cant.toLocaleString('es-MX', {minimumFractionDigits: 0, maximumFractionDigits: 4}) + ' ' + unidTxt;
+        cant.toLocaleString('es-MX', {minimumFractionDigits: 0, maximumFractionDigits: 4}) + ' ' + (unidTxt || '');
 
-    // Poblar dropdown de unidad de captura si el material tiene conversiones
-    var matID = parseInt(sel.value) || 0;
     var convKey = matID.toString();
     if (window._conversionesMat && window._conversionesMat[convKey] &&
         window._conversionesMat[convKey].length > 1) {
@@ -464,17 +461,17 @@ function agregarFilaOutput() {
     var tr = document.createElement('tr');
     tr.id = 'rowOut_' + _outputCounter;
 
-    var optsmat = '<option value="">-- Seleccione --</option>';
-    (window._materialesActivos || []).forEach(function(m) {
-        optsmat += '<option value="' + m.matID + '">' +
-                   m.codigo + ' — ' + m.descripcion + ' (' + m.unidad + ')</option>';
-    });
-
     var n = _outputCounter;
     tr.innerHTML =
-        '<td><select class="form-control form-control-sm sel-mat-dest" ' +
-             'id="selDest_' + n + '" onchange="onDestMatChange(' + n + ')">' +
-             optsmat + '</select></td>' +
+        '<td style="position:relative;">' +
+          '<div style="position:relative;">' +
+            '<input type="text" id="txtDest_' + n + '" class="form-control form-control-sm" ' +
+                   'placeholder="Buscar material..." autocomplete="off" ' +
+                   'oninput="onTxtDestInput(' + n + ')" />' +
+            '<div id="divResultadosDest_' + n + '" class="autocomplete-results"></div>' +
+          '</div>' +
+          '<input type="hidden" id="hdnDestMatID_' + n + '" class="hdn-mat-dest-id" value="" />' +
+        '</td>' +
         '<td><select class="form-control form-control-sm sel-unidad-dest" ' +
              'id="selUnidDest_' + n + '" disabled>' +
              '<option value="0" data-factor="1">— seleccione material —</option>' +
@@ -493,9 +490,9 @@ function quitarFilaOutput(n) {
 }
 
 function onDestMatChange(n) {
-    var selMat  = document.getElementById('selDest_' + n);
+    var hdn     = document.getElementById('hdnDestMatID_' + n);
     var selUnid = document.getElementById('selUnidDest_' + n);
-    var matID   = parseInt(selMat.value) || 0;
+    var matID   = parseInt((hdn && hdn.value) || 0) || 0;
 
     selUnid.innerHTML = '';
     if (!matID || !window._conversionesMat || !window._conversionesMat[matID.toString()]) {
@@ -544,11 +541,11 @@ function prepararGuardar() {
     var outputs = [];
     var filas   = document.querySelectorAll('#tbodyOutputs tr');
     for (var i = 0; i < filas.length; i++) {
-        var selMat  = filas[i].querySelector('.sel-mat-dest');
+        var hdnMat  = filas[i].querySelector('.hdn-mat-dest-id');
         var selUnid = filas[i].querySelector('.sel-unidad-dest');
         var inp     = filas[i].querySelector('.inp-cant-dest');
-        if (!selMat || !inp) continue;
-        var mID  = parseInt(selMat.value || '0');
+        if (!hdnMat || !inp) continue;
+        var mID  = parseInt(hdnMat.value || '0');
         var cant = parseFloat(inp.value || '0');
         if (!mID || cant <= 0) {
             Swal.fire({icon:'warning',title:'Fila incompleta',
@@ -574,6 +571,137 @@ function prepararGuardar() {
     document.getElementById('<%: hdnOutputsJson.ClientID %>').value = JSON.stringify(outputs);
     return true;
 }
+
+// ── Autocomplete: Material en merma — Campo A (client-side) ──────────
+
+var _origenTimer = null;
+
+function onTxtConvMatOrigenInput() {
+    clearTimeout(_origenTimer);
+    document.getElementById('<%: hdnConvMatOrigenID.ClientID %>').value = '';
+    onConvMatOrigenChange('', 0, '');
+    var baseID = document.getElementById('<%: ddlConvBase.ClientID %>').value;
+    var q = document.getElementById('txtConvMatOrigen').value.trim().toLowerCase();
+    if (!baseID || q.length < 2) { ocultarResultadosConvMatOrigen(); return; }
+    _origenTimer = setTimeout(function() {
+        var lista = (window._stockMermaData[baseID] || []).filter(function(m) {
+            return (m.codigo + ' ' + m.descripcion).toLowerCase().indexOf(q) !== -1;
+        });
+        mostrarResultadosConvMatOrigen(lista);
+    }, 300);
+}
+
+function mostrarResultadosConvMatOrigen(items) {
+    var div = document.getElementById('divResultadosConvMatOrigen');
+    div.innerHTML = '';
+    if (!items || items.length === 0) {
+        div.innerHTML = '<div style="padding:8px 10px;color:#888;font-size:.84rem;">Sin resultados</div>';
+        div.style.display = 'block';
+        return;
+    }
+    items.forEach(function(m) {
+        var el = document.createElement('div');
+        el.style.cssText = 'padding:7px 10px;cursor:pointer;font-size:.84rem;border-bottom:1px solid #f0f0f0;';
+        el.textContent   = m.codigo + ' — ' + m.descripcion + ' (' + m.unidad + ')';
+        el.onmouseenter  = function() { el.style.background = '#e8f0fe'; };
+        el.onmouseleave  = function() { el.style.background = ''; };
+        el.onmousedown   = function(e) {
+            e.preventDefault();
+            document.getElementById('txtConvMatOrigen').value = m.codigo + ' — ' + m.descripcion;
+            ocultarResultadosConvMatOrigen();
+            onConvMatOrigenChange(m.matID, m.cantDisponible, m.unidad);
+        };
+        div.appendChild(el);
+    });
+    div.style.display = 'block';
+}
+
+function ocultarResultadosConvMatOrigen() {
+    var div = document.getElementById('divResultadosConvMatOrigen');
+    if (div) div.style.display = 'none';
+}
+
+document.addEventListener('click', function(e) {
+    var txt = document.getElementById('txtConvMatOrigen');
+    var div = document.getElementById('divResultadosConvMatOrigen');
+    if (txt && !txt.contains(e.target) && div && !div.contains(e.target))
+        ocultarResultadosConvMatOrigen();
+});
+
+// ── Autocomplete: Materiales recuperados — Campo B (server-side, por fila) ──
+
+function onTxtDestInput(n) {
+    clearTimeout(_destTimers[n]);
+    var hdn = document.getElementById('hdnDestMatID_' + n);
+    if (hdn) hdn.value = '';
+    var selUnid = document.getElementById('selUnidDest_' + n);
+    if (selUnid) {
+        selUnid.innerHTML = '<option value="0" data-factor="1">— seleccione material —</option>';
+        selUnid.disabled = true;
+    }
+    var inp = document.getElementById('txtDest_' + n);
+    if (!inp) return;
+    var qVal = inp.value.trim();
+    if (qVal.length < 2) { ocultarResultadosDest(n); return; }
+    _destTimers[n] = setTimeout(function() { buscarDest(n, qVal); }, 300);
+}
+
+function buscarDest(n, query) {
+    fetch('<%= ResolveUrl("~/Mermas.aspx/BuscarMaterialesMerma") %>', {
+        method:  'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body:    JSON.stringify({ query: query })
+    })
+    .then(function(r)    { return r.json(); })
+    .then(function(data) { mostrarResultadosDest(n, data.d); })
+    .catch(function()    { ocultarResultadosDest(n); });
+}
+
+function mostrarResultadosDest(n, items) {
+    var div = document.getElementById('divResultadosDest_' + n);
+    if (!div) return;
+    div.innerHTML = '';
+    if (!items || items.length === 0) {
+        div.innerHTML = '<div style="padding:8px 10px;color:#888;font-size:.84rem;">Sin resultados</div>';
+        div.style.display = 'block';
+        return;
+    }
+    items.forEach(function(item) {
+        var el = document.createElement('div');
+        el.style.cssText = 'padding:7px 10px;cursor:pointer;font-size:.84rem;border-bottom:1px solid #f0f0f0;';
+        el.textContent   = item.nombre;
+        el.onmouseenter  = function() { el.style.background = '#e8f0fe'; };
+        el.onmouseleave  = function() { el.style.background = ''; };
+        el.onmousedown   = function(e) {
+            e.preventDefault();
+            document.getElementById('txtDest_' + n).value      = item.nombre;
+            document.getElementById('hdnDestMatID_' + n).value = item.id;
+            ocultarResultadosDest(n);
+            onDestMatChange(n);
+        };
+        div.appendChild(el);
+    });
+    div.style.display = 'block';
+}
+
+function ocultarResultadosDest(n) {
+    var div = document.getElementById('divResultadosDest_' + n);
+    if (div) div.style.display = 'none';
+}
+
+document.addEventListener('click', function(e) {
+    var rows = document.querySelectorAll('#tbodyOutputs tr');
+    rows.forEach(function(tr) {
+        var id = tr.id;
+        if (!id) return;
+        var n = parseInt(id.replace('rowOut_', ''));
+        if (isNaN(n)) return;
+        var txt = document.getElementById('txtDest_' + n);
+        var div = document.getElementById('divResultadosDest_' + n);
+        if (txt && !txt.contains(e.target) && div && !div.contains(e.target))
+            ocultarResultadosDest(n);
+    });
+});
 
 // ── Detalle de conversión (AJAX) ──────────────────────────────────
 function verDetalle(conversionID, origen) {
