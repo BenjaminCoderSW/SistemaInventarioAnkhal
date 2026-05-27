@@ -1909,11 +1909,11 @@ namespace GrupoAnkhalInventario.Modelo
 		private System.Nullable<decimal> _CantidadRealCap;
 		
 		private string _UnidadClaveCap;
-
+		
 		private string _UnidadSeleccionVal;
-
+		
 		private EntityRef<Materiales> _Materiales;
-
+		
 		private EntityRef<Produccion> _Produccion;
 		
     #region Definiciones de métodos de extensibilidad
@@ -1937,7 +1937,7 @@ namespace GrupoAnkhalInventario.Modelo
     partial void OnUnidadSeleccionValChanging(string value);
     partial void OnUnidadSeleccionValChanged();
     #endregion
-
+		
 		public ConsumosProduccion()
 		{
 			this._Materiales = default(EntityRef<Materiales>);
@@ -2092,7 +2092,7 @@ namespace GrupoAnkhalInventario.Modelo
 				}
 			}
 		}
-
+		
 		[global::System.Data.Linq.Mapping.ColumnAttribute(Storage="_UnidadSeleccionVal", DbType="NVarChar(100)")]
 		public string UnidadSeleccionVal
 		{
@@ -2112,7 +2112,7 @@ namespace GrupoAnkhalInventario.Modelo
 				}
 			}
 		}
-
+		
 		[global::System.Data.Linq.Mapping.AssociationAttribute(Name="Materiales_ConsumosProduccion", Storage="_Materiales", ThisKey="MaterialID", OtherKey="MaterialID", IsForeignKey=true)]
 		public Materiales Materiales
 		{
@@ -6120,9 +6120,9 @@ namespace GrupoAnkhalInventario.Modelo
 		private System.DateTime _FechaRegistro;
 		
 		private decimal _PrecioVenta;
-
+		
 		private string _Estado;
-
+		
 		private EntitySet<ConsumosProduccion> _ConsumosProduccion;
 		
 		private EntitySet<Movimientos> _Movimientos;
@@ -6164,7 +6164,7 @@ namespace GrupoAnkhalInventario.Modelo
     partial void OnEstadoChanging(string value);
     partial void OnEstadoChanged();
     #endregion
-
+		
 		public Produccion()
 		{
 			this._ConsumosProduccion = new EntitySet<ConsumosProduccion>(new Action<ConsumosProduccion>(this.attach_ConsumosProduccion), new Action<ConsumosProduccion>(this.detach_ConsumosProduccion));
@@ -6426,7 +6426,7 @@ namespace GrupoAnkhalInventario.Modelo
 				}
 			}
 		}
-
+		
 		[global::System.Data.Linq.Mapping.ColumnAttribute(Storage="_Estado", DbType="VarChar(20) NOT NULL", CanBeNull=false)]
 		public string Estado
 		{
@@ -6446,7 +6446,7 @@ namespace GrupoAnkhalInventario.Modelo
 				}
 			}
 		}
-
+		
 		[global::System.Data.Linq.Mapping.AssociationAttribute(Name="Produccion_ConsumosProduccion", Storage="_ConsumosProduccion", ThisKey="ProduccionID", OtherKey="ProduccionID")]
 		public EntitySet<ConsumosProduccion> ConsumosProduccion
 		{
