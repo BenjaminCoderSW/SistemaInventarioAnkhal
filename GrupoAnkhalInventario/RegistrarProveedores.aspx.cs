@@ -32,6 +32,7 @@ namespace GrupoAnkhalInventario
             {
                 CargarProveedores();
                 CargarDdlMaterialesAgregar();
+                CargarDdlProductosAgregar();
             }
             else
             {
@@ -243,6 +244,354 @@ namespace GrupoAnkhalInventario
                 {
                     System.Diagnostics.Debug.WriteLine("Error toggle: " + ex.Message);
                     SetMsg("error", "Error", "No se pudo cambiar el estatus del proveedor.");
+                }
+            }
+        }
+
+        // ══ MÓDULO PRODUCTOS POR PROVEEDOR ════════════════════════════════════
+
+        private void CargarDdlProductosAgregar()
+        {
+            using (var db = NuevoDb(false))
+            {
+                var prods = db.Productos
+                    .Where(p => p.Activo)
+                    .OrderBy(p => p.Codigo)
+                    .Select(p => new { p.ProductoID, p.Codigo, p.Descripcion })
+                    .ToList();
+
+                ddlProductoAgregar.Items.Clear();
+                ddlProductoAgregar.Items.Add(new ListItem("-- Seleccionar --", ""));
+                foreach (var p in prods)
+                    ddlProductoAgregar.Items.Add(
+                        new ListItem("[" + p.Codigo + "] " + p.Descripcion, p.ProductoID.ToString()));
+            }
+        }
+
+        private void CargarProductosProveedor(int proveedorID)
+        {
+            using (var db = NuevoDb(false))
+            {
+                var prov = db.Proveedores
+                    .Where(p => p.ProveedorID == proveedorID)
+                    .Select(p => new { p.Nombre })
+                    .FirstOrDefault();
+                lblProveedorNombreProd.Text =
+                    System.Web.HttpUtility.HtmlEncode(prov?.Nombre ?? "");
+
+                var pps = db.ProveedorProductos
+                    .Where(pp => pp.ProveedorID == proveedorID)
+                    .ToList();
+
+                if (!pps.Any())
+                {
+                    gvProductosProveedor.DataSource = new List<object>();
+                    gvProductosProveedor.DataBind();
+                    return;
+                }
+
+                var prodIds = pps.Select(pp => pp.ProductoID).Distinct().ToList();
+                var prods = db.Productos
+                    .Where(p => prodIds.Contains(p.ProductoID))
+                    .Select(p => new { p.ProductoID, p.Codigo, p.Descripcion })
+                    .ToList()
+                    .ToDictionary(p => p.ProductoID);
+
+                var ppIds = pps.Select(pp => pp.ProveedorProductoID).ToList();
+                DateTime hoy = AppHelper.Hoy;
+
+                var historialesBrutos = db.HistorialPreciosProductos
+                    .Where(h => ppIds.Contains(h.ProveedorProductoID) && h.FechaInicio <= hoy)
+                    .Select(h => new { h.HistorialPrecioProductoID, h.ProveedorProductoID, h.Precio, h.FechaInicio })
+                    .ToList();
+
+                var preciosVigentes = historialesBrutos
+                    .GroupBy(h => h.ProveedorProductoID)
+                    .ToDictionary(
+                        g => g.Key,
+                        g => g.OrderByDescending(h => h.FechaInicio)
+                               .ThenByDescending(h => h.HistorialPrecioProductoID)
+                               .First());
+
+                var vm = pps.Select(pp => new
+                {
+                    pp.ProveedorProductoID,
+                    Codigo        = prods.ContainsKey(pp.ProductoID) ? prods[pp.ProductoID].Codigo      : "",
+                    Producto      = prods.ContainsKey(pp.ProductoID) ? prods[pp.ProductoID].Descripcion : "",
+                    PrecioVigente = preciosVigentes.ContainsKey(pp.ProveedorProductoID)
+                                    ? preciosVigentes[pp.ProveedorProductoID].Precio : 0m,
+                    FechaVigente  = preciosVigentes.ContainsKey(pp.ProveedorProductoID)
+                                    ? (DateTime?)preciosVigentes[pp.ProveedorProductoID].FechaInicio
+                                    : (DateTime?)null,
+                    pp.Activo
+                }).OrderBy(x => x.Codigo).ToList();
+
+                gvProductosProveedor.DataSource = vm;
+                gvProductosProveedor.DataBind();
+            }
+        }
+
+        private void CargarHistorialProducto(int proveedorProductoID)
+        {
+            using (var db = NuevoDb(false))
+            {
+                var hist = db.HistorialPreciosProductos
+                    .Where(h => h.ProveedorProductoID == proveedorProductoID)
+                    .OrderByDescending(h => h.FechaInicio)
+                    .Select(h => new
+                    {
+                        h.FechaInicio,
+                        h.Precio,
+                        h.RegistradoPorID,
+                        Notas = h.Notas ?? ""
+                    })
+                    .ToList();
+
+                if (!hist.Any())
+                {
+                    gvHistorialProducto.DataSource = new List<object>();
+                    gvHistorialProducto.DataBind();
+                    return;
+                }
+
+                var claveIds       = hist.Select(h => h.RegistradoPorID).Distinct().ToList();
+                var claveToUsuario = db.DatosUsuario
+                    .Where(du => claveIds.Contains(du.ClaveID))
+                    .Select(du => new { du.ClaveID, du.UsuarioID })
+                    .ToList();
+
+                Dictionary<int, string> nombresDict;
+                try
+                {
+                    var usuarioIds = claveToUsuario
+                        .Where(x => x.UsuarioID.HasValue)
+                        .Select(x => x.UsuarioID.Value)
+                        .ToList();
+                    var apiNombres = UsuarioService.ObtenerEmpleadosBulk(usuarioIds)
+                        .ToDictionary(e => e.IdUsuario, e => e.NombreCompleto);
+
+                    nombresDict = claveToUsuario.ToDictionary(
+                        x => x.ClaveID,
+                        x => x.UsuarioID.HasValue && apiNombres.ContainsKey(x.UsuarioID.Value)
+                             ? apiNombres[x.UsuarioID.Value]
+                             : "Usuario " + x.ClaveID);
+                }
+                catch
+                {
+                    nombresDict = claveToUsuario.ToDictionary(
+                        x => x.ClaveID,
+                        x => "Usuario " + x.ClaveID);
+                }
+
+                var vm = hist.Select(h => new
+                {
+                    h.FechaInicio,
+                    h.Precio,
+                    RegistradoPor = nombresDict.ContainsKey(h.RegistradoPorID)
+                                    ? nombresDict[h.RegistradoPorID]
+                                    : "Usuario " + h.RegistradoPorID,
+                    h.Notas
+                }).ToList();
+
+                gvHistorialProducto.DataSource = vm;
+                gvHistorialProducto.DataBind();
+            }
+        }
+
+        protected void btnAgregarProducto_Click(object sender, EventArgs e)
+        {
+            if (string.IsNullOrWhiteSpace(hdnProductosProveedorID.Value)) return;
+            int proveedorID = Convert.ToInt32(hdnProductosProveedorID.Value);
+            int productoID;
+
+            if (!int.TryParse(ddlProductoAgregar.SelectedValue, out productoID) || productoID == 0)
+            {
+                SetMsg("warning", "Producto requerido", "Seleccione un producto de la lista.", "modalProductos");
+                return;
+            }
+
+            decimal precio;
+            if (!decimal.TryParse(txtPrecioAgregarProducto.Text, out precio) || precio < 0)
+            {
+                SetMsg("warning", "Precio inválido", "Ingrese un precio inicial mayor o igual a cero.", "modalProductos");
+                return;
+            }
+
+            int claveID = Convert.ToInt32(Session["ClaveID"]);
+
+            using (var db = NuevoDb())
+            {
+                if (db.ProveedorProductos.Any(pp =>
+                        pp.ProveedorID == proveedorID && pp.ProductoID == productoID))
+                {
+                    SetMsg("warning", "Ya registrado",
+                        "Este producto ya está asociado a este proveedor. " +
+                        "Si está inactivo puedes reactivarlo con el botón Activar.", "modalProductos");
+                    CargarProductosProveedor(proveedorID);
+                    return;
+                }
+
+                try
+                {
+                    var pp = new ProveedorProductos
+                    {
+                        ProveedorID   = proveedorID,
+                        ProductoID    = productoID,
+                        Activo        = true,
+                        FechaAlta     = AppHelper.Ahora,
+                        UsuarioAltaID = claveID
+                    };
+                    db.ProveedorProductos.InsertOnSubmit(pp);
+                    db.SubmitChanges();
+
+                    db.HistorialPreciosProductos.InsertOnSubmit(new HistorialPreciosProductos
+                    {
+                        ProveedorProductoID = pp.ProveedorProductoID,
+                        Precio              = precio,
+                        FechaInicio         = AppHelper.Hoy,
+                        Notas               = "Precio inicial",
+                        RegistradoPorID     = claveID,
+                        FechaRegistro       = AppHelper.Ahora
+                    });
+                    db.SubmitChanges();
+
+                    ddlProductoAgregar.SelectedIndex   = 0;
+                    txtPrecioAgregarProducto.Text       = "";
+
+                    CargarProductosProveedor(proveedorID);
+                    SetMsg("success", "¡Producto agregado!",
+                        "El producto fue vinculado al proveedor con el precio inicial registrado.",
+                        "modalProductos");
+                }
+                catch (Exception ex)
+                {
+                    System.Diagnostics.Debug.WriteLine("Error agregar ProveedorProducto: " + ex.Message);
+                    SetMsg("error", "Error del sistema",
+                        "No se pudo agregar el producto. Contacte al administrador.", "modalProductos");
+                }
+            }
+        }
+
+        protected void btnActualizarPrecioProducto_Click(object sender, EventArgs e)
+        {
+            if (string.IsNullOrWhiteSpace(hdnProveedorProductoID.Value)) return;
+            int ppID    = Convert.ToInt32(hdnProveedorProductoID.Value);
+            int claveID = Convert.ToInt32(Session["ClaveID"]);
+
+            decimal nuevoPrecio;
+            if (!decimal.TryParse(hdnNuevoPrecioProducto.Value,
+                    System.Globalization.NumberStyles.Any,
+                    System.Globalization.CultureInfo.InvariantCulture,
+                    out nuevoPrecio) || nuevoPrecio < 0)
+            {
+                SetMsg("warning", "Precio inválido", "El precio debe ser mayor o igual a cero.", "modalProductos");
+                return;
+            }
+
+            var partes = (hdnNuevaNotaPrecioProducto.Value ?? "").Split(new[] { '|' }, 2);
+            DateTime fechaVigencia;
+            if (partes.Length < 1 || !DateTime.TryParse(partes[0].Trim(), out fechaVigencia))
+                fechaVigencia = AppHelper.Hoy;
+            string nota = partes.Length > 1 ? partes[1].Trim() : null;
+            if (string.IsNullOrWhiteSpace(nota)) nota = null;
+
+            using (var db = NuevoDb())
+            {
+                try
+                {
+                    db.HistorialPreciosProductos.InsertOnSubmit(new HistorialPreciosProductos
+                    {
+                        ProveedorProductoID = ppID,
+                        Precio              = nuevoPrecio,
+                        FechaInicio         = fechaVigencia.Date,
+                        Notas               = nota,
+                        RegistradoPorID     = claveID,
+                        FechaRegistro       = AppHelper.Ahora
+                    });
+                    db.SubmitChanges();
+
+                    if (!string.IsNullOrWhiteSpace(hdnProductosProveedorID.Value))
+                        CargarProductosProveedor(Convert.ToInt32(hdnProductosProveedorID.Value));
+
+                    SetMsg("success", "¡Precio actualizado!",
+                        "El nuevo precio fue registrado en el historial.", "modalProductos");
+                }
+                catch (Exception ex)
+                {
+                    System.Diagnostics.Debug.WriteLine("Error actualizar precio producto: " + ex.Message);
+                    SetMsg("error", "Error del sistema",
+                        "No se pudo registrar el nuevo precio. Contacte al administrador.", "modalProductos");
+                }
+            }
+        }
+
+        protected void btnAccionProductos_Click(object sender, EventArgs e)
+        {
+            string accion      = hdnAccionProductos.Value ?? "";
+            int    proveedorID = string.IsNullOrWhiteSpace(hdnProductosProveedorID.Value)
+                                 ? 0 : Convert.ToInt32(hdnProductosProveedorID.Value);
+
+            if (accion == "cargar")
+            {
+                if (proveedorID == 0) return;
+                CargarProductosProveedor(proveedorID);
+                hdnMensajePendiente.Value = new JavaScriptSerializer()
+                    .Serialize(new { icon = "", title = "", text = "", modal = "modalProductos", showHistorial = false, showHistorialProducto = false });
+                return;
+            }
+
+            if (accion == "historial")
+            {
+                int ppID = string.IsNullOrWhiteSpace(hdnProveedorProductoID.Value)
+                           ? 0 : Convert.ToInt32(hdnProveedorProductoID.Value);
+                if (ppID == 0) return;
+
+                using (var db2 = NuevoDb(false))
+                {
+                    var info = (from pp2 in db2.ProveedorProductos
+                                where pp2.ProveedorProductoID == ppID
+                                join p in db2.Productos on pp2.ProductoID equals p.ProductoID
+                                select new { p.Codigo, p.Descripcion })
+                               .FirstOrDefault();
+                    lblHistorialProducto.Text = info != null
+                        ? System.Web.HttpUtility.HtmlEncode("[" + info.Codigo + "] " + info.Descripcion)
+                        : "";
+                }
+
+                if (proveedorID > 0) CargarProductosProveedor(proveedorID);
+                CargarHistorialProducto(ppID);
+                hdnMensajePendiente.Value = new JavaScriptSerializer()
+                    .Serialize(new { icon = "", title = "", text = "", modal = "modalProductos", showHistorial = false, showHistorialProducto = true });
+                return;
+            }
+
+            if (accion == "toggle")
+            {
+                int ppID = string.IsNullOrWhiteSpace(hdnProveedorProductoID.Value)
+                           ? 0 : Convert.ToInt32(hdnProveedorProductoID.Value);
+                if (ppID == 0) return;
+
+                using (var db = NuevoDb())
+                {
+                    try
+                    {
+                        var pp = db.ProveedorProductos
+                            .FirstOrDefault(x => x.ProveedorProductoID == ppID);
+                        if (pp == null) return;
+
+                        pp.Activo = !pp.Activo;
+                        db.SubmitChanges();
+
+                        if (proveedorID > 0) CargarProductosProveedor(proveedorID);
+                        SetMsg("success", "¡Listo!",
+                            "El producto fue " + (pp.Activo ? "activado" : "desactivado") + " correctamente.",
+                            "modalProductos");
+                    }
+                    catch (Exception ex)
+                    {
+                        System.Diagnostics.Debug.WriteLine("Error toggle producto: " + ex.Message);
+                        SetMsg("error", "Error", "No se pudo cambiar el estatus del producto.", "modalProductos");
+                    }
                 }
             }
         }

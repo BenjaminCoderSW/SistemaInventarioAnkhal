@@ -515,4 +515,29 @@
       <Association Name="ProveedorMateriales_HistorialPrecios" Member="ProveedorMateriales" ThisKey="ProveedorMaterialID" OtherKey="ProveedorMaterialID" Type="ProveedorMateriales" IsForeignKey="true" />
     </Type>
   </Table>
+  <Table Name="dbo.ProveedorProductos" Member="ProveedorProductos">
+    <Type Name="ProveedorProductos">
+      <Column Name="ProveedorProductoID" Type="System.Int32" DbType="Int NOT NULL IDENTITY" IsPrimaryKey="true" IsDbGenerated="true" CanBeNull="false" />
+      <Column Name="ProveedorID" Type="System.Int32" DbType="Int NOT NULL" CanBeNull="false" />
+      <Column Name="ProductoID" Type="System.Int32" DbType="Int NOT NULL" CanBeNull="false" />
+      <Column Name="Activo" Type="System.Boolean" DbType="Bit NOT NULL" CanBeNull="false" />
+      <Column Name="FechaAlta" Type="System.DateTime" DbType="DateTime2 NOT NULL" CanBeNull="false" />
+      <Column Name="UsuarioAltaID" Type="System.Int32" DbType="Int" CanBeNull="true" />
+      <Association Name="ProveedorProductos_HistorialPreciosProductos" Member="HistorialPreciosProductos" ThisKey="ProveedorProductoID" OtherKey="ProveedorProductoID" Type="HistorialPreciosProductos" />
+      <Association Name="Productos_ProveedorProductos" Member="Productos" ThisKey="ProductoID" OtherKey="ProductoID" Type="Productos" IsForeignKey="true" />
+      <Association Name="Proveedores_ProveedorProductos" Member="Proveedores" ThisKey="ProveedorID" OtherKey="ProveedorID" Type="Proveedores" IsForeignKey="true" />
+    </Type>
+  </Table>
+  <Table Name="dbo.HistorialPreciosProductos" Member="HistorialPreciosProductos">
+    <Type Name="HistorialPreciosProductos">
+      <Column Name="HistorialPrecioProductoID" Type="System.Int32" DbType="Int NOT NULL IDENTITY" IsPrimaryKey="true" IsDbGenerated="true" CanBeNull="false" />
+      <Column Name="ProveedorProductoID" Type="System.Int32" DbType="Int NOT NULL" CanBeNull="false" />
+      <Column Name="Precio" Type="System.Decimal" DbType="Decimal(12,4) NOT NULL" CanBeNull="false" />
+      <Column Name="FechaInicio" Type="System.DateTime" DbType="Date NOT NULL" CanBeNull="false" />
+      <Column Name="Notas" Type="System.String" DbType="NVarChar(300)" CanBeNull="true" />
+      <Column Name="RegistradoPorID" Type="System.Int32" DbType="Int NOT NULL" CanBeNull="false" />
+      <Column Name="FechaRegistro" Type="System.DateTime" DbType="DateTime2 NOT NULL" CanBeNull="false" />
+      <Association Name="ProveedorProductos_HistorialPreciosProductos" Member="ProveedorProductos" ThisKey="ProveedorProductoID" OtherKey="ProveedorProductoID" Type="ProveedorProductos" IsForeignKey="true" />
+    </Type>
+  </Table>
 </Database>

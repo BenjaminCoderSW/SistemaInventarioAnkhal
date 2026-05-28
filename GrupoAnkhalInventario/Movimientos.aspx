@@ -551,7 +551,7 @@
     window.addEventListener('load', function () {
         var tipoItem = document.getElementById('<%= hdnTipoItemSeleccionado.ClientID %>').value;
         if (tipoItem === 'Producto') document.getElementById('rbProducto').checked = true;
-        else                         document.getElementById('rbMaterial').checked  = true;
+        else document.getElementById('rbMaterial').checked = true;
 
         var hdnMsg = document.getElementById('<%= hdnMensajePendiente.ClientID %>');
         if (!hdnMsg || !hdnMsg.value) return;
@@ -601,41 +601,43 @@
 
     // ── Agregar ítem al array _items ────────────────────────────────
     function agregarItemAlLote() {
-        var tipo     = document.getElementById('<%= hdnTipoItemSeleccionado.ClientID %>').value;
-        var cant     = parseFloat(document.getElementById('<%= txtCantidad.ClientID %>').value) || 0;
-        var costo    = parseFloat(document.getElementById('<%= txtCosto.ClientID %>').value) || 0;
+        var tipo = document.getElementById('<%= hdnTipoItemSeleccionado.ClientID %>').value;
+        var cant = parseFloat(document.getElementById('<%= txtCantidad.ClientID %>').value) || 0;
+        var costo = parseFloat(document.getElementById('<%= txtCosto.ClientID %>').value) || 0;
 
         function warn(txt) {
             Swal.fire({ icon: 'warning', title: 'Campo inválido', text: txt, confirmButtonColor: '#003366' })
                 .then(function () { $('#modalNuevo').modal('show'); });
         }
         if (!_itemSeleccionado) { warn('Debe seleccionar un item.'); return; }
-        var itemId   = _itemSeleccionado.id;
+        var itemId = _itemSeleccionado.id;
         var itemText = _itemSeleccionado.nombre;
-        if (cant <= 0)   { warn('La cantidad debe ser mayor a cero.'); return; }
+        if (cant <= 0) { warn('La cantidad debe ser mayor a cero.'); return; }
         var tipoMov = document.getElementById('<%= ddlTipoMovimiento.ClientID %>').value;
-        if (!tipoMov)    { warn('Debe seleccionar el tipo de movimiento primero.'); return; }
+        if (!tipoMov) { warn('Debe seleccionar el tipo de movimiento primero.'); return; }
         if (tipoMov !== '3' && costo < 0) { warn('El costo unitario no puede ser negativo.'); return; }
 
         // Unidad de captura
-        var unidadId  = 0;
+        var unidadId = 0;
         var unidadTxt = '';
-        var factor    = 1;
-        var divUC     = document.getElementById('divUnidadCaptura');
-        var ddlUC     = document.getElementById('<%= ddlUnidadCaptura.ClientID %>');
+        var factor = 1;
+        var divUC = document.getElementById('divUnidadCaptura');
+        var ddlUC = document.getElementById('<%= ddlUnidadCaptura.ClientID %>');
         if (divUC && divUC.style.display !== 'none' && ddlUC && ddlUC.options.length > 0) {
             var selOpt = ddlUC.options[ddlUC.selectedIndex];
-            unidadId   = parseInt(selOpt.value) || 0;
-            unidadTxt  = selOpt.text;
-            factor     = parseFloat(selOpt.getAttribute('data-factor')) || 1;
+            unidadId = parseInt(selOpt.value) || 0;
+            unidadTxt = selOpt.text;
+            factor = parseFloat(selOpt.getAttribute('data-factor')) || 1;
         }
 
         // Verificar límite antes de agregar
         var MAX_ITEMS = 50;
         if (_items.length >= MAX_ITEMS) {
-            Swal.fire({ icon: 'warning', title: 'Límite alcanzado',
+            Swal.fire({
+                icon: 'warning', title: 'Límite alcanzado',
                 text: 'Un lote no puede contener más de ' + MAX_ITEMS + ' ítems.',
-                confirmButtonColor: '#003366' })
+                confirmButtonColor: '#003366'
+            })
                 .then(function () { $('#modalNuevo').modal('show'); });
             return;
         }
@@ -653,14 +655,14 @@
             existing.cantidadCapturada += cant;
         } else {
             _items.push({
-                tipoItem:          tipo,
-                itemId:            itemId,
-                itemTexto:         itemText,
+                tipoItem: tipo,
+                itemId: itemId,
+                itemTexto: itemText,
                 cantidadCapturada: cant,
-                costo:             costo,
-                unidadId:          unidadId,
-                unidadTexto:       unidadTxt,
-                factor:            factor
+                costo: costo,
+                unidadId: unidadId,
+                unidadTexto: unidadTxt,
+                factor: factor
             });
         }
 
@@ -679,17 +681,17 @@
     // ── Renderizar tabla de ítems acumulados ────────────────────────
     function renderTablaItems() {
         var tbody = document.getElementById('tbodyItems');
-        var div   = document.getElementById('divItemsAcumulados');
+        var div = document.getElementById('divItemsAcumulados');
         tbody.innerHTML = '';
         if (_items.length === 0) { div.style.display = 'none'; return; }
         div.style.display = 'block';
 
         var totalLote = 0;
         for (var i = 0; i < _items.length; i++) {
-            var it      = _items[i];
+            var it = _items[i];
             var cantBase = it.cantidadCapturada * it.factor;
             var subtotal = cantBase * it.costo;
-            totalLote   += subtotal;
+            totalLote += subtotal;
 
             var unidTxt = it.unidadTexto
                 ? it.unidadTexto.replace(/\s*\[.*\]$/, '').replace(/\s*—\s*base\s*$/i, '').trim()
@@ -697,7 +699,7 @@
 
             var cantMostrar = it.factor !== 1
                 ? it.cantidadCapturada.toFixed(4).replace(/\.?0+$/, '') + ' → ' +
-                  cantBase.toFixed(4).replace(/\.?0+$/, '')
+                cantBase.toFixed(4).replace(/\.?0+$/, '')
                 : it.cantidadCapturada.toFixed(4).replace(/\.?0+$/, '');
 
             var tr = '<tr>' +
@@ -709,7 +711,7 @@
                 '<td>$' + it.costo.toFixed(2) + '</td>' +
                 '<td>$' + subtotal.toFixed(2) + '</td>' +
                 '<td><button type="button" class="btn btn-danger btn-quitar-item" ' +
-                    'onclick="quitarItem(' + i + ')"><i class="fas fa-times"></i></button></td>' +
+                'onclick="quitarItem(' + i + ')"><i class="fas fa-times"></i></button></td>' +
                 '</tr>';
             tbody.innerHTML += tr;
         }
@@ -858,7 +860,11 @@
             var tipoMov     = document.getElementById('<%= ddlTipoMovimiento.ClientID %>').value;
             var proveedorID = document.getElementById('<%= ddlProveedor.ClientID %>').value;
             if (tipoMov === '1' && proveedorID && item.id) {
-                buscarPrecioProveedor(item.id, parseInt(proveedorID));
+                var tipoItemSel = document.querySelector('input[name="rbTipoItem"]:checked').value;
+                if (tipoItemSel === 'Producto')
+                    buscarPrecioProveedorProducto(item.id, parseInt(proveedorID));
+                else
+                    buscarPrecioProveedor(item.id, parseInt(proveedorID));
             }
         }
 
@@ -960,7 +966,36 @@
                 spn.textContent = '✓ Precio vigente del proveedor';
                 spn.className   = 'mt-1 d-block text-success font-weight-bold';
             } else {
-                // Fallback: ya tiene PrecioUnitario; solo informar
+                spn.textContent = '⚠ Sin precio registrado para este proveedor';
+                spn.className   = 'mt-1 d-block text-warning';
+            }
+            calcularTotal();
+        })
+        .catch(function () { limpiarIndicadorPrecio(); });
+    }
+
+    function buscarPrecioProveedorProducto(productoID, proveedorID) {
+        if (!productoID || !proveedorID) return;
+        var spn      = document.getElementById('spnPrecioIndicador');
+        var txtCosto = document.getElementById('<%= txtCosto.ClientID %>');
+        if (!spn || !txtCosto || txtCosto.disabled) return;
+
+        spn.textContent = 'Buscando precio del proveedor...';
+        spn.className   = 'mt-1 d-block text-muted';
+
+        fetch('<%= ResolveUrl("~/Movimientos.aspx/ObtenerPrecioProveedorProducto") %>', {
+            method:  'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body:    JSON.stringify({ productoID: productoID, proveedorID: proveedorID })
+        })
+        .then(function (r) { return r.json(); })
+        .then(function (data) {
+            var res = data.d;
+            if (res && res.encontrado && res.precio !== null) {
+                txtCosto.value  = parseFloat(res.precio).toFixed(2);
+                spn.textContent = '✓ Precio vigente del proveedor';
+                spn.className   = 'mt-1 d-block text-success font-weight-bold';
+            } else {
                 spn.textContent = '⚠ Sin precio registrado para este proveedor';
                 spn.className   = 'mt-1 d-block text-warning';
             }
@@ -985,7 +1020,11 @@
         }
 
         if (_itemSeleccionado && _itemSeleccionado.id) {
-            buscarPrecioProveedor(_itemSeleccionado.id, parseInt(proveedorID));
+            var tipoItemSel = document.querySelector('input[name="rbTipoItem"]:checked').value;
+            if (tipoItemSel === 'Producto')
+                buscarPrecioProveedorProducto(_itemSeleccionado.id, parseInt(proveedorID));
+            else
+                buscarPrecioProveedor(_itemSeleccionado.id, parseInt(proveedorID));
         } else {
             limpiarIndicadorPrecio();
         }
@@ -1006,9 +1045,9 @@
         if (!tipo) return warn('Debe seleccionar el tipo de movimiento.');
         if (_items.length === 0) return warn('Debe agregar al menos un ítem al lote antes de guardar.');
 
-        var divOrigen  = document.getElementById('divBaseOrigen');
+        var divOrigen = document.getElementById('divBaseOrigen');
         var divDestino = document.getElementById('divBaseDestino');
-        if (divOrigen.style.display  !== 'none' && !origen)  return warn('Debe seleccionar la base de origen.');
+        if (divOrigen.style.display !== 'none' && !origen) return warn('Debe seleccionar la base de origen.');
         if (divDestino.style.display !== 'none' && !destino) return warn('Debe seleccionar la base de destino.');
         if (tipo === '3' && origen && destino && origen === destino)
             return warn('La base de origen y destino no pueden ser la misma.');

@@ -29,38 +29,38 @@ namespace GrupoAnkhalInventario
         // ══ Modelo para ítems del lote (deserializado desde JSON) ════════════
         private class ItemLoteModel
         {
-            public string  tipoItem          { get; set; }
-            public int     itemId            { get; set; }
-            public string  itemTexto         { get; set; }
+            public string tipoItem { get; set; }
+            public int itemId { get; set; }
+            public string itemTexto { get; set; }
             public decimal cantidadCapturada { get; set; }
-            public decimal costo             { get; set; }
-            public int     unidadId          { get; set; }
-            public decimal factor            { get; set; }
+            public decimal costo { get; set; }
+            public int unidadId { get; set; }
+            public decimal factor { get; set; }
         }
 
         // ══ ViewModel ════════════════════════════════════════════════════════
         public class MovimientoVM
         {
-            public int      MovimientoID  { get; set; }
-            public DateTime Fecha         { get; set; }
-            public string   TipoClave     { get; set; }   // ENTRADA, TRANSFERENCIA…
-            public string   Tipo          { get; set; }   // Nombre legible
-            public string   TipoItem      { get; set; }   // Material | Producto
-            public string   ItemCodigo    { get; set; }
-            public string   ItemNombre    { get; set; }
-            public string   BaseOrigen    { get; set; }
-            public string   BaseDestino   { get; set; }
-            public decimal  Cantidad      { get; set; }
-            public string   Unidad        { get; set; }
-            public decimal  Costo               { get; set; }
-            public decimal  Total               { get; set; }   // Cantidad × Costo
-            public decimal  CantidadCapturada   { get; set; }   // Lo que el usuario capturó
-            public string   UnidadCapturaNombre { get; set; }   // Nombre de la unidad capturada
-            public bool     TuvoConversion      { get; set; }   // true si se aplicó factor ≠ 1
-            public string   RegistradoPor       { get; set; }
-            public string   Observaciones       { get; set; }
-            public string   FolioLote           { get; set; }
-            public string   ProveedorNombre     { get; set; }
+            public int MovimientoID { get; set; }
+            public DateTime Fecha { get; set; }
+            public string TipoClave { get; set; }   // ENTRADA, TRANSFERENCIA…
+            public string Tipo { get; set; }   // Nombre legible
+            public string TipoItem { get; set; }   // Material | Producto
+            public string ItemCodigo { get; set; }
+            public string ItemNombre { get; set; }
+            public string BaseOrigen { get; set; }
+            public string BaseDestino { get; set; }
+            public decimal Cantidad { get; set; }
+            public string Unidad { get; set; }
+            public decimal Costo { get; set; }
+            public decimal Total { get; set; }   // Cantidad × Costo
+            public decimal CantidadCapturada { get; set; }   // Lo que el usuario capturó
+            public string UnidadCapturaNombre { get; set; }   // Nombre de la unidad capturada
+            public bool TuvoConversion { get; set; }   // true si se aplicó factor ≠ 1
+            public string RegistradoPor { get; set; }
+            public string Observaciones { get; set; }
+            public string FolioLote { get; set; }
+            public string ProveedorNombre { get; set; }
         }
 
         // ══ Page_Load ════════════════════════════════════════════════════════
@@ -191,20 +191,20 @@ namespace GrupoAnkhalInventario
                                    on mv.TipoMovimientoID equals tm.TipoMovimientoID
                                select new { tm.Clave, mv.Cantidad, mv.Costo }).ToList();
 
-                lblTotalHoy.Text  = movData.Count.ToString();
-                lblEntradas.Text  = movData.Count(m => m.Clave == "ENTRADA").ToString();
+                lblTotalHoy.Text = movData.Count.ToString();
+                lblEntradas.Text = movData.Count(m => m.Clave == "ENTRADA").ToString();
                 lblTraspasos.Text = movData.Count(m => m.Clave == "TRANSFERENCIA").ToString();
-                lblAjustes.Text   = movData.Count(m =>
+                lblAjustes.Text = movData.Count(m =>
                     m.Clave == "AJUSTE_POS" || m.Clave == "AJUSTE_NEG").ToString();
-                lblMermas.Text    = movData.Count(m => m.Clave == "MERMA").ToString();
-                lblConsumos.Text  = movData.Count(m => m.Clave == "CONSUMO").ToString();
-                lblSalidas.Text   = movData.Count(m => m.Clave == "SALIDA").ToString();
+                lblMermas.Text = movData.Count(m => m.Clave == "MERMA").ToString();
+                lblConsumos.Text = movData.Count(m => m.Clave == "CONSUMO").ToString();
+                lblSalidas.Text = movData.Count(m => m.Clave == "SALIDA").ToString();
 
                 // AJUSTE_NEG y MERMA restan; TRANSFERENCIA tiene costo=0 y no afecta
                 decimal valorTotal = movData.Sum(m =>
                     (m.Clave == "AJUSTE_NEG" || m.Clave == "MERMA")
                     ? -(m.Cantidad * m.Costo)
-                    :  (m.Cantidad * m.Costo));
+                    : (m.Cantidad * m.Costo));
                 lblValorHoy.Text = valorTotal.ToString("$#,##0.00");
 
                 // Actualizar etiquetas según contexto
@@ -214,7 +214,7 @@ namespace GrupoAnkhalInventario
                     !string.IsNullOrEmpty(ddlFiltrItem.SelectedValue);
 
                 lblTituloTotal.Text = hayFiltroActivo ? "TOTAL FILTRADO" : "TOTAL";
-                lblDescValor.Text   = hayFiltroActivo
+                lblDescValor.Text = hayFiltroActivo
                     ? "Valor Total del Período / Filtro Aplicado"
                     : "Valor Total (Entradas + Ajustes − Mermas/Ajustes negativos)";
             }
@@ -230,9 +230,9 @@ namespace GrupoAnkhalInventario
                 IQueryable<Modelo.Movimientos> movQ =
                     AplicarFiltrosBusqueda(db.Movimientos.AsQueryable(), out hayFiltroFecha);
 
-                int total   = movQ.Count();
+                int total = movQ.Count();
                 int pageIdx = gvMovimientos.PageIndex;
-                int pageSz  = gvMovimientos.PageSize;
+                int pageSz = gvMovimientos.PageSize;
                 gvMovimientos.VirtualItemCount = total;
 
                 lblResultados.Text = total == 0
@@ -257,7 +257,7 @@ namespace GrupoAnkhalInventario
                 // ── Paso 3: Traer datos con LEFT JOINs solo para esos IDs ──────
                 var raw = (from mv in db.Movimientos
                            where ids.Contains(mv.MovimientoID)
-                           join tm  in db.TiposMovimiento
+                           join tm in db.TiposMovimiento
                                on mv.TipoMovimientoID equals tm.TipoMovimientoID
                            join mat in db.Materiales
                                on mv.MaterialID equals (int?)mat.MaterialID into matG
@@ -266,7 +266,7 @@ namespace GrupoAnkhalInventario
                                on mv.ProductoID equals (int?)prd.ProductoID into prdG
                            from prd in prdG.DefaultIfEmpty()
                            join bo in db.Bases
-                               on mv.BaseOrigenID  equals (int?)bo.BaseID into boG
+                               on mv.BaseOrigenID equals (int?)bo.BaseID into boG
                            from bo in boG.DefaultIfEmpty()
                            join bd in db.Bases
                                on mv.BaseDestinoID equals (int?)bd.BaseID into bdG
@@ -280,26 +280,26 @@ namespace GrupoAnkhalInventario
                            select new
                            {
                                mv.MovimientoID,
-                               Fecha             = mv.FechaMovimiento,
-                               TipoClave         = tm.Clave,
-                               TipoNombre        = tm.Nombre,
-                               TipoItem          = mv.TipoItem,
-                               MatCodigo         = mat.Codigo,
-                               MatNombre         = mat.Descripcion,
-                               MatUnidad         = mat.Unidad,
-                               PrdCodigo         = prd.Codigo,
-                               PrdNombre         = prd.Descripcion,
-                               BaseOrig          = bo.Nombre,
-                               BaseDest          = bd.Nombre,
+                               Fecha = mv.FechaMovimiento,
+                               TipoClave = tm.Clave,
+                               TipoNombre = tm.Nombre,
+                               TipoItem = mv.TipoItem,
+                               MatCodigo = mat.Codigo,
+                               MatNombre = mat.Descripcion,
+                               MatUnidad = mat.Unidad,
+                               PrdCodigo = prd.Codigo,
+                               PrdNombre = prd.Descripcion,
+                               BaseOrig = bo.Nombre,
+                               BaseDest = bd.Nombre,
                                mv.Cantidad,
                                mv.CantidadCapturada,
                                mv.FactorAplicado,
-                               UnidadCapturaID   = mv.UnidadCapturaID,
+                               UnidadCapturaID = mv.UnidadCapturaID,
                                mv.Costo,
                                mv.RegistradoPorID,
-                               LoteObs           = lm.Observaciones ?? mv.Observaciones,
-                               FolioLote         = lm.Folio,
-                               ProveedorNombre   = prov.Nombre
+                               LoteObs = lm.Observaciones ?? mv.Observaciones,
+                               FolioLote = lm.Folio,
+                               ProveedorNombre = prov.Nombre
                            }).ToList();
 
                 // ── Paso 4a: Nombres de unidades de captura ──────────────────────
@@ -348,34 +348,34 @@ namespace GrupoAnkhalInventario
                     .Where(r => r != null)
                     .Select(r => new MovimientoVM
                     {
-                        MovimientoID  = r.MovimientoID,
-                        Fecha         = r.Fecha,
-                        TipoClave     = r.TipoClave  ?? "",
-                        Tipo          = r.TipoNombre ?? "",
-                        TipoItem      = r.TipoItem   ?? "",
-                        ItemCodigo    = r.TipoItem == "Material" ? (r.MatCodigo ?? "")
+                        MovimientoID = r.MovimientoID,
+                        Fecha = r.Fecha,
+                        TipoClave = r.TipoClave ?? "",
+                        Tipo = r.TipoNombre ?? "",
+                        TipoItem = r.TipoItem ?? "",
+                        ItemCodigo = r.TipoItem == "Material" ? (r.MatCodigo ?? "")
                                       : (r.PrdCodigo ?? ""),
-                        ItemNombre    = r.TipoItem == "Material" ? (r.MatNombre ?? "")
+                        ItemNombre = r.TipoItem == "Material" ? (r.MatNombre ?? "")
                                       : (r.PrdNombre ?? ""),
-                        BaseOrigen    = r.BaseOrig  ?? "",
-                        BaseDestino   = r.BaseDest  ?? "",
-                        Cantidad            = r.Cantidad,
-                        CantidadCapturada   = r.CantidadCapturada ?? r.Cantidad,
+                        BaseOrigen = r.BaseOrig ?? "",
+                        BaseDestino = r.BaseDest ?? "",
+                        Cantidad = r.Cantidad,
+                        CantidadCapturada = r.CantidadCapturada ?? r.Cantidad,
                         UnidadCapturaNombre = r.UnidadCapturaID.HasValue &&
                                              unidadesCaptura.ContainsKey(r.UnidadCapturaID.Value)
                                              ? unidadesCaptura[r.UnidadCapturaID.Value] : "",
-                        TuvoConversion      = r.FactorAplicado.HasValue &&
+                        TuvoConversion = r.FactorAplicado.HasValue &&
                                              r.FactorAplicado.Value != 1m,
-                        Unidad        = r.TipoItem == "Material"
+                        Unidad = r.TipoItem == "Material"
                                         ? (r.MatUnidad ?? "")
                                         : "Unidad/es",
-                        Costo         = r.Costo,
-                        Total         = r.Cantidad * r.Costo,
+                        Costo = r.Costo,
+                        Total = r.Cantidad * r.Costo,
                         RegistradoPor = nombresUsuario.ContainsKey(r.RegistradoPorID)
                                         ? nombresUsuario[r.RegistradoPorID]
                                         : r.RegistradoPorID.ToString(),
-                        Observaciones   = r.LoteObs ?? "",
-                        FolioLote       = r.FolioLote ?? "",
+                        Observaciones = r.LoteObs ?? "",
+                        FolioLote = r.FolioLote ?? "",
                         ProveedorNombre = r.ProveedorNombre ?? ""
                     }).ToList();
 
@@ -398,9 +398,9 @@ namespace GrupoAnkhalInventario
             ddlFiltrBase.SelectedIndex = 0;
             ddlFiltrItem.SelectedIndex = 0;
             string hoy = AppHelper.Hoy.ToString("yyyy-MM-dd");
-            txtFechaDesde.Text         = hoy;
-            txtFechaHasta.Text         = hoy;
-            gvMovimientos.PageIndex    = 0;
+            txtFechaDesde.Text = hoy;
+            txtFechaHasta.Text = hoy;
+            gvMovimientos.PageIndex = 0;
             CargarDashboard();
             CargarGrid();
         }
@@ -466,10 +466,10 @@ namespace GrupoAnkhalInventario
                     $"Tipo de movimiento ID={tipoMovID} no reconocido en el catálogo.");
 
             // ── Determinar bases requeridas ───────────────────────────────────
-            bool requiereOrigen  = claveTipo == "TRANSFERENCIA" || claveTipo == "MERMA"        || claveTipo == "AJUSTE_NEG";
-            bool requiereDestino = claveTipo == "ENTRADA"       || claveTipo == "TRANSFERENCIA" || claveTipo == "AJUSTE_POS";
+            bool requiereOrigen = claveTipo == "TRANSFERENCIA" || claveTipo == "MERMA" || claveTipo == "AJUSTE_NEG";
+            bool requiereDestino = claveTipo == "ENTRADA" || claveTipo == "TRANSFERENCIA" || claveTipo == "AJUSTE_POS";
 
-            int? baseOrigenID  = null;
+            int? baseOrigenID = null;
             int? baseDestinoID = null;
 
             if (requiereOrigen)
@@ -499,9 +499,9 @@ namespace GrupoAnkhalInventario
                 return;
             }
 
-            string obs     = txtObservaciones.Text.Trim();
-            int    claveID = Convert.ToInt32(Session["ClaveID"]);
-            bool   restaStock = claveTipo == "TRANSFERENCIA" || claveTipo == "MERMA" || claveTipo == "AJUSTE_NEG";
+            string obs = txtObservaciones.Text.Trim();
+            int claveID = Convert.ToInt32(Session["ClaveID"]);
+            bool restaStock = claveTipo == "TRANSFERENCIA" || claveTipo == "MERMA" || claveTipo == "AJUSTE_NEG";
 
             using (var db = NuevoDb(true))
             {
@@ -529,15 +529,15 @@ namespace GrupoAnkhalInventario
                             : null;
                         var lote = new Modelo.LotesMovimiento
                         {
-                            Folio            = folio,
+                            Folio = folio,
                             TipoMovimientoID = tipoMovID,
-                            BaseOrigenID     = baseOrigenID,
-                            BaseDestinoID    = baseDestinoID,
-                            Observaciones    = string.IsNullOrEmpty(obs) ? null : obs,
-                            RegistradoPorID  = claveID,
-                            FechaLote        = AppHelper.Ahora.Date,
-                            FechaRegistro    = AppHelper.Ahora,
-                            ProveedorID      = proveedorID
+                            BaseOrigenID = baseOrigenID,
+                            BaseDestinoID = baseDestinoID,
+                            Observaciones = string.IsNullOrEmpty(obs) ? null : obs,
+                            RegistradoPorID = claveID,
+                            FechaLote = AppHelper.Ahora.Date,
+                            FechaRegistro = AppHelper.Ahora,
+                            ProveedorID = proveedorID
                         };
                         db.LotesMovimiento.InsertOnSubmit(lote);
                         db.SubmitChanges(); // obtener LoteID
@@ -550,21 +550,21 @@ namespace GrupoAnkhalInventario
 
                             var mov = new Modelo.Movimientos
                             {
-                                TipoMovimientoID  = tipoMovID,
-                                TipoItem          = it.tipoItem,
-                                MaterialID        = it.tipoItem == "Material" ? (int?)it.itemId : null,
-                                ProductoID        = it.tipoItem == "Producto" ? (int?)it.itemId : null,
-                                BaseOrigenID      = baseOrigenID,
-                                BaseDestinoID     = baseDestinoID,
-                                Cantidad          = cantBase,
+                                TipoMovimientoID = tipoMovID,
+                                TipoItem = it.tipoItem,
+                                MaterialID = it.tipoItem == "Material" ? (int?)it.itemId : null,
+                                ProductoID = it.tipoItem == "Producto" ? (int?)it.itemId : null,
+                                BaseOrigenID = baseOrigenID,
+                                BaseDestinoID = baseDestinoID,
+                                Cantidad = cantBase,
                                 CantidadCapturada = it.cantidadCapturada,
-                                UnidadCapturaID   = unidadCapturaID,
-                                FactorAplicado    = factorAplicado,
-                                Costo             = it.costo,
-                                LoteID            = lote.LoteID,
-                                Observaciones     = null,
-                                RegistradoPorID   = claveID,
-                                FechaMovimiento   = lote.FechaRegistro
+                                UnidadCapturaID = unidadCapturaID,
+                                FactorAplicado = factorAplicado,
+                                Costo = it.costo,
+                                LoteID = lote.LoteID,
+                                Observaciones = null,
+                                RegistradoPorID = claveID,
+                                FechaMovimiento = lote.FechaRegistro
                             };
                             db.Movimientos.InsertOnSubmit(mov);
 
@@ -573,7 +573,7 @@ namespace GrupoAnkhalInventario
                                 case "ENTRADA":
                                     UpsertStock(db, it.tipoItem, it.itemId, baseDestinoID, +cantBase); break;
                                 case "TRANSFERENCIA":
-                                    UpsertStock(db, it.tipoItem, it.itemId, baseOrigenID,  -cantBase);
+                                    UpsertStock(db, it.tipoItem, it.itemId, baseOrigenID, -cantBase);
                                     UpsertStock(db, it.tipoItem, it.itemId, baseDestinoID, +cantBase); break;
                                 case "MERMA":
                                     UpsertStock(db, it.tipoItem, it.itemId, baseOrigenID, -cantBase);
@@ -586,7 +586,7 @@ namespace GrupoAnkhalInventario
                                 case "AJUSTE_POS":
                                     UpsertStock(db, it.tipoItem, it.itemId, baseDestinoID, +cantBase); break;
                                 case "AJUSTE_NEG":
-                                    UpsertStock(db, it.tipoItem, it.itemId, baseOrigenID,  -cantBase); break;
+                                    UpsertStock(db, it.tipoItem, it.itemId, baseOrigenID, -cantBase); break;
                                 default:
                                     throw new InvalidOperationException(
                                         $"Tipo de movimiento '{claveTipo}' sin lógica de stock definida.");
@@ -636,7 +636,7 @@ namespace GrupoAnkhalInventario
             // Verificar que la conversión sigue activa en servidor (seguridad)
             var conv = db.ConversionesMaterial
                 .FirstOrDefault(c => c.ConversionID == it.unidadId &&
-                                     c.MaterialID   == it.itemId   &&
+                                     c.MaterialID == it.itemId &&
                                      c.Activo);
             if (conv == null)
                 throw new InvalidOperationException(
@@ -667,7 +667,7 @@ namespace GrupoAnkhalInventario
 
                 if (pending != null)
                 {
-                    pending.CantidadActual  += delta;
+                    pending.CantidadActual += delta;
                     pending.FechaUltimaModif = AppHelper.Ahora;
                     return;
                 }
@@ -679,16 +679,16 @@ namespace GrupoAnkhalInventario
                 {
                     db.StockMateriales.InsertOnSubmit(new StockMateriales
                     {
-                        BaseID           = baseID.Value,
-                        MaterialID       = itemID,
-                        CantidadActual   = delta,
+                        BaseID = baseID.Value,
+                        MaterialID = itemID,
+                        CantidadActual = delta,
                         FechaUltimaModif = AppHelper.Ahora
                     });
                 }
                 else
                 {
-                    s.CantidadActual   += delta;
-                    s.FechaUltimaModif  = AppHelper.Ahora;
+                    s.CantidadActual += delta;
+                    s.FechaUltimaModif = AppHelper.Ahora;
                 }
             }
             else if (tipoItem == "Producto") // CantidadBuenas es int
@@ -702,7 +702,7 @@ namespace GrupoAnkhalInventario
 
                 if (pendingP != null)
                 {
-                    pendingP.CantidadBuenas  += deltaInt;
+                    pendingP.CantidadBuenas += deltaInt;
                     pendingP.FechaUltimaModif = AppHelper.Ahora;
                     return;
                 }
@@ -714,17 +714,17 @@ namespace GrupoAnkhalInventario
                 {
                     db.StockProductos.InsertOnSubmit(new StockProductos
                     {
-                        BaseID           = baseID.Value,
-                        ProductoID       = itemID,
-                        CantidadBuenas   = deltaInt > 0 ? deltaInt : 0,
-                        CantidadRechazo  = 0,
+                        BaseID = baseID.Value,
+                        ProductoID = itemID,
+                        CantidadBuenas = deltaInt > 0 ? deltaInt : 0,
+                        CantidadRechazo = 0,
                         FechaUltimaModif = AppHelper.Ahora
                     });
                 }
                 else
                 {
-                    s.CantidadBuenas   += deltaInt;
-                    s.FechaUltimaModif  = AppHelper.Ahora;
+                    s.CantidadBuenas += deltaInt;
+                    s.FechaUltimaModif = AppHelper.Ahora;
                 }
             }
         }
@@ -739,17 +739,17 @@ namespace GrupoAnkhalInventario
             {
                 db.StockProductos.InsertOnSubmit(new StockProductos
                 {
-                    BaseID           = baseID,
-                    ProductoID       = productoID,
-                    CantidadBuenas   = 0,
-                    CantidadRechazo  = delta > 0 ? delta : 0,
+                    BaseID = baseID,
+                    ProductoID = productoID,
+                    CantidadBuenas = 0,
+                    CantidadRechazo = delta > 0 ? delta : 0,
                     FechaUltimaModif = AppHelper.Ahora
                 });
             }
             else
             {
-                s.CantidadRechazo  += delta;
-                s.FechaUltimaModif  = AppHelper.Ahora;
+                s.CantidadRechazo += delta;
+                s.FechaUltimaModif = AppHelper.Ahora;
             }
         }
 
@@ -764,8 +764,8 @@ namespace GrupoAnkhalInventario
                        SET CantidadActual   = CantidadActual + @delta,
                            FechaUltimaModif = SYSUTCDATETIME()
                      WHERE BaseID = @baseID AND MaterialID = @materialID";
-                var p1 = cmd.CreateParameter(); p1.ParameterName = "@delta";      p1.Value = delta;      cmd.Parameters.Add(p1);
-                var p2 = cmd.CreateParameter(); p2.ParameterName = "@baseID";     p2.Value = baseID;     cmd.Parameters.Add(p2);
+                var p1 = cmd.CreateParameter(); p1.ParameterName = "@delta"; p1.Value = delta; cmd.Parameters.Add(p1);
+                var p2 = cmd.CreateParameter(); p2.ParameterName = "@baseID"; p2.Value = baseID; cmd.Parameters.Add(p2);
                 var p3 = cmd.CreateParameter(); p3.ParameterName = "@materialID"; p3.Value = materialID; cmd.Parameters.Add(p3);
                 int filas = cmd.ExecuteNonQuery();
                 if (filas == 0 && delta > 0)
@@ -774,9 +774,9 @@ namespace GrupoAnkhalInventario
                     cmd.CommandText = @"
                         INSERT INTO dbo.StockMerma (BaseID, MaterialID, CantidadActual, FechaUltimaModif)
                         VALUES (@baseID, @materialID, @delta, SYSUTCDATETIME())";
-                    var q1 = cmd.CreateParameter(); q1.ParameterName = "@baseID";     q1.Value = baseID;     cmd.Parameters.Add(q1);
+                    var q1 = cmd.CreateParameter(); q1.ParameterName = "@baseID"; q1.Value = baseID; cmd.Parameters.Add(q1);
                     var q2 = cmd.CreateParameter(); q2.ParameterName = "@materialID"; q2.Value = materialID; cmd.Parameters.Add(q2);
-                    var q3 = cmd.CreateParameter(); q3.ParameterName = "@delta";      q3.Value = delta;      cmd.Parameters.Add(q3);
+                    var q3 = cmd.CreateParameter(); q3.ParameterName = "@delta"; q3.Value = delta; cmd.Parameters.Add(q3);
                     cmd.ExecuteNonQuery();
                 }
             }
@@ -791,8 +791,8 @@ namespace GrupoAnkhalInventario
         {
             if (!baseID.HasValue) return true;
 
-            decimal actual     = 0;
-            string  nombreItem = "";
+            decimal actual = 0;
+            string nombreItem = "";
 
             if (tipoItem == "Material")
             {
@@ -834,11 +834,11 @@ namespace GrupoAnkhalInventario
                                            object cantBaseObj, object unidBaseObj,
                                            object tuvoConvObj)
         {
-            decimal cantCap  = Convert.ToDecimal(cantCapObj  ?? 0m);
+            decimal cantCap = Convert.ToDecimal(cantCapObj ?? 0m);
             decimal cantBase = Convert.ToDecimal(cantBaseObj ?? 0m);
-            string  unidCap  = (unidCapObj  ?? "").ToString();
-            string  unidBase = (unidBaseObj ?? "").ToString();
-            bool    tuvoConv = Convert.ToBoolean(tuvoConvObj ?? false);
+            string unidCap = (unidCapObj ?? "").ToString();
+            string unidBase = (unidBaseObj ?? "").ToString();
+            bool tuvoConv = Convert.ToBoolean(tuvoConvObj ?? false);
 
             string FmtDec(decimal d) => d.ToString("0.####");
 
@@ -862,14 +862,14 @@ namespace GrupoAnkhalInventario
         {
             switch ((clave ?? "").ToString().ToUpper())
             {
-                case "ENTRADA":       return "badge badge-entrada";
-                case "SALIDA":        return "badge badge-salida";
+                case "ENTRADA": return "badge badge-entrada";
+                case "SALIDA": return "badge badge-salida";
                 case "TRANSFERENCIA": return "badge badge-transferencia";
-                case "CONSUMO":       return "badge badge-consumo";
-                case "MERMA":         return "badge badge-merma";
-                case "AJUSTE_POS":    return "badge badge-ajuste-pos";
-                case "AJUSTE_NEG":    return "badge badge-ajuste-neg";
-                default:              return "badge badge-secondary";
+                case "CONSUMO": return "badge badge-consumo";
+                case "MERMA": return "badge badge-merma";
+                case "AJUSTE_POS": return "badge badge-ajuste-pos";
+                case "AJUSTE_NEG": return "badge badge-ajuste-neg";
+                default: return "badge badge-secondary";
             }
         }
 
@@ -877,14 +877,14 @@ namespace GrupoAnkhalInventario
         private void LimpiarModal()
         {
             ddlTipoMovimiento.SelectedIndex = 0;
-            hdnTipoItemSeleccionado.Value   = "Material";
-            hdnItemsJson.Value              = "[]";
-            ddlBaseOrigen.SelectedIndex     = 0;
-            ddlBaseDestino.SelectedIndex    = 0;
-            ddlProveedor.SelectedIndex      = 0;
-            txtCantidad.Text                = "";
-            txtCosto.Text                   = "";
-            txtObservaciones.Text           = "";
+            hdnTipoItemSeleccionado.Value = "Material";
+            hdnItemsJson.Value = "[]";
+            ddlBaseOrigen.SelectedIndex = 0;
+            ddlBaseDestino.SelectedIndex = 0;
+            ddlProveedor.SelectedIndex = 0;
+            txtCantidad.Text = "";
+            txtCosto.Text = "";
+            txtObservaciones.Text = "";
         }
 
         private void SetMsg(string icon, string title, string text, string modal = null)
@@ -915,7 +915,7 @@ namespace GrupoAnkhalInventario
                 // Buscar vínculo activo entre este proveedor y este material
                 var pm = db.ProveedorMateriales.FirstOrDefault(x =>
                     x.ProveedorID == proveedorID &&
-                    x.MaterialID  == materialID  &&
+                    x.MaterialID == materialID &&
                     x.Activo);
 
                 if (pm == null)
@@ -927,10 +927,42 @@ namespace GrupoAnkhalInventario
                 DateTime hoy = AppHelper.Hoy;
                 decimal? precioV = db.HistorialPrecios
                     .Where(hp => hp.ProveedorMaterialID == pm.ProveedorMaterialID
-                              && hp.FechaInicio         <= hoy)
+                              && hp.FechaInicio <= hoy)
                     .OrderByDescending(hp => hp.FechaInicio)
                     .ThenByDescending(hp => hp.HistorialPrecioID)
                     .Select(hp => (decimal?)hp.Precio)
+                    .FirstOrDefault();
+
+                return new { precio = precioV, encontrado = precioV.HasValue };
+            }
+        }
+
+        [System.Web.Services.WebMethod(EnableSession = true)]
+        public static object ObtenerPrecioProveedorProducto(int productoID, int proveedorID)
+        {
+            if (productoID <= 0 || proveedorID <= 0)
+                return new { precio = (decimal?)null, encontrado = false };
+
+            string connStr = System.Configuration.ConfigurationManager
+                .ConnectionStrings["InventarioAnkhalDBConnectionString"].ConnectionString;
+
+            using (var db = new InventarioAnkhalDBDataContext(connStr))
+            {
+                var pp = db.ProveedorProductos.FirstOrDefault(x =>
+                    x.ProveedorID == proveedorID &&
+                    x.ProductoID == productoID &&
+                    x.Activo);
+
+                if (pp == null)
+                    return new { precio = (decimal?)null, encontrado = false };
+
+                DateTime hoy = AppHelper.Hoy;
+                decimal? precioV = db.HistorialPreciosProductos
+                    .Where(h => h.ProveedorProductoID == pp.ProveedorProductoID
+                             && h.FechaInicio <= hoy)
+                    .OrderByDescending(h => h.FechaInicio)
+                    .ThenByDescending(h => h.HistorialPrecioProductoID)
+                    .Select(h => (decimal?)h.Precio)
                     .FirstOrDefault();
 
                 return new { precio = precioV, encontrado = precioV.HasValue };
@@ -952,7 +984,7 @@ namespace GrupoAnkhalInventario
                         .OrderBy(p => p.Codigo)
                         .Take(15)
                         .Select(p => new {
-                            id     = p.ProductoID,
+                            id = p.ProductoID,
                             nombre = "[" + p.Codigo + "] " + p.Descripcion,
                             precio = p.PrecioVenta
                         })
@@ -967,24 +999,24 @@ namespace GrupoAnkhalInventario
                         .Take(15)
                         .ToList();
 
-                    var matIDs   = mats.Select(m => m.MaterialID).ToList();
+                    var matIDs = mats.Select(m => m.MaterialID).ToList();
                     var unidades = db.UnidadesMedida.ToDictionary(u => u.UnidadMedidaID);
-                    var convs    = (from c in db.ConversionesMaterial
-                                    where c.Activo && matIDs.Contains(c.MaterialID)
-                                    join u in db.UnidadesMedida on c.UnidadOrigenID equals u.UnidadMedidaID
-                                    select new { c.MaterialID, c.ConversionID, c.Factor, u.Clave, u.Nombre })
+                    var convs = (from c in db.ConversionesMaterial
+                                 where c.Activo && matIDs.Contains(c.MaterialID)
+                                 join u in db.UnidadesMedida on c.UnidadOrigenID equals u.UnidadMedidaID
+                                 select new { c.MaterialID, c.ConversionID, c.Factor, u.Clave, u.Nombre })
                                    .ToList();
 
                     var resultado = new List<object>();
                     foreach (var m in mats)
                     {
                         string baseNombre = m.Unidad ?? "";
-                        string baseVal    = "0";
+                        string baseVal = "0";
                         if (m.UnidadMedidaID.HasValue && unidades.ContainsKey(m.UnidadMedidaID.Value))
                         {
                             var ub = unidades[m.UnidadMedidaID.Value];
                             baseNombre = ub.Nombre + " (" + ub.Clave + ")";
-                            baseVal    = m.UnidadMedidaID.Value.ToString();
+                            baseVal = m.UnidadMedidaID.Value.ToString();
                         }
                         var opciones = new List<object>();
                         opciones.Add(new { val = baseVal, txt = baseNombre + " — base", factor = 1.0 });
@@ -995,10 +1027,11 @@ namespace GrupoAnkhalInventario
                             opciones.Add(new { val = c.ConversionID.ToString(), txt, factor = (double)c.Factor });
                         }
 
-                        resultado.Add(new {
-                            id           = m.MaterialID,
-                            nombre       = "[" + m.Codigo + "] " + m.Descripcion,
-                            precio       = m.PrecioUnitario,
+                        resultado.Add(new
+                        {
+                            id = m.MaterialID,
+                            nombre = "[" + m.Codigo + "] " + m.Descripcion,
+                            precio = m.PrecioUnitario,
                             conversiones = opciones
                         });
                     }
