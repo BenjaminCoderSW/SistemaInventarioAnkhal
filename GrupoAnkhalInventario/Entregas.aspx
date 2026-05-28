@@ -745,6 +745,10 @@
     // ─────────────────────────────────────────────────────────────────
     // Renderizar modal de detalle desde JSON
     // ─────────────────────────────────────────────────────────────────
+    function fmtMoney(value) {
+        return parseFloat(value).toLocaleString('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 2 });
+    }
+
     function mostrarDetalleModal(d) {
         document.getElementById('dFolio').textContent     = d.Folio || '—';
         document.getElementById('dFecha').textContent     = d.Fecha || '—';
@@ -779,11 +783,11 @@
                 '<td><span class="badge ' + badgeCls + '">' + escHtml(it.TipoItem) + '</span></td>' +
                 '<td>' + escHtml(it.Nombre) + '</td>' +
                 '<td class="text-right">' + cantHtml + '</td>' +
-                '<td class="text-right">$' + parseFloat(it.PrecioUnitario).toFixed(2) + '</td>' +
-                '<td class="text-right font-weight-bold">$' + sub.toFixed(2) + '</td>';
+                '<td class="text-right">$' + fmtMoney(it.PrecioUnitario) + '</td>' +
+                '<td class="text-right font-weight-bold">$' + fmtMoney(sub) + '</td>';
             tbody.appendChild(tr);
         });
-        document.getElementById('tdTotalDetalle').textContent = '$' + total.toFixed(2);
+        document.getElementById('tdTotalDetalle').textContent = '$' + fmtMoney(total);
 
         // Guardar ID para poder imprimir desde el modal
         document.getElementById('<%= hdnDetalleJson.ClientID %>').value = JSON.stringify(d);
