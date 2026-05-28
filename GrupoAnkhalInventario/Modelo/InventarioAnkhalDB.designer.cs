@@ -6133,8 +6133,8 @@ namespace GrupoAnkhalInventario.Modelo
 		
 		private int _CantidadRechazo;
 		
-		private int _MetaDia;
-		
+		private string _Responsable;
+
 		private string _Observaciones;
 		
 		private int _RegistradoPorID;
@@ -6173,8 +6173,8 @@ namespace GrupoAnkhalInventario.Modelo
     partial void OnCantidadBuenaChanged();
     partial void OnCantidadRechazoChanging(int value);
     partial void OnCantidadRechazoChanged();
-    partial void OnMetaDiaChanging(int value);
-    partial void OnMetaDiaChanged();
+    partial void OnResponsableChanging(string value);
+    partial void OnResponsableChanged();
     partial void OnObservacionesChanging(string value);
     partial void OnObservacionesChanged();
     partial void OnRegistradoPorIDChanging(int value);
@@ -6345,22 +6345,22 @@ namespace GrupoAnkhalInventario.Modelo
 			}
 		}
 		
-		[global::System.Data.Linq.Mapping.ColumnAttribute(Storage="_MetaDia", DbType="Int NOT NULL")]
-		public int MetaDia
+		[global::System.Data.Linq.Mapping.ColumnAttribute(Storage="_Responsable", DbType="NVarChar(100)", UpdateCheck=UpdateCheck.Never)]
+		public string Responsable
 		{
 			get
 			{
-				return this._MetaDia;
+				return this._Responsable;
 			}
 			set
 			{
-				if ((this._MetaDia != value))
+				if ((this._Responsable != value))
 				{
-					this.OnMetaDiaChanging(value);
+					this.OnResponsableChanging(value);
 					this.SendPropertyChanging();
-					this._MetaDia = value;
-					this.SendPropertyChanged("MetaDia");
-					this.OnMetaDiaChanged();
+					this._Responsable = value;
+					this.SendPropertyChanged("Responsable");
+					this.OnResponsableChanged();
 				}
 			}
 		}

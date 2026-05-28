@@ -229,6 +229,7 @@
                 </asp:TemplateField>
                 <asp:BoundField DataField="MetaBase" HeaderText="Meta ($)" DataFormatString="{0:C2}" ItemStyle-CssClass="text-right" />
                 <asp:BoundField DataField="RegistradoPor" HeaderText="Registrado Por" />
+                <asp:BoundField DataField="Responsable" HeaderText="Responsable" />
                 <asp:TemplateField HeaderText="Observaciones">
                     <ItemStyle Width="160px" />
                     <ItemTemplate>
@@ -337,8 +338,8 @@
                         </div>
                     </div>
                     <div class="col-md-6">
-                        <label class="font-weight-bold">Tu meta de unidades buenas</label>
-                        <asp:TextBox ID="txtMetaDia" runat="server" CssClass="form-control" TextMode="Number" placeholder="0"></asp:TextBox>
+                        <label class="font-weight-bold">Responsable de la producci&oacute;n</label>
+                        <asp:TextBox ID="txtResponsable" runat="server" CssClass="form-control" MaxLength="100" placeholder="Nombre del operador..."></asp:TextBox>
                     </div>
                 </div>
 

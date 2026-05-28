@@ -242,7 +242,7 @@
       <Column Name="ProductoID" Type="System.Int32" DbType="Int NOT NULL" CanBeNull="false" />
       <Column Name="CantidadBuena" Type="System.Int32" DbType="Int NOT NULL" CanBeNull="false" />
       <Column Name="CantidadRechazo" Type="System.Int32" DbType="Int NOT NULL" CanBeNull="false" />
-      <Column Name="MetaDia" Type="System.Int32" DbType="Int NOT NULL" CanBeNull="false" />
+      <Column Name="Responsable" Type="System.String" DbType="NVarChar(100)" CanBeNull="true" />
       <Column Name="Observaciones" Type="System.String" DbType="VarChar(500)" CanBeNull="true" />
       <Column Name="RegistradoPorID" Type="System.Int32" DbType="Int NOT NULL" CanBeNull="false" />
       <Column Name="FechaRegistro" Type="System.DateTime" DbType="DateTime2 NOT NULL" CanBeNull="false" />

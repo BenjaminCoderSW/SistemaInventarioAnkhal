@@ -43,6 +43,7 @@ namespace GrupoAnkhalInventario
             public decimal  MetaBase        { get; set; }   // MetaDiaria de la base ($)
             public int      CumplPct        { get; set; }
             public decimal  Valor           { get; set; }
+            public string   Responsable     { get; set; }
             public string   RegistradoPor   { get; set; }
             public string   Observaciones   { get; set; }
             public string   Estado          { get; set; }
@@ -262,6 +263,7 @@ namespace GrupoAnkhalInventario
                                p.CantidadRechazo,
                                PrecioVenta     = p.PrecioVenta,
                                p.RegistradoPorID,
+                               p.Responsable,
                                p.Observaciones,
                                p.Estado
                            }).ToList();
@@ -315,6 +317,7 @@ namespace GrupoAnkhalInventario
                             MetaBase        = r.MetaDiaria,
                             CumplPct        = pct,
                             Valor           = valorReg,
+                            Responsable     = r.Responsable ?? "",
                             RegistradoPor   = nombresUsuario.ContainsKey(r.RegistradoPorID)
                                               ? nombresUsuario[r.RegistradoPorID]
                                               : r.RegistradoPorID.ToString(),
@@ -670,14 +673,14 @@ namespace GrupoAnkhalInventario
                 return;
             }
 
-            int cantBuena = 0, cantRechazo = 0, metaDia = 0;
+            int cantBuena = 0, cantRechazo = 0;
             if (!int.TryParse(txtCantBuena.Text, out cantBuena) || cantBuena < 0)
             {
                 SetMsg("warning", "Campo inválido", "Ingrese una cantidad buena válida (≥ 0).", "modalRegistrar");
                 return;
             }
             int.TryParse(txtCantRechazo.Text, out cantRechazo);
-            int.TryParse(txtMetaDia.Text,     out metaDia);
+            string responsable = txtResponsable.Text.Trim();
 
             if (cantBuena + cantRechazo == 0)
             {
@@ -830,7 +833,7 @@ namespace GrupoAnkhalInventario
                                 prod.ProductoID      = productoID;
                                 prod.CantidadBuena   = cantBuena;
                                 prod.CantidadRechazo = cantRechazo;
-                                prod.MetaDia         = metaDia;
+                                prod.Responsable     = string.IsNullOrEmpty(responsable) ? null : responsable;
                                 prod.Observaciones   = string.IsNullOrEmpty(obs) ? null : obs;
                                 prod.PrecioVenta     = precioVentaActual;
                                 prod.Estado          = "Confirmado";
@@ -851,7 +854,7 @@ namespace GrupoAnkhalInventario
                                     ProductoID      = productoID,
                                     CantidadBuena   = cantBuena,
                                     CantidadRechazo = cantRechazo,
-                                    MetaDia         = metaDia,
+                                    Responsable     = string.IsNullOrEmpty(responsable) ? null : responsable,
                                     Observaciones   = string.IsNullOrEmpty(obs) ? null : obs,
                                     RegistradoPorID = claveID,
                                     FechaRegistro   = AppHelper.Ahora,
@@ -1270,7 +1273,7 @@ namespace GrupoAnkhalInventario
             ddlTurno.SelectedIndex        = 0;
             hdnProductoSeleccionado.Value = "";
             hdnProductoNombre.Value       = "";
-            txtMetaDia.Text               = "";
+            txtResponsable.Text           = "";
             txtCantBuena.Text             = "";
             txtCantRechazo.Text           = "";
             txtObservaciones.Text         = "";
@@ -1307,10 +1310,10 @@ namespace GrupoAnkhalInventario
             int      productoID = int.Parse(hdnProductoSeleccionado.Value);
             int      claveID    = Convert.ToInt32(Session["ClaveID"]);
             string   obs        = txtObservaciones.Text.Trim();
-            int cantBuena = 0, cantRechazo = 0, metaDia = 0;
+            int cantBuena = 0, cantRechazo = 0;
             int.TryParse(txtCantBuena.Text,   out cantBuena);
             int.TryParse(txtCantRechazo.Text, out cantRechazo);
-            int.TryParse(txtMetaDia.Text,     out metaDia);
+            string responsable = txtResponsable.Text.Trim();
 
             int existingID = 0;
             int.TryParse(hdnProduccionID.Value, out existingID);
@@ -1338,7 +1341,7 @@ namespace GrupoAnkhalInventario
                         prod.ProductoID      = productoID;
                         prod.CantidadBuena   = cantBuena;
                         prod.CantidadRechazo = cantRechazo;
-                        prod.MetaDia         = metaDia;
+                        prod.Responsable     = string.IsNullOrEmpty(responsable) ? null : responsable;
                         prod.Observaciones   = string.IsNullOrEmpty(obs) ? null : obs;
                         prod.PrecioVenta     = precioVenta;
 
@@ -1360,7 +1363,7 @@ namespace GrupoAnkhalInventario
                             ProductoID      = productoID,
                             CantidadBuena   = cantBuena,
                             CantidadRechazo = cantRechazo,
-                            MetaDia         = metaDia,
+                            Responsable     = string.IsNullOrEmpty(responsable) ? null : responsable,
                             Observaciones   = string.IsNullOrEmpty(obs) ? null : obs,
                             RegistradoPorID = claveID,
                             FechaRegistro   = AppHelper.Ahora,
@@ -1494,7 +1497,7 @@ namespace GrupoAnkhalInventario
                     ? string.Format("[{0}] {1}", prd.Codigo, prd.Descripcion) : "";
                 txtCantBuena.Text        = prod.CantidadBuena.ToString();
                 txtCantRechazo.Text      = prod.CantidadRechazo.ToString();
-                txtMetaDia.Text          = prod.MetaDia > 0 ? prod.MetaDia.ToString() : "";
+                txtResponsable.Text      = prod.Responsable ?? "";
                 txtObservaciones.Text    = prod.Observaciones ?? "";
                 hdnProduccionID.Value    = produccionID.ToString();
                 hdnModoEdicion.Value     = "borrador";
