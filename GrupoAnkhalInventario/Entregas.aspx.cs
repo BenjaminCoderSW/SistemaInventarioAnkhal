@@ -937,7 +937,7 @@ namespace GrupoAnkhalInventario
                     }
 
                     // Datos de captura para materiales: usar campos de DetalleEntregas directamente
-                    string cantidadHtml = d.Cantidad.ToString("0.####");
+                    string cantidadHtml = d.Cantidad.ToString("0.##");
                     if (d.TipoItem == "MATERIAL")
                     {
                         string unidBaseN = (d.MaterialID.HasValue && matUnidadBaseImp.ContainsKey(d.MaterialID.Value))
@@ -950,18 +950,18 @@ namespace GrupoAnkhalInventario
                         {
                             string unidCapN = unidCapNombresImp.ContainsKey(d.UnidadCapturaID.Value)
                                 ? unidCapNombresImp[d.UnidadCapturaID.Value] : "";
-                            string capStr = d.CantidadCapturada.Value.ToString("0.####");
+                            string capStr = d.CantidadCapturada.Value.ToString("0.##");
                             cantidadHtml = string.Format(
                                 "<strong>{0} {1}</strong><span class='cap-info'>= {2} {3}</span>",
                                 capStr,
                                 System.Web.HttpUtility.HtmlEncode(unidCapN),
-                                d.Cantidad.ToString("0.####"),
+                                d.Cantidad.ToString("0.##"),
                                 System.Web.HttpUtility.HtmlEncode(unidBaseN));
                         }
                         else if (!string.IsNullOrEmpty(unidBaseN))
                         {
                             cantidadHtml = string.Format("{0} {1}",
-                                d.Cantidad.ToString("0.####"),
+                                d.Cantidad.ToString("0.##"),
                                 System.Web.HttpUtility.HtmlEncode(unidBaseN));
                         }
                     }

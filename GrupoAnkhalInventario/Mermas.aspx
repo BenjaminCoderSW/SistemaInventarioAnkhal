@@ -264,7 +264,8 @@
               <label>Cantidad a convertir <span style="color:red">*</span></label>
               <asp:TextBox ID="txtConvCantOrigen" runat="server" CssClass="form-control"
                   placeholder="0.00"
-                  oninput="this.value=this.value.replace(/[^0-9.]/g,''); onOrigenCantChange();"></asp:TextBox>
+                  oninput="limpiarDecimales(this); onOrigenCantChange();"
+                  onblur="redondearDecimales(this); onOrigenCantChange();"></asp:TextBox>
             </div>
           </div>
           <div class="col-md-4" id="divOrigenUnidad" style="display:none;">
@@ -415,7 +416,7 @@ function onConvMatOrigenChange(matID, cantDisponible, unidTxt) {
 
     var cant = parseFloat(cantDisponible || 0);
     document.getElementById('divDisponible').textContent =
-        cant.toLocaleString('es-MX', {minimumFractionDigits: 0, maximumFractionDigits: 4}) + ' ' + (unidTxt || '');
+        cant.toLocaleString('es-MX', {minimumFractionDigits: 0, maximumFractionDigits: 2}) + ' ' + (unidTxt || '');
 
     var convKey = matID.toString();
     if (window._conversionesMat && window._conversionesMat[convKey] &&
@@ -443,8 +444,8 @@ function onOrigenUnidadChange() {
     var label  = document.getElementById('lblOrigenConvInfo');
     if (factor === 1 || cant === 0) { label.innerText = ''; return; }
     var cantBase = cant * factor;
-    label.innerText = 'Captura: ' + cant.toLocaleString('es-MX', {minimumFractionDigits:4}) +
-                      ' → ' + cantBase.toLocaleString('es-MX', {minimumFractionDigits:4}) +
+    label.innerText = 'Captura: ' + cant.toLocaleString('es-MX', {minimumFractionDigits: 0, maximumFractionDigits: 2}) +
+                      ' → ' + cantBase.toLocaleString('es-MX', {minimumFractionDigits: 0, maximumFractionDigits: 2}) +
                       ' (unidad base) en merma';
 }
 
@@ -478,7 +479,7 @@ function agregarFilaOutput() {
              '</select></td>' +
         '<td><input type="text" class="form-control form-control-sm inp-cant-dest" ' +
              'id="cantDest_' + n + '" placeholder="0.00" ' +
-             'oninput="this.value=this.value.replace(/[^0-9.]/g,\'\')"/></td>' +
+             'oninput="limpiarDecimales(this)" onblur="redondearDecimales(this)"/></td>' +
         '<td><button type="button" class="btn btn-danger btn-sm btn-quitar-output" ' +
              'onclick="quitarFilaOutput(' + n + ')">✕</button></td>';
     tbody.appendChild(tr);
@@ -761,7 +762,15 @@ function escHtml(s) {
     return String(s).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;');
 }
 function fmtN4(n) {
-    return Number(n).toLocaleString('es-MX', {minimumFractionDigits:0, maximumFractionDigits:4});
+    return Number(n).toLocaleString('es-MX', {minimumFractionDigits:0, maximumFractionDigits:2});
+}
+function limpiarDecimales(el) {
+    el.value = el.value.replace(/[^0-9.]/g, '');
+}
+function redondearDecimales(el) {
+    if (el.value === '') return;
+    var num = parseFloat(el.value);
+    if (!isNaN(num)) el.value = parseFloat(num.toFixed(2));
 }
 
 // ── SweetAlert pendiente ──────────────────────────────────────────

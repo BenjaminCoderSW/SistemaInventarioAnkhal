@@ -840,7 +840,7 @@ namespace GrupoAnkhalInventario
             string unidBase = (unidBaseObj ?? "").ToString();
             bool tuvoConv = Convert.ToBoolean(tuvoConvObj ?? false);
 
-            string FmtDec(decimal d) => d.ToString("0.####");
+            string FmtDec(decimal d) => d.ToString("0.##");
 
             if (tuvoConv && !string.IsNullOrEmpty(unidCap))
                 return string.Format(

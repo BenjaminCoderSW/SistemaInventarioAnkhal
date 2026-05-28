@@ -547,6 +547,17 @@
     var _itemSeleccionado = null;
     var _itemTimer = null;
 
+    // ── Restricción: máximo 2 decimales en campos numéricos ────────────
+    window.addEventListener('load', function () {
+        document.querySelectorAll('input[type="number"][step="0.01"]').forEach(function (el) {
+            el.addEventListener('blur', function () {
+                if (this.value === '') return;
+                var num = parseFloat(this.value);
+                if (!isNaN(num)) this.value = parseFloat(num.toFixed(2));
+            });
+        });
+    });
+
     // ── Mensaje pendiente (SweetAlert) ──────────────────────────────
     window.addEventListener('load', function () {
         var tipoItem = document.getElementById('<%= hdnTipoItemSeleccionado.ClientID %>').value;
@@ -698,9 +709,9 @@
                 : (it.tipoItem === 'Producto' ? 'Und.' : 'base');
 
             var cantMostrar = it.factor !== 1
-                ? it.cantidadCapturada.toFixed(4).replace(/\.?0+$/, '') + ' → ' +
-                cantBase.toFixed(4).replace(/\.?0+$/, '')
-                : it.cantidadCapturada.toFixed(4).replace(/\.?0+$/, '');
+                ? it.cantidadCapturada.toFixed(2).replace(/\.?0+$/, '') + ' → ' +
+                cantBase.toFixed(2).replace(/\.?0+$/, '')
+                : it.cantidadCapturada.toFixed(2).replace(/\.?0+$/, '');
 
             var tr = '<tr>' +
                 '<td>' + (i + 1) + '</td>' +
@@ -919,7 +930,7 @@
         } else {
             var cantBase   = cantidad * factor;
             var baseNombre = ddlUC.options[0].text.replace(/\s*[—\-]\s*base\s*$/i, '').trim();
-            var cantStr    = (cantBase % 1 === 0) ? cantBase.toString() : cantBase.toFixed(4).replace(/\.?0+$/, '');
+            var cantStr    = (cantBase % 1 === 0) ? cantBase.toString() : cantBase.toFixed(2).replace(/\.?0+$/, '');
             lblCI.innerText = 'Captura: ' + cantidad + ' → ' + cantStr + ' ' + baseNombre + ' en stock';
         }
     }

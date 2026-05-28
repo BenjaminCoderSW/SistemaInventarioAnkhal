@@ -613,6 +613,17 @@
 </div>
 
 <script>
+    // ── Restricción: máximo 2 decimales en campos numéricos ──────────
+    window.addEventListener('load', function () {
+        document.querySelectorAll('input[type="number"][step="0.01"]').forEach(function (el) {
+            el.addEventListener('blur', function () {
+                if (this.value === '') return;
+                var num = parseFloat(this.value);
+                if (!isNaN(num)) this.value = parseFloat(num.toFixed(2));
+            });
+        });
+    });
+
     // ── Mensaje pendiente (mismo patrón que Bases) ────────────────
     window.addEventListener('load', function () {
         var hdnMsg = document.getElementById('<%= hdnMensajePendiente.ClientID %>');

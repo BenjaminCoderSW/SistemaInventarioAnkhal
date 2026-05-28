@@ -679,7 +679,7 @@
         document.querySelectorAll('#tblConsumos tbody .consumo-cell').forEach(function (td) {
             var perCap = parseFloat(td.dataset.percap) || 0;
             var resultado = perCap * total;
-            var txt = resultado === 0 ? '0' : resultado.toFixed(4).replace(/\.?0+$/, '');
+            var txt = resultado === 0 ? '0' : resultado.toFixed(2).replace(/\.?0+$/, '');
             td.querySelector('.consumo-total').textContent = txt;
         });
     }

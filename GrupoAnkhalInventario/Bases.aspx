@@ -393,6 +393,17 @@
 
     <script>
 
+        // ── Restricción: máximo 2 decimales en campos numéricos ──────────────
+        window.addEventListener('load', function () {
+            document.querySelectorAll('input[type="number"][step="0.01"]').forEach(function (el) {
+                el.addEventListener('blur', function () {
+                    if (this.value === '') return;
+                    var num = parseFloat(this.value);
+                    if (!isNaN(num)) this.value = parseFloat(num.toFixed(2));
+                });
+            });
+        });
+
         // ── Al cargar la página, revisar si hay mensaje pendiente ──────────────
         window.addEventListener('load', function () {
             var hdnMsg = document.getElementById('<%= hdnMensajePendiente.ClientID %>');
@@ -487,11 +498,11 @@
                 return false;
             }
             if (metaD > 0 && metaS > 0 && metaS < metaD) {
-                Swal.fire({ icon: 'warning', title: 'Metas inconsistentes', text: 'La meta semanal (' + metaS.toLocaleString() + ') no puede ser menor a la meta diaria (' + metaD.toLocaleString() + ').', confirmButtonColor: '#003366' });
+                Swal.fire({ icon: 'warning', title: 'Metas inconsistentes', text: 'La meta semanal (' + metaS.toLocaleString('es-MX', { minimumFractionDigits: 0, maximumFractionDigits: 2 }) + ') no puede ser menor a la meta diaria (' + metaD.toLocaleString('es-MX', { minimumFractionDigits: 0, maximumFractionDigits: 2 }) + ').', confirmButtonColor: '#003366' });
                 return false;
             }
             if (metaS > 0 && metaM > 0 && metaM < metaS) {
-                Swal.fire({ icon: 'warning', title: 'Metas inconsistentes', text: 'La meta mensual (' + metaM.toLocaleString() + ') no puede ser menor a la meta semanal (' + metaS.toLocaleString() + ').', confirmButtonColor: '#003366' });
+                Swal.fire({ icon: 'warning', title: 'Metas inconsistentes', text: 'La meta mensual (' + metaM.toLocaleString('es-MX', { minimumFractionDigits: 0, maximumFractionDigits: 2 }) + ') no puede ser menor a la meta semanal (' + metaS.toLocaleString('es-MX', { minimumFractionDigits: 0, maximumFractionDigits: 2 }) + ').', confirmButtonColor: '#003366' });
                 return false;
             }
             return true;
@@ -535,11 +546,11 @@
                 return false;
             }
             if (metaD > 0 && metaS > 0 && metaS < metaD) {
-                Swal.fire({ icon: 'warning', title: 'Metas inconsistentes', text: 'La meta semanal (' + metaS.toLocaleString() + ') no puede ser menor a la meta diaria (' + metaD.toLocaleString() + ').', confirmButtonColor: '#003366' });
+                Swal.fire({ icon: 'warning', title: 'Metas inconsistentes', text: 'La meta semanal (' + metaS.toLocaleString('es-MX', { minimumFractionDigits: 0, maximumFractionDigits: 2 }) + ') no puede ser menor a la meta diaria (' + metaD.toLocaleString('es-MX', { minimumFractionDigits: 0, maximumFractionDigits: 2 }) + ').', confirmButtonColor: '#003366' });
                 return false;
             }
             if (metaS > 0 && metaM > 0 && metaM < metaS) {
-                Swal.fire({ icon: 'warning', title: 'Metas inconsistentes', text: 'La meta mensual (' + metaM.toLocaleString() + ') no puede ser menor a la meta semanal (' + metaS.toLocaleString() + ').', confirmButtonColor: '#003366' });
+                Swal.fire({ icon: 'warning', title: 'Metas inconsistentes', text: 'La meta mensual (' + metaM.toLocaleString('es-MX', { minimumFractionDigits: 0, maximumFractionDigits: 2 }) + ') no puede ser menor a la meta semanal (' + metaS.toLocaleString('es-MX', { minimumFractionDigits: 0, maximumFractionDigits: 2 }) + ').', confirmButtonColor: '#003366' });
                 return false;
             }
             return true;
