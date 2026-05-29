@@ -228,6 +228,8 @@
                             <asp:ListItem Value="">-- Todos --</asp:ListItem>
                             <asp:ListItem Value="Material">Material</asp:ListItem>
                             <asp:ListItem Value="Producto">Producto</asp:ListItem>
+                            <asp:ListItem Value="MermaMaterial">Merma Material</asp:ListItem>
+                            <asp:ListItem Value="MermaProducto">Merma Producto</asp:ListItem>
                         </asp:DropDownList>
                     </div>
                     <div class="col-md-2">
@@ -281,7 +283,9 @@
                         <asp:TemplateField HeaderText="Item">
                             <ItemTemplate>
                                 <strong style="color:#003366;"><%# Eval("ItemCodigo") %></strong>
-                                <%# Eval("ItemNombre") %>
+                                <%# GetEtiquetaMerma(Eval("TipoItem")) %>
+                                <br />
+                                <span class="text-muted" style="font-size:.88rem;"><%# Eval("ItemNombre") %></span>
                             </ItemTemplate>
                         </asp:TemplateField>
 
@@ -387,10 +391,10 @@
           </div>
         </div>
 
-        <!-- Nota merma producto -->
+        <!-- Nota merma producto / tipos merma -->
         <p id="pMermaNote" class="small fw-semibold text-info mb-2" style="display:none; margin-top:0;">
             <i class="fas fa-info-circle"></i>
-            La cantidad ingresada se restar&aacute; de las unidades buenas de la base y se sumar&aacute; a las unidades en rechazo.
+            <span id="spnMermaNoteTxt"></span>
         </p>
 
         <!-- ── PROVEEDOR (solo visible en ENTRADA) ─────────────────── -->
@@ -423,6 +427,16 @@
                   <input type="radio" name="rbTipoItem" id="rbProducto" value="Producto"
                       onclick="onTipoItemChange();" />
                   Producto
+                </label>
+                <label>
+                  <input type="radio" name="rbTipoItem" id="rbMermaMaterial" value="MermaMaterial"
+                      onclick="onTipoItemChange();" />
+                  Merma Material
+                </label>
+                <label>
+                  <input type="radio" name="rbTipoItem" id="rbMermaProducto" value="MermaProducto"
+                      onclick="onTipoItemChange();" />
+                  Merma Producto (Rechazo)
                 </label>
               </div>
             </div>
@@ -583,7 +597,13 @@
         _items = [];
         _prevTipoMovimiento = "";
         document.getElementById('<%= hdnItemsJson.ClientID %>').value = '[]';
-        document.getElementById('<%= ddlTipoMovimiento.ClientID %>').value = '';
+        var ddlTipo = document.getElementById('<%= ddlTipoMovimiento.ClientID %>');
+        ddlTipo.value = '';
+        // Re-habilitar todas las opciones del tipo de movimiento
+        for (var i = 0; i < ddlTipo.options.length; i++) {
+            ddlTipo.options[i].disabled = false;
+            ddlTipo.options[i].style.display = '';
+        }
         document.getElementById('rbMaterial').checked = true;
         document.getElementById('<%= hdnTipoItemSeleccionado.ClientID %>').value = 'Material';
         document.getElementById('pMermaNote').style.display = 'none';
@@ -706,16 +726,20 @@
 
             var unidTxt = it.unidadTexto
                 ? it.unidadTexto.replace(/\s*\[.*\]$/, '').replace(/\s*—\s*base\s*$/i, '').trim()
-                : (it.tipoItem === 'Producto' ? 'Und.' : 'base');
+                : (it.tipoItem === 'Producto' || it.tipoItem === 'MermaProducto' ? 'Und.' : 'base');
 
             var cantMostrar = it.factor !== 1
                 ? it.cantidadCapturada.toFixed(2).replace(/\.?0+$/, '') + ' → ' +
                 cantBase.toFixed(2).replace(/\.?0+$/, '')
                 : it.cantidadCapturada.toFixed(2).replace(/\.?0+$/, '');
 
+            var tipoDisplay = it.tipoItem === 'MermaMaterial' ? 'Merma Mat.'
+                : it.tipoItem === 'MermaProducto' ? 'Merma Prod.'
+                : it.tipoItem;
+
             var tr = '<tr>' +
                 '<td>' + (i + 1) + '</td>' +
-                '<td>' + it.tipoItem + '</td>' +
+                '<td>' + tipoDisplay + '</td>' +
                 '<td>' + it.itemTexto + '</td>' +
                 '<td>' + cantMostrar + '</td>' +
                 '<td>' + unidTxt + '</td>' +
@@ -794,7 +818,7 @@
         calcularTotal();
     }
 
-    // ── Cambio tipo item (radio) → limpiar autocomplete ────────────
+    // ── Cambio tipo item (radio) → limpiar autocomplete y filtrar tipos mov ──
     function onTipoItemChange() {
         var seleccion = document.querySelector('input[name="rbTipoItem"]:checked').value;
         document.getElementById('<%= hdnTipoItemSeleccionado.ClientID %>').value = seleccion;
@@ -803,6 +827,23 @@
         ocultarResultadosItem();
         document.getElementById('divUnidadCaptura').style.display = 'none';
         document.getElementById('<%= lblConversionInfo.ClientID %>').innerText = '';
+
+        // Para ítems de merma solo aplican Transferencia, Ajuste+ y Ajuste-
+        var esMerma = (seleccion === 'MermaMaterial' || seleccion === 'MermaProducto');
+        var ddlTipo = document.getElementById('<%= ddlTipoMovimiento.ClientID %>');
+        for (var i = 0; i < ddlTipo.options.length; i++) {
+            var opt = ddlTipo.options[i];
+            if (opt.value === '1' || opt.value === '5') {
+                opt.disabled = esMerma;
+                opt.style.display = esMerma ? 'none' : '';
+            }
+        }
+        // Si la selección actual no es válida para ítems de merma, resetear
+        if (esMerma && (ddlTipo.value === '1' || ddlTipo.value === '5')) {
+            ddlTipo.value = '';
+            onTipoMovimientoChange();
+        }
+
         actualizarNotaMerma();
     }
 
@@ -811,7 +852,19 @@
         var tipo     = document.getElementById('<%= ddlTipoMovimiento.ClientID %>').value;
         var tipoItem = document.querySelector('input[name="rbTipoItem"]:checked').value;
         var nota     = document.getElementById('pMermaNote');
-        nota.style.display = (tipo === '5' && tipoItem === 'Producto') ? 'block' : 'none';
+        var spn      = document.getElementById('spnMermaNoteTxt');
+        if (tipo === '5' && tipoItem === 'Producto') {
+            spn.textContent = 'La cantidad ingresada se restará de las unidades buenas de la base y se sumará a las unidades en rechazo.';
+            nota.style.display = 'block';
+        } else if (tipoItem === 'MermaMaterial') {
+            spn.textContent = 'El movimiento solo afectará el stock de merma del material (StockMerma).';
+            nota.style.display = 'block';
+        } else if (tipoItem === 'MermaProducto') {
+            spn.textContent = 'El movimiento solo afectará las unidades en rechazo del producto (CantidadRechazo).';
+            nota.style.display = 'block';
+        } else {
+            nota.style.display = 'none';
+        }
     }
 
     // ── Autocomplete item (reemplaza ddlItem) ──────────────────────
@@ -884,7 +937,7 @@
         var ddlUC = document.getElementById('<%= ddlUnidadCaptura.ClientID %>');
         var lblCI = document.getElementById('<%= lblConversionInfo.ClientID %>');
 
-        if (tipo === 'Material' && item.conversiones && item.conversiones.length > 1) {
+        if ((tipo === 'Material' || tipo === 'MermaMaterial') && item.conversiones && item.conversiones.length > 1) {
             ddlUC.innerHTML = '';
             item.conversiones.forEach(function (op) {
                 var opt = document.createElement('option');

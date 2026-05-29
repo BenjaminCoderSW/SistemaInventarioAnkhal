@@ -353,10 +353,10 @@ namespace GrupoAnkhalInventario
                         TipoClave = r.TipoClave ?? "",
                         Tipo = r.TipoNombre ?? "",
                         TipoItem = r.TipoItem ?? "",
-                        ItemCodigo = r.TipoItem == "Material" ? (r.MatCodigo ?? "")
-                                      : (r.PrdCodigo ?? ""),
-                        ItemNombre = r.TipoItem == "Material" ? (r.MatNombre ?? "")
-                                      : (r.PrdNombre ?? ""),
+                        ItemCodigo = (r.TipoItem == "Material" || r.TipoItem == "MermaMaterial")
+                                      ? (r.MatCodigo ?? "") : (r.PrdCodigo ?? ""),
+                        ItemNombre = (r.TipoItem == "Material" || r.TipoItem == "MermaMaterial")
+                                      ? (r.MatNombre ?? "") : (r.PrdNombre ?? ""),
                         BaseOrigen = r.BaseOrig ?? "",
                         BaseDestino = r.BaseDest ?? "",
                         Cantidad = r.Cantidad,
@@ -366,7 +366,7 @@ namespace GrupoAnkhalInventario
                                              ? unidadesCaptura[r.UnidadCapturaID.Value] : "",
                         TuvoConversion = r.FactorAplicado.HasValue &&
                                              r.FactorAplicado.Value != 1m,
-                        Unidad = r.TipoItem == "Material"
+                        Unidad = (r.TipoItem == "Material" || r.TipoItem == "MermaMaterial")
                                         ? (r.MatUnidad ?? "")
                                         : "Unidad/es",
                         Costo = r.Costo,
@@ -552,8 +552,8 @@ namespace GrupoAnkhalInventario
                             {
                                 TipoMovimientoID = tipoMovID,
                                 TipoItem = it.tipoItem,
-                                MaterialID = it.tipoItem == "Material" ? (int?)it.itemId : null,
-                                ProductoID = it.tipoItem == "Producto" ? (int?)it.itemId : null,
+                                MaterialID = (it.tipoItem == "Material" || it.tipoItem == "MermaMaterial") ? (int?)it.itemId : null,
+                                ProductoID = (it.tipoItem == "Producto" || it.tipoItem == "MermaProducto") ? (int?)it.itemId : null,
                                 BaseOrigenID = baseOrigenID,
                                 BaseDestinoID = baseDestinoID,
                                 Cantidad = cantBase,
@@ -568,13 +568,40 @@ namespace GrupoAnkhalInventario
                             };
                             db.Movimientos.InsertOnSubmit(mov);
 
+                            // Validación server-side: MermaMaterial/MermaProducto solo admiten
+                            // TRANSFERENCIA, AJUSTE_POS y AJUSTE_NEG
+                            if ((it.tipoItem == "MermaMaterial" || it.tipoItem == "MermaProducto") &&
+                                claveTipo != "TRANSFERENCIA" && claveTipo != "AJUSTE_POS" && claveTipo != "AJUSTE_NEG")
+                            {
+                                tx.Rollback();
+                                SetMsg("warning", "Combinación inválida",
+                                    "Para ítems de merma solo se permiten: Transferencia, Ajuste positivo y Ajuste negativo.",
+                                    "modalNuevo");
+                                return;
+                            }
+
                             switch (claveTipo)
                             {
                                 case "ENTRADA":
                                     UpsertStock(db, it.tipoItem, it.itemId, baseDestinoID, +cantBase); break;
                                 case "TRANSFERENCIA":
-                                    UpsertStock(db, it.tipoItem, it.itemId, baseOrigenID, -cantBase);
-                                    UpsertStock(db, it.tipoItem, it.itemId, baseDestinoID, +cantBase); break;
+                                    if (it.tipoItem == "MermaMaterial")
+                                    {
+                                        UpsertStockMerma(db.Connection, tx, it.itemId, baseOrigenID.Value, -cantBase);
+                                        UpsertStockMerma(db.Connection, tx, it.itemId, baseDestinoID.Value, +cantBase);
+                                    }
+                                    else if (it.tipoItem == "MermaProducto")
+                                    {
+                                        int d = (int)Math.Round(cantBase, MidpointRounding.AwayFromZero);
+                                        UpsertRechazoProducto(db, it.itemId, baseOrigenID.Value,  -d);
+                                        UpsertRechazoProducto(db, it.itemId, baseDestinoID.Value, +d);
+                                    }
+                                    else
+                                    {
+                                        UpsertStock(db, it.tipoItem, it.itemId, baseOrigenID, -cantBase);
+                                        UpsertStock(db, it.tipoItem, it.itemId, baseDestinoID, +cantBase);
+                                    }
+                                    break;
                                 case "MERMA":
                                     UpsertStock(db, it.tipoItem, it.itemId, baseOrigenID, -cantBase);
                                     if (it.tipoItem == "Material")
@@ -584,9 +611,23 @@ namespace GrupoAnkhalInventario
                                             (int)Math.Round(cantBase, MidpointRounding.AwayFromZero));
                                     break;
                                 case "AJUSTE_POS":
-                                    UpsertStock(db, it.tipoItem, it.itemId, baseDestinoID, +cantBase); break;
+                                    if (it.tipoItem == "MermaMaterial")
+                                        UpsertStockMerma(db.Connection, tx, it.itemId, baseDestinoID.Value, +cantBase);
+                                    else if (it.tipoItem == "MermaProducto")
+                                        UpsertRechazoProducto(db, it.itemId, baseDestinoID.Value,
+                                            (int)Math.Round(cantBase, MidpointRounding.AwayFromZero));
+                                    else
+                                        UpsertStock(db, it.tipoItem, it.itemId, baseDestinoID, +cantBase);
+                                    break;
                                 case "AJUSTE_NEG":
-                                    UpsertStock(db, it.tipoItem, it.itemId, baseOrigenID, -cantBase); break;
+                                    if (it.tipoItem == "MermaMaterial")
+                                        UpsertStockMerma(db.Connection, tx, it.itemId, baseOrigenID.Value, -cantBase);
+                                    else if (it.tipoItem == "MermaProducto")
+                                        UpsertRechazoProducto(db, it.itemId, baseOrigenID.Value,
+                                            -(int)Math.Round(cantBase, MidpointRounding.AwayFromZero));
+                                    else
+                                        UpsertStock(db, it.tipoItem, it.itemId, baseOrigenID, -cantBase);
+                                    break;
                                 default:
                                     throw new InvalidOperationException(
                                         $"Tipo de movimiento '{claveTipo}' sin lógica de stock definida.");
@@ -622,7 +663,7 @@ namespace GrupoAnkhalInventario
         private (decimal cantBase, int? unidadCapturaID, decimal factorAplicado)
             ResolverConversion(InventarioAnkhalDBDataContext db, ItemLoteModel it)
         {
-            if (it.tipoItem != "Material")
+            if (it.tipoItem != "Material" && it.tipoItem != "MermaMaterial")
                 return (it.cantidadCapturada, null, 1m);
 
             // El JS ya resolvió el factor; el unidadId puede ser el UnidadMedidaID (unidad base)
@@ -818,6 +859,29 @@ namespace GrupoAnkhalInventario
                     .Select(p => p.Descripcion)
                     .FirstOrDefault() ?? "Producto";
             }
+            else if (tipoItem == "MermaMaterial")
+            {
+                actual = db.ExecuteQuery<decimal?>(
+                    "SELECT CantidadActual FROM dbo.StockMerma WHERE BaseID={0} AND MaterialID={1}",
+                    baseID.Value, itemID).FirstOrDefault() ?? 0m;
+
+                nombreItem = db.Materiales
+                    .Where(m => m.MaterialID == itemID)
+                    .Select(m => m.Descripcion)
+                    .FirstOrDefault() ?? "Material (Merma)";
+            }
+            else if (tipoItem == "MermaProducto")
+            {
+                actual = db.StockProductos
+                    .Where(x => x.BaseID == baseID.Value && x.ProductoID == itemID)
+                    .Select(x => (decimal)x.CantidadRechazo)
+                    .FirstOrDefault();
+
+                nombreItem = db.Productos
+                    .Where(p => p.ProductoID == itemID)
+                    .Select(p => p.Descripcion)
+                    .FirstOrDefault() ?? "Producto (Rechazo)";
+            }
             if (actual < cantidad)
             {
                 SetMsg("warning", "Stock insuficiente",
@@ -827,6 +891,20 @@ namespace GrupoAnkhalInventario
                 return false;
             }
             return true;
+        }
+
+        // ══ Helper para la etiqueta de merma en la columna Item ═════════════
+        /// <summary>
+        /// Devuelve un badge HTML naranja "Merma" cuando el TipoItem es MermaMaterial
+        /// o MermaProducto; cadena vacía en cualquier otro caso.
+        /// </summary>
+        public string GetEtiquetaMerma(object tipoItem)
+        {
+            string tipo = (tipoItem ?? "").ToString();
+            if (tipo == "MermaMaterial" || tipo == "MermaProducto")
+                return "<span class='badge' style='background:#e67e22;color:#fff;" +
+                       "font-size:.70rem;vertical-align:middle;margin-left:4px;'>Merma</span>";
+            return "";
         }
 
         // ══ Helper para la columna Cantidad/Unidad ═══════════════════════════
@@ -976,7 +1054,7 @@ namespace GrupoAnkhalInventario
                 .ConnectionStrings["InventarioAnkhalDBConnectionString"].ConnectionString;
             using (var db = new InventarioAnkhalDBDataContext(connStr))
             {
-                if (tipo == "Producto")
+                if (tipo == "Producto" || tipo == "MermaProducto")
                 {
                     return db.Productos
                         .Where(p => p.Activo &&
@@ -990,7 +1068,7 @@ namespace GrupoAnkhalInventario
                         })
                         .ToList();
                 }
-                else // Material
+                else // Material o MermaMaterial
                 {
                     var mats = db.Materiales
                         .Where(m => m.Activo &&

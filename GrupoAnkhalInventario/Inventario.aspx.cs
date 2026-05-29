@@ -276,6 +276,14 @@ namespace GrupoAnkhalInventario
 
             var mermaDict = ObtenerMermaDict(basesUsuario, baseFiltraID);
 
+            // Pre-cargar catálogo de bases activas para mostrar bases que solo tienen merma
+            // (sin registro en StockMateriales — p. ej. destino de una transferencia de merma)
+            var basesInfo = db.Bases
+                .Where(b => b.Activo)
+                .Select(b => new { b.BaseID, b.Nombre, b.Codigo })
+                .ToList()
+                .ToDictionary(b => b.BaseID);
+
             // Construir VMs con stock global filtrado
             var vms = new List<MaterialInvVM>();
             foreach (var m in listaMat)
@@ -291,6 +299,27 @@ namespace GrupoAnkhalInventario
                         MermaBase = mermaDict.ContainsKey(m.MaterialID) && mermaDict[m.MaterialID].ContainsKey(s.BaseID)
                                     ? mermaDict[m.MaterialID][s.BaseID] : 0m
                     }).ToList();
+
+                // Agregar bases que solo tienen merma (sin StockMateriales)
+                // Caso típico: destino de una transferencia de merma sin stock normal previo
+                if (mermaDict.ContainsKey(m.MaterialID))
+                {
+                    foreach (var kvp in mermaDict[m.MaterialID])
+                    {
+                        if (!basesStock.Any(b => b.BaseID == kvp.Key) && basesInfo.ContainsKey(kvp.Key))
+                        {
+                            var bi = basesInfo[kvp.Key];
+                            basesStock.Add(new StockBaseInvVM
+                            {
+                                BaseID = kvp.Key,
+                                BaseNombre = bi.Nombre,
+                                BaseCodigo = bi.Codigo,
+                                Cantidad = 0m,
+                                MermaBase = kvp.Value
+                            });
+                        }
+                    }
+                }
 
                 decimal global = basesStock.Sum(s => s.Cantidad);
                 decimal mermaGlobal = mermaDict.ContainsKey(m.MaterialID) ? mermaDict[m.MaterialID].Values.Sum() : 0m;
