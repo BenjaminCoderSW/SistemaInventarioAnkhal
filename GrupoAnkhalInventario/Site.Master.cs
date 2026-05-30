@@ -31,6 +31,7 @@ namespace GrupoAnkhalInventario
                 // ── Operaciones ──
                 { "produccion.aspx",  new List<string> { "Administrador", "Produccion", "Almacen" } },
                 { "entregas.aspx",    new List<string> { "Administrador", "Ventas",     "Almacen" } },
+                { "ordenes.aspx",     new List<string> { "Administrador", "Ventas",     "Almacen" } },
                 { "movimientos.aspx", new List<string> { "Administrador", "Almacen",    "Produccion" } },
                 { "mermas.aspx",      new List<string> { "Administrador", "Almacen",    "Produccion" } },
 
@@ -142,6 +143,7 @@ namespace GrupoAnkhalInventario
             headerOperaciones.Visible = false;
             menuProduccion.Visible = false;
             menuEntregas.Visible = false;
+            menuOrdenes.Visible = false;
             menuMovimientos.Visible = false;
             menuMermas.Visible = false;
             headerInventario.Visible = false;
@@ -158,6 +160,7 @@ namespace GrupoAnkhalInventario
                     headerOperaciones.Visible = true;
                     menuProduccion.Visible = true;
                     menuEntregas.Visible = true;
+                    menuOrdenes.Visible = true;
                     menuMovimientos.Visible = true;
                     menuMermas.Visible = true;
                     headerInventario.Visible = true;
@@ -171,6 +174,7 @@ namespace GrupoAnkhalInventario
                     menuCatalogos.Visible = true;   // Productos y Paquetes
                     headerOperaciones.Visible = true;
                     menuEntregas.Visible = true;
+                    menuOrdenes.Visible = true;
                     headerInventario.Visible = true;
                     menuInventario.Visible = true;
                     break;
@@ -186,6 +190,7 @@ namespace GrupoAnkhalInventario
                     headerOperaciones.Visible = true;
                     menuProduccion.Visible = true;
                     menuEntregas.Visible = true;
+                    menuOrdenes.Visible = true;
                     menuMovimientos.Visible = true;
                     menuMermas.Visible = true;
                     headerInventario.Visible = true;

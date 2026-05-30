@@ -132,6 +132,15 @@ namespace GrupoAnkhalInventario
         protected global::System.Web.UI.HtmlControls.HtmlGenericControl menuEntregas;
 
         /// <summary>
+        /// Control menuOrdenes.
+        /// </summary>
+        /// <remarks>
+        /// Campo generado automáticamente.
+        /// Para modificarlo, mueva la declaración del campo del archivo del diseñador al archivo de código subyacente.
+        /// </remarks>
+        protected global::System.Web.UI.HtmlControls.HtmlGenericControl menuOrdenes;
+
+        /// <summary>
         /// Control menuMovimientos.
         /// </summary>
         /// <remarks>

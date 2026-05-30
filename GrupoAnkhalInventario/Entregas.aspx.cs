@@ -141,6 +141,9 @@ namespace GrupoAnkhalInventario
         // ══ Filtros ══════════════════════════════════════════════════════════
         private IQueryable<Modelo.Entregas> AplicarFiltros(IQueryable<Modelo.Entregas> q)
         {
+            // Excluir entregas vinculadas a una Orden (se gestionan desde Ordenes.aspx)
+            q = q.Where(e => e.OrdenID == null);
+
             // Restringir por las bases del usuario (null = Administrador, ve todo)
             var basesUsuario = AppHelper.ObtenerBasesUsuario(Session);
             if (basesUsuario != null)
@@ -1092,13 +1095,14 @@ namespace GrupoAnkhalInventario
         private Modelo.Entregas CrearEntregaEntity(InventarioAnkhalDBDataContext db,
             int baseID, int clienteID, DateTime fecha, string estado)
         {
-            // Folio real: COUNT con UPDLOCK+HOLDLOCK serializa el acceso concurrente
-            // dentro de la transacción ya abierta, evitando folios duplicados.
-            DateTime hoy = fecha.Date;
+            // Folio real: contar por PREFIJO de folio (no por FechaEntrega) para evitar
+            // duplicados cuando otra página (Ordenes.aspx) genera entregas con la misma
+            // fecha de folio pero distinta FechaEntrega. UPDLOCK+HOLDLOCK serializa
+            // el acceso concurrente dentro de la transacción ya abierta.
+            string prefixEnt = "ENT-" + fecha.ToString("yyyyMMdd") + "-%";
             int count = db.ExecuteQuery<int>(
-                @"SELECT COUNT(*) FROM dbo.Entregas WITH (UPDLOCK, HOLDLOCK)
-                  WHERE FechaEntrega >= {0} AND FechaEntrega < {1}",
-                hoy, hoy.AddDays(1)).First();
+                "SELECT COUNT(*) FROM dbo.Entregas WITH (UPDLOCK, HOLDLOCK) WHERE Folio LIKE {0}",
+                prefixEnt).First();
             string folio = string.Format("ENT-{0}-{1:D3}", fecha.ToString("yyyyMMdd"), count + 1);
 
             // Nombre del cliente (texto libre del catálogo)

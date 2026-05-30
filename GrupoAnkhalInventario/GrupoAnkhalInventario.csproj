@@ -147,6 +147,7 @@
     <Content Include="dist\js\pages\dashboard2.js" />
     <Content Include="dist\js\pages\dashboard3.js" />
     <Content Include="Entregas.aspx" />
+    <Content Include="Ordenes.aspx" />
     <Content Include="Global.asax" />
     <Content Include="img\ankhal.png" />
     <Content Include="img\GrupoAnkhalPapeleta.jpeg" />
@@ -2056,6 +2057,13 @@
     </Compile>
     <Compile Include="Entregas.aspx.designer.cs">
       <DependentUpon>Entregas.aspx</DependentUpon>
+    </Compile>
+    <Compile Include="Ordenes.aspx.cs">
+      <DependentUpon>Ordenes.aspx</DependentUpon>
+      <SubType>ASPXCodeBehind</SubType>
+    </Compile>
+    <Compile Include="Ordenes.aspx.designer.cs">
+      <DependentUpon>Ordenes.aspx</DependentUpon>
     </Compile>
     <Compile Include="Global.asax.cs">
       <DependentUpon>Global.asax</DependentUpon>
