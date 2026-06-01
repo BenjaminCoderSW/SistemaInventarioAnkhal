@@ -209,7 +209,10 @@
                                         '<%# Server.HtmlEncode((Eval("Descripcion") ?? "").ToString()) %>',
                                         '<%# Eval("TipoProductoID") %>',
                                         '<%# Eval("PrecioVenta") %>',
-                                        '<%# RowVersionBase64(Eval("RowVersion")) %>'
+                                        '<%# RowVersionBase64(Eval("RowVersion")) %>',
+                                        '<%# Eval("ClaveSAT") ?? "" %>',
+                                        '<%# Eval("ClaveUnidadSAT") ?? "" %>',
+                                        '<%# Eval("TasaIVA") ?? "" %>'
                                     )">
                                     <i class="fas fa-edit"></i> Editar
                                 </button>
@@ -280,6 +283,32 @@
           </div>
         </div>
 
+        <!-- Campos SAT para facturación (opcionales) -->
+        <div class="row mt-2">
+          <div class="col-md-4">
+            <div class="form-group mb-2">
+              <label>Clave SAT <small class="text-muted">(c_ClaveProdServ)</small></label>
+              <asp:TextBox ID="txtClaveSAT" runat="server" CssClass="form-control"
+                  placeholder="Ej: 84111506" MaxLength="10"
+                  style="text-transform:uppercase;"></asp:TextBox>
+            </div>
+          </div>
+          <div class="col-md-4">
+            <div class="form-group mb-2">
+              <label>Clave Unidad SAT <small class="text-muted">(c_ClaveUnidad)</small></label>
+              <asp:TextBox ID="txtClaveUnidadSAT" runat="server" CssClass="form-control"
+                  placeholder="Ej: H87" MaxLength="10"
+                  style="text-transform:uppercase;"></asp:TextBox>
+            </div>
+          </div>
+          <div class="col-md-4">
+            <div class="form-group mb-2">
+              <label>Tasa IVA <small class="text-muted">(vacío = 16%)</small></label>
+              <asp:TextBox ID="txtTasaIVA" runat="server" CssClass="form-control"
+                  placeholder="0.1600" MaxLength="6"></asp:TextBox>
+            </div>
+          </div>
+        </div>
         <div class="callout callout-info mt-2 mb-0" style="font-size:.85rem;">
           <i class="fas fa-info-circle"></i> Una vez guardado el producto, usa el botón <strong>"Ver"</strong> en la tabla para configurar sus componentes.
         </div>
@@ -335,6 +364,32 @@
                 <div class="input-group-prepend"><span class="input-group-text">$</span></div>
                 <asp:TextBox ID="txtPrecioEdit" runat="server" CssClass="form-control" TextMode="Number" min="0" step="0.01"></asp:TextBox>
               </div>
+            </div>
+          </div>
+        </div>
+        <!-- Campos SAT para facturación (opcionales) -->
+        <div class="row mt-2">
+          <div class="col-md-4">
+            <div class="form-group mb-2">
+              <label>Clave SAT <small class="text-muted">(c_ClaveProdServ)</small></label>
+              <asp:TextBox ID="txtClaveSATEdit" runat="server" CssClass="form-control"
+                  placeholder="Ej: 84111506" MaxLength="10"
+                  style="text-transform:uppercase;"></asp:TextBox>
+            </div>
+          </div>
+          <div class="col-md-4">
+            <div class="form-group mb-2">
+              <label>Clave Unidad SAT <small class="text-muted">(c_ClaveUnidad)</small></label>
+              <asp:TextBox ID="txtClaveUnidadSATEdit" runat="server" CssClass="form-control"
+                  placeholder="Ej: H87" MaxLength="10"
+                  style="text-transform:uppercase;"></asp:TextBox>
+            </div>
+          </div>
+          <div class="col-md-4">
+            <div class="form-group mb-2">
+              <label>Tasa IVA <small class="text-muted">(vacío = 16%)</small></label>
+              <asp:TextBox ID="txtTasaIVAEdit" runat="server" CssClass="form-control"
+                  placeholder="0.1600" MaxLength="6"></asp:TextBox>
             </div>
           </div>
         </div>
@@ -531,23 +586,26 @@
     // ════════════════════════════════════════════════════
     // MODAL EDITAR PRODUCTO
     // ════════════════════════════════════════════════════
-    function abrirModalEditar(id, codigo, descripcion, tipoID, precio, rowVersion) {
+    function abrirModalEditar(id, codigo, descripcion, tipoID, precio, rowVersion, claveSAT, claveUnidad, tasaIVA) {
         document.getElementById('<%= hdnProductoID.ClientID %>').value = id;
         document.getElementById('<%= hdnRowVersion.ClientID %>').value = rowVersion;
         document.getElementById('<%= txtCodigoEdit.ClientID %>').value = codigo;
         document.getElementById('<%= txtDescripcionEdit.ClientID %>').value = descripcion;
         document.getElementById('<%= ddlTipoEdit.ClientID %>').value = tipoID;
         document.getElementById('<%= txtPrecioEdit.ClientID %>').value = precio;
+        document.getElementById('<%= txtClaveSATEdit.ClientID %>').value = claveSAT || '';
+        document.getElementById('<%= txtClaveUnidadSATEdit.ClientID %>').value = claveUnidad || '';
+        document.getElementById('<%= txtTasaIVAEdit.ClientID %>').value = tasaIVA || '';
         $('#modalEditar').modal('show');
     }
 
     // ════════════════════════════════════════════════════
     // MODAL COMPONENTES — Ver y editar
     // ════════════════════════════════════════════════════
-    var _compModal          = [];
-    var _compModalFilter    = '';
-    var _compModalPage      = 0;
-    var _compModalPageSize  = 25;
+    var _compModal = [];
+    var _compModalFilter = '';
+    var _compModalPage = 0;
+    var _compModalPageSize = 25;
     var _productoCloneSeleccionado = null;
 
     function verComponentes(productoID, descripcion) {
@@ -578,7 +636,7 @@
         var prodActualID = document.getElementById('<%= hdnCompProductoID.ClientID %>').value;
         var lista = (window._productosParaClone || []).filter(function (p) {
             return String(p.productoID) !== String(prodActualID) &&
-                   (p.codigo.toLowerCase().indexOf(q) !== -1 ||
+                (p.codigo.toLowerCase().indexOf(q) !== -1 ||
                     p.descripcion.toLowerCase().indexOf(q) !== -1);
         });
 
@@ -597,7 +655,7 @@
             var item = document.createElement('div');
             item.style.cssText = 'padding:6px 10px; cursor:pointer; border-bottom:1px solid #f0f0f0; font-size:.88rem;';
             item.innerHTML = '<strong>[' + escHtml(p.codigo) + ']</strong> ' + escHtml(p.descripcion) +
-                             ' <span class="badge badge-secondary ml-1">' + p.totalComponentes + '</span>';
+                ' <span class="badge badge-secondary ml-1">' + p.totalComponentes + '</span>';
             item.addEventListener('mouseenter', function () { this.style.background = '#f0f4f8'; });
             item.addEventListener('mouseleave', function () { this.style.background = ''; });
             item.addEventListener('mousedown', function () {
@@ -622,7 +680,7 @@
             icon: 'question',
             title: '¿Copiar componentes?',
             html: 'Se copiarán los componentes de <b>[' + escHtml(src.codigo) + '] ' + escHtml(src.descripcion) + '</b>.<br>' +
-                  '<small class="text-muted">Los materiales que ya existen en este producto se omitirán.</small>',
+                '<small class="text-muted">Los materiales que ya existen en este producto se omitirán.</small>',
             showCancelButton: true,
             confirmButtonText: 'Sí, copiar',
             cancelButtonText: 'Cancelar',

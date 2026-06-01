@@ -1,5 +1,5 @@
 using GrupoAnkhalInventario.Helpers;
-﻿using GrupoAnkhalInventario.Modelo;
+using GrupoAnkhalInventario.Modelo;
 using System;
 using System.Collections.Generic;
 using System.Configuration;
@@ -50,6 +50,9 @@ namespace GrupoAnkhalInventario
             public string TipoNombre { get; set; }
             public string TipoClave { get; set; }
             public decimal PrecioVenta { get; set; }
+            public string ClaveSAT { get; set; }
+            public string ClaveUnidadSAT { get; set; }
+            public decimal? TasaIVA { get; set; }
             public bool Activo { get; set; }
             public int TotalComponentes { get; set; }
             public int StockGlobal { get; set; }
@@ -180,6 +183,9 @@ namespace GrupoAnkhalInventario
                     TipoNombre = x.tp.Nombre,
                     TipoClave = x.tp.Clave,
                     PrecioVenta = x.p.PrecioVenta,
+                    ClaveSAT = x.p.ClaveSAT,
+                    ClaveUnidadSAT = x.p.ClaveUnidadSAT,
+                    TasaIVA = x.p.TasaIVA,
                     Activo = x.p.Activo,
                     RowVersion = x.p.RowVersion,
                     TotalComponentes = compCounts
@@ -190,7 +196,7 @@ namespace GrupoAnkhalInventario
                         {
                             BaseNombre = s.Nombre,
                             BaseCodigo = s.Codigo,
-                            Cantidad   = s.CantidadBuenas
+                            Cantidad = s.CantidadBuenas
                         }).ToList(),
                     StockGlobal = stocksPagina
                         .Where(s => s.ProductoID == x.p.ProductoID)
@@ -216,9 +222,9 @@ namespace GrupoAnkhalInventario
                 var sbRows = new System.Text.StringBuilder();
                 for (int i = 0; i < tipos.Count; i++)
                 {
-                    var t     = tipos[i];
+                    var t = tipos[i];
                     int count = dashboard.FirstOrDefault(d => d.Clave == t.Clave)?.Total ?? 0;
-                    string dot        = _dotColors[i % _dotColors.Length];
+                    string dot = _dotColors[i % _dotColors.Length];
                     string badgeClass = count == 0 ? "tipo-badge cero" : "tipo-badge";
                     sbRows.AppendFormat(
                         "<div class='tipo-row'>" +
@@ -263,7 +269,7 @@ namespace GrupoAnkhalInventario
                              c.ConversionID,
                              c.Factor,
                              uNombre = u.Nombre,
-                             uClave  = u.Clave
+                             uClave = u.Clave
                          });
             if (materialIDs != null)
                 convQ = convQ.Where(c => materialIDs.Contains(c.MaterialID));
@@ -283,8 +289,8 @@ namespace GrupoAnkhalInventario
                 // Primera opción: unidad base (val = 0 → sin conversión, factor = 1)
                 opts.Add(new
                 {
-                    val    = 0,
-                    txt    = ub != null ? string.Format("{0} (base)", ub.Nombre) : "(unidad base)",
+                    val = 0,
+                    txt = ub != null ? string.Format("{0} (base)", ub.Nombre) : "(unidad base)",
                     factor = 1m
                 });
                 // Opciones de conversión
@@ -292,8 +298,8 @@ namespace GrupoAnkhalInventario
                 {
                     opts.Add(new
                     {
-                        val    = c.ConversionID,
-                        txt    = string.Format("{0} ({1})", c.uNombre, c.uClave),
+                        val = c.ConversionID,
+                        txt = string.Format("{0} ({1})", c.uNombre, c.uClave),
                         factor = c.Factor
                     });
                 }
@@ -322,15 +328,15 @@ namespace GrupoAnkhalInventario
                     dict[key] = new List<object>();
                 ((List<object>)dict[key]).Add(new
                 {
-                    pmID           = pm.ProductoMaterialID,
-                    materialID     = pm.MaterialID,
+                    pmID = pm.ProductoMaterialID,
+                    materialID = pm.MaterialID,
                     materialCodigo = mat.Codigo,
                     materialNombre = mat.Descripcion,
-                    unidad         = mat.Unidad,
-                    cantConsumo    = pm.CantidadConsumo,
+                    unidad = mat.Unidad,
+                    cantConsumo = pm.CantidadConsumo,
                     cantConsumoCap = pm.CantConsumoCapturada ?? pm.CantidadConsumo,
-                    conversionID   = pm.ConversionID ?? 0,
-                    notas          = pm.Notas ?? ""
+                    conversionID = pm.ConversionID ?? 0,
+                    notas = pm.Notas ?? ""
                 });
             }
 
@@ -340,9 +346,9 @@ namespace GrupoAnkhalInventario
                 .Where(p => p.Activo)
                 .OrderBy(p => p.Codigo)
                 .Select(p => new {
-                    productoID       = p.ProductoID,
-                    codigo           = p.Codigo,
-                    descripcion      = p.Descripcion,
+                    productoID = p.ProductoID,
+                    codigo = p.Codigo,
+                    descripcion = p.Descripcion,
                     totalComponentes = p.ProductoMateriales.Count(pm => pm.Activo)
                 })
                 .ToList();
@@ -378,15 +384,15 @@ namespace GrupoAnkhalInventario
                         dict[key] = new List<object>();
                     ((List<object>)dict[key]).Add(new
                     {
-                        pmID           = pm.ProductoMaterialID,
-                        materialID     = pm.MaterialID,
+                        pmID = pm.ProductoMaterialID,
+                        materialID = pm.MaterialID,
                         materialCodigo = mat.codigo,
                         materialNombre = mat.nombre,
-                        unidad         = mat.unidad,
-                        cantConsumo    = pm.CantidadConsumo,
+                        unidad = mat.unidad,
+                        cantConsumo = pm.CantidadConsumo,
                         cantConsumoCap = pm.CantConsumoCapturada ?? pm.CantidadConsumo,
-                        conversionID   = pm.ConversionID ?? 0,
-                        notas          = pm.Notas ?? ""
+                        conversionID = pm.ConversionID ?? 0,
+                        notas = pm.Notas ?? ""
                     });
                 }
 
@@ -396,9 +402,9 @@ namespace GrupoAnkhalInventario
                     .Where(p => p.Activo)
                     .OrderBy(p => p.Codigo)
                     .Select(p => new {
-                        productoID       = p.ProductoID,
-                        codigo           = p.Codigo,
-                        descripcion      = p.Descripcion,
+                        productoID = p.ProductoID,
+                        codigo = p.Codigo,
+                        descripcion = p.Descripcion,
                         totalComponentes = p.ProductoMateriales.Count(pm => pm.Activo)
                     })
                     .ToList();
@@ -500,6 +506,9 @@ namespace GrupoAnkhalInventario
                         Descripcion = descripTrim,                           // antes: Nombre
                         TipoProductoID = int.Parse(ddlTipo.SelectedValue),
                         PrecioVenta = ParseDec(txtPrecio.Text),
+                        ClaveSAT = string.IsNullOrWhiteSpace(txtClaveSAT.Text) ? null : txtClaveSAT.Text.Trim().ToUpper(),
+                        ClaveUnidadSAT = string.IsNullOrWhiteSpace(txtClaveUnidadSAT.Text) ? null : txtClaveUnidadSAT.Text.Trim().ToUpper(),
+                        TasaIVA = string.IsNullOrWhiteSpace(txtTasaIVA.Text) ? (decimal?)null : ParseDec(txtTasaIVA.Text),
                         Activo = true,
                         FechaAlta = AppHelper.Ahora,                          // ← corrige 0001-01-01
                         UsuarioAltaID = Convert.ToInt32(Session["ClaveID"])
@@ -564,6 +573,9 @@ namespace GrupoAnkhalInventario
                     prod.Descripcion = descripTrim;           // antes: prod.Nombre
                     prod.TipoProductoID = int.Parse(ddlTipoEdit.SelectedValue);
                     prod.PrecioVenta = ParseDec(txtPrecioEdit.Text);
+                    prod.ClaveSAT = string.IsNullOrWhiteSpace(txtClaveSATEdit.Text) ? null : txtClaveSATEdit.Text.Trim().ToUpper();
+                    prod.ClaveUnidadSAT = string.IsNullOrWhiteSpace(txtClaveUnidadSATEdit.Text) ? null : txtClaveUnidadSATEdit.Text.Trim().ToUpper();
+                    prod.TasaIVA = string.IsNullOrWhiteSpace(txtTasaIVAEdit.Text) ? (decimal?)null : ParseDec(txtTasaIVAEdit.Text);
                     prod.FechaModif = AppHelper.Ahora;
                     prod.UsuarioModifID = Convert.ToInt32(Session["ClaveID"]);
 
@@ -621,13 +633,13 @@ namespace GrupoAnkhalInventario
 
                             var nuevo = new GrupoAnkhalInventario.Modelo.ProductoMateriales
                             {
-                                ProductoID           = prodID,
-                                MaterialID           = matID,
-                                CantidadConsumo      = consumoBase,
+                                ProductoID = prodID,
+                                MaterialID = matID,
+                                CantidadConsumo = consumoBase,
                                 CantConsumoCapturada = consumoCap,
-                                ConversionID         = convIDNullable,
-                                Notas                = hdnCompNotas.Value,
-                                Activo               = true
+                                ConversionID = convIDNullable,
+                                Notas = hdnCompNotas.Value,
+                                Activo = true
                             };
                             db.ProductoMateriales.InsertOnSubmit(nuevo);
                             db.SubmitChanges();
@@ -640,10 +652,10 @@ namespace GrupoAnkhalInventario
                             if (pm2 == null) break;
                             decimal consumo2Cap = ParseDec(hdnCompCantConsumo.Value);
                             decimal consumo2Base = consumo2Cap * factor;
-                            pm2.CantidadConsumo      = consumo2Base;
+                            pm2.CantidadConsumo = consumo2Base;
                             pm2.CantConsumoCapturada = consumo2Cap;
-                            pm2.ConversionID         = convIDNullable;
-                            pm2.Notas                = hdnCompNotas.Value;
+                            pm2.ConversionID = convIDNullable;
+                            pm2.Notas = hdnCompNotas.Value;
                             db.SubmitChanges();
                             SetMsg("success", "¡Actualizado!", "Componente actualizado.", null, true);
                             break;
@@ -677,13 +689,13 @@ namespace GrupoAnkhalInventario
 
                                 db.ProductoMateriales.InsertOnSubmit(new GrupoAnkhalInventario.Modelo.ProductoMateriales
                                 {
-                                    ProductoID           = prodID,
-                                    MaterialID           = src.MaterialID,
-                                    CantidadConsumo      = src.CantidadConsumo,
+                                    ProductoID = prodID,
+                                    MaterialID = src.MaterialID,
+                                    CantidadConsumo = src.CantidadConsumo,
                                     CantConsumoCapturada = src.CantConsumoCapturada,
-                                    ConversionID         = src.ConversionID,
-                                    Notas                = src.Notas,
-                                    Activo               = true
+                                    ConversionID = src.ConversionID,
+                                    Notas = src.Notas,
+                                    Activo = true
                                 });
                                 agregados++;
                             }
@@ -820,12 +832,12 @@ namespace GrupoAnkhalInventario
 
                 if (!mats.Any()) return new object[0];
 
-                var matIDs   = mats.Select(m => m.MaterialID).ToList();
+                var matIDs = mats.Select(m => m.MaterialID).ToList();
                 var unidades = db.UnidadesMedida.ToDictionary(u => u.UnidadMedidaID, u => u.Clave);
-                var convs    = (from c in db.ConversionesMaterial
-                                where c.Activo && matIDs.Contains(c.MaterialID)
-                                join u in db.UnidadesMedida on c.UnidadOrigenID equals u.UnidadMedidaID
-                                select new { c.MaterialID, c.ConversionID, c.Factor, u.Clave, u.Nombre })
+                var convs = (from c in db.ConversionesMaterial
+                             where c.Activo && matIDs.Contains(c.MaterialID)
+                             join u in db.UnidadesMedida on c.UnidadOrigenID equals u.UnidadMedidaID
+                             select new { c.MaterialID, c.ConversionID, c.Factor, u.Clave, u.Nombre })
                                .ToList();
 
                 var resultado = new List<object>();
@@ -845,16 +857,16 @@ namespace GrupoAnkhalInventario
                             ? ((long)c.Factor).ToString(ci) : c.Factor.ToString("G6", ci);
                         opciones.Add(new
                         {
-                            valor  = "conv:" + c.ConversionID,
-                            texto  = textoConv + " (= " + factorStr + " " + claveBase + ")",
+                            valor = "conv:" + c.ConversionID,
+                            texto = textoConv + " (= " + factorStr + " " + claveBase + ")",
                             factor = (double)c.Factor
                         });
                     }
 
                     resultado.Add(new
                     {
-                        id           = m.MaterialID,
-                        nombre       = "[" + m.Codigo + "] " + m.Descripcion,
+                        id = m.MaterialID,
+                        nombre = "[" + m.Codigo + "] " + m.Descripcion,
                         conversiones = opciones
                     });
                 }

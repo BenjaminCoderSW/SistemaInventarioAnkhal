@@ -261,7 +261,10 @@
                                         '<%# Eval("StockMaximo") %>',
                                         '<%# Eval("StockOptimo") %>',
                                         '<%# RowVersionBase64(Eval("RowVersion")) %>',
-                                        '<%# Eval("ProveedorPrincipalID") ?? "" %>'
+                                        '<%# Eval("ProveedorPrincipalID") ?? "" %>',
+                                        '<%# Eval("ClaveSAT") ?? "" %>',
+                                        '<%# Eval("ClaveUnidadSAT") ?? "" %>',
+                                        '<%# Eval("TasaIVA") ?? "" %>'
                                     )">
                                     <i class="fas fa-edit"></i> Editar
                                 </button>
@@ -410,6 +413,32 @@
             </div>
           </div>
         </div>
+        <!-- Campos SAT para facturación (opcionales) -->
+        <div class="row mt-1">
+          <div class="col-md-4">
+            <div class="form-group mb-2">
+              <label>Clave SAT <small class="text-muted">(c_ClaveProdServ)</small></label>
+              <asp:TextBox ID="txtClaveSATMat" runat="server" CssClass="form-control"
+                  placeholder="Ej: 84111506" MaxLength="10"
+                  style="text-transform:uppercase;"></asp:TextBox>
+            </div>
+          </div>
+          <div class="col-md-4">
+            <div class="form-group mb-2">
+              <label>Clave Unidad SAT <small class="text-muted">(c_ClaveUnidad)</small></label>
+              <asp:TextBox ID="txtClaveUnidadSATMat" runat="server" CssClass="form-control"
+                  placeholder="Ej: H87" MaxLength="10"
+                  style="text-transform:uppercase;"></asp:TextBox>
+            </div>
+          </div>
+          <div class="col-md-4">
+            <div class="form-group mb-2">
+              <label>Tasa IVA <small class="text-muted">(vacío = 16%)</small></label>
+              <asp:TextBox ID="txtTasaIVAMat" runat="server" CssClass="form-control"
+                  placeholder="0.1600" MaxLength="6"></asp:TextBox>
+            </div>
+          </div>
+        </div>
         <hr />
         <h6 style="color:#003366;font-weight:600;"><i class="fas fa-layer-group"></i> Niveles de stock General en Ankhal</h6>
         <small class="text-muted d-block mb-1">
@@ -514,6 +543,32 @@
                 <div class="input-group-prepend"><span class="input-group-text">$</span></div>
                 <asp:TextBox ID="txtPrecioEdit" runat="server" CssClass="form-control" TextMode="Number" min="0" step="0.01"></asp:TextBox>
               </div>
+            </div>
+          </div>
+        </div>
+        <!-- Campos SAT para facturación (opcionales) -->
+        <div class="row mt-1">
+          <div class="col-md-4">
+            <div class="form-group mb-2">
+              <label>Clave SAT <small class="text-muted">(c_ClaveProdServ)</small></label>
+              <asp:TextBox ID="txtClaveSATMatEdit" runat="server" CssClass="form-control"
+                  placeholder="Ej: 84111506" MaxLength="10"
+                  style="text-transform:uppercase;"></asp:TextBox>
+            </div>
+          </div>
+          <div class="col-md-4">
+            <div class="form-group mb-2">
+              <label>Clave Unidad SAT <small class="text-muted">(c_ClaveUnidad)</small></label>
+              <asp:TextBox ID="txtClaveUnidadSATMatEdit" runat="server" CssClass="form-control"
+                  placeholder="Ej: H87" MaxLength="10"
+                  style="text-transform:uppercase;"></asp:TextBox>
+            </div>
+          </div>
+          <div class="col-md-4">
+            <div class="form-group mb-2">
+              <label>Tasa IVA <small class="text-muted">(vacío = 16%)</small></label>
+              <asp:TextBox ID="txtTasaIVAMatEdit" runat="server" CssClass="form-control"
+                  placeholder="0.1600" MaxLength="6"></asp:TextBox>
             </div>
           </div>
         </div>
@@ -683,7 +738,7 @@
         // ── Nota de unidad en modal Nuevo: se actualiza al cambiar la unidad ──
         document.getElementById('<%= ddlUnidad.ClientID %>').addEventListener('change', function () {
             var texto = this.options[this.selectedIndex].text;
-            var nota  = document.getElementById('notaUnidadNuevo');
+            var nota = document.getElementById('notaUnidadNuevo');
             nota.innerHTML = texto && this.value
                 ? '<i class="fas fa-info-circle"></i> Configura los niveles en ' + texto
                 : '<i class="fas fa-info-circle"></i> Selecciona una unidad de medida para ver en qué unidad configurar los niveles.';
@@ -692,7 +747,7 @@
         // ── Nota de unidad en modal Editar: se actualiza si el usuario cambia la unidad ──
         document.getElementById('<%= ddlUnidadEdit.ClientID %>').addEventListener('change', function () {
             var texto = this.options[this.selectedIndex].text;
-            var nota  = document.getElementById('notaUnidadEdit');
+            var nota = document.getElementById('notaUnidadEdit');
             nota.innerHTML = texto && this.value
                 ? '<i class="fas fa-info-circle"></i> Configura los niveles en ' + texto
                 : '';
@@ -702,9 +757,9 @@
     // ── Abrir modales ─────────────────────────────────────────────
     function abrirModalNuevo() { $('#modalNuevo').modal('show'); }
 
-    function abrirModalEditar(id, codigo, descripcion, tipoID, subtipo, unidadMedidaID, precio, minimo, maximo, optimo, rowVersion, proveedorPrincipalID) {
-        document.getElementById('<%= hdnMaterialID.ClientID %>').value          = id;
-        document.getElementById('<%= hdnRowVersion.ClientID %>').value          = rowVersion;
+    function abrirModalEditar(id, codigo, descripcion, tipoID, subtipo, unidadMedidaID, precio, minimo, maximo, optimo, rowVersion, proveedorPrincipalID, claveSAT, claveUnidad, tasaIVA) {
+        document.getElementById('<%= hdnMaterialID.ClientID %>').value = id;
+        document.getElementById('<%= hdnRowVersion.ClientID %>').value = rowVersion;
         document.getElementById('<%= hdnConvMaterialID.ClientID %>').value      = id;
         document.getElementById('<%= txtCodigoEdit.ClientID %>').value          = codigo;
         document.getElementById('<%= txtDescripcionEdit.ClientID %>').value     = descripcion;
@@ -716,6 +771,9 @@
         document.getElementById('<%= txtStockMaximoEdit.ClientID %>').value     = maximo;
         document.getElementById('<%= txtStockOptimoEdit.ClientID %>').value     = optimo;
         document.getElementById('<%= ddlProveedorPrincipalEdit.ClientID %>').value = proveedorPrincipalID || '';
+        document.getElementById('<%= txtClaveSATMatEdit.ClientID %>').value     = claveSAT || '';
+        document.getElementById('<%= txtClaveUnidadSATMatEdit.ClientID %>').value = claveUnidad || '';
+        document.getElementById('<%= txtTasaIVAMatEdit.ClientID %>').value      = tasaIVA || '';
         // Actualizar nota de unidad
         var ddlU = document.getElementById('<%= ddlUnidadEdit.ClientID %>');
         var notaEdit = document.getElementById('notaUnidadEdit');

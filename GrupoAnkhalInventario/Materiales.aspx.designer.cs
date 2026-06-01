@@ -303,6 +303,33 @@ namespace GrupoAnkhalInventario
         protected global::System.Web.UI.WebControls.TextBox txtPrecio;
 
         /// <summary>
+        /// Control txtClaveSATMat.
+        /// </summary>
+        /// <remarks>
+        /// Campo generado automáticamente.
+        /// Para modificarlo, mueva la declaración del campo del archivo del diseñador al archivo de código subyacente.
+        /// </remarks>
+        protected global::System.Web.UI.WebControls.TextBox txtClaveSATMat;
+
+        /// <summary>
+        /// Control txtClaveUnidadSATMat.
+        /// </summary>
+        /// <remarks>
+        /// Campo generado automáticamente.
+        /// Para modificarlo, mueva la declaración del campo del archivo del diseñador al archivo de código subyacente.
+        /// </remarks>
+        protected global::System.Web.UI.WebControls.TextBox txtClaveUnidadSATMat;
+
+        /// <summary>
+        /// Control txtTasaIVAMat.
+        /// </summary>
+        /// <remarks>
+        /// Campo generado automáticamente.
+        /// Para modificarlo, mueva la declaración del campo del archivo del diseñador al archivo de código subyacente.
+        /// </remarks>
+        protected global::System.Web.UI.WebControls.TextBox txtTasaIVAMat;
+
+        /// <summary>
         /// Control txtStockMinimo.
         /// </summary>
         /// <remarks>
@@ -418,6 +445,33 @@ namespace GrupoAnkhalInventario
         /// Para modificarlo, mueva la declaración del campo del archivo del diseñador al archivo de código subyacente.
         /// </remarks>
         protected global::System.Web.UI.WebControls.TextBox txtPrecioEdit;
+
+        /// <summary>
+        /// Control txtClaveSATMatEdit.
+        /// </summary>
+        /// <remarks>
+        /// Campo generado automáticamente.
+        /// Para modificarlo, mueva la declaración del campo del archivo del diseñador al archivo de código subyacente.
+        /// </remarks>
+        protected global::System.Web.UI.WebControls.TextBox txtClaveSATMatEdit;
+
+        /// <summary>
+        /// Control txtClaveUnidadSATMatEdit.
+        /// </summary>
+        /// <remarks>
+        /// Campo generado automáticamente.
+        /// Para modificarlo, mueva la declaración del campo del archivo del diseñador al archivo de código subyacente.
+        /// </remarks>
+        protected global::System.Web.UI.WebControls.TextBox txtClaveUnidadSATMatEdit;
+
+        /// <summary>
+        /// Control txtTasaIVAMatEdit.
+        /// </summary>
+        /// <remarks>
+        /// Campo generado automáticamente.
+        /// Para modificarlo, mueva la declaración del campo del archivo del diseñador al archivo de código subyacente.
+        /// </remarks>
+        protected global::System.Web.UI.WebControls.TextBox txtTasaIVAMatEdit;
 
         /// <summary>
         /// Control txtStockMinimoEdit.

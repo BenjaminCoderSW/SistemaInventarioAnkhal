@@ -24,31 +24,13 @@ namespace GrupoAnkhalInventario
         protected global::System.Web.UI.WebControls.Label lblTotal;
 
         /// <summary>
-        /// Control lblTarimas.
+        /// Control litTiposCards.
         /// </summary>
         /// <remarks>
         /// Campo generado automáticamente.
         /// Para modificarlo, mueva la declaración del campo del archivo del diseñador al archivo de código subyacente.
         /// </remarks>
-        protected global::System.Web.UI.WebControls.Label lblTarimas;
-
-        /// <summary>
-        /// Control lblCajas.
-        /// </summary>
-        /// <remarks>
-        /// Campo generado automáticamente.
-        /// Para modificarlo, mueva la declaración del campo del archivo del diseñador al archivo de código subyacente.
-        /// </remarks>
-        protected global::System.Web.UI.WebControls.Label lblCajas;
-
-        /// <summary>
-        /// Control lblAccesorios.
-        /// </summary>
-        /// <remarks>
-        /// Campo generado automáticamente.
-        /// Para modificarlo, mueva la declaración del campo del archivo del diseñador al archivo de código subyacente.
-        /// </remarks>
-        protected global::System.Web.UI.WebControls.Label lblAccesorios;
+        protected global::System.Web.UI.WebControls.Literal litTiposCards;
 
         /// <summary>
         /// Control btnNuevo.
@@ -204,6 +186,33 @@ namespace GrupoAnkhalInventario
         protected global::System.Web.UI.WebControls.TextBox txtPrecio;
 
         /// <summary>
+        /// Control txtClaveSAT.
+        /// </summary>
+        /// <remarks>
+        /// Campo generado automáticamente.
+        /// Para modificarlo, mueva la declaración del campo del archivo del diseñador al archivo de código subyacente.
+        /// </remarks>
+        protected global::System.Web.UI.WebControls.TextBox txtClaveSAT;
+
+        /// <summary>
+        /// Control txtClaveUnidadSAT.
+        /// </summary>
+        /// <remarks>
+        /// Campo generado automáticamente.
+        /// Para modificarlo, mueva la declaración del campo del archivo del diseñador al archivo de código subyacente.
+        /// </remarks>
+        protected global::System.Web.UI.WebControls.TextBox txtClaveUnidadSAT;
+
+        /// <summary>
+        /// Control txtTasaIVA.
+        /// </summary>
+        /// <remarks>
+        /// Campo generado automáticamente.
+        /// Para modificarlo, mueva la declaración del campo del archivo del diseñador al archivo de código subyacente.
+        /// </remarks>
+        protected global::System.Web.UI.WebControls.TextBox txtTasaIVA;
+
+        /// <summary>
         /// Control btnGuardar.
         /// </summary>
         /// <remarks>
@@ -265,6 +274,33 @@ namespace GrupoAnkhalInventario
         /// Para modificarlo, mueva la declaración del campo del archivo del diseñador al archivo de código subyacente.
         /// </remarks>
         protected global::System.Web.UI.WebControls.TextBox txtPrecioEdit;
+
+        /// <summary>
+        /// Control txtClaveSATEdit.
+        /// </summary>
+        /// <remarks>
+        /// Campo generado automáticamente.
+        /// Para modificarlo, mueva la declaración del campo del archivo del diseñador al archivo de código subyacente.
+        /// </remarks>
+        protected global::System.Web.UI.WebControls.TextBox txtClaveSATEdit;
+
+        /// <summary>
+        /// Control txtClaveUnidadSATEdit.
+        /// </summary>
+        /// <remarks>
+        /// Campo generado automáticamente.
+        /// Para modificarlo, mueva la declaración del campo del archivo del diseñador al archivo de código subyacente.
+        /// </remarks>
+        protected global::System.Web.UI.WebControls.TextBox txtClaveUnidadSATEdit;
+
+        /// <summary>
+        /// Control txtTasaIVAEdit.
+        /// </summary>
+        /// <remarks>
+        /// Campo generado automáticamente.
+        /// Para modificarlo, mueva la declaración del campo del archivo del diseñador al archivo de código subyacente.
+        /// </remarks>
+        protected global::System.Web.UI.WebControls.TextBox txtTasaIVAEdit;
 
         /// <summary>
         /// Control btnGuardarEdit.
@@ -330,24 +366,6 @@ namespace GrupoAnkhalInventario
         protected global::System.Web.UI.WebControls.HiddenField hdnCompPMID;
 
         /// <summary>
-        /// Control litJsData.
-        /// </summary>
-        /// <remarks>
-        /// Campo generado automáticamente.
-        /// Para modificarlo, mueva la declaración del campo del archivo del diseñador al archivo de código subyacente.
-        /// </remarks>
-        protected global::System.Web.UI.WebControls.Literal litJsData;
-
-        /// <summary>
-        /// Control litTiposCards.
-        /// </summary>
-        /// <remarks>
-        /// Campo generado automáticamente.
-        /// Para modificarlo, mueva la declaración del campo del archivo del diseñador al archivo de código subyacente.
-        /// </remarks>
-        protected global::System.Web.UI.WebControls.Literal litTiposCards;
-
-        /// <summary>
         /// Control hdnCompConversionID.
         /// </summary>
         /// <remarks>
@@ -364,5 +382,14 @@ namespace GrupoAnkhalInventario
         /// Para modificarlo, mueva la declaración del campo del archivo del diseñador al archivo de código subyacente.
         /// </remarks>
         protected global::System.Web.UI.WebControls.HiddenField hdnProductoCloneID;
+
+        /// <summary>
+        /// Control litJsData.
+        /// </summary>
+        /// <remarks>
+        /// Campo generado automáticamente.
+        /// Para modificarlo, mueva la declaración del campo del archivo del diseñador al archivo de código subyacente.
+        /// </remarks>
+        protected global::System.Web.UI.WebControls.Literal litJsData;
     }
 }
