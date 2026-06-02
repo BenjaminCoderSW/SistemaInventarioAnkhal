@@ -180,13 +180,13 @@
                                     </p>
                                 </a>
                                 <ul class="nav nav-treeview">
-                                    <li class="nav-item">
+                                    <li id="liMenuBases" runat="server" class="nav-item">
                                         <a href="Bases.aspx" class="nav-link">
                                             <i class="far fa-circle nav-icon"></i>
                                             <p>Bases / Plantas</p>
                                         </a>
                                     </li>
-                                    <li class="nav-item">
+                                    <li id="liMenuMateriales" runat="server" class="nav-item">
                                         <a href="Materiales.aspx" class="nav-link">
                                             <i class="far fa-circle nav-icon"></i>
                                             <p>Materiales</p>
@@ -198,7 +198,7 @@
                                             <p>Productos</p>
                                         </a>
                                     </li>
-                                    <li class="nav-item">
+                                    <li id="liMenuClientes" runat="server" class="nav-item">
                                         <a href="RegistrarClientes.aspx" class="nav-link">
                                             <i class="far fa-circle nav-icon"></i>
                                             <p>Clientes</p>

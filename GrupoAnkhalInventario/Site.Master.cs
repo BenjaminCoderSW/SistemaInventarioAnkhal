@@ -23,7 +23,6 @@ namespace GrupoAnkhalInventario
                 { "bases.aspx",               new List<string> { "Administrador", "Compras" } },
                 { "materiales.aspx",           new List<string> { "Administrador", "Compras" } },
                 { "productos.aspx",            new List<string> { "Administrador", "Compras", "Ventas" } },
-                { "paquetes.aspx",             new List<string> { "Administrador", "Compras", "Ventas" } },
                 { "registrarproveedores.aspx", new List<string> { "Administrador", "Compras" } },
 
                 // ── Clientes (solo Ventas, no Compras) ──
@@ -32,7 +31,7 @@ namespace GrupoAnkhalInventario
                 // ── Operaciones ──
                 { "produccion.aspx",  new List<string> { "Administrador", "Produccion", "Almacen" } },
                 { "entregas.aspx",    new List<string> { "Administrador", "Ventas",     "Almacen" } },
-                { "ordenes.aspx",     new List<string> { "Administrador", "Ventas",     "Almacen",  "Produccion" } },
+                { "ordenes.aspx",     new List<string> { "Administrador", "Ventas",     "Almacen" } },
                 { "movimientos.aspx", new List<string> { "Administrador", "Almacen",    "Produccion", "Compras" } },
                 { "mermas.aspx",      new List<string> { "Administrador", "Almacen",    "Produccion" } },
                 { "metasproduccion.aspx", new List<string> { "Administrador", "Produccion" } },
@@ -142,6 +141,9 @@ namespace GrupoAnkhalInventario
             // Por defecto: todo oculto
             headerConfiguracion.Visible = false;
             menuCatalogos.Visible = false;
+            liMenuBases.Visible = false;
+            liMenuMateriales.Visible = false;
+            liMenuClientes.Visible = false;
             liMenuProveedores.Visible = false;
             liMenuMetas.Visible = false;
             headerOperaciones.Visible = false;
@@ -161,6 +163,9 @@ namespace GrupoAnkhalInventario
                 case "Administrador":
                     headerConfiguracion.Visible = true;
                     menuCatalogos.Visible = true;
+                    liMenuBases.Visible = true;
+                    liMenuMateriales.Visible = true;
+                    liMenuClientes.Visible = true;
                     liMenuProveedores.Visible = true;
                     liMenuMetas.Visible = true;
                     headerOperaciones.Visible = true;
@@ -176,8 +181,10 @@ namespace GrupoAnkhalInventario
                     break;
 
                 case "Ventas":
+                    // Catálogos: solo Productos (sin ID) y Clientes
                     headerConfiguracion.Visible = true;
-                    menuCatalogos.Visible = true;   // Productos y Paquetes (sin Proveedores)
+                    menuCatalogos.Visible = true;
+                    liMenuClientes.Visible = true;
                     headerOperaciones.Visible = true;
                     menuEntregas.Visible = true;
                     menuOrdenes.Visible = true;
@@ -186,8 +193,11 @@ namespace GrupoAnkhalInventario
                     break;
 
                 case "Compras":
+                    // Catálogos: Bases, Materiales, Productos (sin ID), Proveedores — sin Clientes
                     headerConfiguracion.Visible = true;
-                    menuCatalogos.Visible = true;   // Bases, Materiales, Productos, Paquetes, Proveedores
+                    menuCatalogos.Visible = true;
+                    liMenuBases.Visible = true;
+                    liMenuMateriales.Visible = true;
                     liMenuProveedores.Visible = true;
                     headerOperaciones.Visible = true;
                     menuMovimientos.Visible = true;
@@ -207,10 +217,10 @@ namespace GrupoAnkhalInventario
                     break;
 
                 case "Produccion":
+                    // Sin acceso a Órdenes — ve solo su flujo de producción
                     headerOperaciones.Visible = true;
                     menuProduccion.Visible = true;
                     liMenuMetas.Visible = true;
-                    menuOrdenes.Visible = true;
                     menuMovimientos.Visible = true;
                     menuMermas.Visible = true;
                     headerInventario.Visible = true;

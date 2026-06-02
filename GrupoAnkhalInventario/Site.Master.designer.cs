@@ -105,6 +105,33 @@ namespace GrupoAnkhalInventario
         protected global::System.Web.UI.HtmlControls.HtmlGenericControl menuCatalogos;
 
         /// <summary>
+        /// Control liMenuBases.
+        /// </summary>
+        /// <remarks>
+        /// Campo generado automáticamente.
+        /// Para modificarlo, mueva la declaración del campo del archivo del diseñador al archivo de código subyacente.
+        /// </remarks>
+        protected global::System.Web.UI.HtmlControls.HtmlGenericControl liMenuBases;
+
+        /// <summary>
+        /// Control liMenuMateriales.
+        /// </summary>
+        /// <remarks>
+        /// Campo generado automáticamente.
+        /// Para modificarlo, mueva la declaración del campo del archivo del diseñador al archivo de código subyacente.
+        /// </remarks>
+        protected global::System.Web.UI.HtmlControls.HtmlGenericControl liMenuMateriales;
+
+        /// <summary>
+        /// Control liMenuClientes.
+        /// </summary>
+        /// <remarks>
+        /// Campo generado automáticamente.
+        /// Para modificarlo, mueva la declaración del campo del archivo del diseñador al archivo de código subyacente.
+        /// </remarks>
+        protected global::System.Web.UI.HtmlControls.HtmlGenericControl liMenuClientes;
+
+        /// <summary>
         /// Control liMenuProveedores.
         /// </summary>
         /// <remarks>
