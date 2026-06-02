@@ -204,7 +204,7 @@
                                             <p>Clientes</p>
                                         </a>
                                     </li>
-                                    <li class="nav-item">
+                                    <li id="liMenuProveedores" runat="server" class="nav-item">
                                         <a href="RegistrarProveedores.aspx" class="nav-link">
                                             <i class="far fa-circle nav-icon"></i>
                                             <p>Proveedores</p>
@@ -232,7 +232,7 @@
                                             <p>Registrar Producción</p>
                                         </a>
                                     </li>
-                                    <li class="nav-item">
+                                    <li id="liMenuMetas" runat="server" class="nav-item">
                                         <a href="MetasProduccion.aspx" class="nav-link">
                                             <i class="far fa-circle nav-icon"></i>
                                             <p>Metas de Producción</p>

@@ -25,37 +25,37 @@ namespace GrupoAnkhalInventario
         }
 
         // ── Estado del filtro (inicializado una vez por request) ──────────────
-        private DateTime  _desde, _hastaExcl;
-        private string    _periodoLabel;
-        private int?      _baseID;
+        private DateTime _desde, _hastaExcl;
+        private string _periodoLabel;
+        private int? _baseID;
         private List<int> _basesUsuario;
 
         // ── DTOs internos ─────────────────────────────────────────────────────
         private class ProdResumenVM
         {
-            public string  Base         { get; set; }
-            public string  Producto     { get; set; }
-            public int     Buenos       { get; set; }
-            public int     Rechazo      { get; set; }
+            public string Base { get; set; }
+            public string Producto { get; set; }
+            public int Buenos { get; set; }
+            public int Rechazo { get; set; }
             public decimal ValorProducido { get; set; }
-            public decimal CostoMat     { get; set; }
-            public decimal Margen       { get { return ValorProducido - CostoMat; } }
+            public decimal CostoMat { get; set; }
+            public decimal Margen { get { return ValorProducido - CostoMat; } }
         }
 
         private class EntregaDashVM
         {
-            public string   Folio   { get; set; }
-            public string   Cliente { get; set; }
-            public string   Base    { get; set; }
-            public decimal  Total   { get; set; }
-            public string   Estado  { get; set; }
-            public DateTime Fecha   { get; set; }
+            public string Folio { get; set; }
+            public string Cliente { get; set; }
+            public string Base { get; set; }
+            public decimal Total { get; set; }
+            public string Estado { get; set; }
+            public DateTime Fecha { get; set; }
         }
 
         private class ValorBaseVM
         {
-            public string  Base    { get; set; }
-            public decimal ValMat  { get; set; }
+            public string Base { get; set; }
+            public decimal ValMat { get; set; }
             public decimal ValProd { get; set; }
         }
 
@@ -70,6 +70,7 @@ namespace GrupoAnkhalInventario
                 CargarDropdownBase();
                 InicializarFiltros();
                 CargarDashboard();
+                ConfigurarVistaPorRol();
             }
         }
 
@@ -77,13 +78,14 @@ namespace GrupoAnkhalInventario
         {
             InicializarFiltros();
             CargarDashboard();
+            ConfigurarVistaPorRol();
         }
 
         // ── Header bienvenida ─────────────────────────────────────────────────
         private void CargarHeader()
         {
             lblNombreUsuario.Text = Session["NombreCompleto"]?.ToString() ?? "Usuario";
-            lblRol.Text           = Session["Rol"]?.ToString() ?? "";
+            lblRol.Text = Session["Rol"]?.ToString() ?? "";
             lblFechaHora.Text = AppHelper.Ahora.ToString("dddd dd/MM/yyyy  HH:mm",
                                     new CultureInfo("es-MX"));
         }
@@ -132,17 +134,17 @@ namespace GrupoAnkhalInventario
             // Siempre: leer el rango real desde los TextBox
             DateTime desde, hasta;
             if (!DateTime.TryParse(txtDesde.Text, out desde)) desde = hoy;
-            if (!DateTime.TryParse(txtHasta.Text,  out hasta)) hasta = hoy;
+            if (!DateTime.TryParse(txtHasta.Text, out hasta)) hasta = hoy;
             if (hasta < desde) hasta = desde;
 
-            _desde     = desde;
+            _desde = desde;
             _hastaExcl = hasta.AddDays(1);
 
             // Label del período para los KPI cards
             switch (ddlPeriodo.SelectedValue)
             {
-                case "semana":      _periodoLabel = "Esta Semana"; break;
-                case "mes":        _periodoLabel = "Este Mes";    break;
+                case "semana": _periodoLabel = "Esta Semana"; break;
+                case "mes": _periodoLabel = "Este Mes"; break;
                 case "personalizado":
                     _periodoLabel = desde == hasta
                         ? desde.ToString("dd/MM/yyyy")
@@ -152,12 +154,104 @@ namespace GrupoAnkhalInventario
             }
 
             // Etiquetas de período en los KPI
-            lblPeriodoA.Text   = _periodoLabel;
-            lblPeriodoB.Text   = _periodoLabel;
-            lblPeriodoC.Text   = _periodoLabel;
-            lblPeriodoD.Text   = _periodoLabel;
-            lblPeriodoE.Text   = _periodoLabel;
+            lblPeriodoA.Text = _periodoLabel;
+            lblPeriodoB.Text = _periodoLabel;
+            lblPeriodoC.Text = _periodoLabel;
+            lblPeriodoD.Text = _periodoLabel;
+            lblPeriodoE.Text = _periodoLabel;
             lblTituloProd.Text = _periodoLabel;
+        }
+
+        // ══ VISIBILIDAD DEL DASHBOARD POR ROL ════════════════════════════════
+        // Cada rol ve únicamente los KPIs y tablas relevantes a su función.
+        // El Administrador tiene acceso a todo.
+        //
+        // | Panel               | Admin | Ventas | Compras | Almacen | Produccion | Reporte |
+        // |---------------------|:-----:|:------:|:-------:|:-------:|:----------:|:-------:|
+        // | pnlKpiInv           |  ✓    |        |    ✓    |         |            |         |
+        // | pnlKpiProd          |  ✓    |        |         |         |     ✓      |         |
+        // | pnlKpiEnt           |  ✓    |   ✓    |         |         |            |         |
+        // | pnlKpiCosto         |  ✓    |        |    ✓    |         |     ✓      |         |
+        // | pnlMargenCard       |  ✓    |        |         |         |            |         |
+        // | pnlAlertasCard      |  ✓    |        |    ✓    |    ✓    |     ✓      |         |
+        // | pnlKpiCoef          |  ✓    |        |         |         |     ✓      |         |
+        // | pnlTablaProduccion  |  ✓    |        |         |    ✓    |     ✓      |         |
+        // | pnlTablaCriticos    |  ✓    |        |    ✓    |    ✓    |     ✓      |         |
+        // | pnlTablaEntregas    |  ✓    |   ✓    |         |    ✓    |            |         |
+        // | pnlTablaValorBase   |  ✓    |        |    ✓    |         |            |         |
+        private void ConfigurarVistaPorRol()
+        {
+            string rol = Session["Rol"]?.ToString() ?? "Reporte";
+
+            // ── Ocultar todo por defecto ──────────────────────────────────────
+            pnlKpiInv.Visible = false;
+            pnlKpiProd.Visible = false;
+            pnlKpiEnt.Visible = false;
+            pnlKpiCosto.Visible = false;
+            pnlMargenCard.Visible = false;
+            pnlAlertasCard.Visible = false;
+            pnlKpiCoef.Visible = false;
+            pnlTablaProduccion.Visible = false;
+            pnlTablaCriticos.Visible = false;
+            pnlTablaEntregas.Visible = false;
+            pnlTablaValorBase.Visible = false;
+
+            switch (rol)
+            {
+                case "Administrador":
+                    pnlKpiInv.Visible = true;
+                    pnlKpiProd.Visible = true;
+                    pnlKpiEnt.Visible = true;
+                    pnlKpiCosto.Visible = true;
+                    pnlMargenCard.Visible = true;
+                    pnlAlertasCard.Visible = true;
+                    pnlKpiCoef.Visible = true;
+                    pnlTablaProduccion.Visible = true;
+                    pnlTablaCriticos.Visible = true;
+                    pnlTablaEntregas.Visible = true;
+                    pnlTablaValorBase.Visible = true;
+                    break;
+
+                case "Ventas":
+                    pnlKpiEnt.Visible = true;
+                    pnlTablaEntregas.Visible = true;
+                    break;
+
+                case "Compras":
+                    pnlKpiInv.Visible = true;
+                    pnlKpiCosto.Visible = true;
+                    pnlAlertasCard.Visible = true;
+                    pnlTablaCriticos.Visible = true;
+                    pnlTablaValorBase.Visible = true;
+                    break;
+
+                case "Almacen":
+                    pnlAlertasCard.Visible = true;
+                    pnlTablaProduccion.Visible = true;
+                    pnlTablaCriticos.Visible = true;
+                    pnlTablaEntregas.Visible = true;
+                    // Almacén ve cantidades de producción pero no valores financieros
+                    gvProduccion.Columns[4].Visible = false; // Valor Producido ($)
+                    gvProduccion.Columns[5].Visible = false; // Costo Mat. ($)
+                    gvProduccion.Columns[6].Visible = false; // Margen ($)
+                    break;
+
+                case "Produccion":
+                    pnlKpiProd.Visible = true;
+                    pnlKpiCosto.Visible = true;
+                    pnlKpiCoef.Visible = true;
+                    pnlAlertasCard.Visible = true;
+                    pnlTablaProduccion.Visible = true;
+                    pnlTablaCriticos.Visible = true;
+                    break;
+
+                case "Reporte":
+                    pnlAlertasCard.Visible = true;
+                    pnlTablaCriticos.Visible = true;
+                    break;
+
+                    // default: todo oculto (ya establecido arriba)
+            }
         }
 
         // ══ CARGA PRINCIPAL ═══════════════════════════════════════════════════
@@ -182,29 +276,32 @@ namespace GrupoAnkhalInventario
         {
             // Stock materiales filtrado por bases del usuario
             var smQ = from sm in db.StockMateriales
-                      join m  in db.Materiales on sm.MaterialID equals m.MaterialID
-                      join b  in db.Bases      on sm.BaseID      equals b.BaseID
+                      join m in db.Materiales on sm.MaterialID equals m.MaterialID
+                      join b in db.Bases on sm.BaseID equals b.BaseID
                       where b.Activo && m.Activo
                       select new { b.BaseID, Valor = sm.CantidadActual * m.PrecioUnitario };
             if (_basesUsuario != null) smQ = smQ.Where(x => _basesUsuario.Contains(x.BaseID));
-            if (_baseID.HasValue)      smQ = smQ.Where(x => x.BaseID == _baseID.Value);
+            if (_baseID.HasValue) smQ = smQ.Where(x => x.BaseID == _baseID.Value);
             decimal valMat = smQ.Sum(x => (decimal?)x.Valor) ?? 0m;
 
             // Stock productos
             var spQ = from sp in db.StockProductos
                       join p in db.Productos on sp.ProductoID equals p.ProductoID
-                      join b in db.Bases     on sp.BaseID      equals b.BaseID
+                      join b in db.Bases on sp.BaseID equals b.BaseID
                       where b.Activo && p.Activo
-                      select new { b.BaseID,
-                                   ValBuenos  = sp.CantidadBuenas  * p.PrecioVenta,
-                                   ValRechazo = sp.CantidadRechazo * (p.PrecioVenta * 0.5m) };
+                      select new
+                      {
+                          b.BaseID,
+                          ValBuenos = sp.CantidadBuenas * p.PrecioVenta,
+                          ValRechazo = sp.CantidadRechazo * (p.PrecioVenta * 0.5m)
+                      };
             if (_basesUsuario != null) spQ = spQ.Where(x => _basesUsuario.Contains(x.BaseID));
-            if (_baseID.HasValue)      spQ = spQ.Where(x => x.BaseID == _baseID.Value);
+            if (_baseID.HasValue) spQ = spQ.Where(x => x.BaseID == _baseID.Value);
             decimal valProd = spQ.Sum(x => (decimal?)(x.ValBuenos + x.ValRechazo)) ?? 0m;
 
             // Conteos
-            int nMat  = db.Materiales.Count(m => m.Activo);
-            int nProd = db.Productos .Count(p => p.Activo);
+            int nMat = db.Materiales.Count(m => m.Activo);
+            int nProd = db.Productos.Count(p => p.Activo);
 
             lblValorInventario.Text = (valMat + valProd).ToString("N2");
             lblInvSub.Text = string.Format("{0} materiales  |  {1} productos activos", nMat, nProd);
@@ -213,20 +310,25 @@ namespace GrupoAnkhalInventario
         // ── KPI 2: Producción del periodo ─────────────────────────────────────
         private void CargarKpiProduccion(InventarioAnkhalDBDataContext db)
         {
-            var q = from p  in db.Produccion
+            var q = from p in db.Produccion
                     join pr in db.Productos on p.ProductoID equals pr.ProductoID
-                    join b  in db.Bases     on p.BaseID      equals b.BaseID
+                    join b in db.Bases on p.BaseID equals b.BaseID
                     where p.Fecha >= _desde && p.Fecha < _hastaExcl
                           && p.Estado == "Confirmado"
-                    select new { b.BaseID, p.CantidadBuena, p.CantidadRechazo,
-                                 Valor = p.CantidadBuena * pr.PrecioVenta };
+                    select new
+                    {
+                        b.BaseID,
+                        p.CantidadBuena,
+                        p.CantidadRechazo,
+                        Valor = p.CantidadBuena * pr.PrecioVenta
+                    };
             if (_basesUsuario != null) q = q.Where(x => _basesUsuario.Contains(x.BaseID));
-            if (_baseID.HasValue)      q = q.Where(x => x.BaseID == _baseID.Value);
+            if (_baseID.HasValue) q = q.Where(x => x.BaseID == _baseID.Value);
 
             var datos = q.ToList();
-            decimal valProd     = datos.Sum(x => x.Valor);
-            int     uBuenas     = datos.Sum(x => x.CantidadBuena);
-            int     uRechazo    = datos.Sum(x => x.CantidadRechazo);
+            decimal valProd = datos.Sum(x => x.Valor);
+            int uBuenas = datos.Sum(x => x.CantidadBuena);
+            int uRechazo = datos.Sum(x => x.CantidadRechazo);
 
             lblValorProducido.Text = valProd.ToString("N2");
             lblProdSub.Text = string.Format("{0} uds. buenas  |  {1} uds. rechazo", uBuenas, uRechazo);
@@ -235,20 +337,24 @@ namespace GrupoAnkhalInventario
         // ── KPI 3: Entregas del periodo ───────────────────────────────────────
         private void CargarKpiEntregas(InventarioAnkhalDBDataContext db)
         {
-            var q = from e  in db.Entregas
+            var q = from e in db.Entregas
                     join de in db.DetalleEntregas on e.EntregaID equals de.EntregaID
-                    join b  in db.Bases           on e.BaseOrigenID equals b.BaseID into bj
+                    join b in db.Bases on e.BaseOrigenID equals b.BaseID into bj
                     from b in bj.DefaultIfEmpty()
                     where e.Estado == "ENTREGADA"
                           && e.FechaEntrega >= _desde && e.FechaEntrega < _hastaExcl
-                    select new { BaseID = (int?)b.BaseID, Total = de.Cantidad * de.PrecioUnitario,
-                                 e.EntregaID };
+                    select new
+                    {
+                        BaseID = (int?)b.BaseID,
+                        Total = de.Cantidad * de.PrecioUnitario,
+                        e.EntregaID
+                    };
             if (_basesUsuario != null) q = q.Where(x => x.BaseID == null || _basesUsuario.Contains((int)x.BaseID));
-            if (_baseID.HasValue)      q = q.Where(x => x.BaseID == _baseID.Value);
+            if (_baseID.HasValue) q = q.Where(x => x.BaseID == _baseID.Value);
 
             var datos = q.ToList();
-            decimal valEnt  = datos.Sum(x => x.Total);
-            int     nEnt    = datos.Select(x => x.EntregaID).Distinct().Count();
+            decimal valEnt = datos.Sum(x => x.Total);
+            int nEnt = datos.Select(x => x.EntregaID).Distinct().Count();
 
             lblValorEntregado.Text = valEnt.ToString("N2");
             lblEntSub.Text = string.Format("{0} entrega{1} completada{1}", nEnt, nEnt == 1 ? "" : "s");
@@ -259,37 +365,37 @@ namespace GrupoAnkhalInventario
         {
             var q = from cp in db.ConsumosProduccion
                     join pr in db.Produccion on cp.ProduccionID equals pr.ProduccionID
-                    join m  in db.Materiales on cp.MaterialID   equals m.MaterialID
-                    join b  in db.Bases      on pr.BaseID        equals b.BaseID
+                    join m in db.Materiales on cp.MaterialID equals m.MaterialID
+                    join b in db.Bases on pr.BaseID equals b.BaseID
                     where pr.Fecha >= _desde && pr.Fecha < _hastaExcl
                           && pr.Estado == "Confirmado"
                     select new { b.BaseID, Costo = cp.CantidadReal * m.PrecioUnitario };
             if (_basesUsuario != null) q = q.Where(x => _basesUsuario.Contains(x.BaseID));
-            if (_baseID.HasValue)      q = q.Where(x => x.BaseID == _baseID.Value);
+            if (_baseID.HasValue) q = q.Where(x => x.BaseID == _baseID.Value);
             decimal costoMat = q.Sum(x => (decimal?)x.Costo) ?? 0m;
 
             // Leer el valor entregado que ya se calculó (lo recalculamos ligero)
-            var eq = from e  in db.Entregas
+            var eq = from e in db.Entregas
                      join de in db.DetalleEntregas on e.EntregaID equals de.EntregaID
-                     join b  in db.Bases on e.BaseOrigenID equals b.BaseID into bj
+                     join b in db.Bases on e.BaseOrigenID equals b.BaseID into bj
                      from b in bj.DefaultIfEmpty()
                      where e.Estado == "ENTREGADA"
                            && e.FechaEntrega >= _desde && e.FechaEntrega < _hastaExcl
                      select new { BaseID = (int?)b.BaseID, Total = de.Cantidad * de.PrecioUnitario };
             if (_basesUsuario != null) eq = eq.Where(x => x.BaseID == null || _basesUsuario.Contains((int)x.BaseID));
-            if (_baseID.HasValue)      eq = eq.Where(x => x.BaseID == _baseID.Value);
+            if (_baseID.HasValue) eq = eq.Where(x => x.BaseID == _baseID.Value);
             decimal valEntregado = eq.Sum(x => (decimal?)x.Total) ?? 0m;
 
             decimal margen = valEntregado - costoMat;
             decimal margenPct = valEntregado > 0 ? Math.Round(margen / valEntregado * 100, 1) : 0m;
 
             lblCostoMaterial.Text = costoMat.ToString("N2");
-            lblMargenDia.Text     = margen.ToString("N2");
-            lblMargenPct.Text     = margenPct.ToString("N1") + "% margen";
+            lblMargenDia.Text = margen.ToString("N2");
+            lblMargenPct.Text = margenPct.ToString("N1") + "% margen";
 
             // Coeficiente de Materia Prima: (CostoMat / ValorEntregado) × 100
             decimal coefMP = valEntregado > 0 ? Math.Round(costoMat / valEntregado * 100, 1) : 0m;
-            lblCoefMatPrima.Text    = coefMP.ToString("N1");
+            lblCoefMatPrima.Text = coefMP.ToString("N1");
             lblCoefMatPrimaSub.Text = valEntregado > 0
                 ? costoMat.ToString("C2") + " / " + valEntregado.ToString("C2")
                 : "Sin ventas entregadas en el período";
@@ -311,7 +417,7 @@ namespace GrupoAnkhalInventario
                                select new { MatID = g.Key, Total = g.Sum(s => s.CantidadActual) }).ToList();
 
             var mats = db.Materiales.Where(m => m.Activo).Select(m => new
-                { m.MaterialID, m.StockMinimo }).ToList();
+            { m.MaterialID, m.StockMinimo }).ToList();
 
             int count = (from m in mats
                          join s in stockPorMat on m.MaterialID equals s.MatID into sg
@@ -319,18 +425,18 @@ namespace GrupoAnkhalInventario
                          where stock < m.StockMinimo
                          select m).Count();
 
-            lblCriticosCount.Text      = count.ToString();
+            lblCriticosCount.Text = count.ToString();
             lblCountCriticosPanel.Text = count.ToString();
 
             if (count == 0)
             {
                 pnlAlertasCard.CssClass = "kpi-card alertas-ok h-100";
-                lblCriticosSub.Text     = "Todos los materiales en nivel aceptable";
+                lblCriticosSub.Text = "Todos los materiales en nivel aceptable";
             }
             else
             {
                 pnlAlertasCard.CssClass = "kpi-card alertas h-100";
-                lblCriticosSub.Text     = string.Format("{0} material{1} necesita{2} reabastecimiento",
+                lblCriticosSub.Text = string.Format("{0} material{1} necesita{2} reabastecimiento",
                                               count, count == 1 ? "" : "es", count == 1 ? "" : "n");
             }
         }
@@ -339,27 +445,29 @@ namespace GrupoAnkhalInventario
         private void CargarTablaProduccion(InventarioAnkhalDBDataContext db)
         {
             // Producción del período
-            var prodQ = from p  in db.Produccion
+            var prodQ = from p in db.Produccion
                         join pr in db.Productos on p.ProductoID equals pr.ProductoID
-                        join b  in db.Bases     on p.BaseID     equals b.BaseID
+                        join b in db.Bases on p.BaseID equals b.BaseID
                         where p.Fecha >= _desde && p.Fecha < _hastaExcl
                               && p.Estado == "Confirmado"
                         select new
                         {
-                            b.BaseID, BaseNombre = b.Nombre,
+                            b.BaseID,
+                            BaseNombre = b.Nombre,
                             p.ProduccionID,
                             ProductoNombre = pr.Descripcion,
-                            p.CantidadBuena, p.CantidadRechazo,
+                            p.CantidadBuena,
+                            p.CantidadRechazo,
                             Valor = p.CantidadBuena * pr.PrecioVenta
                         };
             if (_basesUsuario != null) prodQ = prodQ.Where(x => _basesUsuario.Contains(x.BaseID));
-            if (_baseID.HasValue)      prodQ = prodQ.Where(x => x.BaseID == _baseID.Value);
+            if (_baseID.HasValue) prodQ = prodQ.Where(x => x.BaseID == _baseID.Value);
             var prodData = prodQ.ToList();
 
             // Costos por ProduccionID
             var prodIDs = prodData.Select(p => p.ProduccionID).Distinct().ToList();
             var costosQ = from cp in db.ConsumosProduccion
-                          join m  in db.Materiales on cp.MaterialID equals m.MaterialID
+                          join m in db.Materiales on cp.MaterialID equals m.MaterialID
                           where prodIDs.Contains(cp.ProduccionID)
                           select new { cp.ProduccionID, Costo = cp.CantidadReal * m.PrecioUnitario };
             var costosPorProd = costosQ.ToList()
@@ -378,12 +486,12 @@ namespace GrupoAnkhalInventario
                         .Sum(id => costosPorProd.ContainsKey(id) ? costosPorProd[id] : 0m);
                     return new ProdResumenVM
                     {
-                        Base          = g.Key.BaseNombre,
-                        Producto      = g.Key.ProductoNombre,
-                        Buenos        = g.Sum(x => x.CantidadBuena),
-                        Rechazo       = g.Sum(x => x.CantidadRechazo),
+                        Base = g.Key.BaseNombre,
+                        Producto = g.Key.ProductoNombre,
+                        Buenos = g.Sum(x => x.CantidadBuena),
+                        Rechazo = g.Sum(x => x.CantidadRechazo),
                         ValorProducido = g.Sum(x => x.Valor),
-                        CostoMat      = costoGrupo
+                        CostoMat = costoGrupo
                     };
                 })
                 .OrderBy(r => r.Base).ThenBy(r => r.Producto)
@@ -397,7 +505,7 @@ namespace GrupoAnkhalInventario
                 resumen.Sum(r => r.Margen)
             };
 
-            lblTotalProdRows.Text   = resumen.Count.ToString();
+            lblTotalProdRows.Text = resumen.Count.ToString();
             gvProduccion.DataSource = resumen;
             gvProduccion.DataBind();
         }
@@ -436,7 +544,9 @@ namespace GrupoAnkhalInventario
                             orderby (m.StockMinimo - stock) descending
                             select new
                             {
-                                m.Codigo, m.Descripcion, m.Unidad,
+                                m.Codigo,
+                                m.Descripcion,
+                                m.Unidad,
                                 StockActual = stock,
                                 m.StockMinimo,
                                 Deficit = m.StockMinimo - stock
@@ -476,13 +586,16 @@ namespace GrupoAnkhalInventario
                         orderby e.FechaEntrega descending
                         select new
                         {
-                            e.EntregaID, e.Folio, e.FechaEntrega, e.Estado,
-                            BaseNombre    = b != null ? b.Nombre : "-",
+                            e.EntregaID,
+                            e.Folio,
+                            e.FechaEntrega,
+                            e.Estado,
+                            BaseNombre = b != null ? b.Nombre : "-",
                             ClienteNombre = c != null ? c.Nombre : e.Cliente,
-                            BaseID        = (int?)b.BaseID
+                            BaseID = (int?)b.BaseID
                         });
             if (_basesUsuario != null) entQ = entQ.Where(x => x.BaseID == null || _basesUsuario.Contains((int)x.BaseID));
-            if (_baseID.HasValue)      entQ = entQ.Where(x => x.BaseID == _baseID.Value);
+            if (_baseID.HasValue) entQ = entQ.Where(x => x.BaseID == _baseID.Value);
 
             var entregas = entQ.Take(8).ToList();
             var ids = entregas.Select(e => e.EntregaID).ToList();
@@ -496,12 +609,12 @@ namespace GrupoAnkhalInventario
 
             var vm = entregas.Select(e => new EntregaDashVM
             {
-                Folio   = e.Folio ?? e.EntregaID.ToString(),
+                Folio = e.Folio ?? e.EntregaID.ToString(),
                 Cliente = e.ClienteNombre ?? "Sin cliente",
-                Base    = e.BaseNombre,
-                Total   = totales.ContainsKey(e.EntregaID) ? totales[e.EntregaID] : 0m,
-                Estado  = e.Estado ?? "",
-                Fecha   = e.FechaEntrega
+                Base = e.BaseNombre,
+                Total = totales.ContainsKey(e.EntregaID) ? totales[e.EntregaID] : 0m,
+                Estado = e.Estado ?? "",
+                Fecha = e.FechaEntrega
             }).ToList();
 
             gvUltimasEntregas.DataSource = vm;
@@ -515,10 +628,10 @@ namespace GrupoAnkhalInventario
             if (lbl == null) return;
             switch (lbl.Text)
             {
-                case "ENTREGADA":       lbl.Text = "<span class='badge-entregada'>Entregada</span>";  break;
-                case "PROGRAMADA":      lbl.Text = "<span class='badge-programada'>Programada</span>"; break;
-                case "CANCELADA":       lbl.Text = "<span class='badge-cancelada'>Cancelada</span>";  break;
-                case "PENDIENTE_STOCK": lbl.Text = "<span class='badge-pendiente'>Sin Stock</span>";   break;
+                case "ENTREGADA": lbl.Text = "<span class='badge-entregada'>Entregada</span>"; break;
+                case "PROGRAMADA": lbl.Text = "<span class='badge-programada'>Programada</span>"; break;
+                case "CANCELADA": lbl.Text = "<span class='badge-cancelada'>Cancelada</span>"; break;
+                case "PENDIENTE_STOCK": lbl.Text = "<span class='badge-pendiente'>Sin Stock</span>"; break;
             }
         }
 
@@ -527,7 +640,7 @@ namespace GrupoAnkhalInventario
         {
             var basesQ = db.Bases.Where(b => b.Activo).AsQueryable();
             if (_basesUsuario != null) basesQ = basesQ.Where(b => _basesUsuario.Contains(b.BaseID));
-            if (_baseID.HasValue)      basesQ = basesQ.Where(b => b.BaseID == _baseID.Value);
+            if (_baseID.HasValue) basesQ = basesQ.Where(b => b.BaseID == _baseID.Value);
             var bases = basesQ.OrderBy(b => b.Nombre).ToList();
 
             var smTodos = (from sm in db.StockMateriales
@@ -547,7 +660,7 @@ namespace GrupoAnkhalInventario
 
             var vm = bases.Select(b => new ValorBaseVM
             {
-                Base   = b.Nombre,
+                Base = b.Nombre,
                 ValMat = smTodos.Where(s => s.BaseID == b.BaseID).Sum(s => s.Valor),
                 ValProd = spTodos.Where(s => s.BaseID == b.BaseID).Sum(s => s.Valor)
             }).ToList();

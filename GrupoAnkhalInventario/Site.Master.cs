@@ -20,20 +20,22 @@ namespace GrupoAnkhalInventario
             new Dictionary<string, List<string>>(StringComparer.OrdinalIgnoreCase)
             {
                 // ── Catálogos (Administrador + Compras) ──
-                { "bases.aspx",      new List<string> { "Administrador", "Compras" } },
-                { "materiales.aspx", new List<string> { "Administrador", "Compras" } },
-                { "productos.aspx",  new List<string> { "Administrador", "Compras", "Ventas" } },
-                { "paquetes.aspx",   new List<string> { "Administrador", "Compras", "Ventas" } },
+                { "bases.aspx",               new List<string> { "Administrador", "Compras" } },
+                { "materiales.aspx",           new List<string> { "Administrador", "Compras" } },
+                { "productos.aspx",            new List<string> { "Administrador", "Compras", "Ventas" } },
+                { "paquetes.aspx",             new List<string> { "Administrador", "Compras", "Ventas" } },
+                { "registrarproveedores.aspx", new List<string> { "Administrador", "Compras" } },
 
-                // ── Clientes ──
-                { "registrarclientes.aspx", new List<string> { "Administrador", "Ventas", "Compras" } },
+                // ── Clientes (solo Ventas, no Compras) ──
+                { "registrarclientes.aspx", new List<string> { "Administrador", "Ventas" } },
 
                 // ── Operaciones ──
                 { "produccion.aspx",  new List<string> { "Administrador", "Produccion", "Almacen" } },
                 { "entregas.aspx",    new List<string> { "Administrador", "Ventas",     "Almacen" } },
-                { "ordenes.aspx",     new List<string> { "Administrador", "Ventas",     "Almacen" } },
-                { "movimientos.aspx", new List<string> { "Administrador", "Almacen",    "Produccion" } },
+                { "ordenes.aspx",     new List<string> { "Administrador", "Ventas",     "Almacen",  "Produccion" } },
+                { "movimientos.aspx", new List<string> { "Administrador", "Almacen",    "Produccion", "Compras" } },
                 { "mermas.aspx",      new List<string> { "Administrador", "Almacen",    "Produccion" } },
+                { "metasproduccion.aspx", new List<string> { "Administrador", "Produccion" } },
 
                 // ── Inventario (todos excepto roles no definidos) ──
                 { "inventario.aspx", new List<string>
@@ -140,6 +142,8 @@ namespace GrupoAnkhalInventario
             // Por defecto: todo oculto
             headerConfiguracion.Visible = false;
             menuCatalogos.Visible = false;
+            liMenuProveedores.Visible = false;
+            liMenuMetas.Visible = false;
             headerOperaciones.Visible = false;
             menuProduccion.Visible = false;
             menuEntregas.Visible = false;
@@ -157,6 +161,8 @@ namespace GrupoAnkhalInventario
                 case "Administrador":
                     headerConfiguracion.Visible = true;
                     menuCatalogos.Visible = true;
+                    liMenuProveedores.Visible = true;
+                    liMenuMetas.Visible = true;
                     headerOperaciones.Visible = true;
                     menuProduccion.Visible = true;
                     menuEntregas.Visible = true;
@@ -171,7 +177,7 @@ namespace GrupoAnkhalInventario
 
                 case "Ventas":
                     headerConfiguracion.Visible = true;
-                    menuCatalogos.Visible = true;   // Productos y Paquetes
+                    menuCatalogos.Visible = true;   // Productos y Paquetes (sin Proveedores)
                     headerOperaciones.Visible = true;
                     menuEntregas.Visible = true;
                     menuOrdenes.Visible = true;
@@ -181,7 +187,10 @@ namespace GrupoAnkhalInventario
 
                 case "Compras":
                     headerConfiguracion.Visible = true;
-                    menuCatalogos.Visible = true;   // Bases, Materiales, Productos, Paquetes
+                    menuCatalogos.Visible = true;   // Bases, Materiales, Productos, Paquetes, Proveedores
+                    liMenuProveedores.Visible = true;
+                    headerOperaciones.Visible = true;
+                    menuMovimientos.Visible = true;
                     headerInventario.Visible = true;
                     menuInventario.Visible = true;
                     break;
@@ -200,6 +209,8 @@ namespace GrupoAnkhalInventario
                 case "Produccion":
                     headerOperaciones.Visible = true;
                     menuProduccion.Visible = true;
+                    liMenuMetas.Visible = true;
+                    menuOrdenes.Visible = true;
                     menuMovimientos.Visible = true;
                     menuMermas.Visible = true;
                     headerInventario.Visible = true;

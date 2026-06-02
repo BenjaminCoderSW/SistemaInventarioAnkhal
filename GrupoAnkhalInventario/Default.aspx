@@ -174,7 +174,7 @@
         <!-- ══ ROW 1 — KPI PRINCIPALES ═══════════════════════════════════════ -->
         <div class="row mb-3">
             <!-- Valor Inventario -->
-            <div class="col-lg-4 col-md-6 mb-3">
+            <div id="pnlKpiInv" runat="server" class="col-lg-4 col-md-6 mb-3">
                 <div class="kpi-card inv h-100">
                     <i class="fas fa-warehouse kpi-icon"></i>
                     <div class="kpi-label">Valor Total en Inventario
@@ -190,7 +190,7 @@
                 </div>
             </div>
             <!-- Valor Producido -->
-            <div class="col-lg-4 col-md-6 mb-3">
+            <div id="pnlKpiProd" runat="server" class="col-lg-4 col-md-6 mb-3">
                 <div class="kpi-card prod h-100">
                     <i class="fas fa-industry kpi-icon"></i>
                     <div class="kpi-label">Valor Producido — <asp:Label ID="lblPeriodoA" runat="server" Text="Hoy"></asp:Label>
@@ -206,7 +206,7 @@
                 </div>
             </div>
             <!-- Valor Entregado -->
-            <div class="col-lg-4 col-md-6 mb-3">
+            <div id="pnlKpiEnt" runat="server" class="col-lg-4 col-md-6 mb-3">
                 <div class="kpi-card ventas h-100">
                     <i class="fas fa-truck kpi-icon"></i>
                     <div class="kpi-label">Valor Entregado / Vendido — <asp:Label ID="lblPeriodoB" runat="server" Text="Hoy"></asp:Label>
@@ -226,7 +226,7 @@
         <!-- ══ ROW 2 — KPI FINANCIEROS ════════════════════════════════════════ -->
         <div class="row mb-3">
             <!-- Costo Material -->
-            <div class="col-lg-4 col-md-6 mb-3">
+            <div id="pnlKpiCosto" runat="server" class="col-lg-4 col-md-6 mb-3">
                 <div class="kpi-card costo h-100">
                     <i class="fas fa-box-open kpi-icon"></i>
                     <div class="kpi-label">Costo Materiales Consumidos — <asp:Label ID="lblPeriodoC" runat="server" Text="Hoy"></asp:Label>
@@ -276,7 +276,7 @@
 
         <!-- ══ ROW 3 — COEFICIENTE MATERIA PRIMA ════════════════════════════ -->
         <div class="row mb-3">
-            <div class="col-lg-4 col-md-6 mb-3">
+            <div id="pnlKpiCoef" runat="server" class="col-lg-4 col-md-6 mb-3">
                 <div class="kpi-card coef h-100">
                     <i class="fas fa-percent kpi-icon"></i>
                     <div class="kpi-label">
@@ -300,7 +300,7 @@
         <!-- ══ ROW 4 — PRODUCCIÓN + CRÍTICOS ═════════════════════════════════ -->
         <div class="row">
             <!-- Producción del período -->
-            <div class="col-lg-8 mb-3">
+            <div id="pnlTablaProduccion" runat="server" class="col-lg-8 mb-3">
                 <div class="sec-title">
                     <i class="fas fa-industry"></i> Produccion por Base —
                     <asp:Label ID="lblTituloProd" runat="server" Text="Hoy"></asp:Label>
@@ -347,7 +347,7 @@
             </div>
 
             <!-- Materiales críticos -->
-            <div class="col-lg-4 mb-3">
+            <div id="pnlTablaCriticos" runat="server" class="col-lg-4 mb-3">
                 <div class="sec-title" style="background:#922b21;">
                     <i class="fas fa-exclamation-circle"></i> Materiales Bajo Minimo
                     <span class="badge badge-light float-right" style="color:#922b21;">
@@ -363,7 +363,7 @@
         <!-- ══ ROW 5 — ÚLTIMAS ENTREGAS + VALOR POR BASE ═════════════════════ -->
         <div class="row">
             <!-- Últimas entregas -->
-            <div class="col-lg-7 mb-3">
+            <div id="pnlTablaEntregas" runat="server" class="col-lg-7 mb-3">
                 <div class="sec-title">
                     <i class="fas fa-truck"></i> Ultimas Entregas
                 </div>
@@ -398,7 +398,7 @@
             </div>
 
             <!-- Valor inventario por base -->
-            <div class="col-lg-5 mb-3">
+            <div id="pnlTablaValorBase" runat="server" class="col-lg-5 mb-3">
                 <div class="sec-title">
                     <i class="fas fa-chart-bar"></i> Valor del Inventario por Base
                 </div>
@@ -498,7 +498,7 @@
                         Swal.fire({ icon: m.icon, title: m.title, text: m.text, confirmButtonColor: '#003366' });
                         h.value = '';
                     }
-                } catch(e) {}
+                } catch (e) { }
             }
 
             // Al cambiar el dropdown → actualizar los date pickers
