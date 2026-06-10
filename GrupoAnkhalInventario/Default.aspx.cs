@@ -166,19 +166,19 @@ namespace GrupoAnkhalInventario
         // Cada rol ve únicamente los KPIs y tablas relevantes a su función.
         // El Administrador tiene acceso a todo.
         //
-        // | Panel               | Admin | Ventas | Compras | Almacen | Produccion | Reporte |
-        // |---------------------|:-----:|:------:|:-------:|:-------:|:----------:|:-------:|
-        // | pnlKpiInv           |  ✓    |        |    ✓    |         |            |         |
-        // | pnlKpiProd          |  ✓    |        |         |         |     ✓      |         |
-        // | pnlKpiEnt           |  ✓    |   ✓    |         |         |            |         |
-        // | pnlKpiCosto         |  ✓    |        |    ✓    |         |     ✓      |         |
-        // | pnlMargenCard       |  ✓    |        |         |         |            |         |
-        // | pnlAlertasCard      |  ✓    |        |    ✓    |    ✓    |     ✓      |         |
-        // | pnlKpiCoef          |  ✓    |        |         |         |     ✓      |         |
-        // | pnlTablaProduccion  |  ✓    |        |         |    ✓    |     ✓      |         |
-        // | pnlTablaCriticos    |  ✓    |        |    ✓    |    ✓    |     ✓      |         |
-        // | pnlTablaEntregas    |  ✓    |   ✓    |         |    ✓    |            |         |
-        // | pnlTablaValorBase   |  ✓    |        |    ✓    |         |            |         |
+        // | Panel               | Admin | Ventas | Compras | Almacen | Produccion | Reporte | JefePlanta |
+        // |---------------------|:-----:|:------:|:-------:|:-------:|:----------:|:-------:|:----------:|
+        // | pnlKpiInv           |  ✓    |        |    ✓    |         |            |         |     ✓      |
+        // | pnlKpiProd          |  ✓    |        |         |         |     ✓      |         |            |
+        // | pnlKpiEnt           |  ✓    |   ✓    |         |         |            |         |            |
+        // | pnlKpiCosto         |  ✓    |        |    ✓    |         |     ✓      |         |            |
+        // | pnlMargenCard       |  ✓    |        |         |         |            |         |            |
+        // | pnlAlertasCard      |  ✓    |        |    ✓    |    ✓    |     ✓      |         |     ✓      |
+        // | pnlKpiCoef          |  ✓    |        |         |         |     ✓      |         |            |
+        // | pnlTablaProduccion  |  ✓    |        |         |    ✓    |     ✓      |         |            |
+        // | pnlTablaCriticos    |  ✓    |        |    ✓    |    ✓    |     ✓      |         |     ✓      |
+        // | pnlTablaEntregas    |  ✓    |   ✓    |         |    ✓    |            |         |            |
+        // | pnlTablaValorBase   |  ✓    |        |    ✓    |         |            |         |            |
         private void ConfigurarVistaPorRol()
         {
             string rol = Session["Rol"]?.ToString() ?? "Reporte";
@@ -246,6 +246,12 @@ namespace GrupoAnkhalInventario
                     break;
 
                 case "Reporte":
+                    pnlAlertasCard.Visible = true;
+                    pnlTablaCriticos.Visible = true;
+                    break;
+
+                case "Jefe de planta":
+                    pnlKpiInv.Visible = true;
                     pnlAlertasCard.Visible = true;
                     pnlTablaCriticos.Visible = true;
                     break;

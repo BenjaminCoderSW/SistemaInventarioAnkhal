@@ -19,26 +19,26 @@ namespace GrupoAnkhalInventario
         private static readonly Dictionary<string, List<string>> _permisosPagina =
             new Dictionary<string, List<string>>(StringComparer.OrdinalIgnoreCase)
             {
-                // ── Catálogos (Administrador + Compras) ──
-                { "bases.aspx",               new List<string> { "Administrador", "Compras" } },
-                { "materiales.aspx",           new List<string> { "Administrador", "Compras" } },
-                { "productos.aspx",            new List<string> { "Administrador", "Compras", "Ventas" } },
-                { "registrarproveedores.aspx", new List<string> { "Administrador", "Compras" } },
+                // ── Catálogos (Administrador + Compras + Jefe de planta) ──
+                { "bases.aspx",               new List<string> { "Administrador", "Compras", "Jefe de planta" } },
+                { "materiales.aspx",           new List<string> { "Administrador", "Compras", "Jefe de planta" } },
+                { "productos.aspx",            new List<string> { "Administrador", "Compras", "Ventas", "Jefe de planta" } },
+                { "registrarproveedores.aspx", new List<string> { "Administrador", "Compras", "Jefe de planta" } },
 
                 // ── Clientes (solo Ventas, no Compras) ──
-                { "registrarclientes.aspx", new List<string> { "Administrador", "Ventas" } },
+                { "registrarclientes.aspx", new List<string> { "Administrador", "Ventas", "Jefe de planta" } },
 
                 // ── Operaciones ──
                 { "produccion.aspx",  new List<string> { "Administrador", "Produccion", "Almacen" } },
                 { "entregas.aspx",    new List<string> { "Administrador", "Ventas",     "Almacen" } },
                 { "ordenes.aspx",     new List<string> { "Administrador", "Ventas",     "Almacen" } },
-                { "movimientos.aspx", new List<string> { "Administrador", "Almacen",    "Produccion", "Compras" } },
-                { "mermas.aspx",      new List<string> { "Administrador", "Almacen",    "Produccion" } },
+                { "movimientos.aspx", new List<string> { "Administrador", "Almacen",    "Produccion", "Compras", "Jefe de planta" } },
+                { "mermas.aspx",      new List<string> { "Administrador", "Almacen",    "Produccion", "Jefe de planta" } },
                 { "metasproduccion.aspx", new List<string> { "Administrador", "Produccion" } },
 
                 // ── Inventario (todos excepto roles no definidos) ──
                 { "inventario.aspx", new List<string>
-                    { "Administrador", "Ventas", "Compras", "Almacen", "Produccion", "Reporte" } },
+                    { "Administrador", "Ventas", "Compras", "Almacen", "Produccion", "Reporte", "Jefe de planta" } },
 
                 // ── Administración ──
                 { "usuarios.aspx", new List<string> { "Administrador" } },
@@ -228,6 +228,20 @@ namespace GrupoAnkhalInventario
                     break;
 
                 case "Reporte":
+                    headerInventario.Visible = true;
+                    menuInventario.Visible = true;
+                    break;
+
+                case "Jefe de planta":
+                    headerConfiguracion.Visible = true;
+                    menuCatalogos.Visible = true;
+                    liMenuBases.Visible = true;
+                    liMenuMateriales.Visible = true;
+                    liMenuClientes.Visible = true;
+                    liMenuProveedores.Visible = true;
+                    headerOperaciones.Visible = true;
+                    menuMovimientos.Visible = true;
+                    menuMermas.Visible = true;
                     headerInventario.Visible = true;
                     menuInventario.Visible = true;
                     break;
