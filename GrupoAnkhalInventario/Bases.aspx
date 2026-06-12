@@ -106,9 +106,12 @@
                                     <asp:BoundField DataField="Tipo"         HeaderText="Tipo" />
                                     <asp:BoundField DataField="Responsable"  HeaderText="Responsable" />
                                     <asp:BoundField DataField="Telefono"     HeaderText="Teléfono" />
-                                    <asp:BoundField DataField="MetaDiaria"   HeaderText="Meta Diaria"   DataFormatString="{0:C2}" />
-                                    <asp:BoundField DataField="MetaSemanal"  HeaderText="Meta Semanal"  DataFormatString="{0:C2}" />
-                                    <asp:BoundField DataField="MetaMensual"  HeaderText="Meta Mensual"  DataFormatString="{0:C2}" />
+                                    <asp:BoundField DataField="MetaDiaria"       HeaderText="Meta Prod. Diaria"   DataFormatString="{0:C2}" />
+                                    <asp:BoundField DataField="MetaSemanal"      HeaderText="Meta Prod. Semanal"  DataFormatString="{0:C2}" />
+                                    <asp:BoundField DataField="MetaMensual"      HeaderText="Meta Prod. Mensual"  DataFormatString="{0:C2}" />
+                                    <asp:BoundField DataField="MetaVentasDiaria"  HeaderText="Meta Vta. Diaria"    DataFormatString="{0:C2}" />
+                                    <asp:BoundField DataField="MetaVentasSemanal" HeaderText="Meta Vta. Semanal"   DataFormatString="{0:C2}" />
+                                    <asp:BoundField DataField="MetaVentasMensual" HeaderText="Meta Vta. Mensual"   DataFormatString="{0:C2}" />
                                     <asp:TemplateField HeaderText="Estatus">
                                         <ItemTemplate>
                                             <span class="badge badge-<%# Convert.ToBoolean(Eval("Activo")) ? "success" : "secondary" %>">
@@ -130,6 +133,9 @@
                                                     '<%# Eval("MetaDiaria") %>',
                                                     '<%# Eval("MetaSemanal") %>',
                                                     '<%# Eval("MetaMensual") %>',
+                                                    '<%# Eval("MetaVentasDiaria") %>',
+                                                    '<%# Eval("MetaVentasSemanal") %>',
+                                                    '<%# Eval("MetaVentasMensual") %>',
                                                     '<%# RowVersionBase64(Eval("RowVersion")) %>'
                                                 )">
                                                 <i class="fas fa-edit"></i> Editar
@@ -226,13 +232,13 @@
                     </div>
                     <hr />
                     <h6 style="color:#003366; font-weight:600;">
-                        <i class="fas fa-dollar-sign"></i> Metas de Venta
+                        <i class="fas fa-industry"></i> Metas de Producción
                     </h6>
-                    <small class="text-muted">Montos en pesos ($). Poner 0 si no aplica.</small>
+                    <small class="text-muted">Valor producido en pesos ($). Poner 0 si no aplica.</small>
                     <div class="row mt-2">
                         <div class="col-md-4">
                             <div class="form-group">
-                                <label>Meta diaria ($)</label>
+                                <label>Meta producción diaria ($)</label>
                                 <div class="input-group">
                                     <div class="input-group-prepend"><span class="input-group-text">$</span></div>
                                     <asp:TextBox ID="txtMetaDiaria" runat="server" CssClass="form-control"
@@ -243,7 +249,7 @@
                         </div>
                         <div class="col-md-4">
                             <div class="form-group">
-                                <label>Meta semanal ($)</label>
+                                <label>Meta producción semanal ($)</label>
                                 <div class="input-group">
                                     <div class="input-group-prepend"><span class="input-group-text">$</span></div>
                                     <asp:TextBox ID="txtMetaSemanal" runat="server" CssClass="form-control"
@@ -254,10 +260,50 @@
                         </div>
                         <div class="col-md-4">
                             <div class="form-group">
-                                <label>Meta mensual ($)</label>
+                                <label>Meta producción mensual ($)</label>
                                 <div class="input-group">
                                     <div class="input-group-prepend"><span class="input-group-text">$</span></div>
                                     <asp:TextBox ID="txtMetaMensual" runat="server" CssClass="form-control"
+                                        TextMode="Number" Text="0" min="0" step="0.01"
+                                        Placeholder="0.00"></asp:TextBox>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <hr />
+                    <h6 style="color:#003366; font-weight:600;">
+                        <i class="fas fa-dollar-sign"></i> Metas de Ventas
+                    </h6>
+                    <small class="text-muted">Valor vendido en pesos ($). Poner 0 si no aplica.</small>
+                    <div class="row mt-2">
+                        <div class="col-md-4">
+                            <div class="form-group">
+                                <label>Meta ventas diaria ($)</label>
+                                <div class="input-group">
+                                    <div class="input-group-prepend"><span class="input-group-text">$</span></div>
+                                    <asp:TextBox ID="txtMetaVentasDiaria" runat="server" CssClass="form-control"
+                                        TextMode="Number" Text="0" min="0" step="0.01"
+                                        Placeholder="0.00"></asp:TextBox>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="col-md-4">
+                            <div class="form-group">
+                                <label>Meta ventas semanal ($)</label>
+                                <div class="input-group">
+                                    <div class="input-group-prepend"><span class="input-group-text">$</span></div>
+                                    <asp:TextBox ID="txtMetaVentasSemanal" runat="server" CssClass="form-control"
+                                        TextMode="Number" Text="0" min="0" step="0.01"
+                                        Placeholder="0.00"></asp:TextBox>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="col-md-4">
+                            <div class="form-group">
+                                <label>Meta ventas mensual ($)</label>
+                                <div class="input-group">
+                                    <div class="input-group-prepend"><span class="input-group-text">$</span></div>
+                                    <asp:TextBox ID="txtMetaVentasMensual" runat="server" CssClass="form-control"
                                         TextMode="Number" Text="0" min="0" step="0.01"
                                         Placeholder="0.00"></asp:TextBox>
                                 </div>
@@ -344,13 +390,13 @@
                     </div>
                     <hr />
                     <h6 style="color:#003366; font-weight:600;">
-                        <i class="fas fa-dollar-sign"></i> Metas de Venta
+                        <i class="fas fa-industry"></i> Metas de Producción
                     </h6>
-                    <small class="text-muted">Montos en pesos ($). Poner 0 si no aplica.</small>
+                    <small class="text-muted">Valor producido en pesos ($). Poner 0 si no aplica.</small>
                     <div class="row mt-2">
                         <div class="col-md-4">
                             <div class="form-group">
-                                <label>Meta diaria ($)</label>
+                                <label>Meta producción diaria ($)</label>
                                 <div class="input-group">
                                     <div class="input-group-prepend"><span class="input-group-text">$</span></div>
                                     <asp:TextBox ID="txtMetaDiariaEdit" runat="server" CssClass="form-control"
@@ -360,7 +406,7 @@
                         </div>
                         <div class="col-md-4">
                             <div class="form-group">
-                                <label>Meta semanal ($)</label>
+                                <label>Meta producción semanal ($)</label>
                                 <div class="input-group">
                                     <div class="input-group-prepend"><span class="input-group-text">$</span></div>
                                     <asp:TextBox ID="txtMetaSemanalEdit" runat="server" CssClass="form-control"
@@ -370,10 +416,47 @@
                         </div>
                         <div class="col-md-4">
                             <div class="form-group">
-                                <label>Meta mensual ($)</label>
+                                <label>Meta producción mensual ($)</label>
                                 <div class="input-group">
                                     <div class="input-group-prepend"><span class="input-group-text">$</span></div>
                                     <asp:TextBox ID="txtMetaMensualEdit" runat="server" CssClass="form-control"
+                                        TextMode="Number" min="0" step="0.01"></asp:TextBox>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <hr />
+                    <h6 style="color:#003366; font-weight:600;">
+                        <i class="fas fa-dollar-sign"></i> Metas de Ventas
+                    </h6>
+                    <small class="text-muted">Valor vendido en pesos ($). Poner 0 si no aplica.</small>
+                    <div class="row mt-2">
+                        <div class="col-md-4">
+                            <div class="form-group">
+                                <label>Meta ventas diaria ($)</label>
+                                <div class="input-group">
+                                    <div class="input-group-prepend"><span class="input-group-text">$</span></div>
+                                    <asp:TextBox ID="txtMetaVentasDiariaEdit" runat="server" CssClass="form-control"
+                                        TextMode="Number" min="0" step="0.01"></asp:TextBox>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="col-md-4">
+                            <div class="form-group">
+                                <label>Meta ventas semanal ($)</label>
+                                <div class="input-group">
+                                    <div class="input-group-prepend"><span class="input-group-text">$</span></div>
+                                    <asp:TextBox ID="txtMetaVentasSemanalEdit" runat="server" CssClass="form-control"
+                                        TextMode="Number" min="0" step="0.01"></asp:TextBox>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="col-md-4">
+                            <div class="form-group">
+                                <label>Meta ventas mensual ($)</label>
+                                <div class="input-group">
+                                    <div class="input-group-prepend"><span class="input-group-text">$</span></div>
+                                    <asp:TextBox ID="txtMetaVentasMensualEdit" runat="server" CssClass="form-control"
                                         TextMode="Number" min="0" step="0.01"></asp:TextBox>
                                 </div>
                             </div>
@@ -445,18 +528,23 @@
         }
 
         function abrirModalEditar(id, codigo, nombre, tipo, responsable, telefono, direccion,
-            metaDiaria, metaSemanal, metaMensual, rowVersion) {
+            metaDiaria, metaSemanal, metaMensual,
+            metaVentasDiaria, metaVentasSemanal, metaVentasMensual,
+            rowVersion) {
             document.getElementById('<%= hdnBaseID.ClientID %>').value = id;
             document.getElementById('<%= hdnRowVersion.ClientID %>').value = rowVersion;
             document.getElementById('<%= txtCodigoEdit.ClientID %>').value = codigo;
             document.getElementById('<%= txtNombreEdit.ClientID %>').value = nombre;
-            document.getElementById('<%= ddlTipoEdit.ClientID %>').value            = tipo;
-            document.getElementById('<%= txtResponsableEdit.ClientID %>').value     = responsable;
-            document.getElementById('<%= txtTelefonoEdit.ClientID %>').value        = telefono;
-            document.getElementById('<%= txtDireccionEdit.ClientID %>').value       = direccion;
-            document.getElementById('<%= txtMetaDiariaEdit.ClientID %>').value      = metaDiaria;
-            document.getElementById('<%= txtMetaSemanalEdit.ClientID %>').value     = metaSemanal;
-            document.getElementById('<%= txtMetaMensualEdit.ClientID %>').value     = metaMensual;
+            document.getElementById('<%= ddlTipoEdit.ClientID %>').value = tipo;
+            document.getElementById('<%= txtResponsableEdit.ClientID %>').value = responsable;
+            document.getElementById('<%= txtTelefonoEdit.ClientID %>').value = telefono;
+            document.getElementById('<%= txtDireccionEdit.ClientID %>').value             = direccion;
+            document.getElementById('<%= txtMetaDiariaEdit.ClientID %>').value            = metaDiaria;
+            document.getElementById('<%= txtMetaSemanalEdit.ClientID %>').value           = metaSemanal;
+            document.getElementById('<%= txtMetaMensualEdit.ClientID %>').value           = metaMensual;
+            document.getElementById('<%= txtMetaVentasDiariaEdit.ClientID %>').value      = metaVentasDiaria;
+            document.getElementById('<%= txtMetaVentasSemanalEdit.ClientID %>').value     = metaVentasSemanal;
+            document.getElementById('<%= txtMetaVentasMensualEdit.ClientID %>').value     = metaVentasMensual;
             $('#modalEditar').modal('show');
         }
 
@@ -468,6 +556,9 @@
             var metaD  = parseFloat(document.getElementById('<%= txtMetaDiaria.ClientID %>').value)  || 0;
             var metaS  = parseFloat(document.getElementById('<%= txtMetaSemanal.ClientID %>').value) || 0;
             var metaM  = parseFloat(document.getElementById('<%= txtMetaMensual.ClientID %>').value) || 0;
+            var metaVD = parseFloat(document.getElementById('<%= txtMetaVentasDiaria.ClientID %>').value)  || 0;
+            var metaVS = parseFloat(document.getElementById('<%= txtMetaVentasSemanal.ClientID %>').value) || 0;
+            var metaVM = parseFloat(document.getElementById('<%= txtMetaVentasMensual.ClientID %>').value) || 0;
 
             if (codigo === '') {
                 Swal.fire({ icon: 'warning', title: 'Campo obligatorio', text: 'El código es obligatorio.', confirmButtonColor: '#003366' });
@@ -494,15 +585,27 @@
                 return false;
             }
             if (metaD < 0 || metaS < 0 || metaM < 0) {
-                Swal.fire({ icon: 'warning', title: 'Metas inválidas', text: 'Las metas no pueden ser negativas.', confirmButtonColor: '#003366' });
+                Swal.fire({ icon: 'warning', title: 'Metas inválidas', text: 'Las metas de producción no pueden ser negativas.', confirmButtonColor: '#003366' });
                 return false;
             }
             if (metaD > 0 && metaS > 0 && metaS < metaD) {
-                Swal.fire({ icon: 'warning', title: 'Metas inconsistentes', text: 'La meta semanal (' + metaS.toLocaleString('es-MX', { minimumFractionDigits: 0, maximumFractionDigits: 2 }) + ') no puede ser menor a la meta diaria (' + metaD.toLocaleString('es-MX', { minimumFractionDigits: 0, maximumFractionDigits: 2 }) + ').', confirmButtonColor: '#003366' });
+                Swal.fire({ icon: 'warning', title: 'Metas de producción inconsistentes', text: 'La meta semanal (' + metaS.toLocaleString('es-MX', { minimumFractionDigits: 0, maximumFractionDigits: 2 }) + ') no puede ser menor a la meta diaria (' + metaD.toLocaleString('es-MX', { minimumFractionDigits: 0, maximumFractionDigits: 2 }) + ').', confirmButtonColor: '#003366' });
                 return false;
             }
             if (metaS > 0 && metaM > 0 && metaM < metaS) {
-                Swal.fire({ icon: 'warning', title: 'Metas inconsistentes', text: 'La meta mensual (' + metaM.toLocaleString('es-MX', { minimumFractionDigits: 0, maximumFractionDigits: 2 }) + ') no puede ser menor a la meta semanal (' + metaS.toLocaleString('es-MX', { minimumFractionDigits: 0, maximumFractionDigits: 2 }) + ').', confirmButtonColor: '#003366' });
+                Swal.fire({ icon: 'warning', title: 'Metas de producción inconsistentes', text: 'La meta mensual (' + metaM.toLocaleString('es-MX', { minimumFractionDigits: 0, maximumFractionDigits: 2 }) + ') no puede ser menor a la meta semanal (' + metaS.toLocaleString('es-MX', { minimumFractionDigits: 0, maximumFractionDigits: 2 }) + ').', confirmButtonColor: '#003366' });
+                return false;
+            }
+            if (metaVD < 0 || metaVS < 0 || metaVM < 0) {
+                Swal.fire({ icon: 'warning', title: 'Metas inválidas', text: 'Las metas de ventas no pueden ser negativas.', confirmButtonColor: '#003366' });
+                return false;
+            }
+            if (metaVD > 0 && metaVS > 0 && metaVS < metaVD) {
+                Swal.fire({ icon: 'warning', title: 'Metas de ventas inconsistentes', text: 'La meta de ventas semanal (' + metaVS.toLocaleString('es-MX', { minimumFractionDigits: 0, maximumFractionDigits: 2 }) + ') no puede ser menor a la diaria (' + metaVD.toLocaleString('es-MX', { minimumFractionDigits: 0, maximumFractionDigits: 2 }) + ').', confirmButtonColor: '#003366' });
+                return false;
+            }
+            if (metaVS > 0 && metaVM > 0 && metaVM < metaVS) {
+                Swal.fire({ icon: 'warning', title: 'Metas de ventas inconsistentes', text: 'La meta de ventas mensual (' + metaVM.toLocaleString('es-MX', { minimumFractionDigits: 0, maximumFractionDigits: 2 }) + ') no puede ser menor a la semanal (' + metaVS.toLocaleString('es-MX', { minimumFractionDigits: 0, maximumFractionDigits: 2 }) + ').', confirmButtonColor: '#003366' });
                 return false;
             }
             return true;
@@ -516,6 +619,9 @@
             var metaD  = parseFloat(document.getElementById('<%= txtMetaDiariaEdit.ClientID %>').value)  || 0;
             var metaS  = parseFloat(document.getElementById('<%= txtMetaSemanalEdit.ClientID %>').value) || 0;
             var metaM  = parseFloat(document.getElementById('<%= txtMetaMensualEdit.ClientID %>').value) || 0;
+            var metaVD = parseFloat(document.getElementById('<%= txtMetaVentasDiariaEdit.ClientID %>').value)  || 0;
+            var metaVS = parseFloat(document.getElementById('<%= txtMetaVentasSemanalEdit.ClientID %>').value) || 0;
+            var metaVM = parseFloat(document.getElementById('<%= txtMetaVentasMensualEdit.ClientID %>').value) || 0;
 
             if (codigo === '') {
                 Swal.fire({ icon: 'warning', title: 'Campo obligatorio', text: 'El código es obligatorio.', confirmButtonColor: '#003366' });
@@ -542,15 +648,27 @@
                 return false;
             }
             if (metaD < 0 || metaS < 0 || metaM < 0) {
-                Swal.fire({ icon: 'warning', title: 'Metas inválidas', text: 'Las metas no pueden ser negativas.', confirmButtonColor: '#003366' });
+                Swal.fire({ icon: 'warning', title: 'Metas inválidas', text: 'Las metas de producción no pueden ser negativas.', confirmButtonColor: '#003366' });
                 return false;
             }
             if (metaD > 0 && metaS > 0 && metaS < metaD) {
-                Swal.fire({ icon: 'warning', title: 'Metas inconsistentes', text: 'La meta semanal (' + metaS.toLocaleString('es-MX', { minimumFractionDigits: 0, maximumFractionDigits: 2 }) + ') no puede ser menor a la meta diaria (' + metaD.toLocaleString('es-MX', { minimumFractionDigits: 0, maximumFractionDigits: 2 }) + ').', confirmButtonColor: '#003366' });
+                Swal.fire({ icon: 'warning', title: 'Metas de producción inconsistentes', text: 'La meta semanal (' + metaS.toLocaleString('es-MX', { minimumFractionDigits: 0, maximumFractionDigits: 2 }) + ') no puede ser menor a la meta diaria (' + metaD.toLocaleString('es-MX', { minimumFractionDigits: 0, maximumFractionDigits: 2 }) + ').', confirmButtonColor: '#003366' });
                 return false;
             }
             if (metaS > 0 && metaM > 0 && metaM < metaS) {
-                Swal.fire({ icon: 'warning', title: 'Metas inconsistentes', text: 'La meta mensual (' + metaM.toLocaleString('es-MX', { minimumFractionDigits: 0, maximumFractionDigits: 2 }) + ') no puede ser menor a la meta semanal (' + metaS.toLocaleString('es-MX', { minimumFractionDigits: 0, maximumFractionDigits: 2 }) + ').', confirmButtonColor: '#003366' });
+                Swal.fire({ icon: 'warning', title: 'Metas de producción inconsistentes', text: 'La meta mensual (' + metaM.toLocaleString('es-MX', { minimumFractionDigits: 0, maximumFractionDigits: 2 }) + ') no puede ser menor a la meta semanal (' + metaS.toLocaleString('es-MX', { minimumFractionDigits: 0, maximumFractionDigits: 2 }) + ').', confirmButtonColor: '#003366' });
+                return false;
+            }
+            if (metaVD < 0 || metaVS < 0 || metaVM < 0) {
+                Swal.fire({ icon: 'warning', title: 'Metas inválidas', text: 'Las metas de ventas no pueden ser negativas.', confirmButtonColor: '#003366' });
+                return false;
+            }
+            if (metaVD > 0 && metaVS > 0 && metaVS < metaVD) {
+                Swal.fire({ icon: 'warning', title: 'Metas de ventas inconsistentes', text: 'La meta de ventas semanal (' + metaVS.toLocaleString('es-MX', { minimumFractionDigits: 0, maximumFractionDigits: 2 }) + ') no puede ser menor a la diaria (' + metaVD.toLocaleString('es-MX', { minimumFractionDigits: 0, maximumFractionDigits: 2 }) + ').', confirmButtonColor: '#003366' });
+                return false;
+            }
+            if (metaVS > 0 && metaVM > 0 && metaVM < metaVS) {
+                Swal.fire({ icon: 'warning', title: 'Metas de ventas inconsistentes', text: 'La meta de ventas mensual (' + metaVM.toLocaleString('es-MX', { minimumFractionDigits: 0, maximumFractionDigits: 2 }) + ') no puede ser menor a la semanal (' + metaVS.toLocaleString('es-MX', { minimumFractionDigits: 0, maximumFractionDigits: 2 }) + ').', confirmButtonColor: '#003366' });
                 return false;
             }
             return true;

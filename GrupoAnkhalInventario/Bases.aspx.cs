@@ -1,5 +1,5 @@
 using GrupoAnkhalInventario.Helpers;
-﻿using GrupoAnkhalInventario.Modelo;
+using GrupoAnkhalInventario.Modelo;
 using System;
 using System.Collections.Generic;
 using System.Configuration;
@@ -134,16 +134,31 @@ namespace GrupoAnkhalInventario
             decimal metaD = ParseMeta(txtMetaDiaria.Text);
             decimal metaS = ParseMeta(txtMetaSemanal.Text);
             decimal metaM = ParseMeta(txtMetaMensual.Text);
+            decimal metaVD = ParseMeta(txtMetaVentasDiaria.Text);
+            decimal metaVS = ParseMeta(txtMetaVentasSemanal.Text);
+            decimal metaVM = ParseMeta(txtMetaVentasMensual.Text);
             if (metaD > 0 && metaS > 0 && metaS < metaD)
             {
-                SetMensajePendiente("warning", "Metas inconsistentes",
+                SetMensajePendiente("warning", "Metas de producción inconsistentes",
                     $"La meta semanal ({metaS:N2}) no puede ser menor a la meta diaria ({metaD:N2}).", "modalNueva");
                 return;
             }
             if (metaS > 0 && metaM > 0 && metaM < metaS)
             {
-                SetMensajePendiente("warning", "Metas inconsistentes",
+                SetMensajePendiente("warning", "Metas de producción inconsistentes",
                     $"La meta mensual ({metaM:N2}) no puede ser menor a la meta semanal ({metaS:N2}).", "modalNueva");
+                return;
+            }
+            if (metaVD > 0 && metaVS > 0 && metaVS < metaVD)
+            {
+                SetMensajePendiente("warning", "Metas de ventas inconsistentes",
+                    $"La meta de ventas semanal ({metaVS:N2}) no puede ser menor a la diaria ({metaVD:N2}).", "modalNueva");
+                return;
+            }
+            if (metaVS > 0 && metaVM > 0 && metaVM < metaVS)
+            {
+                SetMensajePendiente("warning", "Metas de ventas inconsistentes",
+                    $"La meta de ventas mensual ({metaVM:N2}) no puede ser menor a la semanal ({metaVS:N2}).", "modalNueva");
                 return;
             }
 
@@ -173,9 +188,12 @@ namespace GrupoAnkhalInventario
                         Responsable = txtResponsable.Text.Trim(),
                         Telefono = txtTelefono.Text.Trim(),
                         Direccion = txtDireccion.Text.Trim(),
-                        MetaDiaria = ParseMeta(txtMetaDiaria.Text),
-                        MetaSemanal = ParseMeta(txtMetaSemanal.Text),
-                        MetaMensual = ParseMeta(txtMetaMensual.Text),
+                        MetaDiaria = metaD,
+                        MetaSemanal = metaS,
+                        MetaMensual = metaM,
+                        MetaVentasDiaria = metaVD,
+                        MetaVentasSemanal = metaVS,
+                        MetaVentasMensual = metaVM,
                         Activo = true,
                         FechaCreacion = AppHelper.Ahora,
                         UsuarioAltaID = Convert.ToInt32(Session["ClaveID"])
@@ -217,16 +235,31 @@ namespace GrupoAnkhalInventario
             decimal metaD = ParseMeta(txtMetaDiariaEdit.Text);
             decimal metaS = ParseMeta(txtMetaSemanalEdit.Text);
             decimal metaM = ParseMeta(txtMetaMensualEdit.Text);
+            decimal metaVD = ParseMeta(txtMetaVentasDiariaEdit.Text);
+            decimal metaVS = ParseMeta(txtMetaVentasSemanalEdit.Text);
+            decimal metaVM = ParseMeta(txtMetaVentasMensualEdit.Text);
             if (metaD > 0 && metaS > 0 && metaS < metaD)
             {
-                SetMensajePendiente("warning", "Metas inconsistentes",
+                SetMensajePendiente("warning", "Metas de producción inconsistentes",
                     $"La meta semanal ({metaS:N2}) no puede ser menor a la meta diaria ({metaD:N2}).", "modalEditar");
                 return;
             }
             if (metaS > 0 && metaM > 0 && metaM < metaS)
             {
-                SetMensajePendiente("warning", "Metas inconsistentes",
+                SetMensajePendiente("warning", "Metas de producción inconsistentes",
                     $"La meta mensual ({metaM:N2}) no puede ser menor a la meta semanal ({metaS:N2}).", "modalEditar");
+                return;
+            }
+            if (metaVD > 0 && metaVS > 0 && metaVS < metaVD)
+            {
+                SetMensajePendiente("warning", "Metas de ventas inconsistentes",
+                    $"La meta de ventas semanal ({metaVS:N2}) no puede ser menor a la diaria ({metaVD:N2}).", "modalEditar");
+                return;
+            }
+            if (metaVS > 0 && metaVM > 0 && metaVM < metaVS)
+            {
+                SetMensajePendiente("warning", "Metas de ventas inconsistentes",
+                    $"La meta de ventas mensual ({metaVM:N2}) no puede ser menor a la semanal ({metaVS:N2}).", "modalEditar");
                 return;
             }
 
@@ -278,9 +311,12 @@ namespace GrupoAnkhalInventario
                     base_.Responsable = txtResponsableEdit.Text.Trim();
                     base_.Telefono = txtTelefonoEdit.Text.Trim();
                     base_.Direccion = txtDireccionEdit.Text.Trim();
-                    base_.MetaDiaria = ParseMeta(txtMetaDiariaEdit.Text);
-                    base_.MetaSemanal = ParseMeta(txtMetaSemanalEdit.Text);
-                    base_.MetaMensual = ParseMeta(txtMetaMensualEdit.Text);
+                    base_.MetaDiaria = metaD;
+                    base_.MetaSemanal = metaS;
+                    base_.MetaMensual = metaM;
+                    base_.MetaVentasDiaria = metaVD;
+                    base_.MetaVentasSemanal = metaVS;
+                    base_.MetaVentasMensual = metaVM;
                     base_.FechaModif = AppHelper.Ahora;
                     base_.UsuarioModifID = Convert.ToInt32(Session["ClaveID"]);
 
@@ -326,7 +362,7 @@ namespace GrupoAnkhalInventario
                     // Bloquear desactivación si la base tiene stock activo
                     if (b.Activo)
                     {
-                        bool tieneStockMat  = db.StockMateriales
+                        bool tieneStockMat = db.StockMateriales
                             .Any(s => s.BaseID == baseID && s.CantidadActual > 0);
                         bool tieneStockProd = db.StockProductos
                             .Any(s => s.BaseID == baseID && (s.CantidadBuenas > 0 || s.CantidadRechazo > 0));
@@ -407,6 +443,9 @@ namespace GrupoAnkhalInventario
             txtMetaDiaria.Text = "0";
             txtMetaSemanal.Text = "0";
             txtMetaMensual.Text = "0";
+            txtMetaVentasDiaria.Text = "0";
+            txtMetaVentasSemanal.Text = "0";
+            txtMetaVentasMensual.Text = "0";
         }
     }
 }
