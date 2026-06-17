@@ -298,6 +298,14 @@
                                 </ul>
                             </li>
 
+                            <!-- Cuentas por Pagar -->
+                            <li class="nav-item" id="menuCxP" runat="server">
+                                <a href="CuentasPorPagar.aspx" class="nav-link">
+                                    <i class="nav-icon fas fa-file-invoice-dollar"></i>
+                                    <p>Cuentas por Pagar</p>
+                                </a>
+                            </li>
+
                             <!-- Mermas -->
                             <li class="nav-item" id="menuMermas" runat="server">
                                 <a href="Mermas.aspx" class="nav-link">

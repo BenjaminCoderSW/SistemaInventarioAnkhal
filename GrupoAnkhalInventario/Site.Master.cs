@@ -33,8 +33,9 @@ namespace GrupoAnkhalInventario
                 { "entregas.aspx",    new List<string> { "Administrador", "Ventas",     "Almacen" } },
                 { "ordenes.aspx",     new List<string> { "Administrador", "Ventas",     "Almacen" } },
                 { "movimientos.aspx", new List<string> { "Administrador", "Almacen",    "Produccion", "Compras", "Jefe de planta" } },
-                { "mermas.aspx",      new List<string> { "Administrador", "Almacen",    "Produccion", "Jefe de planta" } },
+                { "mermas.aspx",          new List<string> { "Administrador", "Almacen",    "Produccion", "Jefe de planta" } },
                 { "metasproduccion.aspx", new List<string> { "Administrador", "Produccion" } },
+                { "cuentasporpagar.aspx", new List<string> { "Administrador", "Compras",   "Jefe de planta" } },
 
                 // ── Inventario (todos excepto roles no definidos) ──
                 { "inventario.aspx", new List<string>
@@ -151,6 +152,7 @@ namespace GrupoAnkhalInventario
             menuEntregas.Visible = false;
             menuOrdenes.Visible = false;
             menuMovimientos.Visible = false;
+            menuCxP.Visible = false;
             menuMermas.Visible = false;
             headerInventario.Visible = false;
             menuInventario.Visible = false;
@@ -173,6 +175,7 @@ namespace GrupoAnkhalInventario
                     menuEntregas.Visible = true;
                     menuOrdenes.Visible = true;
                     menuMovimientos.Visible = true;
+                    menuCxP.Visible = true;
                     menuMermas.Visible = true;
                     headerInventario.Visible = true;
                     menuInventario.Visible = true;
@@ -201,6 +204,7 @@ namespace GrupoAnkhalInventario
                     liMenuProveedores.Visible = true;
                     headerOperaciones.Visible = true;
                     menuMovimientos.Visible = true;
+                    menuCxP.Visible = true;
                     headerInventario.Visible = true;
                     menuInventario.Visible = true;
                     break;
@@ -241,6 +245,7 @@ namespace GrupoAnkhalInventario
                     liMenuProveedores.Visible = true;
                     headerOperaciones.Visible = true;
                     menuMovimientos.Visible = true;
+                    menuCxP.Visible = true;
                     menuMermas.Visible = true;
                     headerInventario.Visible = true;
                     menuInventario.Visible = true;

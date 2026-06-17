@@ -527,6 +527,7 @@ namespace GrupoAnkhalInventario
                         int? proveedorID = claveTipo == "ENTRADA" && !string.IsNullOrEmpty(ddlProveedor.SelectedValue)
                             ? (int?)int.Parse(ddlProveedor.SelectedValue)
                             : null;
+                        string numeroNota = txtNumeroNota.Text.Trim();
                         var lote = new Modelo.LotesMovimiento
                         {
                             Folio = folio,
@@ -537,7 +538,9 @@ namespace GrupoAnkhalInventario
                             RegistradoPorID = claveID,
                             FechaLote = AppHelper.Ahora.Date,
                             FechaRegistro = AppHelper.Ahora,
-                            ProveedorID = proveedorID
+                            ProveedorID = proveedorID,
+                            NumeroNota = (claveTipo == "ENTRADA" && !string.IsNullOrEmpty(numeroNota))
+                                         ? numeroNota : null
                         };
                         db.LotesMovimiento.InsertOnSubmit(lote);
                         db.SubmitChanges(); // obtener LoteID
@@ -593,7 +596,7 @@ namespace GrupoAnkhalInventario
                                     else if (it.tipoItem == "MermaProducto")
                                     {
                                         int d = (int)Math.Round(cantBase, MidpointRounding.AwayFromZero);
-                                        UpsertRechazoProducto(db, it.itemId, baseOrigenID.Value,  -d);
+                                        UpsertRechazoProducto(db, it.itemId, baseOrigenID.Value, -d);
                                         UpsertRechazoProducto(db, it.itemId, baseDestinoID.Value, +d);
                                     }
                                     else
@@ -635,6 +638,34 @@ namespace GrupoAnkhalInventario
                         }
 
                         db.SubmitChanges();
+
+                        // ── 3. Auto-crear CxP si es ENTRADA con proveedor ──────
+                        if (claveTipo == "ENTRADA" && lote.ProveedorID.HasValue)
+                        {
+                            decimal monto = db.Movimientos
+                                .Where(mv => mv.LoteID == lote.LoteID)
+                                .Sum(mv => mv.Cantidad * mv.Costo);
+                            if (monto > 0)
+                            {
+                                var prov = db.Proveedores
+                                    .Single(p => p.ProveedorID == lote.ProveedorID.Value);
+                                int dias = prov.DiasCredito ?? 0;
+                                db.CuentasPorPagar.InsertOnSubmit(new Modelo.CuentasPorPagar
+                                {
+                                    LoteID = lote.LoteID,
+                                    ProveedorID = lote.ProveedorID.Value,
+                                    NumeroNota = lote.NumeroNota,
+                                    FechaRecepcion = lote.FechaLote,
+                                    FechaVencimiento = lote.FechaLote.AddDays(dias),
+                                    MontoTotal = monto,
+                                    Estado = "PENDIENTE",
+                                    RegistradoPorID = claveID,
+                                    FechaRegistro = AppHelper.Ahora
+                                });
+                                db.SubmitChanges();
+                            }
+                        }
+
                         tx.Commit();
                     }
                     catch
@@ -960,6 +991,7 @@ namespace GrupoAnkhalInventario
             ddlBaseOrigen.SelectedIndex = 0;
             ddlBaseDestino.SelectedIndex = 0;
             ddlProveedor.SelectedIndex = 0;
+            txtNumeroNota.Text = "";
             txtCantidad.Text = "";
             txtCosto.Text = "";
             txtObservaciones.Text = "";

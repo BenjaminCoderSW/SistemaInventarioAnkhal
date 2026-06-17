@@ -63,26 +63,6 @@
       <Association Name="UnidadesMedida_ConversionesMaterial" Member="UnidadesMedida" ThisKey="UnidadOrigenID" OtherKey="UnidadMedidaID" Type="UnidadesMedida" IsForeignKey="true" />
     </Type>
   </Table>
-  <Table Name="dbo.LotesMovimiento" Member="LotesMovimiento">
-    <Type Name="LotesMovimiento">
-      <Column Name="LoteID" Type="System.Int32" DbType="Int NOT NULL IDENTITY" IsPrimaryKey="true" IsDbGenerated="true" CanBeNull="false" />
-      <Column Name="Folio" Type="System.String" DbType="VarChar(30) NOT NULL" CanBeNull="false" />
-      <Column Name="FechaLote" Type="System.DateTime" DbType="Date NOT NULL" CanBeNull="false" />
-      <Column Name="TipoMovimientoID" Type="System.Int32" DbType="Int NOT NULL" CanBeNull="false" />
-      <Column Name="BaseOrigenID" Type="System.Int32" DbType="Int" CanBeNull="true" />
-      <Column Name="BaseDestinoID" Type="System.Int32" DbType="Int" CanBeNull="true" />
-      <Column Name="Observaciones" Type="System.String" DbType="VarChar(500)" CanBeNull="true" />
-      <Column Name="RegistradoPorID" Type="System.Int32" DbType="Int NOT NULL" CanBeNull="false" />
-      <Column Name="FechaRegistro" Type="System.DateTime" DbType="DateTime2 NOT NULL" CanBeNull="false" />
-      <Column Name="ProveedorID" Type="System.Int32" DbType="Int" CanBeNull="true" />
-      <Association Name="LotesMovimiento_Movimientos" Member="Movimientos" ThisKey="LoteID" OtherKey="LoteID" Type="Movimientos" />
-      <Association Name="Proveedores_LotesMovimiento" Member="Proveedores" ThisKey="ProveedorID" OtherKey="ProveedorID" Type="Proveedores" IsForeignKey="true" />
-      <Association Name="TiposMovimiento_LotesMovimiento" Member="TiposMovimiento" ThisKey="TipoMovimientoID" OtherKey="TipoMovimientoID" Type="TiposMovimiento" IsForeignKey="true" />
-      <Association Name="Usuario_LotesMovimiento" Member="Usuario" ThisKey="RegistradoPorID" OtherKey="ClaveID" Type="Usuario" IsForeignKey="true" />
-      <Association Name="Bases_LotesMovimiento" Member="Bases" ThisKey="BaseDestinoID" OtherKey="BaseID" Type="Bases" IsForeignKey="true" />
-      <Association Name="Bases_LotesMovimiento1" Member="Bases1" ThisKey="BaseOrigenID" OtherKey="BaseID" Type="Bases" IsForeignKey="true" />
-    </Type>
-  </Table>
   <Table Name="dbo.NivelesMaterialBase" Member="NivelesMaterialBase">
     <Type Name="NivelesMaterialBase">
       <Column Name="NivelBaseID" Type="System.Int32" DbType="Int NOT NULL IDENTITY" IsPrimaryKey="true" IsDbGenerated="true" CanBeNull="false" />
@@ -166,9 +146,10 @@
       <Column Name="Activo" Type="System.Boolean" DbType="Bit NOT NULL" CanBeNull="false" />
       <Column Name="FechaAlta" Type="System.DateTime" DbType="DateTime2 NOT NULL" CanBeNull="false" />
       <Column Name="UsuarioAltaID" Type="System.Int32" DbType="Int" CanBeNull="true" />
-      <Association Name="Proveedores_LotesMovimiento" Member="LotesMovimiento" ThisKey="ProveedorID" OtherKey="ProveedorID" Type="LotesMovimiento" />
       <Association Name="Proveedores_ProveedorMateriales" Member="ProveedorMateriales" ThisKey="ProveedorID" OtherKey="ProveedorID" Type="ProveedorMateriales" />
       <Association Name="Proveedores_Materiales" Member="Materiales" ThisKey="ProveedorID" OtherKey="ProveedorPrincipalID" Type="Materiales" />
+      <Association Name="Proveedores_LotesMovimiento" Member="LotesMovimiento" ThisKey="ProveedorID" OtherKey="ProveedorID" Type="LotesMovimiento" />
+      <Association Name="Proveedores_CuentasPorPagar" Member="CuentasPorPagar" ThisKey="ProveedorID" OtherKey="ProveedorID" Type="CuentasPorPagar" />
       <Association Name="Usuario_Proveedores" Member="Usuario" ThisKey="UsuarioAltaID" OtherKey="ClaveID" Type="Usuario" IsForeignKey="true" />
     </Type>
   </Table>
@@ -221,8 +202,8 @@
       <Column Name="Nombre" Type="System.String" DbType="VarChar(100) NOT NULL" CanBeNull="false" />
       <Column Name="AfectaStock" Type="System.Int16" DbType="SmallInt NOT NULL" CanBeNull="false" />
       <Column Name="Activo" Type="System.Boolean" DbType="Bit NOT NULL" CanBeNull="false" />
-      <Association Name="TiposMovimiento_LotesMovimiento" Member="LotesMovimiento" ThisKey="TipoMovimientoID" OtherKey="TipoMovimientoID" Type="LotesMovimiento" />
       <Association Name="TiposMovimiento_Movimientos" Member="Movimientos" ThisKey="TipoMovimientoID" OtherKey="TipoMovimientoID" Type="Movimientos" />
+      <Association Name="TiposMovimiento_LotesMovimiento" Member="LotesMovimiento" ThisKey="TipoMovimientoID" OtherKey="TipoMovimientoID" Type="LotesMovimiento" />
     </Type>
   </Table>
   <Table Name="dbo.TiposProducto" Member="TiposProducto">
@@ -252,7 +233,6 @@
       <Column Name="UltimoIntento" Type="System.DateTime" DbType="DateTime2" CanBeNull="true" />
       <Association Name="Usuario_Clientes" Member="Clientes" ThisKey="ClaveID" OtherKey="UsuarioAltaID" Type="Clientes" />
       <Association Name="Usuario_ConversionesMaterial" Member="ConversionesMaterial" ThisKey="ClaveID" OtherKey="UsuarioAltaID" Type="ConversionesMaterial" />
-      <Association Name="Usuario_LotesMovimiento" Member="LotesMovimiento" ThisKey="ClaveID" OtherKey="RegistradoPorID" Type="LotesMovimiento" />
       <Association Name="Usuario_Produccion" Member="Produccion" ThisKey="ClaveID" OtherKey="RegistradoPorID" Type="Produccion" />
       <Association Name="Usuario_Proveedores" Member="Proveedores" ThisKey="ClaveID" OtherKey="UsuarioAltaID" Type="Proveedores" />
       <Association Name="Usuario_Usuario" Member="Usuario3" ThisKey="ClaveID" OtherKey="UsuarioAltaID" Type="Usuario" />
@@ -269,6 +249,9 @@
       <Association Name="Usuario_Entregas" Member="Entregas" ThisKey="ClaveID" OtherKey="RegistradoPorID" Type="Entregas" />
       <Association Name="Usuario_Bases" Member="Bases" ThisKey="ClaveID" OtherKey="UsuarioAltaID" Type="Bases" />
       <Association Name="Usuario_Bases1" Member="Bases1" ThisKey="ClaveID" OtherKey="UsuarioModifID" Type="Bases" />
+      <Association Name="Usuario_LotesMovimiento" Member="LotesMovimiento" ThisKey="ClaveID" OtherKey="RegistradoPorID" Type="LotesMovimiento" />
+      <Association Name="Usuario_CuentasPorPagar" Member="CuentasPorPagar" ThisKey="ClaveID" OtherKey="PagadaPorID" Type="CuentasPorPagar" />
+      <Association Name="Usuario_CuentasPorPagar1" Member="CuentasPorPagar1" ThisKey="ClaveID" OtherKey="RegistradoPorID" Type="CuentasPorPagar" />
       <Association Name="Usuario_Usuario" Member="Usuario2" ThisKey="UsuarioAltaID" OtherKey="ClaveID" Type="Usuario" IsForeignKey="true" />
     </Type>
   </Table>
@@ -394,13 +377,13 @@
       <Association Name="Produccion_Movimientos" Member="Produccion" ThisKey="ProduccionID" OtherKey="ProduccionID" Type="Produccion" IsForeignKey="true" />
       <Association Name="Usuario_Movimientos" Member="Usuario" ThisKey="RegistradoPorID" OtherKey="ClaveID" Type="Usuario" IsForeignKey="true" />
       <Association Name="TiposMovimiento_Movimientos" Member="TiposMovimiento" ThisKey="TipoMovimientoID" OtherKey="TipoMovimientoID" Type="TiposMovimiento" IsForeignKey="true" />
-      <Association Name="LotesMovimiento_Movimientos" Member="LotesMovimiento" ThisKey="LoteID" OtherKey="LoteID" Type="LotesMovimiento" IsForeignKey="true" />
       <Association Name="Productos_Movimientos" Member="Productos" ThisKey="ProductoID" OtherKey="ProductoID" Type="Productos" IsForeignKey="true" />
       <Association Name="Materiales_Movimientos" Member="Materiales" ThisKey="MaterialID" OtherKey="MaterialID" Type="Materiales" IsForeignKey="true" />
       <Association Name="UnidadesMedida_Movimientos" Member="UnidadesMedida" ThisKey="UnidadCapturaID" OtherKey="UnidadMedidaID" Type="UnidadesMedida" IsForeignKey="true" />
       <Association Name="Entregas_Movimientos" Member="Entregas" ThisKey="EntregaID" OtherKey="EntregaID" Type="Entregas" IsForeignKey="true" />
       <Association Name="Bases_Movimientos" Member="Bases" ThisKey="BaseDestinoID" OtherKey="BaseID" Type="Bases" IsForeignKey="true" />
       <Association Name="Bases_Movimientos1" Member="Bases1" ThisKey="BaseOrigenID" OtherKey="BaseID" Type="Bases" IsForeignKey="true" />
+      <Association Name="LotesMovimiento_Movimientos" Member="LotesMovimiento" ThisKey="LoteID" OtherKey="LoteID" Type="LotesMovimiento" IsForeignKey="true" />
     </Type>
   </Table>
   <Table Name="dbo.DetalleEntregas" Member="DetalleEntregas">
@@ -583,8 +566,6 @@
       <Column Name="MetaVentasDiaria" Type="System.Decimal" DbType="Decimal(12,2) NOT NULL" CanBeNull="false" />
       <Column Name="MetaVentasSemanal" Type="System.Decimal" DbType="Decimal(12,2) NOT NULL" CanBeNull="false" />
       <Column Name="MetaVentasMensual" Type="System.Decimal" DbType="Decimal(12,2) NOT NULL" CanBeNull="false" />
-      <Association Name="Bases_LotesMovimiento" Member="LotesMovimiento" ThisKey="BaseID" OtherKey="BaseDestinoID" Type="LotesMovimiento" />
-      <Association Name="Bases_LotesMovimiento1" Member="LotesMovimiento1" ThisKey="BaseID" OtherKey="BaseOrigenID" Type="LotesMovimiento" />
       <Association Name="Bases_NivelesMaterialBase" Member="NivelesMaterialBase" ThisKey="BaseID" OtherKey="BaseID" Type="NivelesMaterialBase" />
       <Association Name="Bases_Produccion" Member="Produccion" ThisKey="BaseID" OtherKey="BaseID" Type="Produccion" />
       <Association Name="Bases_StockMateriales" Member="StockMateriales" ThisKey="BaseID" OtherKey="BaseID" Type="StockMateriales" />
@@ -594,8 +575,54 @@
       <Association Name="Bases_Movimientos1" Member="Movimientos1" ThisKey="BaseID" OtherKey="BaseOrigenID" Type="Movimientos" />
       <Association Name="Bases_Ordenes" Member="Ordenes" ThisKey="BaseID" OtherKey="BaseOrigenID" Type="Ordenes" />
       <Association Name="Bases_Entregas" Member="Entregas" ThisKey="BaseID" OtherKey="BaseOrigenID" Type="Entregas" />
+      <Association Name="Bases_LotesMovimiento" Member="LotesMovimiento" ThisKey="BaseID" OtherKey="BaseDestinoID" Type="LotesMovimiento" />
+      <Association Name="Bases_LotesMovimiento1" Member="LotesMovimiento1" ThisKey="BaseID" OtherKey="BaseOrigenID" Type="LotesMovimiento" />
       <Association Name="Usuario_Bases" Member="Usuario" ThisKey="UsuarioAltaID" OtherKey="ClaveID" Type="Usuario" IsForeignKey="true" />
       <Association Name="Usuario_Bases1" Member="Usuario1" ThisKey="UsuarioModifID" OtherKey="ClaveID" Type="Usuario" IsForeignKey="true" />
+    </Type>
+  </Table>
+  <Table Name="dbo.LotesMovimiento" Member="LotesMovimiento">
+    <Type Name="LotesMovimiento">
+      <Column Name="LoteID" Type="System.Int32" DbType="Int NOT NULL IDENTITY" IsPrimaryKey="true" IsDbGenerated="true" CanBeNull="false" />
+      <Column Name="Folio" Type="System.String" DbType="VarChar(30) NOT NULL" CanBeNull="false" />
+      <Column Name="FechaLote" Type="System.DateTime" DbType="Date NOT NULL" CanBeNull="false" />
+      <Column Name="TipoMovimientoID" Type="System.Int32" DbType="Int NOT NULL" CanBeNull="false" />
+      <Column Name="BaseOrigenID" Type="System.Int32" DbType="Int" CanBeNull="true" />
+      <Column Name="BaseDestinoID" Type="System.Int32" DbType="Int" CanBeNull="true" />
+      <Column Name="Observaciones" Type="System.String" DbType="VarChar(500)" CanBeNull="true" />
+      <Column Name="RegistradoPorID" Type="System.Int32" DbType="Int NOT NULL" CanBeNull="false" />
+      <Column Name="FechaRegistro" Type="System.DateTime" DbType="DateTime2 NOT NULL" CanBeNull="false" />
+      <Column Name="ProveedorID" Type="System.Int32" DbType="Int" CanBeNull="true" />
+      <Column Name="NumeroNota" Type="System.String" DbType="VarChar(50)" CanBeNull="true" />
+      <Association Name="LotesMovimiento_Movimientos" Member="Movimientos" ThisKey="LoteID" OtherKey="LoteID" Type="Movimientos" />
+      <Association Name="LotesMovimiento_CuentasPorPagar" Member="CuentasPorPagar" ThisKey="LoteID" OtherKey="LoteID" Type="CuentasPorPagar" />
+      <Association Name="Bases_LotesMovimiento" Member="Bases" ThisKey="BaseDestinoID" OtherKey="BaseID" Type="Bases" IsForeignKey="true" />
+      <Association Name="Bases_LotesMovimiento1" Member="Bases1" ThisKey="BaseOrigenID" OtherKey="BaseID" Type="Bases" IsForeignKey="true" />
+      <Association Name="Proveedores_LotesMovimiento" Member="Proveedores" ThisKey="ProveedorID" OtherKey="ProveedorID" Type="Proveedores" IsForeignKey="true" />
+      <Association Name="TiposMovimiento_LotesMovimiento" Member="TiposMovimiento" ThisKey="TipoMovimientoID" OtherKey="TipoMovimientoID" Type="TiposMovimiento" IsForeignKey="true" />
+      <Association Name="Usuario_LotesMovimiento" Member="Usuario" ThisKey="RegistradoPorID" OtherKey="ClaveID" Type="Usuario" IsForeignKey="true" />
+    </Type>
+  </Table>
+  <Table Name="dbo.CuentasPorPagar" Member="CuentasPorPagar">
+    <Type Name="CuentasPorPagar">
+      <Column Name="CuentaPorPagarID" Type="System.Int32" DbType="Int NOT NULL IDENTITY" IsPrimaryKey="true" IsDbGenerated="true" CanBeNull="false" />
+      <Column Name="LoteID" Type="System.Int32" DbType="Int NOT NULL" CanBeNull="false" />
+      <Column Name="ProveedorID" Type="System.Int32" DbType="Int NOT NULL" CanBeNull="false" />
+      <Column Name="NumeroNota" Type="System.String" DbType="VarChar(50)" CanBeNull="true" />
+      <Column Name="FechaRecepcion" Type="System.DateTime" DbType="Date NOT NULL" CanBeNull="false" />
+      <Column Name="FechaVencimiento" Type="System.DateTime" DbType="Date NOT NULL" CanBeNull="false" />
+      <Column Name="MontoTotal" Type="System.Decimal" DbType="Decimal(18,2) NOT NULL" CanBeNull="false" />
+      <Column Name="Estado" Type="System.String" DbType="VarChar(20) NOT NULL" CanBeNull="false" />
+      <Column Name="FechaPago" Type="System.DateTime" DbType="DateTime2" CanBeNull="true" />
+      <Column Name="ReferenciaPago" Type="System.String" DbType="VarChar(100)" CanBeNull="true" />
+      <Column Name="Observaciones" Type="System.String" DbType="VarChar(500)" CanBeNull="true" />
+      <Column Name="PagadaPorID" Type="System.Int32" DbType="Int" CanBeNull="true" />
+      <Column Name="FechaRegistro" Type="System.DateTime" DbType="DateTime2 NOT NULL" CanBeNull="false" />
+      <Column Name="RegistradoPorID" Type="System.Int32" DbType="Int NOT NULL" CanBeNull="false" />
+      <Association Name="LotesMovimiento_CuentasPorPagar" Member="LotesMovimiento" ThisKey="LoteID" OtherKey="LoteID" Type="LotesMovimiento" IsForeignKey="true" />
+      <Association Name="Usuario_CuentasPorPagar" Member="Usuario" ThisKey="PagadaPorID" OtherKey="ClaveID" Type="Usuario" IsForeignKey="true" />
+      <Association Name="Proveedores_CuentasPorPagar" Member="Proveedores" ThisKey="ProveedorID" OtherKey="ProveedorID" Type="Proveedores" IsForeignKey="true" />
+      <Association Name="Usuario_CuentasPorPagar1" Member="Usuario1" ThisKey="RegistradoPorID" OtherKey="ClaveID" Type="Usuario" IsForeignKey="true" />
     </Type>
   </Table>
 </Database>

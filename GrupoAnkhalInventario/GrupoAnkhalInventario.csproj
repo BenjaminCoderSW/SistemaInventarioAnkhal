@@ -92,6 +92,7 @@
     <Content Include="Bases.aspx" />
     <Content Include="css\estilosMenu.css" />
     <Content Include="css\gridviewPantalla.css" />
+    <Content Include="CuentasPorPagar.aspx" />
     <Content Include="Default.aspx" />
     <Content Include="dist\css\adminlte.css" />
     <Content Include="dist\css\adminlte.min.css" />
@@ -2043,6 +2044,13 @@
     </Compile>
     <Compile Include="Bases.aspx.designer.cs">
       <DependentUpon>Bases.aspx</DependentUpon>
+    </Compile>
+    <Compile Include="CuentasPorPagar.aspx.cs">
+      <DependentUpon>CuentasPorPagar.aspx</DependentUpon>
+      <SubType>ASPXCodeBehind</SubType>
+    </Compile>
+    <Compile Include="CuentasPorPagar.aspx.designer.cs">
+      <DependentUpon>CuentasPorPagar.aspx</DependentUpon>
     </Compile>
     <Compile Include="Default.aspx.cs">
       <DependentUpon>Default.aspx</DependentUpon>

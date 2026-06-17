@@ -410,6 +410,18 @@
           </div>
         </div>
 
+        <!-- ── NÚM. NOTA/REMISIÓN (solo visible en ENTRADA) ────────── -->
+        <div class="row" id="rowNumeroNota" style="display:none;">
+          <div class="col-md-6">
+            <div class="form-group">
+              <label>No. Nota / Remisión del Proveedor</label>
+              <asp:TextBox ID="txtNumeroNota" runat="server" CssClass="form-control"
+                  placeholder="Ej: 1523" MaxLength="50"></asp:TextBox>
+              <small class="form-text text-muted">Número de la nota que entrega el proveedor</small>
+            </div>
+          </div>
+        </div>
+
         <!-- ── ZONA AGREGAR ÍTEM ─────────────────────────────────────── -->
         <div class="lote-seccion-items"><i class="fas fa-plus-circle mr-1"></i> Agregar ítem al lote</div>
 
@@ -619,6 +631,8 @@
         txtCosto.disabled = false;
         document.getElementById('<%= lblTotal.ClientID %>').innerText = '0.00';
         document.getElementById('<%= txtObservaciones.ClientID %>').value = '';
+        document.getElementById('<%= txtNumeroNota.ClientID %>').value = '';
+        document.getElementById('rowNumeroNota').style.display = 'none';
         document.getElementById('divBaseOrigen').style.display = 'none';
         document.getElementById('divBaseDestino').style.display = 'none';
         document.getElementById('divUnidadCaptura').style.display = 'none';
@@ -735,7 +749,7 @@
 
             var tipoDisplay = it.tipoItem === 'MermaMaterial' ? 'Merma Mat.'
                 : it.tipoItem === 'MermaProducto' ? 'Merma Prod.'
-                : it.tipoItem;
+                    : it.tipoItem;
 
             var tr = '<tr>' +
                 '<td>' + (i + 1) + '</td>' +
@@ -791,14 +805,16 @@
         }
 
         _prevTipoMovimiento = tipo;
-        var divOrigen    = document.getElementById('divBaseOrigen');
-        var divDestino   = document.getElementById('divBaseDestino');
-        var rowProveedor = document.getElementById('rowProveedor');
-        var txtCosto     = document.getElementById('<%= txtCosto.ClientID %>');
+        var divOrigen     = document.getElementById('divBaseOrigen');
+        var divDestino    = document.getElementById('divBaseDestino');
+        var rowProveedor  = document.getElementById('rowProveedor');
+        var rowNumeroNota = document.getElementById('rowNumeroNota');
+        var txtCosto      = document.getElementById('<%= txtCosto.ClientID %>');
 
-        divOrigen.style.display    = 'none';
-        divDestino.style.display   = 'none';
-        rowProveedor.style.display = 'none';
+        divOrigen.style.display     = 'none';
+        divDestino.style.display    = 'none';
+        rowProveedor.style.display  = 'none';
+        rowNumeroNota.style.display = 'none';
 
         if (tipo === '3') {
             txtCosto.value    = '0.00';
@@ -808,7 +824,7 @@
         }
 
         switch (tipo) {
-            case '1': divDestino.style.display = 'block'; rowProveedor.style.display = 'block'; break;
+            case '1': divDestino.style.display = 'block'; rowProveedor.style.display = 'block'; rowNumeroNota.style.display = 'block'; break;
             case '3': divOrigen.style.display = 'block'; divDestino.style.display = 'block'; break;
             case '6': divDestino.style.display = 'block'; break;
             case '7': divOrigen.style.display  = 'block'; break;
