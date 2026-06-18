@@ -5,6 +5,7 @@ using System;
 using System.Collections.Generic;
 using System.Configuration;
 using System.Linq;
+using System.Web;
 using System.Web.Script.Serialization;
 using System.Web.UI;
 using System.Web.UI.WebControls;
@@ -31,8 +32,6 @@ namespace GrupoAnkhalInventario
             if (!IsPostBack)
             {
                 CargarProveedores();
-                CargarDdlMaterialesAgregar();
-                CargarDdlProductosAgregar();
             }
             else
             {
@@ -46,8 +45,8 @@ namespace GrupoAnkhalInventario
         {
             string buscar = (txtBuscar.Text ?? "").Trim().ToLower();
             string filEst = ddlFiltrEstado.SelectedValue;
-            int pageIdx   = gvProveedores.PageIndex;
-            int pageSz    = gvProveedores.PageSize;
+            int pageIdx = gvProveedores.PageIndex;
+            int pageSz = gvProveedores.PageSize;
 
             using (var db = NuevoDb(tracking: false))
             {
@@ -114,35 +113,35 @@ namespace GrupoAnkhalInventario
                 {
                     db.Proveedores.InsertOnSubmit(new Proveedores
                     {
-                        Nombre            = nombreTrim,
-                        Contacto          = NullIfEmpty(txtContacto.Text),
-                        Telefono          = NullIfEmpty(txtTelefono.Text),
-                        Email             = NullIfEmpty(txtEmail.Text),
-                        PaginaWeb         = NullIfEmpty(txtPaginaWeb.Text),
-                        TipoEmpresa       = NullIfEmpty(ddlTipoEmpresa.SelectedValue),
-                        Nacionalidad      = NullIfEmpty(txtNacionalidad.Text),
-                        TipoPersona       = NullIfEmpty(ddlTipoPersona.SelectedValue),
+                        Nombre = nombreTrim,
+                        Contacto = NullIfEmpty(txtContacto.Text),
+                        Telefono = NullIfEmpty(txtTelefono.Text),
+                        Email = NullIfEmpty(txtEmail.Text),
+                        PaginaWeb = NullIfEmpty(txtPaginaWeb.Text),
+                        TipoEmpresa = NullIfEmpty(ddlTipoEmpresa.SelectedValue),
+                        Nacionalidad = NullIfEmpty(txtNacionalidad.Text),
+                        TipoPersona = NullIfEmpty(ddlTipoPersona.SelectedValue),
                         RazonSocialFiscal = NullIfEmpty(txtRazonSocialFiscal.Text),
-                        RFC               = NullIfEmpty(txtRFC.Text)?.ToUpper(),
-                        RegimenFiscal     = NullIfEmpty(ddlRegimenFiscal.SelectedValue),
-                        CURP              = NullIfEmpty(txtCURP.Text)?.ToUpper(),
-                        Banco             = NullIfEmpty(txtBanco.Text),
-                        CLABE             = NullIfEmpty(txtCLABE.Text),
-                        CuentaBancaria    = NullIfEmpty(txtCuentaBancaria.Text),
-                        TitularCuenta     = NullIfEmpty(txtTitularCuenta.Text),
-                        DiasCredito       = ParseNullableInt(txtDiasCredito.Text),
-                        LimiteCredito     = ParseNullableDecimal(txtLimiteCredito.Text),
-                        Pais              = NullIfEmpty(txtPais.Text),
-                        CodigoPostal      = NullIfEmpty(txtCodigoPostal.Text),
-                        Estado            = NullIfEmpty(txtEstado.Text),
-                        Municipio         = NullIfEmpty(txtMunicipio.Text),
-                        Colonia           = NullIfEmpty(txtColonia.Text),
-                        NumExt            = NullIfEmpty(txtNumExt.Text),
-                        NumInt            = NullIfEmpty(txtNumInt.Text),
-                        Referencia        = NullIfEmpty(txtReferencia.Text),
-                        Activo            = true,
-                        FechaAlta         = AppHelper.Ahora,
-                        UsuarioAltaID     = Convert.ToInt32(Session["ClaveID"])
+                        RFC = NullIfEmpty(txtRFC.Text)?.ToUpper(),
+                        RegimenFiscal = NullIfEmpty(ddlRegimenFiscal.SelectedValue),
+                        CURP = NullIfEmpty(txtCURP.Text)?.ToUpper(),
+                        Banco = NullIfEmpty(txtBanco.Text),
+                        CLABE = NullIfEmpty(txtCLABE.Text),
+                        CuentaBancaria = NullIfEmpty(txtCuentaBancaria.Text),
+                        TitularCuenta = NullIfEmpty(txtTitularCuenta.Text),
+                        DiasCredito = ParseNullableInt(txtDiasCredito.Text),
+                        LimiteCredito = ParseNullableDecimal(txtLimiteCredito.Text),
+                        Pais = NullIfEmpty(txtPais.Text),
+                        CodigoPostal = NullIfEmpty(txtCodigoPostal.Text),
+                        Estado = NullIfEmpty(txtEstado.Text),
+                        Municipio = NullIfEmpty(txtMunicipio.Text),
+                        Colonia = NullIfEmpty(txtColonia.Text),
+                        NumExt = NullIfEmpty(txtNumExt.Text),
+                        NumInt = NullIfEmpty(txtNumInt.Text),
+                        Referencia = NullIfEmpty(txtReferencia.Text),
+                        Activo = true,
+                        FechaAlta = AppHelper.Ahora,
+                        UsuarioAltaID = Convert.ToInt32(Session["ClaveID"])
                     });
                     db.SubmitChanges();
                     LimpiarNuevo();
@@ -183,32 +182,32 @@ namespace GrupoAnkhalInventario
                     var p2 = db.Proveedores.FirstOrDefault(p => p.ProveedorID == proveedorID);
                     if (p2 == null) { SetMsg("error", "Error", "No se encontró el proveedor a editar."); return; }
 
-                    p2.Nombre            = nombreTrim;
-                    p2.Contacto          = NullIfEmpty(txtContactoEdit.Text);
-                    p2.Telefono          = NullIfEmpty(txtTelefonoEdit.Text);
-                    p2.Email             = NullIfEmpty(txtEmailEdit.Text);
-                    p2.PaginaWeb         = NullIfEmpty(txtPaginaWebEdit.Text);
-                    p2.TipoEmpresa       = NullIfEmpty(ddlTipoEmpresaEdit.SelectedValue);
-                    p2.Nacionalidad      = NullIfEmpty(txtNacionalidadEdit.Text);
-                    p2.TipoPersona       = NullIfEmpty(ddlTipoPersonaEdit.SelectedValue);
+                    p2.Nombre = nombreTrim;
+                    p2.Contacto = NullIfEmpty(txtContactoEdit.Text);
+                    p2.Telefono = NullIfEmpty(txtTelefonoEdit.Text);
+                    p2.Email = NullIfEmpty(txtEmailEdit.Text);
+                    p2.PaginaWeb = NullIfEmpty(txtPaginaWebEdit.Text);
+                    p2.TipoEmpresa = NullIfEmpty(ddlTipoEmpresaEdit.SelectedValue);
+                    p2.Nacionalidad = NullIfEmpty(txtNacionalidadEdit.Text);
+                    p2.TipoPersona = NullIfEmpty(ddlTipoPersonaEdit.SelectedValue);
                     p2.RazonSocialFiscal = NullIfEmpty(txtRazonSocialFiscalEdit.Text);
-                    p2.RFC               = NullIfEmpty(txtRFCEdit.Text)?.ToUpper();
-                    p2.RegimenFiscal     = NullIfEmpty(ddlRegimenFiscalEdit.SelectedValue);
-                    p2.CURP              = NullIfEmpty(txtCURPEdit.Text)?.ToUpper();
-                    p2.Banco             = NullIfEmpty(txtBancoEdit.Text);
-                    p2.CLABE             = NullIfEmpty(txtCLABEEdit.Text);
-                    p2.CuentaBancaria    = NullIfEmpty(txtCuentaBancariaEdit.Text);
-                    p2.TitularCuenta     = NullIfEmpty(txtTitularCuentaEdit.Text);
-                    p2.DiasCredito       = ParseNullableInt(txtDiasCreditoEdit.Text);
-                    p2.LimiteCredito     = ParseNullableDecimal(txtLimiteCreditoEdit.Text);
-                    p2.Pais              = NullIfEmpty(txtPaisEdit.Text);
-                    p2.CodigoPostal      = NullIfEmpty(txtCodigoPostalEdit.Text);
-                    p2.Estado            = NullIfEmpty(txtEstadoEdit.Text);
-                    p2.Municipio         = NullIfEmpty(txtMunicipioEdit.Text);
-                    p2.Colonia           = NullIfEmpty(txtColoniaEdit.Text);
-                    p2.NumExt            = NullIfEmpty(txtNumExtEdit.Text);
-                    p2.NumInt            = NullIfEmpty(txtNumIntEdit.Text);
-                    p2.Referencia        = NullIfEmpty(txtReferenciaEdit.Text);
+                    p2.RFC = NullIfEmpty(txtRFCEdit.Text)?.ToUpper();
+                    p2.RegimenFiscal = NullIfEmpty(ddlRegimenFiscalEdit.SelectedValue);
+                    p2.CURP = NullIfEmpty(txtCURPEdit.Text)?.ToUpper();
+                    p2.Banco = NullIfEmpty(txtBancoEdit.Text);
+                    p2.CLABE = NullIfEmpty(txtCLABEEdit.Text);
+                    p2.CuentaBancaria = NullIfEmpty(txtCuentaBancariaEdit.Text);
+                    p2.TitularCuenta = NullIfEmpty(txtTitularCuentaEdit.Text);
+                    p2.DiasCredito = ParseNullableInt(txtDiasCreditoEdit.Text);
+                    p2.LimiteCredito = ParseNullableDecimal(txtLimiteCreditoEdit.Text);
+                    p2.Pais = NullIfEmpty(txtPaisEdit.Text);
+                    p2.CodigoPostal = NullIfEmpty(txtCodigoPostalEdit.Text);
+                    p2.Estado = NullIfEmpty(txtEstadoEdit.Text);
+                    p2.Municipio = NullIfEmpty(txtMunicipioEdit.Text);
+                    p2.Colonia = NullIfEmpty(txtColoniaEdit.Text);
+                    p2.NumExt = NullIfEmpty(txtNumExtEdit.Text);
+                    p2.NumInt = NullIfEmpty(txtNumIntEdit.Text);
+                    p2.Referencia = NullIfEmpty(txtReferenciaEdit.Text);
 
                     db.SubmitChanges();
                     CargarProveedores();
@@ -249,24 +248,6 @@ namespace GrupoAnkhalInventario
         }
 
         // ══ MÓDULO PRODUCTOS POR PROVEEDOR ════════════════════════════════════
-
-        private void CargarDdlProductosAgregar()
-        {
-            using (var db = NuevoDb(false))
-            {
-                var prods = db.Productos
-                    .Where(p => p.Activo)
-                    .OrderBy(p => p.Codigo)
-                    .Select(p => new { p.ProductoID, p.Codigo, p.Descripcion })
-                    .ToList();
-
-                ddlProductoAgregar.Items.Clear();
-                ddlProductoAgregar.Items.Add(new ListItem("-- Seleccionar --", ""));
-                foreach (var p in prods)
-                    ddlProductoAgregar.Items.Add(
-                        new ListItem("[" + p.Codigo + "] " + p.Descripcion, p.ProductoID.ToString()));
-            }
-        }
 
         private void CargarProductosProveedor(int proveedorID)
         {
@@ -316,11 +297,11 @@ namespace GrupoAnkhalInventario
                 var vm = pps.Select(pp => new
                 {
                     pp.ProveedorProductoID,
-                    Codigo        = prods.ContainsKey(pp.ProductoID) ? prods[pp.ProductoID].Codigo      : "",
-                    Producto      = prods.ContainsKey(pp.ProductoID) ? prods[pp.ProductoID].Descripcion : "",
+                    Codigo = prods.ContainsKey(pp.ProductoID) ? prods[pp.ProductoID].Codigo : "",
+                    Producto = prods.ContainsKey(pp.ProductoID) ? prods[pp.ProductoID].Descripcion : "",
                     PrecioVigente = preciosVigentes.ContainsKey(pp.ProveedorProductoID)
                                     ? preciosVigentes[pp.ProveedorProductoID].Precio : 0m,
-                    FechaVigente  = preciosVigentes.ContainsKey(pp.ProveedorProductoID)
+                    FechaVigente = preciosVigentes.ContainsKey(pp.ProveedorProductoID)
                                     ? (DateTime?)preciosVigentes[pp.ProveedorProductoID].FechaInicio
                                     : (DateTime?)null,
                     pp.Activo
@@ -354,7 +335,7 @@ namespace GrupoAnkhalInventario
                     return;
                 }
 
-                var claveIds       = hist.Select(h => h.RegistradoPorID).Distinct().ToList();
+                var claveIds = hist.Select(h => h.RegistradoPorID).Distinct().ToList();
                 var claveToUsuario = db.DatosUsuario
                     .Where(du => claveIds.Contains(du.ClaveID))
                     .Select(du => new { du.ClaveID, du.UsuarioID })
@@ -404,9 +385,9 @@ namespace GrupoAnkhalInventario
             int proveedorID = Convert.ToInt32(hdnProductosProveedorID.Value);
             int productoID;
 
-            if (!int.TryParse(ddlProductoAgregar.SelectedValue, out productoID) || productoID == 0)
+            if (!int.TryParse(hdnProductoAgregarID.Value, out productoID) || productoID == 0)
             {
-                SetMsg("warning", "Producto requerido", "Seleccione un producto de la lista.", "modalProductos");
+                SetMsg("warning", "Producto requerido", "Busque y seleccione un producto de la lista.", "modalProductos");
                 return;
             }
 
@@ -435,10 +416,10 @@ namespace GrupoAnkhalInventario
                 {
                     var pp = new ProveedorProductos
                     {
-                        ProveedorID   = proveedorID,
-                        ProductoID    = productoID,
-                        Activo        = true,
-                        FechaAlta     = AppHelper.Ahora,
+                        ProveedorID = proveedorID,
+                        ProductoID = productoID,
+                        Activo = true,
+                        FechaAlta = AppHelper.Ahora,
                         UsuarioAltaID = claveID
                     };
                     db.ProveedorProductos.InsertOnSubmit(pp);
@@ -447,16 +428,17 @@ namespace GrupoAnkhalInventario
                     db.HistorialPreciosProductos.InsertOnSubmit(new HistorialPreciosProductos
                     {
                         ProveedorProductoID = pp.ProveedorProductoID,
-                        Precio              = precio,
-                        FechaInicio         = AppHelper.Hoy,
-                        Notas               = "Precio inicial",
-                        RegistradoPorID     = claveID,
-                        FechaRegistro       = AppHelper.Ahora
+                        Precio = precio,
+                        FechaInicio = AppHelper.Hoy,
+                        Notas = "Precio inicial",
+                        RegistradoPorID = claveID,
+                        FechaRegistro = AppHelper.Ahora
                     });
                     db.SubmitChanges();
 
-                    ddlProductoAgregar.SelectedIndex   = 0;
-                    txtPrecioAgregarProducto.Text       = "";
+                    hdnProductoAgregarID.Value = "";
+                    hdnProductoAgregarNombre.Value = "";
+                    txtPrecioAgregarProducto.Text = "";
 
                     CargarProductosProveedor(proveedorID);
                     SetMsg("success", "¡Producto agregado!",
@@ -475,7 +457,7 @@ namespace GrupoAnkhalInventario
         protected void btnActualizarPrecioProducto_Click(object sender, EventArgs e)
         {
             if (string.IsNullOrWhiteSpace(hdnProveedorProductoID.Value)) return;
-            int ppID    = Convert.ToInt32(hdnProveedorProductoID.Value);
+            int ppID = Convert.ToInt32(hdnProveedorProductoID.Value);
             int claveID = Convert.ToInt32(Session["ClaveID"]);
 
             decimal nuevoPrecio;
@@ -502,11 +484,11 @@ namespace GrupoAnkhalInventario
                     db.HistorialPreciosProductos.InsertOnSubmit(new HistorialPreciosProductos
                     {
                         ProveedorProductoID = ppID,
-                        Precio              = nuevoPrecio,
-                        FechaInicio         = fechaVigencia.Date,
-                        Notas               = nota,
-                        RegistradoPorID     = claveID,
-                        FechaRegistro       = AppHelper.Ahora
+                        Precio = nuevoPrecio,
+                        FechaInicio = fechaVigencia.Date,
+                        Notas = nota,
+                        RegistradoPorID = claveID,
+                        FechaRegistro = AppHelper.Ahora
                     });
                     db.SubmitChanges();
 
@@ -527,8 +509,8 @@ namespace GrupoAnkhalInventario
 
         protected void btnAccionProductos_Click(object sender, EventArgs e)
         {
-            string accion      = hdnAccionProductos.Value ?? "";
-            int    proveedorID = string.IsNullOrWhiteSpace(hdnProductosProveedorID.Value)
+            string accion = hdnAccionProductos.Value ?? "";
+            int proveedorID = string.IsNullOrWhiteSpace(hdnProductosProveedorID.Value)
                                  ? 0 : Convert.ToInt32(hdnProductosProveedorID.Value);
 
             if (accion == "cargar")
@@ -605,32 +587,32 @@ namespace GrupoAnkhalInventario
 
         private void LimpiarNuevo()
         {
-            txtNombre.Text                  = "";
-            txtContacto.Text                = "";
-            txtTelefono.Text                = "";
-            txtEmail.Text                   = "";
-            txtPaginaWeb.Text               = "";
-            ddlTipoEmpresa.SelectedIndex    = 0;
-            txtNacionalidad.Text            = "";
-            ddlTipoPersona.SelectedIndex    = 0;
-            txtRazonSocialFiscal.Text       = "";
-            txtRFC.Text                     = "";
-            ddlRegimenFiscal.SelectedIndex  = 0;
-            txtCURP.Text                    = "";
-            txtBanco.Text                   = "";
-            txtCLABE.Text                   = "";
-            txtCuentaBancaria.Text          = "";
-            txtTitularCuenta.Text           = "";
-            txtDiasCredito.Text             = "";
-            txtLimiteCredito.Text           = "";
-            txtPais.Text                    = "";
-            txtCodigoPostal.Text            = "";
-            txtEstado.Text                  = "";
-            txtMunicipio.Text               = "";
-            txtColonia.Text                 = "";
-            txtNumExt.Text                  = "";
-            txtNumInt.Text                  = "";
-            txtReferencia.Text              = "";
+            txtNombre.Text = "";
+            txtContacto.Text = "";
+            txtTelefono.Text = "";
+            txtEmail.Text = "";
+            txtPaginaWeb.Text = "";
+            ddlTipoEmpresa.SelectedIndex = 0;
+            txtNacionalidad.Text = "";
+            ddlTipoPersona.SelectedIndex = 0;
+            txtRazonSocialFiscal.Text = "";
+            txtRFC.Text = "";
+            ddlRegimenFiscal.SelectedIndex = 0;
+            txtCURP.Text = "";
+            txtBanco.Text = "";
+            txtCLABE.Text = "";
+            txtCuentaBancaria.Text = "";
+            txtTitularCuenta.Text = "";
+            txtDiasCredito.Text = "";
+            txtLimiteCredito.Text = "";
+            txtPais.Text = "";
+            txtCodigoPostal.Text = "";
+            txtEstado.Text = "";
+            txtMunicipio.Text = "";
+            txtColonia.Text = "";
+            txtNumExt.Text = "";
+            txtNumInt.Text = "";
+            txtReferencia.Text = "";
         }
 
         private static string NullIfEmpty(string valor)
@@ -652,28 +634,6 @@ namespace GrupoAnkhalInventario
         }
 
         // ══ MÓDULO MATERIALES POR PROVEEDOR ══════════════════════════════════
-
-        /// <summary>
-        /// Puebla el dropdown de materiales disponibles para agregar a un proveedor.
-        /// Se llama solo en !IsPostBack; ViewState mantiene los items en postbacks.
-        /// </summary>
-        private void CargarDdlMaterialesAgregar()
-        {
-            using (var db = NuevoDb(false))
-            {
-                var mats = db.Materiales
-                    .Where(m => m.Activo)
-                    .OrderBy(m => m.Codigo)
-                    .Select(m => new { m.MaterialID, m.Codigo, m.Descripcion })
-                    .ToList();
-
-                ddlMaterialAgregar.Items.Clear();
-                ddlMaterialAgregar.Items.Add(new ListItem("-- Seleccionar --", ""));
-                foreach (var m in mats)
-                    ddlMaterialAgregar.Items.Add(
-                        new ListItem("[" + m.Codigo + "] " + m.Descripcion, m.MaterialID.ToString()));
-            }
-        }
 
         /// <summary>
         /// Carga el GridView de materiales asociados a un proveedor,
@@ -705,7 +665,7 @@ namespace GrupoAnkhalInventario
 
                 // 2. Datos de los materiales (Dictionary para lookup O(1))
                 var matIds = pms.Select(pm => pm.MaterialID).Distinct().ToList();
-                var mats   = db.Materiales
+                var mats = db.Materiales
                     .Where(m => matIds.Contains(m.MaterialID))
                     .Select(m => new { m.MaterialID, m.Codigo, m.Descripcion, m.Unidad })
                     .ToList()
@@ -736,10 +696,10 @@ namespace GrupoAnkhalInventario
                 var vm = pms.Select(pm => new
                 {
                     pm.ProveedorMaterialID,
-                    Codigo       = mats.ContainsKey(pm.MaterialID) ? mats[pm.MaterialID].Codigo      : "",
-                    Material     = mats.ContainsKey(pm.MaterialID) ? mats[pm.MaterialID].Descripcion : "",
-                    Unidad       = mats.ContainsKey(pm.MaterialID) ? mats[pm.MaterialID].Unidad       : "",
-                    PrecioVigente= preciosVigentes.ContainsKey(pm.ProveedorMaterialID)
+                    Codigo = mats.ContainsKey(pm.MaterialID) ? mats[pm.MaterialID].Codigo : "",
+                    Material = mats.ContainsKey(pm.MaterialID) ? mats[pm.MaterialID].Descripcion : "",
+                    Unidad = mats.ContainsKey(pm.MaterialID) ? mats[pm.MaterialID].Unidad : "",
+                    PrecioVigente = preciosVigentes.ContainsKey(pm.ProveedorMaterialID)
                                    ? preciosVigentes[pm.ProveedorMaterialID].Precio : 0m,
                     FechaVigente = preciosVigentes.ContainsKey(pm.ProveedorMaterialID)
                                    ? (DateTime?)preciosVigentes[pm.ProveedorMaterialID].FechaInicio
@@ -779,7 +739,7 @@ namespace GrupoAnkhalInventario
                 }
 
                 // Resolver nombres de usuario via UsuarioService (con fallback)
-                var claveIds      = hist.Select(h => h.RegistradoPorID).Distinct().ToList();
+                var claveIds = hist.Select(h => h.RegistradoPorID).Distinct().ToList();
                 var claveToUsuario = db.DatosUsuario
                     .Where(du => claveIds.Contains(du.ClaveID))
                     .Select(du => new { du.ClaveID, du.UsuarioID })
@@ -833,9 +793,9 @@ namespace GrupoAnkhalInventario
             int proveedorID = Convert.ToInt32(hdnMaterialesProveedorID.Value);
             int materialID;
 
-            if (!int.TryParse(ddlMaterialAgregar.SelectedValue, out materialID) || materialID == 0)
+            if (!int.TryParse(hdnMaterialAgregarID.Value, out materialID) || materialID == 0)
             {
-                SetMsg("warning", "Material requerido", "Seleccione un material de la lista.", "modalMateriales");
+                SetMsg("warning", "Material requerido", "Busque y seleccione un material de la lista.", "modalMateriales");
                 return;
             }
 
@@ -866,10 +826,10 @@ namespace GrupoAnkhalInventario
                     // Insertar ProveedorMateriales
                     var pm = new ProveedorMateriales
                     {
-                        ProveedorID   = proveedorID,
-                        MaterialID    = materialID,
-                        Activo        = true,
-                        FechaAlta     = AppHelper.Ahora,
+                        ProveedorID = proveedorID,
+                        MaterialID = materialID,
+                        Activo = true,
+                        FechaAlta = AppHelper.Ahora,
                         UsuarioAltaID = claveID
                     };
                     db.ProveedorMateriales.InsertOnSubmit(pm);
@@ -879,17 +839,18 @@ namespace GrupoAnkhalInventario
                     db.HistorialPrecios.InsertOnSubmit(new HistorialPrecios
                     {
                         ProveedorMaterialID = pm.ProveedorMaterialID,
-                        Precio              = precio,
-                        FechaInicio         = AppHelper.Hoy,
-                        Notas               = "Precio inicial",
-                        RegistradoPorID     = claveID,
-                        FechaRegistro       = AppHelper.Ahora
+                        Precio = precio,
+                        FechaInicio = AppHelper.Hoy,
+                        Notas = "Precio inicial",
+                        RegistradoPorID = claveID,
+                        FechaRegistro = AppHelper.Ahora
                     });
                     db.SubmitChanges();
 
                     // Limpiar el formulario de agregar
-                    ddlMaterialAgregar.SelectedIndex = 0;
-                    txtPrecioAgregar.Text            = "";
+                    hdnMaterialAgregarID.Value = "";
+                    hdnMaterialAgregarNombre.Value = "";
+                    txtPrecioAgregar.Text = "";
 
                     CargarMaterialesProveedor(proveedorID);
                     SetMsg("success", "¡Material agregado!",
@@ -912,7 +873,7 @@ namespace GrupoAnkhalInventario
         protected void btnActualizarPrecio_Click(object sender, EventArgs e)
         {
             if (string.IsNullOrWhiteSpace(hdnProveedorMaterialID.Value)) return;
-            int pmID    = Convert.ToInt32(hdnProveedorMaterialID.Value);
+            int pmID = Convert.ToInt32(hdnProveedorMaterialID.Value);
             int claveID = Convert.ToInt32(Session["ClaveID"]);
 
             decimal nuevoPrecio;
@@ -940,11 +901,11 @@ namespace GrupoAnkhalInventario
                     db.HistorialPrecios.InsertOnSubmit(new HistorialPrecios
                     {
                         ProveedorMaterialID = pmID,
-                        Precio              = nuevoPrecio,
-                        FechaInicio         = fechaVigencia.Date,
-                        Notas               = nota,
-                        RegistradoPorID     = claveID,
-                        FechaRegistro       = AppHelper.Ahora
+                        Precio = nuevoPrecio,
+                        FechaInicio = fechaVigencia.Date,
+                        Notas = nota,
+                        RegistradoPorID = claveID,
+                        FechaRegistro = AppHelper.Ahora
                     });
                     db.SubmitChanges();
 
@@ -972,8 +933,8 @@ namespace GrupoAnkhalInventario
         /// </summary>
         protected void btnAccionMateriales_Click(object sender, EventArgs e)
         {
-            string accion      = hdnAccionMateriales.Value ?? "";
-            int    proveedorID = string.IsNullOrWhiteSpace(hdnMaterialesProveedorID.Value)
+            string accion = hdnAccionMateriales.Value ?? "";
+            int proveedorID = string.IsNullOrWhiteSpace(hdnMaterialesProveedorID.Value)
                                  ? 0 : Convert.ToInt32(hdnMaterialesProveedorID.Value);
 
             if (accion == "cargar")
@@ -1040,6 +1001,48 @@ namespace GrupoAnkhalInventario
                         SetMsg("error", "Error", "No se pudo cambiar el estatus del material.", "modalMateriales");
                     }
                 }
+            }
+        }
+
+        // ══ WebMethods: autocomplete de materiales/productos para agregar a un proveedor ══
+
+        [System.Web.Services.WebMethod(EnableSession = true)]
+        public static object BuscarMaterialesParaProveedor(string query)
+        {
+            if (HttpContext.Current.Session["ClaveID"] == null)
+                throw new Exception("No autorizado");
+
+            string connStr = ConfigurationManager
+                .ConnectionStrings["InventarioAnkhalDBConnectionString"].ConnectionString;
+            using (var db = new InventarioAnkhalDBDataContext(connStr))
+            {
+                return db.Materiales
+                    .Where(m => m.Activo &&
+                        (m.Descripcion.Contains(query) || m.Codigo.Contains(query)))
+                    .OrderBy(m => m.Codigo)
+                    .Take(15)
+                    .Select(m => new { id = m.MaterialID, nombre = "[" + m.Codigo + "] " + m.Descripcion })
+                    .ToList();
+            }
+        }
+
+        [System.Web.Services.WebMethod(EnableSession = true)]
+        public static object BuscarProductosParaProveedor(string query)
+        {
+            if (HttpContext.Current.Session["ClaveID"] == null)
+                throw new Exception("No autorizado");
+
+            string connStr = ConfigurationManager
+                .ConnectionStrings["InventarioAnkhalDBConnectionString"].ConnectionString;
+            using (var db = new InventarioAnkhalDBDataContext(connStr))
+            {
+                return db.Productos
+                    .Where(p => p.Activo &&
+                        (p.Descripcion.Contains(query) || p.Codigo.Contains(query)))
+                    .OrderBy(p => p.Codigo)
+                    .Take(15)
+                    .Select(p => new { id = p.ProductoID, nombre = "[" + p.Codigo + "] " + p.Descripcion })
+                    .ToList();
             }
         }
     }

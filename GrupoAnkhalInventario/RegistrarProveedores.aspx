@@ -200,6 +200,12 @@
     <asp:Button ID="btnActualizarPrecioProducto" runat="server" CssClass="d-none" OnClick="btnActualizarPrecioProducto_Click" />
     <asp:Button ID="btnAccionProductos"         runat="server" CssClass="d-none" OnClick="btnAccionProductos_Click" />
 
+    <%-- ── HiddenFields para autocomplete de materiales/productos a agregar ── --%>
+    <asp:HiddenField ID="hdnMaterialAgregarID"     runat="server" Value="" />
+    <asp:HiddenField ID="hdnMaterialAgregarNombre" runat="server" Value="" />
+    <asp:HiddenField ID="hdnProductoAgregarID"     runat="server" Value="" />
+    <asp:HiddenField ID="hdnProductoAgregarNombre" runat="server" Value="" />
+
     <!-- ══════════════════════════════════════════════════════════════════════
          MODAL NUEVO PROVEEDOR
     ══════════════════════════════════════════════════════════════════════ -->
@@ -827,9 +833,17 @@
                                 <div class="col-md-6">
                                     <div class="form-group mb-2">
                                         <label style="font-size:.85rem;font-weight:600;">Material <span style="color:red">*</span></label>
-                                        <asp:DropDownList ID="ddlMaterialAgregar" runat="server" CssClass="form-control form-control-sm">
-                                            <asp:ListItem Value="">-- Seleccionar --</asp:ListItem>
-                                        </asp:DropDownList>
+                                        <div style="position:relative;">
+                                            <input type="text" id="txtMaterialAgregar" class="form-control form-control-sm"
+                                                   placeholder="Buscar material por código o nombre..." autocomplete="off"
+                                                   oninput="onBuscarMaterialAgregar()" />
+                                            <div id="divResultadosMaterialAgregar"
+                                                 style="display:none; position:absolute; z-index:9999; width:100%;
+                                                        background:#fff; border:1px solid #ccc; border-radius:4px;
+                                                        max-height:200px; overflow-y:auto;
+                                                        box-shadow:0 2px 8px rgba(0,0,0,.18);">
+                                            </div>
+                                        </div>
                                     </div>
                                 </div>
                                 <div class="col-md-3">
@@ -999,9 +1013,17 @@
                                 <div class="col-md-6">
                                     <div class="form-group mb-2">
                                         <label style="font-size:.85rem;font-weight:600;">Producto <span style="color:red">*</span></label>
-                                        <asp:DropDownList ID="ddlProductoAgregar" runat="server" CssClass="form-control form-control-sm">
-                                            <asp:ListItem Value="">-- Seleccionar --</asp:ListItem>
-                                        </asp:DropDownList>
+                                        <div style="position:relative;">
+                                            <input type="text" id="txtProductoAgregar" class="form-control form-control-sm"
+                                                   placeholder="Buscar producto por código o nombre..." autocomplete="off"
+                                                   oninput="onBuscarProductoAgregar()" />
+                                            <div id="divResultadosProductoAgregar"
+                                                 style="display:none; position:absolute; z-index:9999; width:100%;
+                                                        background:#fff; border:1px solid #ccc; border-radius:4px;
+                                                        max-height:200px; overflow-y:auto;
+                                                        box-shadow:0 2px 8px rgba(0,0,0,.18);">
+                                            </div>
+                                        </div>
                                     </div>
                                 </div>
                                 <div class="col-md-3">
@@ -1203,14 +1225,14 @@
             document.getElementById('<%= hdnProveedorID.ClientID %>').value = id;
             document.getElementById('<%= txtNombreEdit.ClientID %>').value = nombre;
             document.getElementById('<%= txtContactoEdit.ClientID %>').value = contacto;
-            document.getElementById('<%= txtTelefonoEdit.ClientID %>').value             = telefono;
-            document.getElementById('<%= txtEmailEdit.ClientID %>').value                = email;
-            document.getElementById('<%= txtPaginaWebEdit.ClientID %>').value            = paginaWeb;
+            document.getElementById('<%= txtTelefonoEdit.ClientID %>').value = telefono;
+            document.getElementById('<%= txtEmailEdit.ClientID %>').value = email;
+            document.getElementById('<%= txtPaginaWebEdit.ClientID %>').value = paginaWeb;
             setDdl('<%= ddlTipoEmpresaEdit.ClientID %>', tipoEmpresa);
-            document.getElementById('<%= txtNacionalidadEdit.ClientID %>').value         = nacionalidad;
+            document.getElementById('<%= txtNacionalidadEdit.ClientID %>').value = nacionalidad;
             setDdl('<%= ddlTipoPersonaEdit.ClientID %>', tipoPersona);
-            document.getElementById('<%= txtRazonSocialFiscalEdit.ClientID %>').value    = razonSocialFiscal;
-            document.getElementById('<%= txtRFCEdit.ClientID %>').value                  = rfc;
+            document.getElementById('<%= txtRazonSocialFiscalEdit.ClientID %>').value = razonSocialFiscal;
+            document.getElementById('<%= txtRFCEdit.ClientID %>').value = rfc;
             setDdl('<%= ddlRegimenFiscalEdit.ClientID %>', regimenFiscal);
             document.getElementById('<%= txtCURPEdit.ClientID %>').value                 = curp;
             document.getElementById('<%= txtBancoEdit.ClientID %>').value                = banco;
@@ -1371,17 +1393,86 @@
         function abrirModalMateriales(proveedorID, nombreProveedor) {
             document.getElementById('<%= hdnMaterialesProveedorID.ClientID %>').value = proveedorID;
             document.getElementById('divHistorial').style.display = 'none';
+            document.getElementById('txtMaterialAgregar').value = '';
+            document.getElementById('<%= hdnMaterialAgregarID.ClientID %>').value     = '';
+            document.getElementById('<%= hdnMaterialAgregarNombre.ClientID %>').value = '';
+            ocultarResultadosMaterialAgregar();
             document.getElementById('<%= hdnAccionMateriales.ClientID %>').value = 'cargar';
             __doPostBack('<%= btnAccionMateriales.UniqueID %>', '');
         }
 
+        // ── Autocomplete: material a agregar ───────────────────────────────────
+        var _materialAgregarTimer = null;
+
+        function onBuscarMaterialAgregar() {
+            clearTimeout(_materialAgregarTimer);
+            var q = document.getElementById('txtMaterialAgregar').value.trim();
+            document.getElementById('<%= hdnMaterialAgregarID.ClientID %>').value     = '';
+            document.getElementById('<%= hdnMaterialAgregarNombre.ClientID %>').value = '';
+            if (q.length < 2) { ocultarResultadosMaterialAgregar(); return; }
+            _materialAgregarTimer = setTimeout(function () { buscarMaterialAgregar(q); }, 300);
+        }
+
+        function buscarMaterialAgregar(query) {
+            fetch('<%= ResolveUrl("~/RegistrarProveedores.aspx/BuscarMaterialesParaProveedor") %>', {
+                method:  'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body:    JSON.stringify({ query: query })
+            })
+            .then(function (r) { return r.json(); })
+            .then(function (data) { mostrarResultadosMaterialAgregar(data.d); })
+            .catch(function () { ocultarResultadosMaterialAgregar(); });
+        }
+
+        function mostrarResultadosMaterialAgregar(items) {
+            var div = document.getElementById('divResultadosMaterialAgregar');
+            div.innerHTML = '';
+            if (!items || items.length === 0) {
+                div.innerHTML = '<div style="padding:8px 10px;color:#888;font-size:.84rem;">Sin resultados</div>';
+                div.style.display = '';
+                return;
+            }
+            items.forEach(function (item) {
+                var el = document.createElement('div');
+                el.style.cssText = 'padding:7px 10px;cursor:pointer;font-size:.84rem;border-bottom:1px solid #f0f0f0;';
+                el.textContent   = item.nombre;
+                el.onmouseenter  = function () { el.style.background = '#e8f0fe'; };
+                el.onmouseleave  = function () { el.style.background = ''; };
+                el.onmousedown   = function (e) {
+                    e.preventDefault();
+                    document.getElementById('txtMaterialAgregar').value = item.nombre;
+                    document.getElementById('<%= hdnMaterialAgregarID.ClientID %>').value     = item.id;
+                    document.getElementById('<%= hdnMaterialAgregarNombre.ClientID %>').value = item.nombre;
+                    ocultarResultadosMaterialAgregar();
+                };
+                div.appendChild(el);
+            });
+            div.style.display = '';
+        }
+
+        function ocultarResultadosMaterialAgregar() {
+            document.getElementById('divResultadosMaterialAgregar').style.display = 'none';
+        }
+
+        document.addEventListener('click', function (e) {
+            var txt = document.getElementById('txtMaterialAgregar');
+            var div = document.getElementById('divResultadosMaterialAgregar');
+            if (txt && !txt.contains(e.target) && div && !div.contains(e.target))
+                ocultarResultadosMaterialAgregar();
+        });
+
+        (function () {
+            var nombre = document.getElementById('<%= hdnMaterialAgregarNombre.ClientID %>').value;
+            if (nombre) document.getElementById('txtMaterialAgregar').value = nombre;
+        })();
+
         // ── Confirmar y disparar agregar material ──────────────────────────────
         function confirmarAgregarMaterial() {
-            var mat    = document.getElementById('<%= ddlMaterialAgregar.ClientID %>').value;
+            var matID  = document.getElementById('<%= hdnMaterialAgregarID.ClientID %>').value;
             var precio = parseFloat(document.getElementById('<%= txtPrecioAgregar.ClientID %>').value);
-            if (!mat) {
+            if (!matID) {
                 Swal.fire({ icon: 'warning', title: 'Material requerido',
-                    text: 'Seleccione un material de la lista.', confirmButtonColor: '#003366' })
+                    text: 'Busque y seleccione un material de la lista.', confirmButtonColor: '#003366' })
                     .then(function () { $('#modalMateriales').modal('show'); });
                 return;
             }
@@ -1479,16 +1570,85 @@
         function abrirModalProductos(proveedorID, nombreProveedor) {
             document.getElementById('<%= hdnProductosProveedorID.ClientID %>').value = proveedorID;
             document.getElementById('divHistorialProducto').style.display = 'none';
+            document.getElementById('txtProductoAgregar').value = '';
+            document.getElementById('<%= hdnProductoAgregarID.ClientID %>').value     = '';
+            document.getElementById('<%= hdnProductoAgregarNombre.ClientID %>').value = '';
+            ocultarResultadosProductoAgregar();
             document.getElementById('<%= hdnAccionProductos.ClientID %>').value = 'cargar';
             __doPostBack('<%= btnAccionProductos.UniqueID %>', '');
         }
 
+        // ── Autocomplete: producto a agregar ───────────────────────────────────
+        var _productoAgregarTimer = null;
+
+        function onBuscarProductoAgregar() {
+            clearTimeout(_productoAgregarTimer);
+            var q = document.getElementById('txtProductoAgregar').value.trim();
+            document.getElementById('<%= hdnProductoAgregarID.ClientID %>').value     = '';
+            document.getElementById('<%= hdnProductoAgregarNombre.ClientID %>').value = '';
+            if (q.length < 2) { ocultarResultadosProductoAgregar(); return; }
+            _productoAgregarTimer = setTimeout(function () { buscarProductoAgregar(q); }, 300);
+        }
+
+        function buscarProductoAgregar(query) {
+            fetch('<%= ResolveUrl("~/RegistrarProveedores.aspx/BuscarProductosParaProveedor") %>', {
+                method:  'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body:    JSON.stringify({ query: query })
+            })
+            .then(function (r) { return r.json(); })
+            .then(function (data) { mostrarResultadosProductoAgregar(data.d); })
+            .catch(function () { ocultarResultadosProductoAgregar(); });
+        }
+
+        function mostrarResultadosProductoAgregar(items) {
+            var div = document.getElementById('divResultadosProductoAgregar');
+            div.innerHTML = '';
+            if (!items || items.length === 0) {
+                div.innerHTML = '<div style="padding:8px 10px;color:#888;font-size:.84rem;">Sin resultados</div>';
+                div.style.display = '';
+                return;
+            }
+            items.forEach(function (item) {
+                var el = document.createElement('div');
+                el.style.cssText = 'padding:7px 10px;cursor:pointer;font-size:.84rem;border-bottom:1px solid #f0f0f0;';
+                el.textContent   = item.nombre;
+                el.onmouseenter  = function () { el.style.background = '#e8f0fe'; };
+                el.onmouseleave  = function () { el.style.background = ''; };
+                el.onmousedown   = function (e) {
+                    e.preventDefault();
+                    document.getElementById('txtProductoAgregar').value = item.nombre;
+                    document.getElementById('<%= hdnProductoAgregarID.ClientID %>').value     = item.id;
+                    document.getElementById('<%= hdnProductoAgregarNombre.ClientID %>').value = item.nombre;
+                    ocultarResultadosProductoAgregar();
+                };
+                div.appendChild(el);
+            });
+            div.style.display = '';
+        }
+
+        function ocultarResultadosProductoAgregar() {
+            document.getElementById('divResultadosProductoAgregar').style.display = 'none';
+        }
+
+        document.addEventListener('click', function (e) {
+            var txt = document.getElementById('txtProductoAgregar');
+            var div = document.getElementById('divResultadosProductoAgregar');
+            if (txt && !txt.contains(e.target) && div && !div.contains(e.target))
+                ocultarResultadosProductoAgregar();
+        });
+
+        (function () {
+            var nombre = document.getElementById('<%= hdnProductoAgregarNombre.ClientID %>').value;
+            if (nombre) document.getElementById('txtProductoAgregar').value = nombre;
+        })();
+
         function confirmarAgregarProducto() {
-            var prod   = document.getElementById('<%= ddlProductoAgregar.ClientID %>').value;
+            var prodID = document.getElementById('<%= hdnProductoAgregarID.ClientID %>').value;
             var precio = parseFloat(document.getElementById('<%= txtPrecioAgregarProducto.ClientID %>').value);
-            if (!prod) {
+            if (!prodID) {
                 Swal.fire({ icon: 'warning', title: 'Producto requerido',
-                    text: 'Seleccione un producto de la lista.', confirmButtonColor: '#003366' })
+                    text: 'Busque y seleccione un producto de la lista.', confirmButtonColor: '#003366' })
                     .then(function () { $('#modalProductos').modal('show'); });
                 return;
             }

@@ -249,6 +249,42 @@ namespace GrupoAnkhalInventario
         protected global::System.Web.UI.WebControls.Button btnAccionProductos;
 
         /// <summary>
+        /// Control hdnMaterialAgregarID.
+        /// </summary>
+        /// <remarks>
+        /// Campo generado automáticamente.
+        /// Para modificarlo, mueva la declaración del campo del archivo del diseñador al archivo de código subyacente.
+        /// </remarks>
+        protected global::System.Web.UI.WebControls.HiddenField hdnMaterialAgregarID;
+
+        /// <summary>
+        /// Control hdnMaterialAgregarNombre.
+        /// </summary>
+        /// <remarks>
+        /// Campo generado automáticamente.
+        /// Para modificarlo, mueva la declaración del campo del archivo del diseñador al archivo de código subyacente.
+        /// </remarks>
+        protected global::System.Web.UI.WebControls.HiddenField hdnMaterialAgregarNombre;
+
+        /// <summary>
+        /// Control hdnProductoAgregarID.
+        /// </summary>
+        /// <remarks>
+        /// Campo generado automáticamente.
+        /// Para modificarlo, mueva la declaración del campo del archivo del diseñador al archivo de código subyacente.
+        /// </remarks>
+        protected global::System.Web.UI.WebControls.HiddenField hdnProductoAgregarID;
+
+        /// <summary>
+        /// Control hdnProductoAgregarNombre.
+        /// </summary>
+        /// <remarks>
+        /// Campo generado automáticamente.
+        /// Para modificarlo, mueva la declaración del campo del archivo del diseñador al archivo de código subyacente.
+        /// </remarks>
+        protected global::System.Web.UI.WebControls.HiddenField hdnProductoAgregarNombre;
+
+        /// <summary>
         /// Control ddlTipoPersona.
         /// </summary>
         /// <remarks>
@@ -753,15 +789,6 @@ namespace GrupoAnkhalInventario
         protected global::System.Web.UI.WebControls.Label lblProveedorNombreMat;
 
         /// <summary>
-        /// Control ddlMaterialAgregar.
-        /// </summary>
-        /// <remarks>
-        /// Campo generado automáticamente.
-        /// Para modificarlo, mueva la declaración del campo del archivo del diseñador al archivo de código subyacente.
-        /// </remarks>
-        protected global::System.Web.UI.WebControls.DropDownList ddlMaterialAgregar;
-
-        /// <summary>
         /// Control txtPrecioAgregar.
         /// </summary>
         /// <remarks>
@@ -805,15 +832,6 @@ namespace GrupoAnkhalInventario
         /// Para modificarlo, mueva la declaración del campo del archivo del diseñador al archivo de código subyacente.
         /// </remarks>
         protected global::System.Web.UI.WebControls.Label lblProveedorNombreProd;
-
-        /// <summary>
-        /// Control ddlProductoAgregar.
-        /// </summary>
-        /// <remarks>
-        /// Campo generado automáticamente.
-        /// Para modificarlo, mueva la declaración del campo del archivo del diseñador al archivo de código subyacente.
-        /// </remarks>
-        protected global::System.Web.UI.WebControls.DropDownList ddlProductoAgregar;
 
         /// <summary>
         /// Control txtPrecioAgregarProducto.
