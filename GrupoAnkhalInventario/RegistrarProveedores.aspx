@@ -1273,7 +1273,7 @@
             var tipo = tipoDdlId ? document.getElementById(tipoDdlId).value : '';
             document.getElementById(rfcFieldId).value = rfc;
             if (rfc === '') {
-                Swal.fire({ icon: 'info', title: 'RFC vac&iacute;o', text: 'Ingrese un RFC para validar.', confirmButtonColor: '#003366' });
+                Swal.fire({ icon: 'info', title: 'RFC vacío', text: 'Ingrese un RFC para validar.', confirmButtonColor: '#003366' });
                 return;
             }
             var regex = /^([A-ZÑ&]{3,4})(\d{2})(0[1-9]|1[0-2])([0-2]\d|3[01])([A-Z\d]{3})$/;
@@ -1281,14 +1281,14 @@
             var longOk = true;
             var msgLong = '';
             if (tipo === 'Moral'  && rfc.length !== 12) { longOk = false; msgLong = 'Para Persona Moral el RFC debe tener 12 caracteres.'; }
-            if (tipo === 'Fisica' && rfc.length !== 13) { longOk = false; msgLong = 'Para Persona F&iacute;sica el RFC debe tener 13 caracteres.'; }
+            if (tipo === 'Fisica' && rfc.length !== 13) { longOk = false; msgLong = 'Para Persona Física el RFC debe tener 13 caracteres.'; }
             if (fmtOk && longOk) {
-                var desc = rfc.length === 12 ? 'Persona Moral (12 caracteres)' : 'Persona F&iacute;sica (13 caracteres)';
-                Swal.fire({ icon: 'success', title: 'RFC v&aacute;lido', text: 'Formato correcto. ' + desc, confirmButtonColor: '#003366' });
+                var desc = rfc.length === 12 ? 'Persona Moral (12 caracteres)' : 'Persona Física (13 caracteres)';
+                Swal.fire({ icon: 'success', title: 'RFC válido', text: 'Formato correcto. ' + desc, confirmButtonColor: '#003366' });
             } else if (!longOk) {
                 Swal.fire({ icon: 'warning', title: 'Longitud incorrecta', text: msgLong, confirmButtonColor: '#003366' });
             } else {
-                Swal.fire({ icon: 'error', title: 'RFC inv&aacute;lido', text: 'El RFC no cumple el formato del SAT.', confirmButtonColor: '#003366' });
+                Swal.fire({ icon: 'error', title: 'RFC inválido', text: 'El RFC no cumple el formato del SAT.', confirmButtonColor: '#003366' });
             }
         }
 
@@ -1297,14 +1297,14 @@
             var curp = document.getElementById(curpFieldId).value.trim().toUpperCase();
             document.getElementById(curpFieldId).value = curp;
             if (curp === '') {
-                Swal.fire({ icon: 'info', title: 'CURP vac&iacute;a', text: 'Ingrese una CURP para validar.', confirmButtonColor: '#003366' });
+                Swal.fire({ icon: 'info', title: 'CURP vacía', text: 'Ingrese una CURP para validar.', confirmButtonColor: '#003366' });
                 return;
             }
             var regex = /^[A-Z]{1}[AEIOU]{1}[A-Z]{2}\d{2}(0[1-9]|1[0-2])([0-2]\d|3[01])[HM]{1}[A-Z]{2}[B-DF-HJ-NP-TV-Z]{3}[0-9A-Z]{1}\d{1}$/;
             if (regex.test(curp)) {
-                Swal.fire({ icon: 'success', title: 'CURP v&aacute;lida', text: 'El formato de la CURP es correcto.', confirmButtonColor: '#003366' });
+                Swal.fire({ icon: 'success', title: 'CURP válida', text: 'El formato de la CURP es correcto.', confirmButtonColor: '#003366' });
             } else {
-                Swal.fire({ icon: 'error', title: 'CURP inv&aacute;lida', text: 'El formato no es correcto (18 caracteres).', confirmButtonColor: '#003366' });
+                Swal.fire({ icon: 'error', title: 'CURP inválida', text: 'El formato no es correcto (18 caracteres).', confirmButtonColor: '#003366' });
             }
         }
 
@@ -1325,12 +1325,12 @@
             }
             if (telef !== '' && !/^\d{7,20}$/.test(telef)) {
                 $('#tabsNuevo a[href="#pane-gen-n"]').tab('show');
-                Swal.fire({ icon: 'warning', title: 'Tel&eacute;fono inv&aacute;lido', text: 'El tel&eacute;fono debe contener solo n&uacute;meros (7 a 20 d&iacute;gitos).', confirmButtonColor: '#003366' });
+                Swal.fire({ icon: 'warning', title: 'Teléfono inválido', text: 'El teléfono debe contener solo números (7 a 20 dígitos).', confirmButtonColor: '#003366' });
                 return false;
             }
             if (clabe !== '' && !/^\d{18}$/.test(clabe)) {
                 $('#tabsNuevo a[href="#pane-ban-n"]').tab('show');
-                Swal.fire({ icon: 'warning', title: 'CLABE inv&aacute;lida', text: 'La CLABE interbancaria debe tener exactamente 18 d&iacute;gitos num&eacute;ricos.', confirmButtonColor: '#003366' });
+                Swal.fire({ icon: 'warning', title: 'CLABE inválida', text: 'La CLABE interbancaria debe tener exactamente 18 dígitos numéricos.', confirmButtonColor: '#003366' });
                 return false;
             }
             return true;
@@ -1352,12 +1352,12 @@
             }
             if (telef !== '' && !/^\d{7,20}$/.test(telef)) {
                 $('#tabsEditar a[href="#pane-gen-e"]').tab('show');
-                Swal.fire({ icon: 'warning', title: 'Tel&eacute;fono inv&aacute;lido', text: 'El tel&eacute;fono debe contener solo n&uacute;meros (7 a 20 d&iacute;gitos).', confirmButtonColor: '#003366' });
+                Swal.fire({ icon: 'warning', title: 'Teléfono inválido', text: 'El teléfono debe contener solo números (7 a 20 dígitos).', confirmButtonColor: '#003366' });
                 return false;
             }
             if (clabe !== '' && !/^\d{18}$/.test(clabe)) {
                 $('#tabsEditar a[href="#pane-ban-e"]').tab('show');
-                Swal.fire({ icon: 'warning', title: 'CLABE inv&aacute;lida', text: 'La CLABE interbancaria debe tener exactamente 18 d&iacute;gitos num&eacute;ricos.', confirmButtonColor: '#003366' });
+                Swal.fire({ icon: 'warning', title: 'CLABE inválida', text: 'La CLABE interbancaria debe tener exactamente 18 dígitos numéricos.', confirmButtonColor: '#003366' });
                 return false;
             }
             return true;
@@ -1577,10 +1577,10 @@
             var accion = activo ? 'desactivar' : 'activar';
             Swal.fire({
                 icon: activo ? 'warning' : 'question',
-                title: '&iquest;' + (activo ? 'Desactivar' : 'Activar') + ' proveedor?',
-                html: '&iquest;Est&aacute; seguro de <b>' + accion + '</b> a <b>' + nombre + '</b>?',
+                title: '¿' + (activo ? 'Desactivar' : 'Activar') + ' proveedor?',
+                html: '¿Está seguro de <b>' + accion + '</b> a <b>' + nombre + '</b>?',
                 showCancelButton: true,
-                confirmButtonText: 'S&iacute;, ' + accion,
+                confirmButtonText: 'Sí, ' + accion,
                 cancelButtonText: 'Cancelar',
                 confirmButtonColor: activo ? '#e0a800' : '#28a745',
                 cancelButtonColor: '#6c757d'
