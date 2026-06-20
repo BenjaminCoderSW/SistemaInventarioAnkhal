@@ -150,7 +150,6 @@ namespace GrupoAnkhalInventario
             headerOperaciones.Visible = false;
             menuProduccion.Visible = false;
             menuEntregas.Visible = false;
-            menuOrdenes.Visible = false;
             menuMovimientos.Visible = false;
             menuCxP.Visible = false;
             menuMermas.Visible = false;
@@ -173,7 +172,6 @@ namespace GrupoAnkhalInventario
                     headerOperaciones.Visible = true;
                     menuProduccion.Visible = true;
                     menuEntregas.Visible = true;
-                    menuOrdenes.Visible = true;
                     menuMovimientos.Visible = true;
                     menuCxP.Visible = true;
                     menuMermas.Visible = true;
@@ -190,7 +188,6 @@ namespace GrupoAnkhalInventario
                     liMenuClientes.Visible = true;
                     headerOperaciones.Visible = true;
                     menuEntregas.Visible = true;
-                    menuOrdenes.Visible = true;
                     headerInventario.Visible = true;
                     menuInventario.Visible = true;
                     break;
@@ -213,7 +210,6 @@ namespace GrupoAnkhalInventario
                     headerOperaciones.Visible = true;
                     menuProduccion.Visible = true;
                     menuEntregas.Visible = true;
-                    menuOrdenes.Visible = true;
                     menuMovimientos.Visible = true;
                     menuMermas.Visible = true;
                     headerInventario.Visible = true;

@@ -42,6 +42,16 @@ namespace GrupoAnkhalInventario
         protected global::System.Web.UI.WebControls.DropDownList ddlFiltroEstado;
 
         /// <summary>
+        /// Control txtFiltroFechaDesde.
+        /// </summary>
+        protected global::System.Web.UI.WebControls.TextBox txtFiltroFechaDesde;
+
+        /// <summary>
+        /// Control txtFiltroFechaHasta.
+        /// </summary>
+        protected global::System.Web.UI.WebControls.TextBox txtFiltroFechaHasta;
+
+        /// <summary>
         /// Control btnFiltrar.
         /// </summary>
         protected global::System.Web.UI.WebControls.Button btnFiltrar;

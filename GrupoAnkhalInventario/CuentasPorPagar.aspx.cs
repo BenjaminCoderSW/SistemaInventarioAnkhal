@@ -103,6 +103,17 @@ namespace GrupoAnkhalInventario
                     q = q.Where(c => c.Estado == "PAGADA");
                 // filtroEstado == "" = todas, sin filtro adicional
 
+                if (!string.IsNullOrEmpty(txtFiltroFechaDesde.Text))
+                {
+                    DateTime fd = DateTime.Parse(txtFiltroFechaDesde.Text);
+                    q = q.Where(c => c.FechaRecepcion >= fd);
+                }
+                if (!string.IsNullOrEmpty(txtFiltroFechaHasta.Text))
+                {
+                    DateTime fh = DateTime.Parse(txtFiltroFechaHasta.Text).AddDays(1);
+                    q = q.Where(c => c.FechaRecepcion < fh);
+                }
+
                 var datos = q.Select(c => new { c.MontoTotal, c.FechaVencimiento, c.Estado }).ToList();
 
                 // Sobre el conjunto filtrado, calcular solo los pendientes (excluir pagadas del monto)
@@ -153,6 +164,18 @@ namespace GrupoAnkhalInventario
                 else if (filtroEstado == "PAGADA")
                     q = q.Where(c => c.Estado == "PAGADA");
                 // filtroEstado == "" = todas, sin filtro adicional
+
+                // Filtro rango de fechas (fecha de recepción)
+                if (!string.IsNullOrEmpty(txtFiltroFechaDesde.Text))
+                {
+                    DateTime fd = DateTime.Parse(txtFiltroFechaDesde.Text);
+                    q = q.Where(c => c.FechaRecepcion >= fd);
+                }
+                if (!string.IsNullOrEmpty(txtFiltroFechaHasta.Text))
+                {
+                    DateTime fh = DateTime.Parse(txtFiltroFechaHasta.Text).AddDays(1);
+                    q = q.Where(c => c.FechaRecepcion < fh);
+                }
 
                 int total = q.Count();
                 int pageIdx = gvCxP.PageIndex;
@@ -256,6 +279,8 @@ namespace GrupoAnkhalInventario
         {
             ddlFiltroProveedor.SelectedIndex = 0;
             ddlFiltroEstado.SelectedIndex = 0;
+            txtFiltroFechaDesde.Text = "";
+            txtFiltroFechaHasta.Text = "";
             gvCxP.PageIndex = 0;
             CargarResumen();
             CargarGrid();

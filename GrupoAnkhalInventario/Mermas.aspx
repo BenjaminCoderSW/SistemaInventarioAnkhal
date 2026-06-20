@@ -68,7 +68,7 @@
                 <div class="lbl">Materiales en merma</div>
             </div>
         </div>
-        <div class="stock-card valor-merma" style="flex:0 0 auto; min-width:280px;">
+        <div class="stock-card valor-merma">
             <div class="icon"><i class="fas fa-dollar-sign"></i></div>
             <div class="info">
                 <div class="num" style="font-size:1.8rem;">

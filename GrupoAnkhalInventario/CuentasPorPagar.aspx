@@ -105,13 +105,13 @@
             <!-- ── Filtros ── -->
             <div class="filtros-bar">
                 <div class="row align-items-end">
-                    <div class="col-md-3">
+                    <div class="col-md-2">
                         <label>Proveedor</label>
                         <asp:DropDownList ID="ddlFiltroProveedor" runat="server" CssClass="form-control form-control-sm">
                             <asp:ListItem Value="">-- Todos --</asp:ListItem>
                         </asp:DropDownList>
                     </div>
-                    <div class="col-md-3">
+                    <div class="col-md-2">
                         <label>Estado</label>
                         <asp:DropDownList ID="ddlFiltroEstado" runat="server" CssClass="form-control form-control-sm">
                             <asp:ListItem Value="SINPAGAR">Sin Pagar (todas)</asp:ListItem>
@@ -122,7 +122,15 @@
                             <asp:ListItem Value="">Todas</asp:ListItem>
                         </asp:DropDownList>
                     </div>
-                    <div class="col-md-3 mt-2 mt-md-0">
+                    <div class="col-md-2">
+                        <label>F. Recepción desde</label>
+                        <asp:TextBox ID="txtFiltroFechaDesde" runat="server" CssClass="form-control form-control-sm" TextMode="Date"></asp:TextBox>
+                    </div>
+                    <div class="col-md-2">
+                        <label>F. Recepción hasta</label>
+                        <asp:TextBox ID="txtFiltroFechaHasta" runat="server" CssClass="form-control form-control-sm" TextMode="Date"></asp:TextBox>
+                    </div>
+                    <div class="col-md-4 mt-2 mt-md-0">
                         <asp:Button ID="btnFiltrar" runat="server" Text="Buscar"
                             CssClass="btn btn-primary btn-sm mr-1" OnClick="btnFiltrar_Click" />
                         <asp:Button ID="btnLimpiar" runat="server" Text="Limpiar"

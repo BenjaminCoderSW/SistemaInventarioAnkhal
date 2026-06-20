@@ -241,12 +241,12 @@
                                 </ul>
                             </li>
 
-                            <!-- Entregas (desplegable) -->
+                            <!-- Entregas / Ventas (desplegable) -->
                             <li class="nav-item" id="menuEntregas" runat="server">
                                 <a href="#" class="nav-link">
                                     <i class="nav-icon fas fa-truck"></i>
                                     <p>
-                                        Entregas
+                                        Entregas / Ventas
                                         <i class="fas fa-angle-left right"></i>
                                     </p>
                                 </a>
@@ -257,23 +257,10 @@
                                             <p>Entrega Directa</p>
                                         </a>
                                     </li>
-                                </ul>
-                            </li>
-
-                            <!-- Órdenes de Entrega (desplegable) -->
-                            <li class="nav-item" id="menuOrdenes" runat="server">
-                                <a href="#" class="nav-link">
-                                    <i class="nav-icon fas fa-clipboard-list"></i>
-                                    <p>
-                                        &Oacute;rdenes de Entrega
-                                        <i class="fas fa-angle-left right"></i>
-                                    </p>
-                                </a>
-                                <ul class="nav nav-treeview">
                                     <li class="nav-item">
                                         <a href="Ordenes.aspx" class="nav-link">
                                             <i class="far fa-circle nav-icon"></i>
-                                            <p>Registrar Orden</p>
+                                            <p>Entregas Parciales por Orden</p>
                                         </a>
                                     </li>
                                 </ul>
