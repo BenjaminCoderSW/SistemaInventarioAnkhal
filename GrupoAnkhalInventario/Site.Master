@@ -298,20 +298,42 @@
                                 </ul>
                             </li>
 
-                            <!-- Cuentas por Pagar -->
+                            <!-- Cuentas por Pagar (desplegable) -->
                             <li class="nav-item" id="menuCxP" runat="server">
-                                <a href="CuentasPorPagar.aspx" class="nav-link">
+                                <a href="#" class="nav-link">
                                     <i class="nav-icon fas fa-file-invoice-dollar"></i>
-                                    <p>Cuentas por Pagar</p>
+                                    <p>
+                                        Cuentas por Pagar
+                                        <i class="fas fa-angle-left right"></i>
+                                    </p>
                                 </a>
+                                <ul class="nav nav-treeview">
+                                    <li class="nav-item">
+                                        <a href="CuentasPorPagar.aspx" class="nav-link">
+                                            <i class="far fa-circle nav-icon"></i>
+                                            <p>Seguimiendo de Cuentas por Pagar</p>
+                                        </a>
+                                    </li>
+                                </ul>
                             </li>
 
-                            <!-- Mermas -->
+                            <!-- Mermas (desplegable) -->
                             <li class="nav-item" id="menuMermas" runat="server">
-                                <a href="Mermas.aspx" class="nav-link">
+                                <a href="#" class="nav-link">
                                     <i class="nav-icon fas fa-recycle"></i>
-                                    <p>Mermas MP</p>
+                                    <p>
+                                        Mermas
+                                        <i class="fas fa-angle-left right"></i>
+                                    </p>
                                 </a>
+                                <ul class="nav nav-treeview">
+                                    <li class="nav-item">
+                                        <a href="Mermas.aspx" class="nav-link">
+                                            <i class="far fa-circle nav-icon"></i>
+                                            <p>Conversion Merma MP</p>
+                                        </a>
+                                    </li>
+                                </ul>
                             </li>
 
                             <!-- ── INVENTARIO ──────────────────────────────── -->
