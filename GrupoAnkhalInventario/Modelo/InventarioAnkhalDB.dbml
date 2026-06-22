@@ -252,6 +252,8 @@
       <Association Name="Usuario_LotesMovimiento" Member="LotesMovimiento" ThisKey="ClaveID" OtherKey="RegistradoPorID" Type="LotesMovimiento" />
       <Association Name="Usuario_CuentasPorPagar" Member="CuentasPorPagar" ThisKey="ClaveID" OtherKey="PagadaPorID" Type="CuentasPorPagar" />
       <Association Name="Usuario_CuentasPorPagar1" Member="CuentasPorPagar1" ThisKey="ClaveID" OtherKey="RegistradoPorID" Type="CuentasPorPagar" />
+      <Association Name="Usuario_AbonosCuentasPorPagar" Member="AbonosCuentasPorPagar" ThisKey="ClaveID" OtherKey="RegistradoPorID" Type="AbonosCuentasPorPagar" />
+      <Association Name="Usuario_CancelacionesAbonosCxP" Member="CancelacionesAbonosCxP" ThisKey="ClaveID" OtherKey="CanceladoPorID" Type="CancelacionesAbonosCxP" />
       <Association Name="Usuario_Usuario" Member="Usuario2" ThisKey="UsuarioAltaID" OtherKey="ClaveID" Type="Usuario" IsForeignKey="true" />
     </Type>
   </Table>
@@ -619,10 +621,38 @@
       <Column Name="PagadaPorID" Type="System.Int32" DbType="Int" CanBeNull="true" />
       <Column Name="FechaRegistro" Type="System.DateTime" DbType="DateTime2 NOT NULL" CanBeNull="false" />
       <Column Name="RegistradoPorID" Type="System.Int32" DbType="Int NOT NULL" CanBeNull="false" />
+      <Association Name="CuentasPorPagar_AbonosCuentasPorPagar" Member="AbonosCuentasPorPagar" ThisKey="CuentaPorPagarID" OtherKey="CuentaPorPagarID" Type="AbonosCuentasPorPagar" />
       <Association Name="LotesMovimiento_CuentasPorPagar" Member="LotesMovimiento" ThisKey="LoteID" OtherKey="LoteID" Type="LotesMovimiento" IsForeignKey="true" />
       <Association Name="Usuario_CuentasPorPagar" Member="Usuario" ThisKey="PagadaPorID" OtherKey="ClaveID" Type="Usuario" IsForeignKey="true" />
       <Association Name="Proveedores_CuentasPorPagar" Member="Proveedores" ThisKey="ProveedorID" OtherKey="ProveedorID" Type="Proveedores" IsForeignKey="true" />
       <Association Name="Usuario_CuentasPorPagar1" Member="Usuario1" ThisKey="RegistradoPorID" OtherKey="ClaveID" Type="Usuario" IsForeignKey="true" />
+    </Type>
+  </Table>
+  <Table Name="dbo.AbonosCuentasPorPagar" Member="AbonosCuentasPorPagar">
+    <Type Name="AbonosCuentasPorPagar">
+      <Column Name="AbonoID" Type="System.Int32" DbType="Int NOT NULL IDENTITY" IsPrimaryKey="true" IsDbGenerated="true" CanBeNull="false" />
+      <Column Name="CuentaPorPagarID" Type="System.Int32" DbType="Int NOT NULL" CanBeNull="false" />
+      <Column Name="MontoAbono" Type="System.Decimal" DbType="Decimal(18,2) NOT NULL" CanBeNull="false" />
+      <Column Name="FechaAbono" Type="System.DateTime" DbType="DateTime2 NOT NULL" CanBeNull="false" />
+      <Column Name="ReferenciaPago" Type="System.String" DbType="VarChar(100)" CanBeNull="true" />
+      <Column Name="Observaciones" Type="System.String" DbType="VarChar(500)" CanBeNull="true" />
+      <Column Name="Estado" Type="System.String" DbType="VarChar(20) NOT NULL" CanBeNull="false" />
+      <Column Name="RegistradoPorID" Type="System.Int32" DbType="Int NOT NULL" CanBeNull="false" />
+      <Column Name="FechaRegistro" Type="System.DateTime" DbType="DateTime2 NOT NULL" CanBeNull="false" />
+      <Association Name="AbonosCuentasPorPagar_CancelacionesAbonosCxP" Member="CancelacionesAbonosCxP" ThisKey="AbonoID" OtherKey="AbonoID" Type="CancelacionesAbonosCxP" />
+      <Association Name="CuentasPorPagar_AbonosCuentasPorPagar" Member="CuentasPorPagar" ThisKey="CuentaPorPagarID" OtherKey="CuentaPorPagarID" Type="CuentasPorPagar" IsForeignKey="true" />
+      <Association Name="Usuario_AbonosCuentasPorPagar" Member="Usuario" ThisKey="RegistradoPorID" OtherKey="ClaveID" Type="Usuario" IsForeignKey="true" />
+    </Type>
+  </Table>
+  <Table Name="dbo.CancelacionesAbonosCxP" Member="CancelacionesAbonosCxP">
+    <Type Name="CancelacionesAbonosCxP">
+      <Column Name="CancelacionID" Type="System.Int32" DbType="Int NOT NULL IDENTITY" IsPrimaryKey="true" IsDbGenerated="true" CanBeNull="false" />
+      <Column Name="AbonoID" Type="System.Int32" DbType="Int NOT NULL" CanBeNull="false" />
+      <Column Name="Motivo" Type="System.String" DbType="VarChar(500) NOT NULL" CanBeNull="false" />
+      <Column Name="CanceladoPorID" Type="System.Int32" DbType="Int NOT NULL" CanBeNull="false" />
+      <Column Name="FechaCancelacion" Type="System.DateTime" DbType="DateTime2 NOT NULL" CanBeNull="false" />
+      <Association Name="AbonosCuentasPorPagar_CancelacionesAbonosCxP" Member="AbonosCuentasPorPagar" ThisKey="AbonoID" OtherKey="AbonoID" Type="AbonosCuentasPorPagar" IsForeignKey="true" />
+      <Association Name="Usuario_CancelacionesAbonosCxP" Member="Usuario" ThisKey="CanceladoPorID" OtherKey="ClaveID" Type="Usuario" IsForeignKey="true" />
     </Type>
   </Table>
 </Database>

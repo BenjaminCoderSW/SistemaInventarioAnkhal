@@ -8,6 +8,7 @@ using System.Web.Services;
 using System.Web.UI.WebControls;
 using GrupoAnkhalInventario.Helpers;
 using GrupoAnkhalInventario.Modelo;
+using GrupoAnkhalInventario.Services;
 
 namespace GrupoAnkhalInventario
 {
@@ -38,10 +39,11 @@ namespace GrupoAnkhalInventario
             public DateTime FechaRecepcion { get; set; }
             public DateTime FechaVencimiento { get; set; }
             public decimal MontoTotal { get; set; }
+            public decimal SaldoPendiente { get; set; }
             public string Estado { get; set; }
             public string EstadoVisual { get; set; }
             public string BadgeClass { get; set; }
-            public bool PuedeRegistrarPago { get; set; }
+            public bool PuedeAbonar { get; set; }
         }
 
         // ══ Page_Load ════════════════════════════════════════════════════════
@@ -90,15 +92,17 @@ namespace GrupoAnkhalInventario
 
                 string filtroEstado = ddlFiltroEstado.SelectedValue;
                 if (filtroEstado == "SINPAGAR")
-                    q = q.Where(c => c.Estado == "PENDIENTE");
+                    q = q.Where(c => c.Estado == "PENDIENTE" || c.Estado == "PARCIAL");
                 else if (filtroEstado == "VENCIDA")
-                    q = q.Where(c => c.Estado == "PENDIENTE" && c.FechaVencimiento < hoy);
+                    q = q.Where(c => (c.Estado == "PENDIENTE" || c.Estado == "PARCIAL") && c.FechaVencimiento < hoy);
                 else if (filtroEstado == "PORVENCER")
-                    q = q.Where(c => c.Estado == "PENDIENTE"
+                    q = q.Where(c => (c.Estado == "PENDIENTE" || c.Estado == "PARCIAL")
                                   && c.FechaVencimiento >= hoy
                                   && c.FechaVencimiento <= hoy.AddDays(7));
                 else if (filtroEstado == "PENDIENTE")
-                    q = q.Where(c => c.Estado == "PENDIENTE" && c.FechaVencimiento > hoy.AddDays(7));
+                    q = q.Where(c => (c.Estado == "PENDIENTE" || c.Estado == "PARCIAL") && c.FechaVencimiento > hoy.AddDays(7));
+                else if (filtroEstado == "PARCIAL")
+                    q = q.Where(c => c.Estado == "PARCIAL");
                 else if (filtroEstado == "PAGADA")
                     q = q.Where(c => c.Estado == "PAGADA");
                 // filtroEstado == "" = todas, sin filtro adicional
@@ -114,15 +118,22 @@ namespace GrupoAnkhalInventario
                     q = q.Where(c => c.FechaRecepcion < fh);
                 }
 
-                var datos = q.Select(c => new { c.MontoTotal, c.FechaVencimiento, c.Estado }).ToList();
+                var datos = q.Select(c => new { c.CuentaPorPagarID, c.MontoTotal, c.FechaVencimiento, c.Estado }).ToList();
 
-                // Sobre el conjunto filtrado, calcular solo los pendientes (excluir pagadas del monto)
+                var idsResumen = datos.Select(c => c.CuentaPorPagarID).ToList();
+                var abonosResumen = db.AbonosCuentasPorPagar
+                    .Where(a => idsResumen.Contains(a.CuentaPorPagarID) && a.Estado == "ACTIVO")
+                    .GroupBy(a => a.CuentaPorPagarID)
+                    .Select(g => new { CuentaPorPagarID = g.Key, Total = g.Sum(a => a.MontoAbono) })
+                    .ToDictionary(x => x.CuentaPorPagarID, x => x.Total);
+
+                // Sobre el conjunto filtrado, calcular el saldo pendiente real (excluye pagadas)
                 decimal totalPendiente = datos
-                    .Where(c => c.Estado == "PENDIENTE")
-                    .Sum(c => (decimal?)c.MontoTotal) ?? 0m;
-                int notasPendientes = datos.Count(c => c.Estado == "PENDIENTE" && c.FechaVencimiento > hoy.AddDays(7));
-                int vencidas = datos.Count(c => c.Estado == "PENDIENTE" && c.FechaVencimiento < hoy);
-                int porVencer = datos.Count(c => c.Estado == "PENDIENTE"
+                    .Where(c => c.Estado == "PENDIENTE" || c.Estado == "PARCIAL")
+                    .Sum(c => c.MontoTotal - (abonosResumen.TryGetValue(c.CuentaPorPagarID, out var ab) ? ab : 0m));
+                int notasPendientes = datos.Count(c => (c.Estado == "PENDIENTE" || c.Estado == "PARCIAL") && c.FechaVencimiento > hoy.AddDays(7));
+                int vencidas = datos.Count(c => (c.Estado == "PENDIENTE" || c.Estado == "PARCIAL") && c.FechaVencimiento < hoy);
+                int porVencer = datos.Count(c => (c.Estado == "PENDIENTE" || c.Estado == "PARCIAL")
                                               && c.FechaVencimiento >= hoy
                                               && c.FechaVencimiento <= hoy.AddDays(7));
 
@@ -152,15 +163,17 @@ namespace GrupoAnkhalInventario
                 // Filtro estado
                 string filtroEstado = ddlFiltroEstado.SelectedValue;
                 if (filtroEstado == "SINPAGAR")
-                    q = q.Where(c => c.Estado == "PENDIENTE");
+                    q = q.Where(c => c.Estado == "PENDIENTE" || c.Estado == "PARCIAL");
                 else if (filtroEstado == "VENCIDA")
-                    q = q.Where(c => c.Estado == "PENDIENTE" && c.FechaVencimiento < hoy);
+                    q = q.Where(c => (c.Estado == "PENDIENTE" || c.Estado == "PARCIAL") && c.FechaVencimiento < hoy);
                 else if (filtroEstado == "PORVENCER")
-                    q = q.Where(c => c.Estado == "PENDIENTE"
+                    q = q.Where(c => (c.Estado == "PENDIENTE" || c.Estado == "PARCIAL")
                                   && c.FechaVencimiento >= hoy
                                   && c.FechaVencimiento <= hoy.AddDays(7));
                 else if (filtroEstado == "PENDIENTE")
-                    q = q.Where(c => c.Estado == "PENDIENTE" && c.FechaVencimiento > hoy.AddDays(7));
+                    q = q.Where(c => (c.Estado == "PENDIENTE" || c.Estado == "PARCIAL") && c.FechaVencimiento > hoy.AddDays(7));
+                else if (filtroEstado == "PARCIAL")
+                    q = q.Where(c => c.Estado == "PARCIAL");
                 else if (filtroEstado == "PAGADA")
                     q = q.Where(c => c.Estado == "PAGADA");
                 // filtroEstado == "" = todas, sin filtro adicional
@@ -221,6 +234,12 @@ namespace GrupoAnkhalInventario
                 string rol = Session["Rol"]?.ToString() ?? "";
                 bool puedeRegistrarPago = (rol == "Administrador" || rol == "Compras");
 
+                var totalesAbonados = db.AbonosCuentasPorPagar
+                    .Where(a => ids.Contains(a.CuentaPorPagarID) && a.Estado == "ACTIVO")
+                    .GroupBy(a => a.CuentaPorPagarID)
+                    .Select(g => new { CuentaPorPagarID = g.Key, Total = g.Sum(a => a.MontoAbono) })
+                    .ToDictionary(x => x.CuentaPorPagarID, x => x.Total);
+
                 var pagina = new List<CxPRow>();
                 foreach (var id in ids)
                 {
@@ -240,10 +259,16 @@ namespace GrupoAnkhalInventario
                     {
                         estadoVisual = "POR VENCER"; badgeClass = "badge-warning";
                     }
+                    else if (r.Estado == "PARCIAL")
+                    {
+                        estadoVisual = "PARCIAL"; badgeClass = "badge-info";
+                    }
                     else
                     {
                         estadoVisual = "PENDIENTE"; badgeClass = "badge-primary";
                     }
+
+                    decimal abonado = totalesAbonados.TryGetValue(id, out var ab) ? ab : 0m;
 
                     pagina.Add(new CxPRow
                     {
@@ -255,10 +280,11 @@ namespace GrupoAnkhalInventario
                         FechaRecepcion = r.FechaRecepcion,
                         FechaVencimiento = r.FechaVencimiento,
                         MontoTotal = r.MontoTotal,
+                        SaldoPendiente = r.MontoTotal - abonado,
                         Estado = r.Estado,
                         EstadoVisual = estadoVisual,
                         BadgeClass = badgeClass,
-                        PuedeRegistrarPago = puedeRegistrarPago && r.Estado == "PENDIENTE"
+                        PuedeAbonar = puedeRegistrarPago && (r.Estado == "PENDIENTE" || r.Estado == "PARCIAL")
                     });
                 }
 
@@ -292,25 +318,32 @@ namespace GrupoAnkhalInventario
             CargarGrid();
         }
 
-        // ══ Helper para botón Registrar Pago en GridView ═════════════════════
-        public string GetBtnPago(object cxpIDObj, object puedeObj, object provObj,
-                                  object notaObj, object montoObj)
+        // ══ Helper para botones Abonar / Ver Abonos en GridView ══════════════
+        public string GetBotonesAccion(object cxpIDObj, object puedeObj, object provObj,
+                                        object notaObj, object saldoObj)
         {
-            bool puede = puedeObj is bool b && b;
-            if (!puede)
-                return "<button type='button' class='btn btn-sm btn-outline-success' disabled title='Sin permiso'>" +
-                       "<i class='fas fa-check'></i></button>";
-
             int cxpID = Convert.ToInt32(cxpIDObj);
             string proveedor = System.Web.HttpUtility.JavaScriptStringEncode(provObj?.ToString() ?? "");
             string nota = System.Web.HttpUtility.JavaScriptStringEncode(notaObj?.ToString() ?? "");
-            string monto = ((decimal)montoObj).ToString("C2");
+            string saldo = ((decimal)saldoObj).ToString("C2");
+            bool puede = puedeObj is bool b && b;
 
-            return string.Format(
-                "<button type='button' class='btn btn-sm btn-success' title='Registrar Pago' " +
-                "onclick=\"abrirPago({0}, '{1}', '{2}', '{3}')\">" +
-                "<i class='fas fa-check'></i></button>",
-                cxpID, proveedor, nota, monto);
+            string btnAbonar = puede
+                ? string.Format(
+                    "<button type='button' class='btn btn-sm btn-success mr-1' title='Abonar' " +
+                    "onclick=\"abrirAbono({0}, '{1}', '{2}', '{3}')\">" +
+                    "<i class='fas fa-money-bill-wave'></i></button>",
+                    cxpID, proveedor, nota, saldo)
+                : "<button type='button' class='btn btn-sm btn-outline-success mr-1' disabled title='Sin permiso'>" +
+                  "<i class='fas fa-money-bill-wave'></i></button>";
+
+            string btnVerAbonos = string.Format(
+                "<button type='button' class='btn btn-sm btn-outline-primary' title='Ver Abonos' " +
+                "onclick=\"abrirHistorialAbonos({0}, '{1}', '{2}')\">" +
+                "<i class='fas fa-list'></i></button>",
+                cxpID, proveedor, nota);
+
+            return btnAbonar + btnVerAbonos;
         }
 
         // ══ Utilidades ════════════════════════════════════════════════════════
@@ -322,11 +355,56 @@ namespace GrupoAnkhalInventario
 
         // ══ WebMethods ═══════════════════════════════════════════════════════
 
+        // Recalcula Estado/FechaPago/ReferenciaPago/PagadaPorID de la cabecera a partir
+        // de la suma de abonos ACTIVOs. Fuente de verdad real: AbonosCuentasPorPagar.
+        private static void RecalcularEstadoCuenta(InventarioAnkhalDBDataContext db, int cuentaPorPagarID)
+        {
+            var cxp = db.CuentasPorPagar.First(c => c.CuentaPorPagarID == cuentaPorPagarID);
+            if (cxp.Estado == "CANCELADA") return; // estado reservado, sin lógica activa hoy
+
+            decimal totalAbonado = db.AbonosCuentasPorPagar
+                .Where(a => a.CuentaPorPagarID == cuentaPorPagarID && a.Estado == "ACTIVO")
+                .Sum(a => (decimal?)a.MontoAbono) ?? 0m;
+
+            if (totalAbonado <= 0m)
+            {
+                cxp.Estado = "PENDIENTE";
+                cxp.FechaPago = null;
+                cxp.ReferenciaPago = null;
+                cxp.PagadaPorID = null;
+            }
+            else if (totalAbonado < cxp.MontoTotal)
+            {
+                cxp.Estado = "PARCIAL";
+                cxp.FechaPago = null;
+                cxp.ReferenciaPago = null;
+                cxp.PagadaPorID = null;
+            }
+            else
+            {
+                cxp.Estado = "PAGADA";
+                var ultimo = db.AbonosCuentasPorPagar
+                    .Where(a => a.CuentaPorPagarID == cuentaPorPagarID && a.Estado == "ACTIVO")
+                    .OrderByDescending(a => a.FechaAbono).ThenByDescending(a => a.AbonoID)
+                    .First();
+                cxp.FechaPago = ultimo.FechaAbono;
+                cxp.ReferenciaPago = ultimo.ReferenciaPago;
+                cxp.PagadaPorID = ultimo.RegistradoPorID;
+            }
+        }
+
         [WebMethod(EnableSession = true), ScriptMethod]
-        public static object RegistrarPago(int cuentaPorPagarID, string referencia)
+        public static object RegistrarAbono(int cuentaPorPagarID, decimal monto, string referencia, string observaciones)
         {
             if (HttpContext.Current.Session["ClaveID"] == null)
                 return new { ok = false, msg = "Sesión expirada. Recargue la página." };
+
+            string rol = HttpContext.Current.Session["Rol"]?.ToString() ?? "";
+            if (rol != "Administrador" && rol != "Compras")
+                return new { ok = false, msg = "No tiene permiso para registrar abonos." };
+
+            if (monto <= 0)
+                return new { ok = false, msg = "El monto del abono debe ser mayor a cero." };
 
             int claveID = (int)HttpContext.Current.Session["ClaveID"];
             string connStr = ConfigurationManager
@@ -334,22 +412,210 @@ namespace GrupoAnkhalInventario
 
             using (var db = new InventarioAnkhalDBDataContext(connStr))
             {
-                var cxp = db.CuentasPorPagar
-                    .SingleOrDefault(c => c.CuentaPorPagarID == cuentaPorPagarID);
+                db.Connection.Open();
+                using (var tx = db.Connection.BeginTransaction())
+                {
+                    db.Transaction = tx;
+                    try
+                    {
+                        // Lock de fila — evita condiciones de carrera entre abonos concurrentes
+                        db.ExecuteQuery<int>(
+                            "SELECT CuentaPorPagarID FROM dbo.CuentasPorPagar WITH (UPDLOCK, HOLDLOCK) WHERE CuentaPorPagarID = {0}",
+                            cuentaPorPagarID).FirstOrDefault();
 
-                if (cxp == null)
-                    return new { ok = false, msg = "Nota no encontrada." };
+                        var cxp = db.CuentasPorPagar.SingleOrDefault(c => c.CuentaPorPagarID == cuentaPorPagarID);
+                        if (cxp == null)
+                        {
+                            tx.Rollback();
+                            return new { ok = false, msg = "Nota no encontrada." };
+                        }
+                        if (cxp.Estado == "PAGADA")
+                        {
+                            tx.Rollback();
+                            return new { ok = false, msg = "Esta nota ya está liquidada." };
+                        }
+                        if (cxp.Estado == "CANCELADA")
+                        {
+                            tx.Rollback();
+                            return new { ok = false, msg = "Esta nota está cancelada." };
+                        }
 
-                if (cxp.Estado == "PAGADA")
-                    return new { ok = false, msg = "Esta nota ya fue registrada como pagada." };
+                        decimal totalAbonado = db.AbonosCuentasPorPagar
+                            .Where(a => a.CuentaPorPagarID == cuentaPorPagarID && a.Estado == "ACTIVO")
+                            .Sum(a => (decimal?)a.MontoAbono) ?? 0m;
+                        decimal saldoPendiente = cxp.MontoTotal - totalAbonado;
 
-                cxp.Estado = "PAGADA";
-                cxp.FechaPago = AppHelper.Ahora;
-                cxp.ReferenciaPago = string.IsNullOrWhiteSpace(referencia) ? null : referencia.Trim();
-                cxp.PagadaPorID = claveID;
-                db.SubmitChanges();
+                        if (monto > saldoPendiente)
+                        {
+                            tx.Rollback();
+                            return new { ok = false, msg = string.Format("El monto excede el saldo pendiente ({0:C2}).", saldoPendiente) };
+                        }
 
-                return new { ok = true };
+                        db.AbonosCuentasPorPagar.InsertOnSubmit(new AbonosCuentasPorPagar
+                        {
+                            CuentaPorPagarID = cuentaPorPagarID,
+                            MontoAbono = monto,
+                            FechaAbono = AppHelper.Ahora,
+                            ReferenciaPago = string.IsNullOrWhiteSpace(referencia) ? null : referencia.Trim(),
+                            Observaciones = string.IsNullOrWhiteSpace(observaciones) ? null : observaciones.Trim(),
+                            Estado = "ACTIVO",
+                            RegistradoPorID = claveID,
+                            FechaRegistro = AppHelper.Ahora
+                        });
+                        db.SubmitChanges();
+
+                        RecalcularEstadoCuenta(db, cuentaPorPagarID);
+                        db.SubmitChanges();
+
+                        tx.Commit();
+                        return new { ok = true };
+                    }
+                    catch (Exception ex)
+                    {
+                        tx.Rollback();
+                        return new { ok = false, msg = "Error al registrar el abono: " + ex.Message };
+                    }
+                }
+            }
+        }
+
+        [WebMethod(EnableSession = true), ScriptMethod]
+        public static object CancelarAbono(int abonoID, string motivo)
+        {
+            if (HttpContext.Current.Session["ClaveID"] == null)
+                return new { ok = false, msg = "Sesión expirada. Recargue la página." };
+
+            string rol = HttpContext.Current.Session["Rol"]?.ToString() ?? "";
+            if (rol != "Administrador" && rol != "Compras")
+                return new { ok = false, msg = "No tiene permiso para cancelar abonos." };
+
+            if (string.IsNullOrWhiteSpace(motivo))
+                return new { ok = false, msg = "Debe indicar un motivo de cancelación." };
+
+            int claveID = (int)HttpContext.Current.Session["ClaveID"];
+            string connStr = ConfigurationManager
+                .ConnectionStrings["InventarioAnkhalDBConnectionString"].ConnectionString;
+
+            using (var db = new InventarioAnkhalDBDataContext(connStr))
+            {
+                var abonoPrev = db.AbonosCuentasPorPagar.SingleOrDefault(a => a.AbonoID == abonoID);
+                if (abonoPrev == null)
+                    return new { ok = false, msg = "Abono no encontrado." };
+                int cuentaPorPagarID = abonoPrev.CuentaPorPagarID;
+
+                db.Connection.Open();
+                using (var tx = db.Connection.BeginTransaction())
+                {
+                    db.Transaction = tx;
+                    try
+                    {
+                        db.ExecuteQuery<int>(
+                            "SELECT CuentaPorPagarID FROM dbo.CuentasPorPagar WITH (UPDLOCK, HOLDLOCK) WHERE CuentaPorPagarID = {0}",
+                            cuentaPorPagarID).FirstOrDefault();
+
+                        var abono = db.AbonosCuentasPorPagar.Single(a => a.AbonoID == abonoID);
+                        if (abono.Estado != "ACTIVO")
+                        {
+                            tx.Rollback();
+                            return new { ok = false, msg = "Este abono ya fue cancelado." };
+                        }
+
+                        var cxp = db.CuentasPorPagar.Single(c => c.CuentaPorPagarID == cuentaPorPagarID);
+                        if (cxp.Estado == "CANCELADA")
+                        {
+                            tx.Rollback();
+                            return new { ok = false, msg = "La cuenta está cancelada; no se puede modificar." };
+                        }
+
+                        db.CancelacionesAbonosCxP.InsertOnSubmit(new CancelacionesAbonosCxP
+                        {
+                            AbonoID = abonoID,
+                            Motivo = motivo.Trim(),
+                            CanceladoPorID = claveID,
+                            FechaCancelacion = AppHelper.Ahora
+                        });
+                        abono.Estado = "CANCELADO";
+                        db.SubmitChanges();
+
+                        RecalcularEstadoCuenta(db, cuentaPorPagarID);
+                        db.SubmitChanges();
+
+                        tx.Commit();
+                        return new { ok = true };
+                    }
+                    catch (Exception ex)
+                    {
+                        tx.Rollback();
+                        return new { ok = false, msg = "Error al cancelar el abono: " + ex.Message };
+                    }
+                }
+            }
+        }
+
+        [WebMethod(EnableSession = true), ScriptMethod]
+        public static object ObtenerAbonos(int cuentaPorPagarID)
+        {
+            string connStr = ConfigurationManager
+                .ConnectionStrings["InventarioAnkhalDBConnectionString"].ConnectionString;
+
+            using (var db = new InventarioAnkhalDBDataContext(connStr))
+            {
+                string rol = HttpContext.Current.Session["Rol"]?.ToString() ?? "";
+                bool puedeCancelar = (rol == "Administrador" || rol == "Compras");
+
+                var abonos = db.AbonosCuentasPorPagar
+                    .Where(a => a.CuentaPorPagarID == cuentaPorPagarID)
+                    .OrderByDescending(a => a.FechaAbono)
+                    .ToList();
+                var abonoIds = abonos.Select(a => a.AbonoID).ToList();
+                var cancelaciones = db.CancelacionesAbonosCxP
+                    .Where(c => abonoIds.Contains(c.AbonoID))
+                    .ToList();
+
+                // Resolver nombres: mismo patrón que Movimientos.aspx.cs (ClaveID → DatosUsuario
+                // → UsuarioID → UsuarioService API externa, con fallback si falla).
+                var claveIds = abonos.Select(a => a.RegistradoPorID)
+                    .Concat(cancelaciones.Select(c => c.CanceladoPorID))
+                    .Distinct().ToList();
+                Dictionary<int, string> nombres = new Dictionary<int, string>();
+                try
+                {
+                    var claveToUsuario = db.DatosUsuario
+                        .Where(du => claveIds.Contains(du.ClaveID))
+                        .Select(du => new { du.ClaveID, du.UsuarioID })
+                        .ToList();
+                    var usuarioIds = claveToUsuario.Where(x => x.UsuarioID.HasValue)
+                        .Select(x => x.UsuarioID.Value).ToList();
+                    var apiNombres = UsuarioService.ObtenerEmpleadosBulk(usuarioIds)
+                        .ToDictionary(e => e.IdUsuario, e => e.NombreCompleto);
+                    nombres = claveToUsuario.ToDictionary(
+                        x => x.ClaveID,
+                        x => x.UsuarioID.HasValue && apiNombres.ContainsKey(x.UsuarioID.Value)
+                             ? apiNombres[x.UsuarioID.Value]
+                             : $"Usuario {x.ClaveID}");
+                }
+                catch { /* si falla la API, fallback abajo con $"Usuario {ClaveID}" */ }
+
+                return abonos.Select(a =>
+                {
+                    var canc = cancelaciones.FirstOrDefault(c => c.AbonoID == a.AbonoID);
+                    return new
+                    {
+                        abonoID = a.AbonoID,
+                        monto = a.MontoAbono,
+                        fecha = a.FechaAbono.ToString("dd/MM/yyyy HH:mm"),
+                        referencia = a.ReferenciaPago,
+                        observaciones = a.Observaciones,
+                        estado = a.Estado,
+                        registradoPor = nombres.ContainsKey(a.RegistradoPorID) ? nombres[a.RegistradoPorID] : $"Usuario {a.RegistradoPorID}",
+                        puedeCancelar = puedeCancelar && a.Estado == "ACTIVO",
+                        canceladoPor = canc != null
+                            ? (nombres.ContainsKey(canc.CanceladoPorID) ? nombres[canc.CanceladoPorID] : $"Usuario {canc.CanceladoPorID}")
+                            : null,
+                        fechaCancelacion = canc != null ? canc.FechaCancelacion.ToString("dd/MM/yyyy HH:mm") : null,
+                        motivoCancelacion = canc?.Motivo
+                    };
+                }).ToList();
             }
         }
 

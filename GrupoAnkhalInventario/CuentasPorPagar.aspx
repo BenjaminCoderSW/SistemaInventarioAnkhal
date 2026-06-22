@@ -118,6 +118,7 @@
                             <asp:ListItem Value="VENCIDA">Vencidas</asp:ListItem>
                             <asp:ListItem Value="PORVENCER">Por Vencer (7 días)</asp:ListItem>
                             <asp:ListItem Value="PENDIENTE">Pendientes (al día)</asp:ListItem>
+                            <asp:ListItem Value="PARCIAL">Parciales (con abonos)</asp:ListItem>
                             <asp:ListItem Value="PAGADA">Pagadas</asp:ListItem>
                             <asp:ListItem Value="">Todas</asp:ListItem>
                         </asp:DropDownList>
@@ -190,6 +191,14 @@
 
                         <asp:BoundField DataField="MontoTotal" HeaderText="Monto Total" DataFormatString="{0:C2}" />
 
+                        <asp:TemplateField HeaderText="Saldo Pendiente">
+                            <ItemTemplate>
+                                <span class="font-weight-bold">
+                                    <%# ((decimal)Eval("SaldoPendiente")).ToString("C2") %>
+                                </span>
+                            </ItemTemplate>
+                        </asp:TemplateField>
+
                         <asp:TemplateField HeaderText="Estado">
                             <ItemTemplate>
                                 <span class='badge <%# Eval("BadgeClass") %>'>
@@ -205,7 +214,7 @@
                                     onclick="abrirDetalle(<%# Eval("CuentaPorPagarID") %>, <%# Eval("LoteID") %>, '<%# System.Web.HttpUtility.JavaScriptStringEncode(Eval("FolioLote")?.ToString() ?? "") %>', '<%# System.Web.HttpUtility.JavaScriptStringEncode(Eval("ProveedorNombre")?.ToString() ?? "") %>', '<%# System.Web.HttpUtility.JavaScriptStringEncode(Eval("NumeroNota")?.ToString() ?? "") %>', '<%# ((decimal)Eval("MontoTotal")).ToString("C2") %>')">
                                     <i class="fas fa-eye"></i>
                                 </button>
-                                <%# GetBtnPago(Eval("CuentaPorPagarID"), Eval("PuedeRegistrarPago"), Eval("ProveedorNombre"), Eval("NumeroNota"), Eval("MontoTotal")) %>
+                                <%# GetBotonesAccion(Eval("CuentaPorPagarID"), Eval("PuedeAbonar"), Eval("ProveedorNombre"), Eval("NumeroNota"), Eval("SaldoPendiente")) %>
                             </ItemTemplate>
                         </asp:TemplateField>
                     </Columns>
@@ -276,12 +285,12 @@
   </div>
 </div>
 
-<!-- ══ MODAL REGISTRAR PAGO ═══════════════════════════════════ -->
+<!-- ══ MODAL REGISTRAR ABONO ══════════════════════════════════ -->
 <div class="modal fade" id="modalPago" tabindex="-1" role="dialog" data-backdrop="static">
   <div class="modal-dialog" role="document">
     <div class="modal-content">
       <div class="modal-header" style="background-color:#1e8449;color:white;">
-        <h5 class="modal-title"><i class="fas fa-check-circle mr-1"></i> Registrar Pago</h5>
+        <h5 class="modal-title"><i class="fas fa-money-bill-wave mr-1"></i> Registrar Abono</h5>
         <button type="button" class="close text-white" data-dismiss="modal"><span>&times;</span></button>
       </div>
       <div class="modal-body">
@@ -298,27 +307,84 @@
         </div>
         <div class="row mb-3">
           <div class="col-md-6">
-            <label class="font-weight-bold text-muted" style="font-size:.8rem;">MONTO A PAGAR</label>
-            <div id="pagoMonto" class="font-weight-bold text-success" style="font-size:1.3rem;"></div>
+            <label class="font-weight-bold text-muted" style="font-size:.8rem;">SALDO PENDIENTE</label>
+            <div id="pagoSaldo" class="font-weight-bold text-success" style="font-size:1.3rem;"></div>
           </div>
         </div>
         <hr />
+        <div class="form-group">
+          <label class="font-weight-bold">Monto a Abonar <span class="text-danger">*</span></label>
+          <input type="number" id="txtMontoAbono" class="form-control" step="0.01" min="0.01" />
+          <small class="form-text text-muted">Por defecto se prellena con el saldo pendiente; redúzcalo para un abono parcial.</small>
+        </div>
         <div class="form-group">
           <label class="font-weight-bold">Referencia de Pago <span class="text-muted font-weight-normal">(opcional)</span></label>
           <input type="text" id="txtReferencia" class="form-control" maxlength="100"
               placeholder="Ej: No. de transferencia, folio de cheque..." />
           <small class="form-text text-muted">Número de transferencia, cheque o cualquier referencia bancaria.</small>
         </div>
+        <div class="form-group">
+          <label class="font-weight-bold">Observaciones <span class="text-muted font-weight-normal">(opcional)</span></label>
+          <textarea id="txtObservacionesAbono" class="form-control" maxlength="500" rows="2"></textarea>
+        </div>
         <div class="alert alert-warning" style="font-size:.88rem;">
           <i class="fas fa-info-circle mr-1"></i>
-          Esta acción registra la nota como pagada. No se puede deshacer.
+          El abono se suma al historial de la cuenta. Si el monto cubre el saldo, la cuenta quedará marcada como PAGADA.
+          Un abono ya registrado no se puede editar; solo se puede cancelar (queda un registro de auditoría).
         </div>
       </div>
       <div class="modal-footer">
         <button type="button" class="btn btn-secondary" data-dismiss="modal">Cancelar</button>
-        <button type="button" class="btn btn-success" id="btnConfirmarPago" onclick="confirmarPago()">
-          <i class="fas fa-check mr-1"></i> Confirmar Pago
+        <button type="button" class="btn btn-success" id="btnConfirmarPago" onclick="confirmarAbono()">
+          <i class="fas fa-check mr-1"></i> Confirmar Abono
         </button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ══ MODAL VER ABONOS ═══════════════════════════════════════ -->
+<div class="modal fade" id="modalAbonos" tabindex="-1" role="dialog">
+  <div class="modal-dialog modal-lg" role="document">
+    <div class="modal-content">
+      <div class="modal-header" style="background-color:#003366;color:white;">
+        <h5 class="modal-title"><i class="fas fa-list mr-1"></i> Historial de Abonos</h5>
+        <button type="button" class="close text-white" data-dismiss="modal"><span>&times;</span></button>
+      </div>
+      <div class="modal-body">
+        <input type="hidden" id="hdnCxPIDHistorial" value="" />
+        <div class="row mb-3">
+          <div class="col-md-6">
+            <label class="font-weight-bold text-muted" style="font-size:.8rem;">PROVEEDOR</label>
+            <div id="histProveedor" class="font-weight-bold"></div>
+          </div>
+          <div class="col-md-6">
+            <label class="font-weight-bold text-muted" style="font-size:.8rem;">NO. NOTA</label>
+            <div id="histNota"></div>
+          </div>
+        </div>
+        <div id="divCargandoAbonos" class="text-center py-3" style="display:none;">
+            <i class="fas fa-spinner fa-spin"></i> Cargando...
+        </div>
+        <div class="table-responsive">
+          <table class="table table-sm table-bordered" id="tblAbonos">
+            <thead>
+              <tr>
+                <th>Fecha</th>
+                <th>Monto</th>
+                <th>Referencia</th>
+                <th>Observaciones</th>
+                <th>Registrado por</th>
+                <th>Estado</th>
+                <th></th>
+              </tr>
+            </thead>
+            <tbody id="tbodyAbonos"></tbody>
+          </table>
+        </div>
+      </div>
+      <div class="modal-footer">
+        <button type="button" class="btn btn-secondary" data-dismiss="modal">Cerrar</button>
       </div>
     </div>
   </div>
@@ -380,28 +446,44 @@
             });
     }
 
-    // ── Abrir modal Registrar Pago ───────────────────────────────────
-    function abrirPago(cxpID, proveedor, nota, monto) {
+    // ── Abrir modal Registrar Abono ──────────────────────────────────
+    function abrirAbono(cxpID, proveedor, nota, saldo) {
         document.getElementById('hdnCxPIDPago').value = cxpID;
         document.getElementById('pagoProveedor').textContent = proveedor || '—';
         document.getElementById('pagoNota').textContent = nota || '—';
-        document.getElementById('pagoMonto').textContent = monto;
+        document.getElementById('pagoSaldo').textContent = saldo;
+        var saldoNum = parseFloat(String(saldo).replace(/[^0-9.-]+/g, ''));
+        document.getElementById('txtMontoAbono').value = saldoNum.toFixed(2);
+        document.getElementById('txtMontoAbono').max = saldoNum.toFixed(2);
         document.getElementById('txtReferencia').value = '';
+        document.getElementById('txtObservacionesAbono').value = '';
         $('#modalPago').modal('show');
     }
 
-    // ── Confirmar pago ──────────────────────────────────────────────
-    function confirmarPago() {
+    // ── Confirmar abono ───────────────────────────────────────────────
+    function confirmarAbono() {
         var cxpID = parseInt(document.getElementById('hdnCxPIDPago').value);
+        var monto = parseFloat(document.getElementById('txtMontoAbono').value);
         var ref = document.getElementById('txtReferencia').value.trim();
+        var obs = document.getElementById('txtObservacionesAbono').value.trim();
         if (!cxpID) return;
+
+        if (!(monto > 0)) {
+            Swal.fire({ icon: 'warning', title: 'Monto inválido', text: 'El monto debe ser mayor a cero.', confirmButtonColor: '#003366' });
+            return;
+        }
+        var maxSaldo = parseFloat(document.getElementById('txtMontoAbono').max);
+        if (maxSaldo && monto > maxSaldo + 0.001) {
+            Swal.fire({ icon: 'warning', title: 'Monto inválido', text: 'El monto no puede exceder el saldo pendiente.', confirmButtonColor: '#003366' });
+            return;
+        }
 
         document.getElementById('btnConfirmarPago').disabled = true;
 
-        fetch('<%= ResolveUrl("~/CuentasPorPagar.aspx/RegistrarPago") %>', {
+        fetch('<%= ResolveUrl("~/CuentasPorPagar.aspx/RegistrarAbono") %>', {
             method: 'POST',
             headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify({ cuentaPorPagarID: cxpID, referencia: ref })
+            body: JSON.stringify({ cuentaPorPagarID: cxpID, monto: monto, referencia: ref, observaciones: obs })
         })
             .then(function (r) { return r.json(); })
             .then(function (data) {
@@ -410,8 +492,8 @@
                 if (res && res.ok) {
                     $('#modalPago').modal('hide');
                     Swal.fire({
-                        icon: 'success', title: 'Pago registrado',
-                        text: 'La nota quedó marcada como PAGADA.',
+                        icon: 'success', title: 'Abono registrado',
+                        text: 'El abono se aplicó correctamente.',
                         confirmButtonColor: '#003366'
                     }).then(function () { location.reload(); });
                 } else {
@@ -430,6 +512,109 @@
                     confirmButtonColor: '#003366'
                 }).then(function () { $('#modalPago').modal('show'); });
             });
+    }
+
+    // ── Abrir modal Ver Abonos ────────────────────────────────────────
+    function abrirHistorialAbonos(cxpID, proveedor, nota) {
+        document.getElementById('hdnCxPIDHistorial').value = cxpID;
+        document.getElementById('histProveedor').textContent = proveedor || '—';
+        document.getElementById('histNota').textContent = nota || '—';
+        document.getElementById('tbodyAbonos').innerHTML = '';
+        document.getElementById('divCargandoAbonos').style.display = 'block';
+        $('#modalAbonos').modal('show');
+        cargarAbonos(cxpID);
+    }
+
+    function cargarAbonos(cxpID) {
+        fetch('<%= ResolveUrl("~/CuentasPorPagar.aspx/ObtenerAbonos") %>', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ cuentaPorPagarID: cxpID })
+        })
+            .then(function (r) { return r.json(); })
+            .then(function (data) {
+                document.getElementById('divCargandoAbonos').style.display = 'none';
+                var abonos = data.d;
+                var tbody = document.getElementById('tbodyAbonos');
+                if (!abonos || abonos.length === 0) {
+                    tbody.innerHTML = '<tr><td colspan="7" class="text-center text-muted">Sin abonos registrados.</td></tr>';
+                    return;
+                }
+                var html = '';
+                abonos.forEach(function (a) {
+                    var badge = a.estado === 'ACTIVO'
+                        ? '<span class="badge badge-success">ACTIVO</span>'
+                        : '<span class="badge badge-secondary">CANCELADO</span>';
+                    var infoCancel = a.estado === 'CANCELADO'
+                        ? '<br><small class="text-muted">Por: ' + escHtml(a.canceladoPor || '—') +
+                          ' el ' + escHtml(a.fechaCancelacion || '—') +
+                          '<br>Motivo: ' + escHtml(a.motivoCancelacion || '—') + '</small>'
+                        : '';
+                    var btnCancelar = a.puedeCancelar
+                        ? '<button type="button" class="btn btn-sm btn-outline-danger" title="Cancelar" onclick="cancelarAbono(' + a.abonoID + ', ' + cxpID + ')"><i class="fas fa-times"></i></button>'
+                        : '';
+                    html += '<tr>'
+                        + '<td>' + escHtml(a.fecha) + '</td>'
+                        + '<td>' + formatCurrency(a.monto) + '</td>'
+                        + '<td>' + escHtml(a.referencia || '—') + '</td>'
+                        + '<td>' + escHtml(a.observaciones || '—') + '</td>'
+                        + '<td>' + escHtml(a.registradoPor || '—') + '</td>'
+                        + '<td>' + badge + infoCancel + '</td>'
+                        + '<td>' + btnCancelar + '</td>'
+                        + '</tr>';
+                });
+                tbody.innerHTML = html;
+            })
+            .catch(function () {
+                document.getElementById('divCargandoAbonos').style.display = 'none';
+                document.getElementById('tbodyAbonos').innerHTML =
+                    '<tr><td colspan="7" class="text-center text-danger">Error al cargar abonos.</td></tr>';
+            });
+    }
+
+    // ── Cancelar abono (crea registro de auditoría, no borra el abono) ──
+    function cancelarAbono(abonoID, cxpID) {
+        // target: el modalAbonos sigue abierto detrás. Si no se ancla el popup de SweetAlert2
+        // dentro de él, el focus-trap de Bootstrap le roba el foco al textarea y no deja escribir.
+        Swal.fire({
+            title: 'Cancelar abono',
+            input: 'textarea',
+            inputLabel: 'Motivo de la cancelación',
+            inputPlaceholder: 'Escriba el motivo...',
+            showCancelButton: true,
+            confirmButtonText: 'Cancelar abono',
+            confirmButtonColor: '#e74c3c',
+            target: document.getElementById('modalAbonos'),
+            inputValidator: function (value) {
+                if (!value || !value.trim()) return 'Debe indicar un motivo.';
+            }
+        }).then(function (result) {
+            if (!result.isConfirmed) return;
+            fetch('<%= ResolveUrl("~/CuentasPorPagar.aspx/CancelarAbono") %>', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ abonoID: abonoID, motivo: result.value.trim() })
+            })
+                .then(function (r) { return r.json(); })
+                .then(function (data) {
+                    var res = data.d;
+                    if (res && res.ok) {
+                        Swal.fire({
+                            icon: 'success', title: 'Abono cancelado',
+                            confirmButtonColor: '#003366'
+                        }).then(function () { location.reload(); });
+                    } else {
+                        Swal.fire({
+                            icon: 'warning', title: 'No se pudo cancelar',
+                            text: (res && res.msg) || 'Error inesperado.',
+                            confirmButtonColor: '#003366'
+                        });
+                    }
+                })
+                .catch(function () {
+                    Swal.fire({ icon: 'error', title: 'Error', text: 'No se pudo comunicar con el servidor.' });
+                });
+        });
     }
 
     // ── Helpers ────────────────────────────────────────────────────
