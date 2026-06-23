@@ -35,6 +35,7 @@ namespace GrupoAnkhalInventario
                 { "movimientos.aspx", new List<string> { "Administrador", "Almacen",    "Produccion", "Compras", "Jefe de planta" } },
                 { "mermas.aspx",          new List<string> { "Administrador", "Almacen",    "Produccion", "Jefe de planta" } },
                 { "metasproduccion.aspx", new List<string> { "Administrador", "Produccion" } },
+                { "metasventas.aspx",     new List<string> { "Administrador", "Ventas" } },
                 { "cuentasporpagar.aspx", new List<string> { "Administrador", "Compras",   "Jefe de planta" } },
 
                 // ── Inventario (todos excepto roles no definidos) ──
@@ -150,6 +151,7 @@ namespace GrupoAnkhalInventario
             headerOperaciones.Visible = false;
             menuProduccion.Visible = false;
             menuEntregas.Visible = false;
+            liMenuMetasVentas.Visible = false;
             menuMovimientos.Visible = false;
             menuCxP.Visible = false;
             menuMermas.Visible = false;
@@ -172,6 +174,7 @@ namespace GrupoAnkhalInventario
                     headerOperaciones.Visible = true;
                     menuProduccion.Visible = true;
                     menuEntregas.Visible = true;
+                    liMenuMetasVentas.Visible = true;
                     menuMovimientos.Visible = true;
                     menuCxP.Visible = true;
                     menuMermas.Visible = true;
@@ -188,6 +191,7 @@ namespace GrupoAnkhalInventario
                     liMenuClientes.Visible = true;
                     headerOperaciones.Visible = true;
                     menuEntregas.Visible = true;
+                    liMenuMetasVentas.Visible = true;
                     headerInventario.Visible = true;
                     menuInventario.Visible = true;
                     break;

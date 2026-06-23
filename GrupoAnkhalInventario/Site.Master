@@ -263,6 +263,12 @@
                                             <p>Entregas Parciales por Orden</p>
                                         </a>
                                     </li>
+                                    <li id="liMenuMetasVentas" runat="server" class="nav-item">
+                                        <a href="MetasVentas.aspx" class="nav-link">
+                                            <i class="far fa-circle nav-icon"></i>
+                                            <p>Metas de Ventas</p>
+                                        </a>
+                                    </li>
                                 </ul>
                             </li>
 

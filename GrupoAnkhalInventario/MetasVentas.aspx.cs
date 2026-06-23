@@ -6,16 +6,16 @@ using GrupoAnkhalInventario.Modelo;
 
 namespace GrupoAnkhalInventario
 {
-    public partial class MetasProduccion : System.Web.UI.Page
+    public partial class MetasVentas : System.Web.UI.Page
     {
         // ══ ViewModel ════════════════════════════════════════════════════════
         public class MetaBaseVM
         {
             public string  BaseNombre   { get; set; }
             public string  BaseTipo     { get; set; }
-            public decimal MetaDiaria   { get; set; }   // Meta diaria fija de la base
-            public decimal MetaPeriodo  { get; set; }   // MetaDiaria × número de días
-            public decimal ValorPeriodo { get; set; }   // Valor producido en el período
+            public decimal MetaDiaria   { get; set; }   // Meta de ventas diaria fija de la base
+            public decimal MetaPeriodo  { get; set; }   // MetaVentasDiaria × número de días
+            public decimal ValorPeriodo { get; set; }   // Valor vendido en el período
             public int     CumplPct     { get; set; }
             public bool    Cumplio      { get; set; }
         }
@@ -134,23 +134,25 @@ namespace GrupoAnkhalInventario
 
                 var baseIds = basesQ.Select(b => b.BaseID).ToList();
 
-                decimal metaDiaria = basesQ.Sum(b => (decimal?)b.MetaDiaria) ?? 0m;
+                decimal metaDiaria = basesQ.Sum(b => (decimal?)b.MetaVentasDiaria) ?? 0m;
                 decimal metaPeriodo = metaDiaria * numDias;
 
-                // Valor producido en el período (solo bases filtradas)
-                var valorRaw = db.Produccion
-                    .Where(p => p.Fecha >= desde && p.Fecha <= hasta && baseIds.Contains(p.BaseID) && p.Estado == "Confirmado")
-                    .Select(p => p.CantidadBuena * p.PrecioVenta)
-                    .ToList();
+                // Valor vendido en el período (solo bases filtradas), vía join Entregas + DetalleEntregas
+                var valorRaw = (from e in db.Entregas
+                                join de in db.DetalleEntregas on e.EntregaID equals de.EntregaID
+                                where e.FechaEntrega >= desde && e.FechaEntrega <= hasta
+                                      && baseIds.Contains(e.BaseOrigenID)
+                                      && e.Estado == "ENTREGADA"
+                                select de.Cantidad * de.PrecioUnitario).ToList();
                 decimal valorPeriodo = valorRaw.Any() ? valorRaw.Sum() : 0m;
 
                 int cumplPct = metaPeriodo > 0
                     ? (int)Math.Round((double)valorPeriodo / (double)metaPeriodo * 100)
                     : 0;
 
-                lblMetaTotal.Text      = metaPeriodo.ToString("$#,##0.00");
-                lblValorProducido.Text = valorPeriodo.ToString("$#,##0.00");
-                lblCumplimiento.Text   = cumplPct.ToString() + "%";
+                lblMetaTotal.Text    = metaPeriodo.ToString("$#,##0.00");
+                lblValorVendido.Text = valorPeriodo.ToString("$#,##0.00");
+                lblCumplimiento.Text = cumplPct.ToString() + "%";
             }
         }
 
@@ -173,12 +175,13 @@ namespace GrupoAnkhalInventario
 
                 var baseIds = bases.Select(b => b.BaseID).ToList();
 
-                // Valor producido en el período agrupado por base (solo bases filtradas)
-                var valorPorBase = (from p in db.Produccion
-                                    where p.Fecha >= desde && p.Fecha <= hasta
-                                          && baseIds.Contains(p.BaseID)
-                                          && p.Estado == "Confirmado"
-                                    group p.CantidadBuena * p.PrecioVenta by p.BaseID into g
+                // Valor vendido en el período agrupado por base (solo bases filtradas)
+                var valorPorBase = (from e in db.Entregas
+                                    join de in db.DetalleEntregas on e.EntregaID equals de.EntregaID
+                                    where e.FechaEntrega >= desde && e.FechaEntrega <= hasta
+                                          && baseIds.Contains(e.BaseOrigenID)
+                                          && e.Estado == "ENTREGADA"
+                                    group de.Cantidad * de.PrecioUnitario by e.BaseOrigenID into g
                                     select new { BaseID = g.Key, Valor = g.Sum() }).ToList();
 
                 var lista = bases.Select(b =>
@@ -187,7 +190,7 @@ namespace GrupoAnkhalInventario
                         .Where(v => v.BaseID == b.BaseID)
                         .Select(v => v.Valor)
                         .FirstOrDefault();
-                    decimal metaPeriodo = b.MetaDiaria * numDias;
+                    decimal metaPeriodo = b.MetaVentasDiaria * numDias;
                     int pct = metaPeriodo > 0
                         ? (int)Math.Round((double)valor / (double)metaPeriodo * 100)
                         : 0;
@@ -195,7 +198,7 @@ namespace GrupoAnkhalInventario
                     {
                         BaseNombre   = b.Nombre,
                         BaseTipo     = b.Tipo ?? "",
-                        MetaDiaria   = b.MetaDiaria,
+                        MetaDiaria   = b.MetaVentasDiaria,
                         MetaPeriodo  = metaPeriodo,
                         ValorPeriodo = valor,
                         CumplPct     = pct,
