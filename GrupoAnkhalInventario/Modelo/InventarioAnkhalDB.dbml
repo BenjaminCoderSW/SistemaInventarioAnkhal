@@ -30,6 +30,7 @@
       <Column Name="LimiteCredito" Type="System.Decimal" DbType="Decimal(18,2)" CanBeNull="true" />
       <Association Name="Clientes_Ordenes" Member="Ordenes" ThisKey="ClienteID" OtherKey="ClienteID" Type="Ordenes" />
       <Association Name="Clientes_Entregas" Member="Entregas" ThisKey="ClienteID" OtherKey="ClienteID" Type="Entregas" />
+      <Association Name="Clientes_CuentasPorCobrar" Member="CuentasPorCobrar" ThisKey="ClienteID" OtherKey="ClienteID" Type="CuentasPorCobrar" />
       <Association Name="Usuario_Clientes" Member="Usuario" ThisKey="UsuarioAltaID" OtherKey="ClaveID" Type="Usuario" IsForeignKey="true" />
     </Type>
   </Table>
@@ -241,19 +242,23 @@
       <Association Name="Usuario_UsuarioRoles" Member="UsuarioRoles" ThisKey="ClaveID" OtherKey="AsignadoPorID" Type="UsuarioRoles" />
       <Association Name="Usuario_UsuarioRoles1" Member="UsuarioRoles1" ThisKey="ClaveID" OtherKey="UsuarioID" Type="UsuarioRoles" />
       <Association Name="Usuario_Movimientos" Member="Movimientos" ThisKey="ClaveID" OtherKey="RegistradoPorID" Type="Movimientos" />
-      <Association Name="Usuario_Ordenes" Member="Ordenes" ThisKey="ClaveID" OtherKey="RegistradoPorID" Type="Ordenes" />
       <Association Name="Usuario_Productos" Member="Productos" ThisKey="ClaveID" OtherKey="UsuarioAltaID" Type="Productos" />
       <Association Name="Usuario_Productos1" Member="Productos1" ThisKey="ClaveID" OtherKey="UsuarioModifID" Type="Productos" />
       <Association Name="Usuario_Materiales" Member="Materiales" ThisKey="ClaveID" OtherKey="UsuarioAltaID" Type="Materiales" />
       <Association Name="Usuario_Materiales1" Member="Materiales1" ThisKey="ClaveID" OtherKey="UsuarioModifID" Type="Materiales" />
-      <Association Name="Usuario_Entregas" Member="Entregas" ThisKey="ClaveID" OtherKey="RegistradoPorID" Type="Entregas" />
       <Association Name="Usuario_Bases" Member="Bases" ThisKey="ClaveID" OtherKey="UsuarioAltaID" Type="Bases" />
       <Association Name="Usuario_Bases1" Member="Bases1" ThisKey="ClaveID" OtherKey="UsuarioModifID" Type="Bases" />
       <Association Name="Usuario_LotesMovimiento" Member="LotesMovimiento" ThisKey="ClaveID" OtherKey="RegistradoPorID" Type="LotesMovimiento" />
-      <Association Name="Usuario_CuentasPorPagar" Member="CuentasPorPagar" ThisKey="ClaveID" OtherKey="PagadaPorID" Type="CuentasPorPagar" />
-      <Association Name="Usuario_CuentasPorPagar1" Member="CuentasPorPagar1" ThisKey="ClaveID" OtherKey="RegistradoPorID" Type="CuentasPorPagar" />
       <Association Name="Usuario_AbonosCuentasPorPagar" Member="AbonosCuentasPorPagar" ThisKey="ClaveID" OtherKey="RegistradoPorID" Type="AbonosCuentasPorPagar" />
       <Association Name="Usuario_CancelacionesAbonosCxP" Member="CancelacionesAbonosCxP" ThisKey="ClaveID" OtherKey="CanceladoPorID" Type="CancelacionesAbonosCxP" />
+      <Association Name="Usuario_Ordenes" Member="Ordenes" ThisKey="ClaveID" OtherKey="RegistradoPorID" Type="Ordenes" />
+      <Association Name="Usuario_Entregas" Member="Entregas" ThisKey="ClaveID" OtherKey="RegistradoPorID" Type="Entregas" />
+      <Association Name="Usuario_CuentasPorCobrar" Member="CuentasPorCobrar" ThisKey="ClaveID" OtherKey="CobradaPorID" Type="CuentasPorCobrar" />
+      <Association Name="Usuario_CuentasPorCobrar1" Member="CuentasPorCobrar1" ThisKey="ClaveID" OtherKey="RegistradoPorID" Type="CuentasPorCobrar" />
+      <Association Name="Usuario_AbonosCuentasPorCobrar" Member="AbonosCuentasPorCobrar" ThisKey="ClaveID" OtherKey="RegistradoPorID" Type="AbonosCuentasPorCobrar" />
+      <Association Name="Usuario_CancelacionesAbonosCxC" Member="CancelacionesAbonosCxC" ThisKey="ClaveID" OtherKey="CanceladoPorID" Type="CancelacionesAbonosCxC" />
+      <Association Name="Usuario_CuentasPorPagar" Member="CuentasPorPagar" ThisKey="ClaveID" OtherKey="PagadaPorID" Type="CuentasPorPagar" />
+      <Association Name="Usuario_CuentasPorPagar1" Member="CuentasPorPagar1" ThisKey="ClaveID" OtherKey="RegistradoPorID" Type="CuentasPorPagar" />
       <Association Name="Usuario_Usuario" Member="Usuario2" ThisKey="UsuarioAltaID" OtherKey="ClaveID" Type="Usuario" IsForeignKey="true" />
     </Type>
   </Table>
@@ -382,10 +387,10 @@
       <Association Name="Productos_Movimientos" Member="Productos" ThisKey="ProductoID" OtherKey="ProductoID" Type="Productos" IsForeignKey="true" />
       <Association Name="Materiales_Movimientos" Member="Materiales" ThisKey="MaterialID" OtherKey="MaterialID" Type="Materiales" IsForeignKey="true" />
       <Association Name="UnidadesMedida_Movimientos" Member="UnidadesMedida" ThisKey="UnidadCapturaID" OtherKey="UnidadMedidaID" Type="UnidadesMedida" IsForeignKey="true" />
-      <Association Name="Entregas_Movimientos" Member="Entregas" ThisKey="EntregaID" OtherKey="EntregaID" Type="Entregas" IsForeignKey="true" />
       <Association Name="Bases_Movimientos" Member="Bases" ThisKey="BaseDestinoID" OtherKey="BaseID" Type="Bases" IsForeignKey="true" />
       <Association Name="Bases_Movimientos1" Member="Bases1" ThisKey="BaseOrigenID" OtherKey="BaseID" Type="Bases" IsForeignKey="true" />
       <Association Name="LotesMovimiento_Movimientos" Member="LotesMovimiento" ThisKey="LoteID" OtherKey="LoteID" Type="LotesMovimiento" IsForeignKey="true" />
+      <Association Name="Entregas_Movimientos" Member="Entregas" ThisKey="EntregaID" OtherKey="EntregaID" Type="Entregas" IsForeignKey="true" />
     </Type>
   </Table>
   <Table Name="dbo.DetalleEntregas" Member="DetalleEntregas">
@@ -406,25 +411,6 @@
       <Association Name="Entregas_DetalleEntregas" Member="Entregas" ThisKey="EntregaID" OtherKey="EntregaID" Type="Entregas" IsForeignKey="true" />
     </Type>
   </Table>
-  <Table Name="dbo.Ordenes" Member="Ordenes">
-    <Type Name="Ordenes">
-      <Column Name="OrdenID" Type="System.Int32" DbType="Int NOT NULL IDENTITY" IsPrimaryKey="true" IsDbGenerated="true" CanBeNull="false" />
-      <Column Name="Folio" Type="System.String" DbType="VarChar(30) NOT NULL" CanBeNull="false" />
-      <Column Name="FechaOrden" Type="System.DateTime" DbType="Date NOT NULL" CanBeNull="false" />
-      <Column Name="ClienteID" Type="System.Int32" DbType="Int NOT NULL" CanBeNull="false" />
-      <Column Name="BaseOrigenID" Type="System.Int32" DbType="Int NOT NULL" CanBeNull="false" />
-      <Column Name="Estado" Type="System.String" DbType="VarChar(25) NOT NULL" CanBeNull="false" />
-      <Column Name="Observaciones" Type="System.String" DbType="VarChar(500)" CanBeNull="true" />
-      <Column Name="RegistradoPorID" Type="System.Int32" DbType="Int NOT NULL" CanBeNull="false" />
-      <Column Name="FechaRegistro" Type="System.DateTime" DbType="DateTime2 NOT NULL" CanBeNull="false" />
-      <Column Name="FechaModif" Type="System.DateTime" DbType="DateTime2" CanBeNull="true" />
-      <Association Name="Ordenes_DetalleOrdenes" Member="DetalleOrdenes" ThisKey="OrdenID" OtherKey="OrdenID" Type="DetalleOrdenes" />
-      <Association Name="Ordenes_Entregas" Member="Entregas" ThisKey="OrdenID" OtherKey="OrdenID" Type="Entregas" />
-      <Association Name="Clientes_Ordenes" Member="Clientes" ThisKey="ClienteID" OtherKey="ClienteID" Type="Clientes" IsForeignKey="true" />
-      <Association Name="Usuario_Ordenes" Member="Usuario" ThisKey="RegistradoPorID" OtherKey="ClaveID" Type="Usuario" IsForeignKey="true" />
-      <Association Name="Bases_Ordenes" Member="Bases" ThisKey="BaseOrigenID" OtherKey="BaseID" Type="Bases" IsForeignKey="true" />
-    </Type>
-  </Table>
   <Table Name="dbo.DetalleOrdenes" Member="DetalleOrdenes">
     <Type Name="DetalleOrdenes">
       <Column Name="DetalleOrdenID" Type="System.Int32" DbType="Int NOT NULL IDENTITY" IsPrimaryKey="true" IsDbGenerated="true" CanBeNull="false" />
@@ -439,9 +425,9 @@
       <Column Name="Observaciones" Type="System.String" DbType="VarChar(200)" CanBeNull="true" />
       <Column Name="Estado" Type="System.String" DbType="VarChar(20) NOT NULL" CanBeNull="false" />
       <Column Name="FechaRegistro" Type="System.DateTime" DbType="DateTime2 NOT NULL" CanBeNull="false" />
-      <Association Name="Ordenes_DetalleOrdenes" Member="Ordenes" ThisKey="OrdenID" OtherKey="OrdenID" Type="Ordenes" IsForeignKey="true" />
       <Association Name="Productos_DetalleOrdenes" Member="Productos" ThisKey="ProductoID" OtherKey="ProductoID" Type="Productos" IsForeignKey="true" />
       <Association Name="Materiales_DetalleOrdenes" Member="Materiales" ThisKey="MaterialID" OtherKey="MaterialID" Type="Materiales" IsForeignKey="true" />
+      <Association Name="Ordenes_DetalleOrdenes" Member="Ordenes" ThisKey="OrdenID" OtherKey="OrdenID" Type="Ordenes" IsForeignKey="true" />
     </Type>
   </Table>
   <Table Name="dbo.Productos" Member="Productos">
@@ -523,30 +509,6 @@
       <Association Name="UnidadesMedida_Materiales" Member="Materiales" ThisKey="UnidadMedidaID" OtherKey="UnidadMedidaID" Type="Materiales" />
     </Type>
   </Table>
-  <Table Name="dbo.Entregas" Member="Entregas">
-    <Type Name="Entregas">
-      <Column Name="EntregaID" Type="System.Int32" DbType="Int NOT NULL IDENTITY" IsPrimaryKey="true" IsDbGenerated="true" CanBeNull="false" />
-      <Column Name="Folio" Type="System.String" DbType="VarChar(30) NOT NULL" CanBeNull="false" />
-      <Column Name="FechaEntrega" Type="System.DateTime" DbType="Date NOT NULL" CanBeNull="false" />
-      <Column Name="BaseOrigenID" Type="System.Int32" DbType="Int NOT NULL" CanBeNull="false" />
-      <Column Name="Cliente" Type="System.String" DbType="VarChar(200) NOT NULL" CanBeNull="false" />
-      <Column Name="Estado" Type="System.String" DbType="VarChar(20) NOT NULL" CanBeNull="false" />
-      <Column Name="Observaciones" Type="System.String" DbType="VarChar(500)" CanBeNull="true" />
-      <Column Name="RegistradoPorID" Type="System.Int32" DbType="Int NOT NULL" CanBeNull="false" />
-      <Column Name="FechaRegistro" Type="System.DateTime" DbType="DateTime2 NOT NULL" CanBeNull="false" />
-      <Column Name="FechaModif" Type="System.DateTime" DbType="DateTime2" CanBeNull="true" />
-      <Column Name="ClienteID" Type="System.Int32" DbType="Int" CanBeNull="true" />
-      <Column Name="OrdenID" Type="System.Int32" DbType="Int" CanBeNull="true" />
-      <Column Name="NumeroFactura" Type="System.String" DbType="VarChar(50)" CanBeNull="true" />
-      <Column Name="FacturaID" Type="System.Int32" DbType="Int" CanBeNull="true" />
-      <Association Name="Entregas_Movimientos" Member="Movimientos" ThisKey="EntregaID" OtherKey="EntregaID" Type="Movimientos" />
-      <Association Name="Entregas_DetalleEntregas" Member="DetalleEntregas" ThisKey="EntregaID" OtherKey="EntregaID" Type="DetalleEntregas" />
-      <Association Name="Clientes_Entregas" Member="Clientes" ThisKey="ClienteID" OtherKey="ClienteID" Type="Clientes" IsForeignKey="true" />
-      <Association Name="Ordenes_Entregas" Member="Ordenes" ThisKey="OrdenID" OtherKey="OrdenID" Type="Ordenes" IsForeignKey="true" />
-      <Association Name="Usuario_Entregas" Member="Usuario" ThisKey="RegistradoPorID" OtherKey="ClaveID" Type="Usuario" IsForeignKey="true" />
-      <Association Name="Bases_Entregas" Member="Bases" ThisKey="BaseOrigenID" OtherKey="BaseID" Type="Bases" IsForeignKey="true" />
-    </Type>
-  </Table>
   <Table Name="dbo.Bases" Member="Bases">
     <Type Name="Bases">
       <Column Name="BaseID" Type="System.Int32" DbType="Int NOT NULL IDENTITY" IsPrimaryKey="true" IsDbGenerated="true" CanBeNull="false" />
@@ -575,10 +537,10 @@
       <Association Name="Bases_UsuarioBases" Member="UsuarioBases" ThisKey="BaseID" OtherKey="BaseID" Type="UsuarioBases" />
       <Association Name="Bases_Movimientos" Member="Movimientos" ThisKey="BaseID" OtherKey="BaseDestinoID" Type="Movimientos" />
       <Association Name="Bases_Movimientos1" Member="Movimientos1" ThisKey="BaseID" OtherKey="BaseOrigenID" Type="Movimientos" />
-      <Association Name="Bases_Ordenes" Member="Ordenes" ThisKey="BaseID" OtherKey="BaseOrigenID" Type="Ordenes" />
-      <Association Name="Bases_Entregas" Member="Entregas" ThisKey="BaseID" OtherKey="BaseOrigenID" Type="Entregas" />
       <Association Name="Bases_LotesMovimiento" Member="LotesMovimiento" ThisKey="BaseID" OtherKey="BaseDestinoID" Type="LotesMovimiento" />
       <Association Name="Bases_LotesMovimiento1" Member="LotesMovimiento1" ThisKey="BaseID" OtherKey="BaseOrigenID" Type="LotesMovimiento" />
+      <Association Name="Bases_Ordenes" Member="Ordenes" ThisKey="BaseID" OtherKey="BaseOrigenID" Type="Ordenes" />
+      <Association Name="Bases_Entregas" Member="Entregas" ThisKey="BaseID" OtherKey="BaseOrigenID" Type="Entregas" />
       <Association Name="Usuario_Bases" Member="Usuario" ThisKey="UsuarioAltaID" OtherKey="ClaveID" Type="Usuario" IsForeignKey="true" />
       <Association Name="Usuario_Bases1" Member="Usuario1" ThisKey="UsuarioModifID" OtherKey="ClaveID" Type="Usuario" IsForeignKey="true" />
     </Type>
@@ -605,6 +567,130 @@
       <Association Name="Usuario_LotesMovimiento" Member="Usuario" ThisKey="RegistradoPorID" OtherKey="ClaveID" Type="Usuario" IsForeignKey="true" />
     </Type>
   </Table>
+  <Table Name="dbo.AbonosCuentasPorPagar" Member="AbonosCuentasPorPagar">
+    <Type Name="AbonosCuentasPorPagar">
+      <Column Name="AbonoID" Type="System.Int32" DbType="Int NOT NULL IDENTITY" IsPrimaryKey="true" IsDbGenerated="true" CanBeNull="false" />
+      <Column Name="CuentaPorPagarID" Type="System.Int32" DbType="Int NOT NULL" CanBeNull="false" />
+      <Column Name="MontoAbono" Type="System.Decimal" DbType="Decimal(18,2) NOT NULL" CanBeNull="false" />
+      <Column Name="FechaAbono" Type="System.DateTime" DbType="DateTime2 NOT NULL" CanBeNull="false" />
+      <Column Name="ReferenciaPago" Type="System.String" DbType="VarChar(100)" CanBeNull="true" />
+      <Column Name="Observaciones" Type="System.String" DbType="VarChar(500)" CanBeNull="true" />
+      <Column Name="Estado" Type="System.String" DbType="VarChar(20) NOT NULL" CanBeNull="false" />
+      <Column Name="RegistradoPorID" Type="System.Int32" DbType="Int NOT NULL" CanBeNull="false" />
+      <Column Name="FechaRegistro" Type="System.DateTime" DbType="DateTime2 NOT NULL" CanBeNull="false" />
+      <Association Name="AbonosCuentasPorPagar_CancelacionesAbonosCxP" Member="CancelacionesAbonosCxP" ThisKey="AbonoID" OtherKey="AbonoID" Type="CancelacionesAbonosCxP" />
+      <Association Name="Usuario_AbonosCuentasPorPagar" Member="Usuario" ThisKey="RegistradoPorID" OtherKey="ClaveID" Type="Usuario" IsForeignKey="true" />
+      <Association Name="CuentasPorPagar_AbonosCuentasPorPagar" Member="CuentasPorPagar" ThisKey="CuentaPorPagarID" OtherKey="CuentaPorPagarID" Type="CuentasPorPagar" IsForeignKey="true" />
+    </Type>
+  </Table>
+  <Table Name="dbo.CancelacionesAbonosCxP" Member="CancelacionesAbonosCxP">
+    <Type Name="CancelacionesAbonosCxP">
+      <Column Name="CancelacionID" Type="System.Int32" DbType="Int NOT NULL IDENTITY" IsPrimaryKey="true" IsDbGenerated="true" CanBeNull="false" />
+      <Column Name="AbonoID" Type="System.Int32" DbType="Int NOT NULL" CanBeNull="false" />
+      <Column Name="Motivo" Type="System.String" DbType="VarChar(500) NOT NULL" CanBeNull="false" />
+      <Column Name="CanceladoPorID" Type="System.Int32" DbType="Int NOT NULL" CanBeNull="false" />
+      <Column Name="FechaCancelacion" Type="System.DateTime" DbType="DateTime2 NOT NULL" CanBeNull="false" />
+      <Association Name="AbonosCuentasPorPagar_CancelacionesAbonosCxP" Member="AbonosCuentasPorPagar" ThisKey="AbonoID" OtherKey="AbonoID" Type="AbonosCuentasPorPagar" IsForeignKey="true" />
+      <Association Name="Usuario_CancelacionesAbonosCxP" Member="Usuario" ThisKey="CanceladoPorID" OtherKey="ClaveID" Type="Usuario" IsForeignKey="true" />
+    </Type>
+  </Table>
+  <Table Name="dbo.Ordenes" Member="Ordenes">
+    <Type Name="Ordenes">
+      <Column Name="OrdenID" Type="System.Int32" DbType="Int NOT NULL IDENTITY" IsPrimaryKey="true" IsDbGenerated="true" CanBeNull="false" />
+      <Column Name="Folio" Type="System.String" DbType="VarChar(30) NOT NULL" CanBeNull="false" />
+      <Column Name="FechaOrden" Type="System.DateTime" DbType="Date NOT NULL" CanBeNull="false" />
+      <Column Name="ClienteID" Type="System.Int32" DbType="Int NOT NULL" CanBeNull="false" />
+      <Column Name="BaseOrigenID" Type="System.Int32" DbType="Int NOT NULL" CanBeNull="false" />
+      <Column Name="Estado" Type="System.String" DbType="VarChar(25) NOT NULL" CanBeNull="false" />
+      <Column Name="Observaciones" Type="System.String" DbType="VarChar(500)" CanBeNull="true" />
+      <Column Name="RegistradoPorID" Type="System.Int32" DbType="Int NOT NULL" CanBeNull="false" />
+      <Column Name="FechaRegistro" Type="System.DateTime" DbType="DateTime2 NOT NULL" CanBeNull="false" />
+      <Column Name="FechaModif" Type="System.DateTime" DbType="DateTime2" CanBeNull="true" />
+      <Column Name="EsCredito" Type="System.Boolean" DbType="Bit NOT NULL" CanBeNull="false" />
+      <Association Name="Ordenes_DetalleOrdenes" Member="DetalleOrdenes" ThisKey="OrdenID" OtherKey="OrdenID" Type="DetalleOrdenes" />
+      <Association Name="Ordenes_Entregas" Member="Entregas" ThisKey="OrdenID" OtherKey="OrdenID" Type="Entregas" />
+      <Association Name="Bases_Ordenes" Member="Bases" ThisKey="BaseOrigenID" OtherKey="BaseID" Type="Bases" IsForeignKey="true" />
+      <Association Name="Clientes_Ordenes" Member="Clientes" ThisKey="ClienteID" OtherKey="ClienteID" Type="Clientes" IsForeignKey="true" />
+      <Association Name="Usuario_Ordenes" Member="Usuario" ThisKey="RegistradoPorID" OtherKey="ClaveID" Type="Usuario" IsForeignKey="true" />
+    </Type>
+  </Table>
+  <Table Name="dbo.Entregas" Member="Entregas">
+    <Type Name="Entregas">
+      <Column Name="EntregaID" Type="System.Int32" DbType="Int NOT NULL IDENTITY" IsPrimaryKey="true" IsDbGenerated="true" CanBeNull="false" />
+      <Column Name="Folio" Type="System.String" DbType="VarChar(30) NOT NULL" CanBeNull="false" />
+      <Column Name="FechaEntrega" Type="System.DateTime" DbType="Date NOT NULL" CanBeNull="false" />
+      <Column Name="BaseOrigenID" Type="System.Int32" DbType="Int NOT NULL" CanBeNull="false" />
+      <Column Name="Cliente" Type="System.String" DbType="VarChar(200) NOT NULL" CanBeNull="false" />
+      <Column Name="Estado" Type="System.String" DbType="VarChar(20) NOT NULL" CanBeNull="false" />
+      <Column Name="Observaciones" Type="System.String" DbType="VarChar(500)" CanBeNull="true" />
+      <Column Name="RegistradoPorID" Type="System.Int32" DbType="Int NOT NULL" CanBeNull="false" />
+      <Column Name="FechaRegistro" Type="System.DateTime" DbType="DateTime2 NOT NULL" CanBeNull="false" />
+      <Column Name="FechaModif" Type="System.DateTime" DbType="DateTime2" CanBeNull="true" />
+      <Column Name="ClienteID" Type="System.Int32" DbType="Int" CanBeNull="true" />
+      <Column Name="OrdenID" Type="System.Int32" DbType="Int" CanBeNull="true" />
+      <Column Name="NumeroFactura" Type="System.String" DbType="VarChar(50)" CanBeNull="true" />
+      <Column Name="FacturaID" Type="System.Int32" DbType="Int" CanBeNull="true" />
+      <Column Name="EsCredito" Type="System.Boolean" DbType="Bit NOT NULL" CanBeNull="false" />
+      <Association Name="Entregas_Movimientos" Member="Movimientos" ThisKey="EntregaID" OtherKey="EntregaID" Type="Movimientos" />
+      <Association Name="Entregas_DetalleEntregas" Member="DetalleEntregas" ThisKey="EntregaID" OtherKey="EntregaID" Type="DetalleEntregas" />
+      <Association Name="Entregas_CuentasPorCobrar" Member="CuentasPorCobrar" ThisKey="EntregaID" OtherKey="EntregaID" Type="CuentasPorCobrar" />
+      <Association Name="Bases_Entregas" Member="Bases" ThisKey="BaseOrigenID" OtherKey="BaseID" Type="Bases" IsForeignKey="true" />
+      <Association Name="Clientes_Entregas" Member="Clientes" ThisKey="ClienteID" OtherKey="ClienteID" Type="Clientes" IsForeignKey="true" />
+      <Association Name="Ordenes_Entregas" Member="Ordenes" ThisKey="OrdenID" OtherKey="OrdenID" Type="Ordenes" IsForeignKey="true" />
+      <Association Name="Usuario_Entregas" Member="Usuario" ThisKey="RegistradoPorID" OtherKey="ClaveID" Type="Usuario" IsForeignKey="true" />
+    </Type>
+  </Table>
+  <Table Name="dbo.CuentasPorCobrar" Member="CuentasPorCobrar">
+    <Type Name="CuentasPorCobrar">
+      <Column Name="CuentaPorCobrarID" Type="System.Int32" DbType="Int NOT NULL IDENTITY" IsPrimaryKey="true" IsDbGenerated="true" CanBeNull="false" />
+      <Column Name="EntregaID" Type="System.Int32" DbType="Int NOT NULL" CanBeNull="false" />
+      <Column Name="ClienteID" Type="System.Int32" DbType="Int NOT NULL" CanBeNull="false" />
+      <Column Name="NumeroFactura" Type="System.String" DbType="VarChar(50)" CanBeNull="true" />
+      <Column Name="FechaEntrega" Type="System.DateTime" DbType="Date NOT NULL" CanBeNull="false" />
+      <Column Name="DiasCreditoAplicados" Type="System.Int32" DbType="Int NOT NULL" CanBeNull="false" />
+      <Column Name="FechaVencimiento" Type="System.DateTime" DbType="Date NOT NULL" CanBeNull="false" />
+      <Column Name="MontoTotal" Type="System.Decimal" DbType="Decimal(18,2) NOT NULL" CanBeNull="false" />
+      <Column Name="Estado" Type="System.String" DbType="VarChar(20) NOT NULL" CanBeNull="false" />
+      <Column Name="FechaCobro" Type="System.DateTime" DbType="DateTime2" CanBeNull="true" />
+      <Column Name="ReferenciaCobro" Type="System.String" DbType="VarChar(100)" CanBeNull="true" />
+      <Column Name="Observaciones" Type="System.String" DbType="VarChar(500)" CanBeNull="true" />
+      <Column Name="CobradaPorID" Type="System.Int32" DbType="Int" CanBeNull="true" />
+      <Column Name="FechaRegistro" Type="System.DateTime" DbType="DateTime2 NOT NULL" CanBeNull="false" />
+      <Column Name="RegistradoPorID" Type="System.Int32" DbType="Int NOT NULL" CanBeNull="false" />
+      <Association Name="CuentasPorCobrar_AbonosCuentasPorCobrar" Member="AbonosCuentasPorCobrar" ThisKey="CuentaPorCobrarID" OtherKey="CuentaPorCobrarID" Type="AbonosCuentasPorCobrar" />
+      <Association Name="Clientes_CuentasPorCobrar" Member="Clientes" ThisKey="ClienteID" OtherKey="ClienteID" Type="Clientes" IsForeignKey="true" />
+      <Association Name="Usuario_CuentasPorCobrar" Member="Usuario" ThisKey="CobradaPorID" OtherKey="ClaveID" Type="Usuario" IsForeignKey="true" />
+      <Association Name="Entregas_CuentasPorCobrar" Member="Entregas" ThisKey="EntregaID" OtherKey="EntregaID" Type="Entregas" IsForeignKey="true" />
+      <Association Name="Usuario_CuentasPorCobrar1" Member="Usuario1" ThisKey="RegistradoPorID" OtherKey="ClaveID" Type="Usuario" IsForeignKey="true" />
+    </Type>
+  </Table>
+  <Table Name="dbo.AbonosCuentasPorCobrar" Member="AbonosCuentasPorCobrar">
+    <Type Name="AbonosCuentasPorCobrar">
+      <Column Name="AbonoID" Type="System.Int32" DbType="Int NOT NULL IDENTITY" IsPrimaryKey="true" IsDbGenerated="true" CanBeNull="false" />
+      <Column Name="CuentaPorCobrarID" Type="System.Int32" DbType="Int NOT NULL" CanBeNull="false" />
+      <Column Name="MontoAbono" Type="System.Decimal" DbType="Decimal(18,2) NOT NULL" CanBeNull="false" />
+      <Column Name="FechaAbono" Type="System.DateTime" DbType="DateTime2 NOT NULL" CanBeNull="false" />
+      <Column Name="ReferenciaPago" Type="System.String" DbType="VarChar(100)" CanBeNull="true" />
+      <Column Name="Observaciones" Type="System.String" DbType="VarChar(500)" CanBeNull="true" />
+      <Column Name="Estado" Type="System.String" DbType="VarChar(20) NOT NULL" CanBeNull="false" />
+      <Column Name="RegistradoPorID" Type="System.Int32" DbType="Int NOT NULL" CanBeNull="false" />
+      <Column Name="FechaRegistro" Type="System.DateTime" DbType="DateTime2 NOT NULL" CanBeNull="false" />
+      <Association Name="AbonosCuentasPorCobrar_CancelacionesAbonosCxC" Member="CancelacionesAbonosCxC" ThisKey="AbonoID" OtherKey="AbonoID" Type="CancelacionesAbonosCxC" />
+      <Association Name="CuentasPorCobrar_AbonosCuentasPorCobrar" Member="CuentasPorCobrar" ThisKey="CuentaPorCobrarID" OtherKey="CuentaPorCobrarID" Type="CuentasPorCobrar" IsForeignKey="true" />
+      <Association Name="Usuario_AbonosCuentasPorCobrar" Member="Usuario" ThisKey="RegistradoPorID" OtherKey="ClaveID" Type="Usuario" IsForeignKey="true" />
+    </Type>
+  </Table>
+  <Table Name="dbo.CancelacionesAbonosCxC" Member="CancelacionesAbonosCxC">
+    <Type Name="CancelacionesAbonosCxC">
+      <Column Name="CancelacionID" Type="System.Int32" DbType="Int NOT NULL IDENTITY" IsPrimaryKey="true" IsDbGenerated="true" CanBeNull="false" />
+      <Column Name="AbonoID" Type="System.Int32" DbType="Int NOT NULL" CanBeNull="false" />
+      <Column Name="Motivo" Type="System.String" DbType="VarChar(500) NOT NULL" CanBeNull="false" />
+      <Column Name="CanceladoPorID" Type="System.Int32" DbType="Int NOT NULL" CanBeNull="false" />
+      <Column Name="FechaCancelacion" Type="System.DateTime" DbType="DateTime2 NOT NULL" CanBeNull="false" />
+      <Association Name="AbonosCuentasPorCobrar_CancelacionesAbonosCxC" Member="AbonosCuentasPorCobrar" ThisKey="AbonoID" OtherKey="AbonoID" Type="AbonosCuentasPorCobrar" IsForeignKey="true" />
+      <Association Name="Usuario_CancelacionesAbonosCxC" Member="Usuario" ThisKey="CanceladoPorID" OtherKey="ClaveID" Type="Usuario" IsForeignKey="true" />
+    </Type>
+  </Table>
   <Table Name="dbo.CuentasPorPagar" Member="CuentasPorPagar">
     <Type Name="CuentasPorPagar">
       <Column Name="CuentaPorPagarID" Type="System.Int32" DbType="Int NOT NULL IDENTITY" IsPrimaryKey="true" IsDbGenerated="true" CanBeNull="false" />
@@ -621,38 +707,12 @@
       <Column Name="PagadaPorID" Type="System.Int32" DbType="Int" CanBeNull="true" />
       <Column Name="FechaRegistro" Type="System.DateTime" DbType="DateTime2 NOT NULL" CanBeNull="false" />
       <Column Name="RegistradoPorID" Type="System.Int32" DbType="Int NOT NULL" CanBeNull="false" />
+      <Column Name="DiasCreditoAplicados" Type="System.Int32" DbType="Int NOT NULL" CanBeNull="false" />
       <Association Name="CuentasPorPagar_AbonosCuentasPorPagar" Member="AbonosCuentasPorPagar" ThisKey="CuentaPorPagarID" OtherKey="CuentaPorPagarID" Type="AbonosCuentasPorPagar" />
       <Association Name="LotesMovimiento_CuentasPorPagar" Member="LotesMovimiento" ThisKey="LoteID" OtherKey="LoteID" Type="LotesMovimiento" IsForeignKey="true" />
       <Association Name="Usuario_CuentasPorPagar" Member="Usuario" ThisKey="PagadaPorID" OtherKey="ClaveID" Type="Usuario" IsForeignKey="true" />
       <Association Name="Proveedores_CuentasPorPagar" Member="Proveedores" ThisKey="ProveedorID" OtherKey="ProveedorID" Type="Proveedores" IsForeignKey="true" />
       <Association Name="Usuario_CuentasPorPagar1" Member="Usuario1" ThisKey="RegistradoPorID" OtherKey="ClaveID" Type="Usuario" IsForeignKey="true" />
-    </Type>
-  </Table>
-  <Table Name="dbo.AbonosCuentasPorPagar" Member="AbonosCuentasPorPagar">
-    <Type Name="AbonosCuentasPorPagar">
-      <Column Name="AbonoID" Type="System.Int32" DbType="Int NOT NULL IDENTITY" IsPrimaryKey="true" IsDbGenerated="true" CanBeNull="false" />
-      <Column Name="CuentaPorPagarID" Type="System.Int32" DbType="Int NOT NULL" CanBeNull="false" />
-      <Column Name="MontoAbono" Type="System.Decimal" DbType="Decimal(18,2) NOT NULL" CanBeNull="false" />
-      <Column Name="FechaAbono" Type="System.DateTime" DbType="DateTime2 NOT NULL" CanBeNull="false" />
-      <Column Name="ReferenciaPago" Type="System.String" DbType="VarChar(100)" CanBeNull="true" />
-      <Column Name="Observaciones" Type="System.String" DbType="VarChar(500)" CanBeNull="true" />
-      <Column Name="Estado" Type="System.String" DbType="VarChar(20) NOT NULL" CanBeNull="false" />
-      <Column Name="RegistradoPorID" Type="System.Int32" DbType="Int NOT NULL" CanBeNull="false" />
-      <Column Name="FechaRegistro" Type="System.DateTime" DbType="DateTime2 NOT NULL" CanBeNull="false" />
-      <Association Name="AbonosCuentasPorPagar_CancelacionesAbonosCxP" Member="CancelacionesAbonosCxP" ThisKey="AbonoID" OtherKey="AbonoID" Type="CancelacionesAbonosCxP" />
-      <Association Name="CuentasPorPagar_AbonosCuentasPorPagar" Member="CuentasPorPagar" ThisKey="CuentaPorPagarID" OtherKey="CuentaPorPagarID" Type="CuentasPorPagar" IsForeignKey="true" />
-      <Association Name="Usuario_AbonosCuentasPorPagar" Member="Usuario" ThisKey="RegistradoPorID" OtherKey="ClaveID" Type="Usuario" IsForeignKey="true" />
-    </Type>
-  </Table>
-  <Table Name="dbo.CancelacionesAbonosCxP" Member="CancelacionesAbonosCxP">
-    <Type Name="CancelacionesAbonosCxP">
-      <Column Name="CancelacionID" Type="System.Int32" DbType="Int NOT NULL IDENTITY" IsPrimaryKey="true" IsDbGenerated="true" CanBeNull="false" />
-      <Column Name="AbonoID" Type="System.Int32" DbType="Int NOT NULL" CanBeNull="false" />
-      <Column Name="Motivo" Type="System.String" DbType="VarChar(500) NOT NULL" CanBeNull="false" />
-      <Column Name="CanceladoPorID" Type="System.Int32" DbType="Int NOT NULL" CanBeNull="false" />
-      <Column Name="FechaCancelacion" Type="System.DateTime" DbType="DateTime2 NOT NULL" CanBeNull="false" />
-      <Association Name="AbonosCuentasPorPagar_CancelacionesAbonosCxP" Member="AbonosCuentasPorPagar" ThisKey="AbonoID" OtherKey="AbonoID" Type="AbonosCuentasPorPagar" IsForeignKey="true" />
-      <Association Name="Usuario_CancelacionesAbonosCxP" Member="Usuario" ThisKey="CanceladoPorID" OtherKey="ClaveID" Type="Usuario" IsForeignKey="true" />
     </Type>
   </Table>
 </Database>

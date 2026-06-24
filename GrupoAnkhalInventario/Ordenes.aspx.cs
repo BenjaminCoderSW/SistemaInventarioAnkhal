@@ -96,6 +96,7 @@ namespace GrupoAnkhalInventario
             public string BaseNombre   { get; set; }
             public string EstadoOrden  { get; set; }
             public int    BaseOrigenID { get; set; }
+            public bool   EsCredito    { get; set; }
             public List<DetalleOrdenItemJson> Items { get; set; }
         }
 
@@ -154,13 +155,17 @@ namespace GrupoAnkhalInventario
                 var clientes = db.Clientes
                     .Where(c => c.Activo)
                     .OrderBy(c => c.Nombre)
-                    .Select(c => new { c.ClienteID, c.Nombre })
+                    .Select(c => new { c.ClienteID, c.Nombre, c.DiasCredito })
                     .ToList();
 
                 ddlNuevoCliente.Items.Clear();
                 ddlNuevoCliente.Items.Add(new ListItem("-- Seleccione --", ""));
                 foreach (var c in clientes)
-                    ddlNuevoCliente.Items.Add(new ListItem(c.Nombre, c.ClienteID.ToString()));
+                {
+                    var item = new ListItem(c.Nombre, c.ClienteID.ToString());
+                    item.Attributes["data-dias"] = (c.DiasCredito ?? 0).ToString();
+                    ddlNuevoCliente.Items.Add(item);
+                }
             }
         }
 
@@ -431,6 +436,7 @@ namespace GrupoAnkhalInventario
                                 Estado          = "ABIERTA",
                                 Observaciones   = string.IsNullOrWhiteSpace(txtNuevoObservaciones.Text)
                                                     ? null : txtNuevoObservaciones.Text.Trim(),
+                                EsCredito       = chkEsCreditoOrden.Checked,
                                 RegistradoPorID = Convert.ToInt32(Session["ClaveID"]),
                                 FechaRegistro   = AppHelper.Ahora
                             };
@@ -671,7 +677,7 @@ namespace GrupoAnkhalInventario
                              join b in db.Bases    on o.BaseOrigenID equals b.BaseID
                              join c in db.Clientes on o.ClienteID    equals c.ClienteID
                              select new { o.OrdenID, o.Folio, BaseNombre=b.Nombre,
-                                          ClienteNombre=c.Nombre, o.Estado, o.BaseOrigenID })
+                                          ClienteNombre=c.Nombre, o.Estado, o.BaseOrigenID, o.EsCredito })
                             .FirstOrDefault();
                 if (orden == null) return;
 
@@ -813,6 +819,7 @@ namespace GrupoAnkhalInventario
                     BaseNombre    = orden.BaseNombre,
                     EstadoOrden   = orden.Estado,
                     BaseOrigenID  = orden.BaseOrigenID,
+                    EsCredito     = orden.EsCredito,
                     Items         = items
                 };
                 hdnPartidaJson.Value = _json.Serialize(partida);
@@ -934,6 +941,7 @@ namespace GrupoAnkhalInventario
                                 Estado          = estadoEntrega,
                                 OrdenID         = ordenID,
                                 NumeroFactura   = confirmarDirecto ? numFactura : null,
+                                EsCredito       = chkEsCreditoPartida.Checked,
                                 Observaciones   = null,
                                 RegistradoPorID = Convert.ToInt32(Session["ClaveID"]),
                                 FechaRegistro   = AppHelper.Ahora
@@ -993,6 +1001,8 @@ namespace GrupoAnkhalInventario
 
                                 ActualizarEstadoOrden(ordenID, db);
                                 db.SubmitChanges();
+
+                                CuentasPorCobrarHelper.GenerarSiAplica(db, entrega.EntregaID, Convert.ToInt32(Session["ClaveID"]));
                             }
                             else if (orden.Estado == "ABIERTA")
                             {
@@ -1088,6 +1098,8 @@ namespace GrupoAnkhalInventario
                                 db.SubmitChanges();
                             }
 
+                            CuentasPorCobrarHelper.GenerarSiAplica(db, entregaID, Convert.ToInt32(Session["ClaveID"]));
+
                             tx.Commit();
 
                             SetMsg("success", "Entrega confirmada",
@@ -1120,6 +1132,11 @@ namespace GrupoAnkhalInventario
                         {
                             var entrega = db.Entregas.First(e => e.EntregaID == entregaID);
 
+                            if (CuentasPorCobrarHelper.HayCobrosActivos(db, entregaID))
+                                throw new CxCConCobrosActivosException(
+                                    "Esta entrega tiene cobros (abonos) registrados en su Cuenta por Cobrar. " +
+                                    "Cancele primero esos cobros desde el módulo de Cuentas por Cobrar antes de cancelar la entrega.");
+
                             if (entrega.Estado == "ENTREGADA")
                             {
                                 var items = ObtenerItemsEntrega(db, entregaID);
@@ -1134,6 +1151,8 @@ namespace GrupoAnkhalInventario
                                 foreach (var mv in movsOriginal)
                                     mv.Observaciones = (mv.Observaciones ?? "") + " [ANULADO - entrega cancelada]";
                             }
+
+                            CuentasPorCobrarHelper.CancelarCxCSiExiste(db, entregaID);
 
                             int? ordenID = entrega.OrdenID;
                             entrega.Estado     = "CANCELADA";
@@ -1155,6 +1174,10 @@ namespace GrupoAnkhalInventario
                         catch { tx.Rollback(); throw; }
                     }
                 }
+            }
+            catch (CxCConCobrosActivosException cex)
+            {
+                SetMsg("warning", "Cobros pendientes", cex.Message);
             }
             catch (Exception ex)
             {
@@ -1181,6 +1204,18 @@ namespace GrupoAnkhalInventario
                                 .Where(e => e.OrdenID == ordenID && e.Estado != "CANCELADA")
                                 .ToList();
 
+                            // Pre-chequeo (todo-o-nada): si alguna entrega ya tiene cobros
+                            // activos en su CxC, no se cancela NADA de la orden.
+                            var foliosBloqueados = entregasVinc
+                                .Where(ent => CuentasPorCobrarHelper.HayCobrosActivos(db, ent.EntregaID))
+                                .Select(ent => ent.Folio)
+                                .ToList();
+                            if (foliosBloqueados.Any())
+                                throw new CxCConCobrosActivosException(
+                                    "No se puede cancelar la orden: las siguientes entregas tienen cobros (abonos) " +
+                                    "registrados y deben cancelarse primero desde el módulo de Cuentas por Cobrar: " +
+                                    string.Join(", ", foliosBloqueados) + ".");
+
                             foreach (var ent in entregasVinc)
                             {
                                 if (ent.Estado == "ENTREGADA")
@@ -1197,6 +1232,9 @@ namespace GrupoAnkhalInventario
                                     foreach (var mv in movs)
                                         mv.Observaciones = (mv.Observaciones ?? "") + " [ANULADO - orden cancelada]";
                                 }
+
+                                CuentasPorCobrarHelper.CancelarCxCSiExiste(db, ent.EntregaID);
+
                                 ent.Estado     = "CANCELADA";
                                 ent.FechaModif = AppHelper.Ahora;
                             }
@@ -1214,6 +1252,10 @@ namespace GrupoAnkhalInventario
                         catch { tx.Rollback(); throw; }
                     }
                 }
+            }
+            catch (CxCConCobrosActivosException cex)
+            {
+                SetMsg("warning", "Cobros pendientes", cex.Message);
             }
             catch (Exception ex)
             {
@@ -1728,6 +1770,7 @@ namespace GrupoAnkhalInventario
             ddlNuevoBase.SelectedIndex    = 0;
             ddlNuevoCliente.SelectedIndex = 0;
             txtNuevoObservaciones.Text    = "";
+            chkEsCreditoOrden.Checked     = false;
             hdnItemsJson.Value            = "[]";
         }
 

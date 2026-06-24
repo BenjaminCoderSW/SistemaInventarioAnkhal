@@ -1,17 +1,17 @@
-<%@ Page Title="Cuentas por Pagar" Language="C#" MasterPageFile="~/Site.Master" AutoEventWireup="true" CodeBehind="CuentasPorPagar.aspx.cs" Inherits="GrupoAnkhalInventario.CuentasPorPagar" EnableEventValidation="false" %>
+<%@ Page Title="Cuentas por Cobrar" Language="C#" MasterPageFile="~/Site.Master" AutoEventWireup="true" CodeBehind="CuentasPorCobrar.aspx.cs" Inherits="GrupoAnkhalInventario.CuentasPorCobrar" EnableEventValidation="false" %>
 <%@ MasterType VirtualPath="~/Site.Master" %>
 
 <asp:Content ID="Content1" ContentPlaceHolderID="head" runat="server">
     <link href="css/gridviewPantalla.css" rel="stylesheet" />
     <style>
         /* ── Cards de resumen ── */
-        .cxp-dashboard {
+        .cxc-dashboard {
             display: flex;
             gap: 14px;
             margin-bottom: 18px;
             flex-wrap: wrap;
         }
-        .cxp-card {
+        .cxc-card {
             flex: 1;
             min-width: 200px;
             border-radius: 10px;
@@ -23,14 +23,14 @@
             box-shadow: 0 3px 10px rgba(0,0,0,0.15);
             transition: transform .15s, box-shadow .15s;
         }
-        .cxp-card:hover { transform: translateY(-3px); box-shadow: 0 6px 16px rgba(0,0,0,0.2); }
-        .cxp-card.total-monto    { background: linear-gradient(135deg,#1c2833,#2c3e50); flex-basis: 100%; }
-        .cxp-card.al-dia         { background: linear-gradient(135deg,#1a5276,#2980b9); }
-        .cxp-card.vencidas       { background: linear-gradient(135deg,#922b21,#e74c3c); }
-        .cxp-card.por-vencer     { background: linear-gradient(135deg,#7d6608,#d4ac0d); }
-        .cxp-card .icon      { font-size: 2.2rem; opacity: .9; }
-        .cxp-card .info .num { font-size: 2rem; font-weight: 700; line-height:1; }
-        .cxp-card .info .lbl { font-size: .78rem; opacity: .9; text-transform: uppercase; letter-spacing:.5px; }
+        .cxc-card:hover { transform: translateY(-3px); box-shadow: 0 6px 16px rgba(0,0,0,0.2); }
+        .cxc-card.total-monto    { background: linear-gradient(135deg,#1c2833,#2c3e50); flex-basis: 100%; }
+        .cxc-card.al-dia         { background: linear-gradient(135deg,#1a5276,#2980b9); }
+        .cxc-card.vencidas       { background: linear-gradient(135deg,#922b21,#e74c3c); }
+        .cxc-card.por-vencer     { background: linear-gradient(135deg,#7d6608,#d4ac0d); }
+        .cxc-card .icon      { font-size: 2.2rem; opacity: .9; }
+        .cxc-card .info .num { font-size: 2rem; font-weight: 700; line-height:1; }
+        .cxc-card .info .lbl { font-size: .78rem; opacity: .9; text-transform: uppercase; letter-spacing:.5px; }
 
         /* ── Filtros ── */
         .filtros-bar {
@@ -53,8 +53,8 @@
         .badge-success { background:#27ae60; color:#fff; }
 
         /* ── Modal detalle ── */
-        #tblDetalleLote thead th { background:#003366; color:#fff; font-size:.82rem; }
-        #tblDetalleLote tbody td { font-size:.88rem; }
+        #tblDetalleEntrega thead th { background:#003366; color:#fff; font-size:.82rem; }
+        #tblDetalleEntrega tbody td { font-size:.88rem; }
     </style>
 </asp:Content>
 
@@ -64,29 +64,29 @@
 <div class="col-12">
 
     <!-- ══ CARDS DE RESUMEN ════════════════════════════════════════ -->
-    <div class="cxp-dashboard">
-        <div class="cxp-card al-dia">
+    <div class="cxc-dashboard">
+        <div class="cxc-card al-dia">
             <div class="icon"><i class="fas fa-check-circle"></i></div>
             <div class="info">
                 <div class="num"><asp:Label ID="lblNotasPendientes" runat="server" Text="0"></asp:Label></div>
-                <div class="lbl">Notas Pendientes en Tiempo</div>
+                <div class="lbl">Cuentas Pendientes en Tiempo</div>
             </div>
         </div>
-        <div class="cxp-card vencidas">
+        <div class="cxc-card vencidas">
             <div class="icon"><i class="fas fa-exclamation-circle"></i></div>
             <div class="info">
                 <div class="num"><asp:Label ID="lblNotasVencidas" runat="server" Text="0"></asp:Label></div>
-                <div class="lbl">Notas Vencidas</div>
+                <div class="lbl">Cuentas Vencidas</div>
             </div>
         </div>
-        <div class="cxp-card por-vencer">
+        <div class="cxc-card por-vencer">
             <div class="icon"><i class="fas fa-clock"></i></div>
             <div class="info">
                 <div class="num"><asp:Label ID="lblPorVencer" runat="server" Text="0"></asp:Label></div>
-                <div class="lbl">Notas Pendientes por Vencer</div>
+                <div class="lbl">Cuentas Pendientes por Vencer</div>
             </div>
         </div>
-        <div class="cxp-card total-monto">
+        <div class="cxc-card total-monto">
             <div class="icon"><i class="fas fa-dollar-sign"></i></div>
             <div class="info">
                 <div class="num"><asp:Label ID="lblTotalPendiente" runat="server" Text="$0.00"></asp:Label></div>
@@ -98,7 +98,7 @@
     <!-- ══ TARJETA PRINCIPAL ═══════════════════════════════════════ -->
     <div class="card card-outline card-primary">
         <div class="card-header">
-            <h3 class="card-title"><i class="fas fa-file-invoice-dollar mr-2"></i>Cuentas por Pagar</h3>
+            <h3 class="card-title"><i class="fas fa-hand-holding-usd mr-2"></i>Cuentas por Cobrar</h3>
         </div>
         <div class="card-body">
 
@@ -106,29 +106,29 @@
             <div class="filtros-bar">
                 <div class="row align-items-end">
                     <div class="col-md-2">
-                        <label>Proveedor</label>
-                        <asp:DropDownList ID="ddlFiltroProveedor" runat="server" CssClass="form-control form-control-sm">
+                        <label>Cliente</label>
+                        <asp:DropDownList ID="ddlFiltroCliente" runat="server" CssClass="form-control form-control-sm">
                             <asp:ListItem Value="">-- Todos --</asp:ListItem>
                         </asp:DropDownList>
                     </div>
                     <div class="col-md-2">
                         <label>Estado</label>
                         <asp:DropDownList ID="ddlFiltroEstado" runat="server" CssClass="form-control form-control-sm">
-                            <asp:ListItem Value="SINPAGAR">Sin Pagar (todas)</asp:ListItem>
+                            <asp:ListItem Value="SINCOBRAR">Sin Cobrar (todas)</asp:ListItem>
                             <asp:ListItem Value="VENCIDA">Vencidas</asp:ListItem>
                             <asp:ListItem Value="PORVENCER">Por Vencer (7 días)</asp:ListItem>
                             <asp:ListItem Value="PENDIENTE">Pendientes (al día)</asp:ListItem>
-                            <asp:ListItem Value="PARCIAL">Parciales (con abonos)</asp:ListItem>
+                            <asp:ListItem Value="PARCIAL">Parciales (con cobros)</asp:ListItem>
                             <asp:ListItem Value="PAGADA">Pagadas</asp:ListItem>
                             <asp:ListItem Value="">Todas</asp:ListItem>
                         </asp:DropDownList>
                     </div>
                     <div class="col-md-2">
-                        <label>F. Recepción desde</label>
+                        <label>F. Entrega desde</label>
                         <asp:TextBox ID="txtFiltroFechaDesde" runat="server" CssClass="form-control form-control-sm" TextMode="Date"></asp:TextBox>
                     </div>
                     <div class="col-md-2">
-                        <label>F. Recepción hasta</label>
+                        <label>F. Entrega hasta</label>
                         <asp:TextBox ID="txtFiltroFechaHasta" runat="server" CssClass="form-control form-control-sm" TextMode="Date"></asp:TextBox>
                     </div>
                     <div class="col-md-4 mt-2 mt-md-0">
@@ -148,38 +148,38 @@
 
             <!-- ── GRID ── -->
             <div class="table-responsive">
-                <asp:GridView ID="gvCxP" runat="server" AutoGenerateColumns="False"
+                <asp:GridView ID="gvCxC" runat="server" AutoGenerateColumns="False"
                     CssClass="table table-bordered table-striped custom-grid"
                     AllowPaging="True" AllowCustomPaging="True" PageSize="15"
-                    OnPageIndexChanging="gvCxP_PageIndexChanging"
-                    DataKeyNames="CuentaPorPagarID"
+                    OnPageIndexChanging="gvCxC_PageIndexChanging"
+                    DataKeyNames="CuentaPorCobrarID"
                     PagerStyle-CssClass="pager-custom"
                     PagerSettings-Mode="NumericFirstLast"
                     PagerSettings-FirstPageText="«"
                     PagerSettings-LastPageText="»"
                     PagerSettings-PageButtonCount="5">
                     <Columns>
-                        <asp:BoundField DataField="CuentaPorPagarID" HeaderText="ID" Visible="false" />
+                        <asp:BoundField DataField="CuentaPorCobrarID" HeaderText="ID" Visible="false" />
 
-                        <asp:TemplateField HeaderText="Folio Lote">
+                        <asp:TemplateField HeaderText="Folio Entrega">
                             <ItemTemplate>
                                 <span class="badge" style="background:#555;color:#fff;font-size:.78rem;">
-                                    <%# System.Web.HttpUtility.HtmlEncode(Eval("FolioLote") ?? "") %>
+                                    <%# System.Web.HttpUtility.HtmlEncode(Eval("FolioEntrega") ?? "") %>
                                 </span>
                             </ItemTemplate>
                         </asp:TemplateField>
 
-                        <asp:TemplateField HeaderText="No. Nota">
+                        <asp:TemplateField HeaderText="No. Factura">
                             <ItemTemplate>
-                                <%# !string.IsNullOrEmpty(Eval("NumeroNota") as string)
-                                    ? System.Web.HttpUtility.HtmlEncode(Eval("NumeroNota").ToString())
+                                <%# !string.IsNullOrEmpty(Eval("NumeroFactura") as string)
+                                    ? System.Web.HttpUtility.HtmlEncode(Eval("NumeroFactura").ToString())
                                     : "<span class='text-muted'>—</span>" %>
                             </ItemTemplate>
                         </asp:TemplateField>
 
-                        <asp:BoundField DataField="ProveedorNombre" HeaderText="Proveedor" />
+                        <asp:BoundField DataField="ClienteNombre" HeaderText="Cliente" />
 
-                        <asp:BoundField DataField="FechaRecepcion" HeaderText="F. Recepción" DataFormatString="{0:dd/MM/yyyy}" />
+                        <asp:BoundField DataField="FechaEntrega" HeaderText="F. Entrega" DataFormatString="{0:dd/MM/yyyy}" />
 
                         <asp:TemplateField HeaderText="F. Vencimiento">
                             <ItemTemplate>
@@ -219,10 +219,10 @@
                             <ItemTemplate>
                                 <button type="button" class="btn btn-sm btn-info mr-1"
                                     title="Ver Detalle"
-                                    onclick="abrirDetalle(<%# Eval("CuentaPorPagarID") %>, <%# Eval("LoteID") %>, '<%# System.Web.HttpUtility.JavaScriptStringEncode(Eval("FolioLote")?.ToString() ?? "") %>', '<%# System.Web.HttpUtility.JavaScriptStringEncode(Eval("ProveedorNombre")?.ToString() ?? "") %>', '<%# System.Web.HttpUtility.JavaScriptStringEncode(Eval("NumeroNota")?.ToString() ?? "") %>', '<%# ((decimal)Eval("MontoTotal")).ToString("C2") %>')">
+                                    onclick="abrirDetalle(<%# Eval("CuentaPorCobrarID") %>, <%# Eval("EntregaID") %>, '<%# System.Web.HttpUtility.JavaScriptStringEncode(Eval("FolioEntrega")?.ToString() ?? "") %>', '<%# System.Web.HttpUtility.JavaScriptStringEncode(Eval("ClienteNombre")?.ToString() ?? "") %>', '<%# System.Web.HttpUtility.JavaScriptStringEncode(Eval("NumeroFactura")?.ToString() ?? "") %>', '<%# ((decimal)Eval("MontoTotal")).ToString("C2") %>')">
                                     <i class="fas fa-eye"></i>
                                 </button>
-                                <%# GetBotonesAccion(Eval("CuentaPorPagarID"), Eval("PuedeAbonar"), Eval("ProveedorNombre"), Eval("NumeroNota"), Eval("SaldoPendiente")) %>
+                                <%# GetBotonesAccion(Eval("CuentaPorCobrarID"), Eval("PuedeAbonar"), Eval("ClienteNombre"), Eval("NumeroFactura"), Eval("SaldoPendiente")) %>
                             </ItemTemplate>
                         </asp:TemplateField>
                     </Columns>
@@ -243,22 +243,22 @@
   <div class="modal-dialog modal-lg" role="document">
     <div class="modal-content">
       <div class="modal-header" style="background-color:#003366;color:white;">
-        <h5 class="modal-title"><i class="fas fa-eye mr-1"></i> Detalle de Nota</h5>
+        <h5 class="modal-title"><i class="fas fa-eye mr-1"></i> Detalle de la Entrega</h5>
         <button type="button" class="close text-white" data-dismiss="modal"><span>&times;</span></button>
       </div>
       <div class="modal-body">
         <div class="row mb-3">
           <div class="col-md-4">
-            <label class="font-weight-bold text-muted" style="font-size:.8rem;">FOLIO LOTE</label>
-            <div id="detFolioLote" class="font-weight-bold"></div>
+            <label class="font-weight-bold text-muted" style="font-size:.8rem;">FOLIO ENTREGA</label>
+            <div id="detFolioEntrega" class="font-weight-bold"></div>
           </div>
           <div class="col-md-4">
-            <label class="font-weight-bold text-muted" style="font-size:.8rem;">PROVEEDOR</label>
-            <div id="detProveedor"></div>
+            <label class="font-weight-bold text-muted" style="font-size:.8rem;">CLIENTE</label>
+            <div id="detCliente"></div>
           </div>
           <div class="col-md-4">
-            <label class="font-weight-bold text-muted" style="font-size:.8rem;">NO. NOTA</label>
-            <div id="detNumeroNota"></div>
+            <label class="font-weight-bold text-muted" style="font-size:.8rem;">NO. FACTURA</label>
+            <div id="detNumeroFactura"></div>
           </div>
         </div>
         <div class="row mb-3">
@@ -268,17 +268,17 @@
           </div>
         </div>
         <hr />
-        <h6 class="font-weight-bold" style="color:#003366;"><i class="fas fa-boxes mr-1"></i> Ítems del Lote</h6>
+        <h6 class="font-weight-bold" style="color:#003366;"><i class="fas fa-boxes mr-1"></i> Ítems de la Entrega</h6>
         <div id="divCargandoDetalle" class="text-center py-3" style="display:none;">
             <i class="fas fa-spinner fa-spin"></i> Cargando...
         </div>
         <div class="table-responsive">
-          <table class="table table-sm table-bordered" id="tblDetalleLote">
+          <table class="table table-sm table-bordered" id="tblDetalleEntrega">
             <thead>
               <tr>
                 <th>Ítem</th>
                 <th>Cantidad</th>
-                <th>Costo Unit.</th>
+                <th>Precio Unit.</th>
                 <th>Subtotal</th>
               </tr>
             </thead>
@@ -293,24 +293,24 @@
   </div>
 </div>
 
-<!-- ══ MODAL REGISTRAR ABONO ══════════════════════════════════ -->
+<!-- ══ MODAL REGISTRAR COBRO ══════════════════════════════════ -->
 <div class="modal fade" id="modalPago" tabindex="-1" role="dialog" data-backdrop="static">
   <div class="modal-dialog" role="document">
     <div class="modal-content">
       <div class="modal-header" style="background-color:#1e8449;color:white;">
-        <h5 class="modal-title"><i class="fas fa-money-bill-wave mr-1"></i> Registrar Abono</h5>
+        <h5 class="modal-title"><i class="fas fa-money-bill-wave mr-1"></i> Registrar Cobro</h5>
         <button type="button" class="close text-white" data-dismiss="modal"><span>&times;</span></button>
       </div>
       <div class="modal-body">
-        <input type="hidden" id="hdnCxPIDPago" value="" />
+        <input type="hidden" id="hdnCxCIDPago" value="" />
         <div class="row mb-2">
           <div class="col-md-6">
-            <label class="font-weight-bold text-muted" style="font-size:.8rem;">PROVEEDOR</label>
-            <div id="pagoProveedor" class="font-weight-bold"></div>
+            <label class="font-weight-bold text-muted" style="font-size:.8rem;">CLIENTE</label>
+            <div id="pagoCliente" class="font-weight-bold"></div>
           </div>
           <div class="col-md-6">
-            <label class="font-weight-bold text-muted" style="font-size:.8rem;">NO. NOTA</label>
-            <div id="pagoNota"></div>
+            <label class="font-weight-bold text-muted" style="font-size:.8rem;">NO. FACTURA</label>
+            <div id="pagoFactura"></div>
           </div>
         </div>
         <div class="row mb-3">
@@ -321,15 +321,15 @@
         </div>
         <hr />
         <div class="form-group">
-          <label class="font-weight-bold">Monto a Abonar <span class="text-danger">*</span></label>
+          <label class="font-weight-bold">Monto a Cobrar <span class="text-danger">*</span></label>
           <input type="number" id="txtMontoAbono" class="form-control" step="0.01" min="0.01" />
-          <small class="form-text text-muted">Por defecto se prellena con el saldo pendiente; redúzcalo para un abono parcial.</small>
+          <small class="form-text text-muted">Por defecto se prellena con el saldo pendiente; redúzcalo para un cobro parcial.</small>
         </div>
         <div class="form-group">
-          <label class="font-weight-bold">Referencia de Pago <span class="text-muted font-weight-normal">(opcional)</span></label>
+          <label class="font-weight-bold">Referencia de Cobro <span class="text-muted font-weight-normal">(opcional)</span></label>
           <input type="text" id="txtReferencia" class="form-control" maxlength="100"
-              placeholder="Ej: No. de transferencia, folio de cheque..." />
-          <small class="form-text text-muted">Número de transferencia, cheque o cualquier referencia bancaria.</small>
+              placeholder="Ej: No. de transferencia, folio de depósito..." />
+          <small class="form-text text-muted">Número de transferencia, depósito o cualquier referencia bancaria.</small>
         </div>
         <div class="form-group">
           <label class="font-weight-bold">Observaciones <span class="text-muted font-weight-normal">(opcional)</span></label>
@@ -337,38 +337,38 @@
         </div>
         <div class="alert alert-warning" style="font-size:.88rem;">
           <i class="fas fa-info-circle mr-1"></i>
-          El abono se suma al historial de la cuenta. Si el monto cubre el saldo, la cuenta quedará marcada como PAGADA.
-          Un abono ya registrado no se puede editar; solo se puede cancelar (queda un registro de auditoría).
+          El cobro se suma al historial de la cuenta. Si el monto cubre el saldo, la cuenta quedará marcada como PAGADA.
+          Un cobro ya registrado no se puede editar; solo se puede cancelar (queda un registro de auditoría).
         </div>
       </div>
       <div class="modal-footer">
         <button type="button" class="btn btn-secondary" data-dismiss="modal">Cancelar</button>
         <button type="button" class="btn btn-success" id="btnConfirmarPago" onclick="confirmarAbono()">
-          <i class="fas fa-check mr-1"></i> Confirmar Abono
+          <i class="fas fa-check mr-1"></i> Confirmar Cobro
         </button>
       </div>
     </div>
   </div>
 </div>
 
-<!-- ══ MODAL VER ABONOS ═══════════════════════════════════════ -->
+<!-- ══ MODAL VER COBROS ═══════════════════════════════════════ -->
 <div class="modal fade" id="modalAbonos" tabindex="-1" role="dialog">
   <div class="modal-dialog modal-lg" role="document">
     <div class="modal-content">
       <div class="modal-header" style="background-color:#003366;color:white;">
-        <h5 class="modal-title"><i class="fas fa-list mr-1"></i> Historial de Abonos</h5>
+        <h5 class="modal-title"><i class="fas fa-list mr-1"></i> Historial de Cobros</h5>
         <button type="button" class="close text-white" data-dismiss="modal"><span>&times;</span></button>
       </div>
       <div class="modal-body">
-        <input type="hidden" id="hdnCxPIDHistorial" value="" />
+        <input type="hidden" id="hdnCxCIDHistorial" value="" />
         <div class="row mb-3">
           <div class="col-md-6">
-            <label class="font-weight-bold text-muted" style="font-size:.8rem;">PROVEEDOR</label>
-            <div id="histProveedor" class="font-weight-bold"></div>
+            <label class="font-weight-bold text-muted" style="font-size:.8rem;">CLIENTE</label>
+            <div id="histCliente" class="font-weight-bold"></div>
           </div>
           <div class="col-md-6">
-            <label class="font-weight-bold text-muted" style="font-size:.8rem;">NO. NOTA</label>
-            <div id="histNota"></div>
+            <label class="font-weight-bold text-muted" style="font-size:.8rem;">NO. FACTURA</label>
+            <div id="histFactura"></div>
           </div>
         </div>
         <div id="divCargandoAbonos" class="text-center py-3" style="display:none;">
@@ -413,19 +413,19 @@
     });
 
     // ── Abrir modal Ver Detalle ──────────────────────────────────────
-    function abrirDetalle(cxpID, loteID, folio, proveedor, nota, monto) {
-        document.getElementById('detFolioLote').textContent = folio || '—';
-        document.getElementById('detProveedor').textContent = proveedor || '—';
-        document.getElementById('detNumeroNota').textContent = nota || '—';
+    function abrirDetalle(cxcID, entregaID, folio, cliente, factura, monto) {
+        document.getElementById('detFolioEntrega').textContent = folio || '—';
+        document.getElementById('detCliente').textContent = cliente || '—';
+        document.getElementById('detNumeroFactura').textContent = factura || '—';
         document.getElementById('detMonto').textContent = monto;
         document.getElementById('tbodyDetalle').innerHTML = '';
         document.getElementById('divCargandoDetalle').style.display = 'block';
         $('#modalDetalle').modal('show');
 
-        fetch('<%= ResolveUrl("~/CuentasPorPagar.aspx/ObtenerDetalleLote") %>', {
+        fetch('<%= ResolveUrl("~/CuentasPorCobrar.aspx/ObtenerDetalleEntrega") %>', {
             method: 'POST',
             headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify({ loteID: loteID })
+            body: JSON.stringify({ entregaID: entregaID })
         })
             .then(function (r) { return r.json(); })
             .then(function (data) {
@@ -441,7 +441,7 @@
                     html += '<tr>'
                         + '<td>' + escHtml(it.nombre) + '</td>'
                         + '<td>' + parseFloat(it.cantidad).toLocaleString('es-MX', { minimumFractionDigits: 2 }) + '</td>'
-                        + '<td>' + formatCurrency(it.costo) + '</td>'
+                        + '<td>' + formatCurrency(it.precio) + '</td>'
                         + '<td>' + formatCurrency(it.subtotal) + '</td>'
                         + '</tr>';
                 });
@@ -454,11 +454,11 @@
             });
     }
 
-    // ── Abrir modal Registrar Abono ──────────────────────────────────
-    function abrirAbono(cxpID, proveedor, nota, saldo) {
-        document.getElementById('hdnCxPIDPago').value = cxpID;
-        document.getElementById('pagoProveedor').textContent = proveedor || '—';
-        document.getElementById('pagoNota').textContent = nota || '—';
+    // ── Abrir modal Registrar Cobro ──────────────────────────────────
+    function abrirAbono(cxcID, cliente, factura, saldo) {
+        document.getElementById('hdnCxCIDPago').value = cxcID;
+        document.getElementById('pagoCliente').textContent = cliente || '—';
+        document.getElementById('pagoFactura').textContent = factura || '—';
         document.getElementById('pagoSaldo').textContent = saldo;
         var saldoNum = parseFloat(String(saldo).replace(/[^0-9.-]+/g, ''));
         document.getElementById('txtMontoAbono').value = saldoNum.toFixed(2);
@@ -468,13 +468,13 @@
         $('#modalPago').modal('show');
     }
 
-    // ── Confirmar abono ───────────────────────────────────────────────
+    // ── Confirmar cobro ───────────────────────────────────────────────
     function confirmarAbono() {
-        var cxpID = parseInt(document.getElementById('hdnCxPIDPago').value);
+        var cxcID = parseInt(document.getElementById('hdnCxCIDPago').value);
         var monto = parseFloat(document.getElementById('txtMontoAbono').value);
         var ref = document.getElementById('txtReferencia').value.trim();
         var obs = document.getElementById('txtObservacionesAbono').value.trim();
-        if (!cxpID) return;
+        if (!cxcID) return;
 
         if (!(monto > 0)) {
             Swal.fire({ icon: 'warning', title: 'Monto inválido', text: 'El monto debe ser mayor a cero.', confirmButtonColor: '#003366' });
@@ -488,10 +488,10 @@
 
         document.getElementById('btnConfirmarPago').disabled = true;
 
-        fetch('<%= ResolveUrl("~/CuentasPorPagar.aspx/RegistrarAbono") %>', {
+        fetch('<%= ResolveUrl("~/CuentasPorCobrar.aspx/RegistrarAbono") %>', {
             method: 'POST',
             headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify({ cuentaPorPagarID: cxpID, monto: monto, referencia: ref, observaciones: obs })
+            body: JSON.stringify({ cuentaPorCobrarID: cxcID, monto: monto, referencia: ref, observaciones: obs })
         })
             .then(function (r) { return r.json(); })
             .then(function (data) {
@@ -500,8 +500,8 @@
                 if (res && res.ok) {
                     $('#modalPago').modal('hide');
                     Swal.fire({
-                        icon: 'success', title: 'Abono registrado',
-                        text: 'El abono se aplicó correctamente.',
+                        icon: 'success', title: 'Cobro registrado',
+                        text: 'El cobro se aplicó correctamente.',
                         confirmButtonColor: '#003366'
                     }).then(function () { location.reload(); });
                 } else {
@@ -522,22 +522,22 @@
             });
     }
 
-    // ── Abrir modal Ver Abonos ────────────────────────────────────────
-    function abrirHistorialAbonos(cxpID, proveedor, nota) {
-        document.getElementById('hdnCxPIDHistorial').value = cxpID;
-        document.getElementById('histProveedor').textContent = proveedor || '—';
-        document.getElementById('histNota').textContent = nota || '—';
+    // ── Abrir modal Ver Cobros ────────────────────────────────────────
+    function abrirHistorialAbonos(cxcID, cliente, factura) {
+        document.getElementById('hdnCxCIDHistorial').value = cxcID;
+        document.getElementById('histCliente').textContent = cliente || '—';
+        document.getElementById('histFactura').textContent = factura || '—';
         document.getElementById('tbodyAbonos').innerHTML = '';
         document.getElementById('divCargandoAbonos').style.display = 'block';
         $('#modalAbonos').modal('show');
-        cargarAbonos(cxpID);
+        cargarAbonos(cxcID);
     }
 
-    function cargarAbonos(cxpID) {
-        fetch('<%= ResolveUrl("~/CuentasPorPagar.aspx/ObtenerAbonos") %>', {
+    function cargarAbonos(cxcID) {
+        fetch('<%= ResolveUrl("~/CuentasPorCobrar.aspx/ObtenerAbonos") %>', {
             method: 'POST',
             headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify({ cuentaPorPagarID: cxpID })
+            body: JSON.stringify({ cuentaPorCobrarID: cxcID })
         })
             .then(function (r) { return r.json(); })
             .then(function (data) {
@@ -545,7 +545,7 @@
                 var abonos = data.d;
                 var tbody = document.getElementById('tbodyAbonos');
                 if (!abonos || abonos.length === 0) {
-                    tbody.innerHTML = '<tr><td colspan="7" class="text-center text-muted">Sin abonos registrados.</td></tr>';
+                    tbody.innerHTML = '<tr><td colspan="7" class="text-center text-muted">Sin cobros registrados.</td></tr>';
                     return;
                 }
                 var html = '';
@@ -559,7 +559,7 @@
                           '<br>Motivo: ' + escHtml(a.motivoCancelacion || '—') + '</small>'
                         : '';
                     var btnCancelar = a.puedeCancelar
-                        ? '<button type="button" class="btn btn-sm btn-outline-danger" title="Cancelar" onclick="cancelarAbono(' + a.abonoID + ', ' + cxpID + ')"><i class="fas fa-times"></i></button>'
+                        ? '<button type="button" class="btn btn-sm btn-outline-danger" title="Cancelar" onclick="cancelarAbono(' + a.abonoID + ', ' + cxcID + ')"><i class="fas fa-times"></i></button>'
                         : '';
                     html += '<tr>'
                         + '<td>' + escHtml(a.fecha) + '</td>'
@@ -576,21 +576,19 @@
             .catch(function () {
                 document.getElementById('divCargandoAbonos').style.display = 'none';
                 document.getElementById('tbodyAbonos').innerHTML =
-                    '<tr><td colspan="7" class="text-center text-danger">Error al cargar abonos.</td></tr>';
+                    '<tr><td colspan="7" class="text-center text-danger">Error al cargar cobros.</td></tr>';
             });
     }
 
-    // ── Cancelar abono (crea registro de auditoría, no borra el abono) ──
-    function cancelarAbono(abonoID, cxpID) {
-        // target: el modalAbonos sigue abierto detrás. Si no se ancla el popup de SweetAlert2
-        // dentro de él, el focus-trap de Bootstrap le roba el foco al textarea y no deja escribir.
+    // ── Cancelar cobro (crea registro de auditoría, no borra el cobro) ──
+    function cancelarAbono(abonoID, cxcID) {
         Swal.fire({
-            title: 'Cancelar abono',
+            title: 'Cancelar cobro',
             input: 'textarea',
             inputLabel: 'Motivo de la cancelación',
             inputPlaceholder: 'Escriba el motivo...',
             showCancelButton: true,
-            confirmButtonText: 'Cancelar abono',
+            confirmButtonText: 'Cancelar cobro',
             confirmButtonColor: '#e74c3c',
             target: document.getElementById('modalAbonos'),
             inputValidator: function (value) {
@@ -598,7 +596,7 @@
             }
         }).then(function (result) {
             if (!result.isConfirmed) return;
-            fetch('<%= ResolveUrl("~/CuentasPorPagar.aspx/CancelarAbono") %>', {
+            fetch('<%= ResolveUrl("~/CuentasPorCobrar.aspx/CancelarAbono") %>', {
                 method: 'POST',
                 headers: { 'Content-Type': 'application/json' },
                 body: JSON.stringify({ abonoID: abonoID, motivo: result.value.trim() })
@@ -608,7 +606,7 @@
                     var res = data.d;
                     if (res && res.ok) {
                         Swal.fire({
-                            icon: 'success', title: 'Abono cancelado',
+                            icon: 'success', title: 'Cobro cancelado',
                             confirmButtonColor: '#003366'
                         }).then(function () { location.reload(); });
                     } else {

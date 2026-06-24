@@ -96,9 +96,6 @@ namespace GrupoAnkhalInventario.Modelo
     partial void InsertDetalleEntregas(DetalleEntregas instance);
     partial void UpdateDetalleEntregas(DetalleEntregas instance);
     partial void DeleteDetalleEntregas(DetalleEntregas instance);
-    partial void InsertOrdenes(Ordenes instance);
-    partial void UpdateOrdenes(Ordenes instance);
-    partial void DeleteOrdenes(Ordenes instance);
     partial void InsertDetalleOrdenes(DetalleOrdenes instance);
     partial void UpdateDetalleOrdenes(DetalleOrdenes instance);
     partial void DeleteDetalleOrdenes(DetalleOrdenes instance);
@@ -111,24 +108,36 @@ namespace GrupoAnkhalInventario.Modelo
     partial void InsertUnidadesMedida(UnidadesMedida instance);
     partial void UpdateUnidadesMedida(UnidadesMedida instance);
     partial void DeleteUnidadesMedida(UnidadesMedida instance);
-    partial void InsertEntregas(Entregas instance);
-    partial void UpdateEntregas(Entregas instance);
-    partial void DeleteEntregas(Entregas instance);
     partial void InsertBases(Bases instance);
     partial void UpdateBases(Bases instance);
     partial void DeleteBases(Bases instance);
     partial void InsertLotesMovimiento(LotesMovimiento instance);
     partial void UpdateLotesMovimiento(LotesMovimiento instance);
     partial void DeleteLotesMovimiento(LotesMovimiento instance);
-    partial void InsertCuentasPorPagar(CuentasPorPagar instance);
-    partial void UpdateCuentasPorPagar(CuentasPorPagar instance);
-    partial void DeleteCuentasPorPagar(CuentasPorPagar instance);
     partial void InsertAbonosCuentasPorPagar(AbonosCuentasPorPagar instance);
     partial void UpdateAbonosCuentasPorPagar(AbonosCuentasPorPagar instance);
     partial void DeleteAbonosCuentasPorPagar(AbonosCuentasPorPagar instance);
     partial void InsertCancelacionesAbonosCxP(CancelacionesAbonosCxP instance);
     partial void UpdateCancelacionesAbonosCxP(CancelacionesAbonosCxP instance);
     partial void DeleteCancelacionesAbonosCxP(CancelacionesAbonosCxP instance);
+    partial void InsertOrdenes(Ordenes instance);
+    partial void UpdateOrdenes(Ordenes instance);
+    partial void DeleteOrdenes(Ordenes instance);
+    partial void InsertEntregas(Entregas instance);
+    partial void UpdateEntregas(Entregas instance);
+    partial void DeleteEntregas(Entregas instance);
+    partial void InsertCuentasPorCobrar(CuentasPorCobrar instance);
+    partial void UpdateCuentasPorCobrar(CuentasPorCobrar instance);
+    partial void DeleteCuentasPorCobrar(CuentasPorCobrar instance);
+    partial void InsertAbonosCuentasPorCobrar(AbonosCuentasPorCobrar instance);
+    partial void UpdateAbonosCuentasPorCobrar(AbonosCuentasPorCobrar instance);
+    partial void DeleteAbonosCuentasPorCobrar(AbonosCuentasPorCobrar instance);
+    partial void InsertCancelacionesAbonosCxC(CancelacionesAbonosCxC instance);
+    partial void UpdateCancelacionesAbonosCxC(CancelacionesAbonosCxC instance);
+    partial void DeleteCancelacionesAbonosCxC(CancelacionesAbonosCxC instance);
+    partial void InsertCuentasPorPagar(CuentasPorPagar instance);
+    partial void UpdateCuentasPorPagar(CuentasPorPagar instance);
+    partial void DeleteCuentasPorPagar(CuentasPorPagar instance);
     #endregion
 		
 		public InventarioAnkhalDBDataContext(string connection) : 
@@ -339,14 +348,6 @@ namespace GrupoAnkhalInventario.Modelo
 			}
 		}
 		
-		public System.Data.Linq.Table<Ordenes> Ordenes
-		{
-			get
-			{
-				return this.GetTable<Ordenes>();
-			}
-		}
-		
 		public System.Data.Linq.Table<DetalleOrdenes> DetalleOrdenes
 		{
 			get
@@ -379,14 +380,6 @@ namespace GrupoAnkhalInventario.Modelo
 			}
 		}
 		
-		public System.Data.Linq.Table<Entregas> Entregas
-		{
-			get
-			{
-				return this.GetTable<Entregas>();
-			}
-		}
-		
 		public System.Data.Linq.Table<Bases> Bases
 		{
 			get
@@ -403,14 +396,6 @@ namespace GrupoAnkhalInventario.Modelo
 			}
 		}
 		
-		public System.Data.Linq.Table<CuentasPorPagar> CuentasPorPagar
-		{
-			get
-			{
-				return this.GetTable<CuentasPorPagar>();
-			}
-		}
-		
 		public System.Data.Linq.Table<AbonosCuentasPorPagar> AbonosCuentasPorPagar
 		{
 			get
@@ -424,6 +409,54 @@ namespace GrupoAnkhalInventario.Modelo
 			get
 			{
 				return this.GetTable<CancelacionesAbonosCxP>();
+			}
+		}
+		
+		public System.Data.Linq.Table<Ordenes> Ordenes
+		{
+			get
+			{
+				return this.GetTable<Ordenes>();
+			}
+		}
+		
+		public System.Data.Linq.Table<Entregas> Entregas
+		{
+			get
+			{
+				return this.GetTable<Entregas>();
+			}
+		}
+		
+		public System.Data.Linq.Table<CuentasPorCobrar> CuentasPorCobrar
+		{
+			get
+			{
+				return this.GetTable<CuentasPorCobrar>();
+			}
+		}
+		
+		public System.Data.Linq.Table<AbonosCuentasPorCobrar> AbonosCuentasPorCobrar
+		{
+			get
+			{
+				return this.GetTable<AbonosCuentasPorCobrar>();
+			}
+		}
+		
+		public System.Data.Linq.Table<CancelacionesAbonosCxC> CancelacionesAbonosCxC
+		{
+			get
+			{
+				return this.GetTable<CancelacionesAbonosCxC>();
+			}
+		}
+		
+		public System.Data.Linq.Table<CuentasPorPagar> CuentasPorPagar
+		{
+			get
+			{
+				return this.GetTable<CuentasPorPagar>();
 			}
 		}
 	}
@@ -492,6 +525,8 @@ namespace GrupoAnkhalInventario.Modelo
 		
 		private EntitySet<Entregas> _Entregas;
 		
+		private EntitySet<CuentasPorCobrar> _CuentasPorCobrar;
+		
 		private EntityRef<Usuario> _Usuario;
 		
     #region Definiciones de métodos de extensibilidad
@@ -558,6 +593,7 @@ namespace GrupoAnkhalInventario.Modelo
 		{
 			this._Ordenes = new EntitySet<Ordenes>(new Action<Ordenes>(this.attach_Ordenes), new Action<Ordenes>(this.detach_Ordenes));
 			this._Entregas = new EntitySet<Entregas>(new Action<Entregas>(this.attach_Entregas), new Action<Entregas>(this.detach_Entregas));
+			this._CuentasPorCobrar = new EntitySet<CuentasPorCobrar>(new Action<CuentasPorCobrar>(this.attach_CuentasPorCobrar), new Action<CuentasPorCobrar>(this.detach_CuentasPorCobrar));
 			this._Usuario = default(EntityRef<Usuario>);
 			OnCreated();
 		}
@@ -1132,6 +1168,19 @@ namespace GrupoAnkhalInventario.Modelo
 			}
 		}
 		
+		[global::System.Data.Linq.Mapping.AssociationAttribute(Name="Clientes_CuentasPorCobrar", Storage="_CuentasPorCobrar", ThisKey="ClienteID", OtherKey="ClienteID")]
+		public EntitySet<CuentasPorCobrar> CuentasPorCobrar
+		{
+			get
+			{
+				return this._CuentasPorCobrar;
+			}
+			set
+			{
+				this._CuentasPorCobrar.Assign(value);
+			}
+		}
+		
 		[global::System.Data.Linq.Mapping.AssociationAttribute(Name="Usuario_Clientes", Storage="_Usuario", ThisKey="UsuarioAltaID", OtherKey="ClaveID", IsForeignKey=true)]
 		public Usuario Usuario
 		{
@@ -1205,6 +1254,18 @@ namespace GrupoAnkhalInventario.Modelo
 		}
 		
 		private void detach_Entregas(Entregas entity)
+		{
+			this.SendPropertyChanging();
+			entity.Clientes = null;
+		}
+		
+		private void attach_CuentasPorCobrar(CuentasPorCobrar entity)
+		{
+			this.SendPropertyChanging();
+			entity.Clientes = this;
+		}
+		
+		private void detach_CuentasPorCobrar(CuentasPorCobrar entity)
 		{
 			this.SendPropertyChanging();
 			entity.Clientes = null;
@@ -5291,8 +5352,6 @@ namespace GrupoAnkhalInventario.Modelo
 		
 		private EntitySet<Movimientos> _Movimientos;
 		
-		private EntitySet<Ordenes> _Ordenes;
-		
 		private EntitySet<Productos> _Productos;
 		
 		private EntitySet<Productos> _Productos1;
@@ -5301,21 +5360,31 @@ namespace GrupoAnkhalInventario.Modelo
 		
 		private EntitySet<Materiales> _Materiales1;
 		
-		private EntitySet<Entregas> _Entregas;
-		
 		private EntitySet<Bases> _Bases;
 		
 		private EntitySet<Bases> _Bases1;
 		
 		private EntitySet<LotesMovimiento> _LotesMovimiento;
 		
-		private EntitySet<CuentasPorPagar> _CuentasPorPagar;
-		
-		private EntitySet<CuentasPorPagar> _CuentasPorPagar1;
-		
 		private EntitySet<AbonosCuentasPorPagar> _AbonosCuentasPorPagar;
 		
 		private EntitySet<CancelacionesAbonosCxP> _CancelacionesAbonosCxP;
+		
+		private EntitySet<Ordenes> _Ordenes;
+		
+		private EntitySet<Entregas> _Entregas;
+		
+		private EntitySet<CuentasPorCobrar> _CuentasPorCobrar;
+		
+		private EntitySet<CuentasPorCobrar> _CuentasPorCobrar1;
+		
+		private EntitySet<AbonosCuentasPorCobrar> _AbonosCuentasPorCobrar;
+		
+		private EntitySet<CancelacionesAbonosCxC> _CancelacionesAbonosCxC;
+		
+		private EntitySet<CuentasPorPagar> _CuentasPorPagar;
+		
+		private EntitySet<CuentasPorPagar> _CuentasPorPagar1;
 		
 		private EntityRef<Usuario> _Usuario2;
 		
@@ -5365,19 +5434,23 @@ namespace GrupoAnkhalInventario.Modelo
 			this._UsuarioRoles = new EntitySet<UsuarioRoles>(new Action<UsuarioRoles>(this.attach_UsuarioRoles), new Action<UsuarioRoles>(this.detach_UsuarioRoles));
 			this._UsuarioRoles1 = new EntitySet<UsuarioRoles>(new Action<UsuarioRoles>(this.attach_UsuarioRoles1), new Action<UsuarioRoles>(this.detach_UsuarioRoles1));
 			this._Movimientos = new EntitySet<Movimientos>(new Action<Movimientos>(this.attach_Movimientos), new Action<Movimientos>(this.detach_Movimientos));
-			this._Ordenes = new EntitySet<Ordenes>(new Action<Ordenes>(this.attach_Ordenes), new Action<Ordenes>(this.detach_Ordenes));
 			this._Productos = new EntitySet<Productos>(new Action<Productos>(this.attach_Productos), new Action<Productos>(this.detach_Productos));
 			this._Productos1 = new EntitySet<Productos>(new Action<Productos>(this.attach_Productos1), new Action<Productos>(this.detach_Productos1));
 			this._Materiales = new EntitySet<Materiales>(new Action<Materiales>(this.attach_Materiales), new Action<Materiales>(this.detach_Materiales));
 			this._Materiales1 = new EntitySet<Materiales>(new Action<Materiales>(this.attach_Materiales1), new Action<Materiales>(this.detach_Materiales1));
-			this._Entregas = new EntitySet<Entregas>(new Action<Entregas>(this.attach_Entregas), new Action<Entregas>(this.detach_Entregas));
 			this._Bases = new EntitySet<Bases>(new Action<Bases>(this.attach_Bases), new Action<Bases>(this.detach_Bases));
 			this._Bases1 = new EntitySet<Bases>(new Action<Bases>(this.attach_Bases1), new Action<Bases>(this.detach_Bases1));
 			this._LotesMovimiento = new EntitySet<LotesMovimiento>(new Action<LotesMovimiento>(this.attach_LotesMovimiento), new Action<LotesMovimiento>(this.detach_LotesMovimiento));
-			this._CuentasPorPagar = new EntitySet<CuentasPorPagar>(new Action<CuentasPorPagar>(this.attach_CuentasPorPagar), new Action<CuentasPorPagar>(this.detach_CuentasPorPagar));
-			this._CuentasPorPagar1 = new EntitySet<CuentasPorPagar>(new Action<CuentasPorPagar>(this.attach_CuentasPorPagar1), new Action<CuentasPorPagar>(this.detach_CuentasPorPagar1));
 			this._AbonosCuentasPorPagar = new EntitySet<AbonosCuentasPorPagar>(new Action<AbonosCuentasPorPagar>(this.attach_AbonosCuentasPorPagar), new Action<AbonosCuentasPorPagar>(this.detach_AbonosCuentasPorPagar));
 			this._CancelacionesAbonosCxP = new EntitySet<CancelacionesAbonosCxP>(new Action<CancelacionesAbonosCxP>(this.attach_CancelacionesAbonosCxP), new Action<CancelacionesAbonosCxP>(this.detach_CancelacionesAbonosCxP));
+			this._Ordenes = new EntitySet<Ordenes>(new Action<Ordenes>(this.attach_Ordenes), new Action<Ordenes>(this.detach_Ordenes));
+			this._Entregas = new EntitySet<Entregas>(new Action<Entregas>(this.attach_Entregas), new Action<Entregas>(this.detach_Entregas));
+			this._CuentasPorCobrar = new EntitySet<CuentasPorCobrar>(new Action<CuentasPorCobrar>(this.attach_CuentasPorCobrar), new Action<CuentasPorCobrar>(this.detach_CuentasPorCobrar));
+			this._CuentasPorCobrar1 = new EntitySet<CuentasPorCobrar>(new Action<CuentasPorCobrar>(this.attach_CuentasPorCobrar1), new Action<CuentasPorCobrar>(this.detach_CuentasPorCobrar1));
+			this._AbonosCuentasPorCobrar = new EntitySet<AbonosCuentasPorCobrar>(new Action<AbonosCuentasPorCobrar>(this.attach_AbonosCuentasPorCobrar), new Action<AbonosCuentasPorCobrar>(this.detach_AbonosCuentasPorCobrar));
+			this._CancelacionesAbonosCxC = new EntitySet<CancelacionesAbonosCxC>(new Action<CancelacionesAbonosCxC>(this.attach_CancelacionesAbonosCxC), new Action<CancelacionesAbonosCxC>(this.detach_CancelacionesAbonosCxC));
+			this._CuentasPorPagar = new EntitySet<CuentasPorPagar>(new Action<CuentasPorPagar>(this.attach_CuentasPorPagar), new Action<CuentasPorPagar>(this.detach_CuentasPorPagar));
+			this._CuentasPorPagar1 = new EntitySet<CuentasPorPagar>(new Action<CuentasPorPagar>(this.attach_CuentasPorPagar1), new Action<CuentasPorPagar>(this.detach_CuentasPorPagar1));
 			this._Usuario2 = default(EntityRef<Usuario>);
 			OnCreated();
 		}
@@ -5796,19 +5869,6 @@ namespace GrupoAnkhalInventario.Modelo
 			}
 		}
 		
-		[global::System.Data.Linq.Mapping.AssociationAttribute(Name="Usuario_Ordenes", Storage="_Ordenes", ThisKey="ClaveID", OtherKey="RegistradoPorID")]
-		public EntitySet<Ordenes> Ordenes
-		{
-			get
-			{
-				return this._Ordenes;
-			}
-			set
-			{
-				this._Ordenes.Assign(value);
-			}
-		}
-		
 		[global::System.Data.Linq.Mapping.AssociationAttribute(Name="Usuario_Productos", Storage="_Productos", ThisKey="ClaveID", OtherKey="UsuarioAltaID")]
 		public EntitySet<Productos> Productos
 		{
@@ -5861,19 +5921,6 @@ namespace GrupoAnkhalInventario.Modelo
 			}
 		}
 		
-		[global::System.Data.Linq.Mapping.AssociationAttribute(Name="Usuario_Entregas", Storage="_Entregas", ThisKey="ClaveID", OtherKey="RegistradoPorID")]
-		public EntitySet<Entregas> Entregas
-		{
-			get
-			{
-				return this._Entregas;
-			}
-			set
-			{
-				this._Entregas.Assign(value);
-			}
-		}
-		
 		[global::System.Data.Linq.Mapping.AssociationAttribute(Name="Usuario_Bases", Storage="_Bases", ThisKey="ClaveID", OtherKey="UsuarioAltaID")]
 		public EntitySet<Bases> Bases
 		{
@@ -5913,32 +5960,6 @@ namespace GrupoAnkhalInventario.Modelo
 			}
 		}
 		
-		[global::System.Data.Linq.Mapping.AssociationAttribute(Name="Usuario_CuentasPorPagar", Storage="_CuentasPorPagar", ThisKey="ClaveID", OtherKey="PagadaPorID")]
-		public EntitySet<CuentasPorPagar> CuentasPorPagar
-		{
-			get
-			{
-				return this._CuentasPorPagar;
-			}
-			set
-			{
-				this._CuentasPorPagar.Assign(value);
-			}
-		}
-		
-		[global::System.Data.Linq.Mapping.AssociationAttribute(Name="Usuario_CuentasPorPagar1", Storage="_CuentasPorPagar1", ThisKey="ClaveID", OtherKey="RegistradoPorID")]
-		public EntitySet<CuentasPorPagar> CuentasPorPagar1
-		{
-			get
-			{
-				return this._CuentasPorPagar1;
-			}
-			set
-			{
-				this._CuentasPorPagar1.Assign(value);
-			}
-		}
-		
 		[global::System.Data.Linq.Mapping.AssociationAttribute(Name="Usuario_AbonosCuentasPorPagar", Storage="_AbonosCuentasPorPagar", ThisKey="ClaveID", OtherKey="RegistradoPorID")]
 		public EntitySet<AbonosCuentasPorPagar> AbonosCuentasPorPagar
 		{
@@ -5962,6 +5983,110 @@ namespace GrupoAnkhalInventario.Modelo
 			set
 			{
 				this._CancelacionesAbonosCxP.Assign(value);
+			}
+		}
+		
+		[global::System.Data.Linq.Mapping.AssociationAttribute(Name="Usuario_Ordenes", Storage="_Ordenes", ThisKey="ClaveID", OtherKey="RegistradoPorID")]
+		public EntitySet<Ordenes> Ordenes
+		{
+			get
+			{
+				return this._Ordenes;
+			}
+			set
+			{
+				this._Ordenes.Assign(value);
+			}
+		}
+		
+		[global::System.Data.Linq.Mapping.AssociationAttribute(Name="Usuario_Entregas", Storage="_Entregas", ThisKey="ClaveID", OtherKey="RegistradoPorID")]
+		public EntitySet<Entregas> Entregas
+		{
+			get
+			{
+				return this._Entregas;
+			}
+			set
+			{
+				this._Entregas.Assign(value);
+			}
+		}
+		
+		[global::System.Data.Linq.Mapping.AssociationAttribute(Name="Usuario_CuentasPorCobrar", Storage="_CuentasPorCobrar", ThisKey="ClaveID", OtherKey="CobradaPorID")]
+		public EntitySet<CuentasPorCobrar> CuentasPorCobrar
+		{
+			get
+			{
+				return this._CuentasPorCobrar;
+			}
+			set
+			{
+				this._CuentasPorCobrar.Assign(value);
+			}
+		}
+		
+		[global::System.Data.Linq.Mapping.AssociationAttribute(Name="Usuario_CuentasPorCobrar1", Storage="_CuentasPorCobrar1", ThisKey="ClaveID", OtherKey="RegistradoPorID")]
+		public EntitySet<CuentasPorCobrar> CuentasPorCobrar1
+		{
+			get
+			{
+				return this._CuentasPorCobrar1;
+			}
+			set
+			{
+				this._CuentasPorCobrar1.Assign(value);
+			}
+		}
+		
+		[global::System.Data.Linq.Mapping.AssociationAttribute(Name="Usuario_AbonosCuentasPorCobrar", Storage="_AbonosCuentasPorCobrar", ThisKey="ClaveID", OtherKey="RegistradoPorID")]
+		public EntitySet<AbonosCuentasPorCobrar> AbonosCuentasPorCobrar
+		{
+			get
+			{
+				return this._AbonosCuentasPorCobrar;
+			}
+			set
+			{
+				this._AbonosCuentasPorCobrar.Assign(value);
+			}
+		}
+		
+		[global::System.Data.Linq.Mapping.AssociationAttribute(Name="Usuario_CancelacionesAbonosCxC", Storage="_CancelacionesAbonosCxC", ThisKey="ClaveID", OtherKey="CanceladoPorID")]
+		public EntitySet<CancelacionesAbonosCxC> CancelacionesAbonosCxC
+		{
+			get
+			{
+				return this._CancelacionesAbonosCxC;
+			}
+			set
+			{
+				this._CancelacionesAbonosCxC.Assign(value);
+			}
+		}
+		
+		[global::System.Data.Linq.Mapping.AssociationAttribute(Name="Usuario_CuentasPorPagar", Storage="_CuentasPorPagar", ThisKey="ClaveID", OtherKey="PagadaPorID")]
+		public EntitySet<CuentasPorPagar> CuentasPorPagar
+		{
+			get
+			{
+				return this._CuentasPorPagar;
+			}
+			set
+			{
+				this._CuentasPorPagar.Assign(value);
+			}
+		}
+		
+		[global::System.Data.Linq.Mapping.AssociationAttribute(Name="Usuario_CuentasPorPagar1", Storage="_CuentasPorPagar1", ThisKey="ClaveID", OtherKey="RegistradoPorID")]
+		public EntitySet<CuentasPorPagar> CuentasPorPagar1
+		{
+			get
+			{
+				return this._CuentasPorPagar1;
+			}
+			set
+			{
+				this._CuentasPorPagar1.Assign(value);
 			}
 		}
 		
@@ -6139,18 +6264,6 @@ namespace GrupoAnkhalInventario.Modelo
 			entity.Usuario = null;
 		}
 		
-		private void attach_Ordenes(Ordenes entity)
-		{
-			this.SendPropertyChanging();
-			entity.Usuario = this;
-		}
-		
-		private void detach_Ordenes(Ordenes entity)
-		{
-			this.SendPropertyChanging();
-			entity.Usuario = null;
-		}
-		
 		private void attach_Productos(Productos entity)
 		{
 			this.SendPropertyChanging();
@@ -6199,18 +6312,6 @@ namespace GrupoAnkhalInventario.Modelo
 			entity.Usuario1 = null;
 		}
 		
-		private void attach_Entregas(Entregas entity)
-		{
-			this.SendPropertyChanging();
-			entity.Usuario = this;
-		}
-		
-		private void detach_Entregas(Entregas entity)
-		{
-			this.SendPropertyChanging();
-			entity.Usuario = null;
-		}
-		
 		private void attach_Bases(Bases entity)
 		{
 			this.SendPropertyChanging();
@@ -6247,30 +6348,6 @@ namespace GrupoAnkhalInventario.Modelo
 			entity.Usuario = null;
 		}
 		
-		private void attach_CuentasPorPagar(CuentasPorPagar entity)
-		{
-			this.SendPropertyChanging();
-			entity.Usuario = this;
-		}
-		
-		private void detach_CuentasPorPagar(CuentasPorPagar entity)
-		{
-			this.SendPropertyChanging();
-			entity.Usuario = null;
-		}
-		
-		private void attach_CuentasPorPagar1(CuentasPorPagar entity)
-		{
-			this.SendPropertyChanging();
-			entity.Usuario1 = this;
-		}
-		
-		private void detach_CuentasPorPagar1(CuentasPorPagar entity)
-		{
-			this.SendPropertyChanging();
-			entity.Usuario1 = null;
-		}
-		
 		private void attach_AbonosCuentasPorPagar(AbonosCuentasPorPagar entity)
 		{
 			this.SendPropertyChanging();
@@ -6293,6 +6370,102 @@ namespace GrupoAnkhalInventario.Modelo
 		{
 			this.SendPropertyChanging();
 			entity.Usuario = null;
+		}
+		
+		private void attach_Ordenes(Ordenes entity)
+		{
+			this.SendPropertyChanging();
+			entity.Usuario = this;
+		}
+		
+		private void detach_Ordenes(Ordenes entity)
+		{
+			this.SendPropertyChanging();
+			entity.Usuario = null;
+		}
+		
+		private void attach_Entregas(Entregas entity)
+		{
+			this.SendPropertyChanging();
+			entity.Usuario = this;
+		}
+		
+		private void detach_Entregas(Entregas entity)
+		{
+			this.SendPropertyChanging();
+			entity.Usuario = null;
+		}
+		
+		private void attach_CuentasPorCobrar(CuentasPorCobrar entity)
+		{
+			this.SendPropertyChanging();
+			entity.Usuario = this;
+		}
+		
+		private void detach_CuentasPorCobrar(CuentasPorCobrar entity)
+		{
+			this.SendPropertyChanging();
+			entity.Usuario = null;
+		}
+		
+		private void attach_CuentasPorCobrar1(CuentasPorCobrar entity)
+		{
+			this.SendPropertyChanging();
+			entity.Usuario1 = this;
+		}
+		
+		private void detach_CuentasPorCobrar1(CuentasPorCobrar entity)
+		{
+			this.SendPropertyChanging();
+			entity.Usuario1 = null;
+		}
+		
+		private void attach_AbonosCuentasPorCobrar(AbonosCuentasPorCobrar entity)
+		{
+			this.SendPropertyChanging();
+			entity.Usuario = this;
+		}
+		
+		private void detach_AbonosCuentasPorCobrar(AbonosCuentasPorCobrar entity)
+		{
+			this.SendPropertyChanging();
+			entity.Usuario = null;
+		}
+		
+		private void attach_CancelacionesAbonosCxC(CancelacionesAbonosCxC entity)
+		{
+			this.SendPropertyChanging();
+			entity.Usuario = this;
+		}
+		
+		private void detach_CancelacionesAbonosCxC(CancelacionesAbonosCxC entity)
+		{
+			this.SendPropertyChanging();
+			entity.Usuario = null;
+		}
+		
+		private void attach_CuentasPorPagar(CuentasPorPagar entity)
+		{
+			this.SendPropertyChanging();
+			entity.Usuario = this;
+		}
+		
+		private void detach_CuentasPorPagar(CuentasPorPagar entity)
+		{
+			this.SendPropertyChanging();
+			entity.Usuario = null;
+		}
+		
+		private void attach_CuentasPorPagar1(CuentasPorPagar entity)
+		{
+			this.SendPropertyChanging();
+			entity.Usuario1 = this;
+		}
+		
+		private void detach_CuentasPorPagar1(CuentasPorPagar entity)
+		{
+			this.SendPropertyChanging();
+			entity.Usuario1 = null;
 		}
 	}
 	
@@ -8367,13 +8540,13 @@ namespace GrupoAnkhalInventario.Modelo
 		
 		private EntityRef<UnidadesMedida> _UnidadesMedida;
 		
-		private EntityRef<Entregas> _Entregas;
-		
 		private EntityRef<Bases> _Bases;
 		
 		private EntityRef<Bases> _Bases1;
 		
 		private EntityRef<LotesMovimiento> _LotesMovimiento;
+		
+		private EntityRef<Entregas> _Entregas;
 		
     #region Definiciones de métodos de extensibilidad
     partial void OnLoaded();
@@ -8425,10 +8598,10 @@ namespace GrupoAnkhalInventario.Modelo
 			this._Productos = default(EntityRef<Productos>);
 			this._Materiales = default(EntityRef<Materiales>);
 			this._UnidadesMedida = default(EntityRef<UnidadesMedida>);
-			this._Entregas = default(EntityRef<Entregas>);
 			this._Bases = default(EntityRef<Bases>);
 			this._Bases1 = default(EntityRef<Bases>);
 			this._LotesMovimiento = default(EntityRef<LotesMovimiento>);
+			this._Entregas = default(EntityRef<Entregas>);
 			OnCreated();
 		}
 		
@@ -9036,40 +9209,6 @@ namespace GrupoAnkhalInventario.Modelo
 			}
 		}
 		
-		[global::System.Data.Linq.Mapping.AssociationAttribute(Name="Entregas_Movimientos", Storage="_Entregas", ThisKey="EntregaID", OtherKey="EntregaID", IsForeignKey=true)]
-		public Entregas Entregas
-		{
-			get
-			{
-				return this._Entregas.Entity;
-			}
-			set
-			{
-				Entregas previousValue = this._Entregas.Entity;
-				if (((previousValue != value) 
-							|| (this._Entregas.HasLoadedOrAssignedValue == false)))
-				{
-					this.SendPropertyChanging();
-					if ((previousValue != null))
-					{
-						this._Entregas.Entity = null;
-						previousValue.Movimientos.Remove(this);
-					}
-					this._Entregas.Entity = value;
-					if ((value != null))
-					{
-						value.Movimientos.Add(this);
-						this._EntregaID = value.EntregaID;
-					}
-					else
-					{
-						this._EntregaID = default(Nullable<int>);
-					}
-					this.SendPropertyChanged("Entregas");
-				}
-			}
-		}
-		
 		[global::System.Data.Linq.Mapping.AssociationAttribute(Name="Bases_Movimientos", Storage="_Bases", ThisKey="BaseDestinoID", OtherKey="BaseID", IsForeignKey=true)]
 		public Bases Bases
 		{
@@ -9168,6 +9307,40 @@ namespace GrupoAnkhalInventario.Modelo
 						this._LoteID = default(Nullable<int>);
 					}
 					this.SendPropertyChanged("LotesMovimiento");
+				}
+			}
+		}
+		
+		[global::System.Data.Linq.Mapping.AssociationAttribute(Name="Entregas_Movimientos", Storage="_Entregas", ThisKey="EntregaID", OtherKey="EntregaID", IsForeignKey=true)]
+		public Entregas Entregas
+		{
+			get
+			{
+				return this._Entregas.Entity;
+			}
+			set
+			{
+				Entregas previousValue = this._Entregas.Entity;
+				if (((previousValue != value) 
+							|| (this._Entregas.HasLoadedOrAssignedValue == false)))
+				{
+					this.SendPropertyChanging();
+					if ((previousValue != null))
+					{
+						this._Entregas.Entity = null;
+						previousValue.Movimientos.Remove(this);
+					}
+					this._Entregas.Entity = value;
+					if ((value != null))
+					{
+						value.Movimientos.Add(this);
+						this._EntregaID = value.EntregaID;
+					}
+					else
+					{
+						this._EntregaID = default(Nullable<int>);
+					}
+					this.SendPropertyChanged("Entregas");
 				}
 			}
 		}
@@ -9618,463 +9791,6 @@ namespace GrupoAnkhalInventario.Modelo
 		}
 	}
 	
-	[global::System.Data.Linq.Mapping.TableAttribute(Name="dbo.Ordenes")]
-	public partial class Ordenes : INotifyPropertyChanging, INotifyPropertyChanged
-	{
-		
-		private static PropertyChangingEventArgs emptyChangingEventArgs = new PropertyChangingEventArgs(String.Empty);
-		
-		private int _OrdenID;
-		
-		private string _Folio;
-		
-		private System.DateTime _FechaOrden;
-		
-		private int _ClienteID;
-		
-		private int _BaseOrigenID;
-		
-		private string _Estado;
-		
-		private string _Observaciones;
-		
-		private int _RegistradoPorID;
-		
-		private System.DateTime _FechaRegistro;
-		
-		private System.Nullable<System.DateTime> _FechaModif;
-		
-		private EntitySet<DetalleOrdenes> _DetalleOrdenes;
-		
-		private EntitySet<Entregas> _Entregas;
-		
-		private EntityRef<Clientes> _Clientes;
-		
-		private EntityRef<Usuario> _Usuario;
-		
-		private EntityRef<Bases> _Bases;
-		
-    #region Definiciones de métodos de extensibilidad
-    partial void OnLoaded();
-    partial void OnValidate(System.Data.Linq.ChangeAction action);
-    partial void OnCreated();
-    partial void OnOrdenIDChanging(int value);
-    partial void OnOrdenIDChanged();
-    partial void OnFolioChanging(string value);
-    partial void OnFolioChanged();
-    partial void OnFechaOrdenChanging(System.DateTime value);
-    partial void OnFechaOrdenChanged();
-    partial void OnClienteIDChanging(int value);
-    partial void OnClienteIDChanged();
-    partial void OnBaseOrigenIDChanging(int value);
-    partial void OnBaseOrigenIDChanged();
-    partial void OnEstadoChanging(string value);
-    partial void OnEstadoChanged();
-    partial void OnObservacionesChanging(string value);
-    partial void OnObservacionesChanged();
-    partial void OnRegistradoPorIDChanging(int value);
-    partial void OnRegistradoPorIDChanged();
-    partial void OnFechaRegistroChanging(System.DateTime value);
-    partial void OnFechaRegistroChanged();
-    partial void OnFechaModifChanging(System.Nullable<System.DateTime> value);
-    partial void OnFechaModifChanged();
-    #endregion
-		
-		public Ordenes()
-		{
-			this._DetalleOrdenes = new EntitySet<DetalleOrdenes>(new Action<DetalleOrdenes>(this.attach_DetalleOrdenes), new Action<DetalleOrdenes>(this.detach_DetalleOrdenes));
-			this._Entregas = new EntitySet<Entregas>(new Action<Entregas>(this.attach_Entregas), new Action<Entregas>(this.detach_Entregas));
-			this._Clientes = default(EntityRef<Clientes>);
-			this._Usuario = default(EntityRef<Usuario>);
-			this._Bases = default(EntityRef<Bases>);
-			OnCreated();
-		}
-		
-		[global::System.Data.Linq.Mapping.ColumnAttribute(Storage="_OrdenID", AutoSync=AutoSync.OnInsert, DbType="Int NOT NULL IDENTITY", IsPrimaryKey=true, IsDbGenerated=true)]
-		public int OrdenID
-		{
-			get
-			{
-				return this._OrdenID;
-			}
-			set
-			{
-				if ((this._OrdenID != value))
-				{
-					this.OnOrdenIDChanging(value);
-					this.SendPropertyChanging();
-					this._OrdenID = value;
-					this.SendPropertyChanged("OrdenID");
-					this.OnOrdenIDChanged();
-				}
-			}
-		}
-		
-		[global::System.Data.Linq.Mapping.ColumnAttribute(Storage="_Folio", DbType="VarChar(30) NOT NULL", CanBeNull=false)]
-		public string Folio
-		{
-			get
-			{
-				return this._Folio;
-			}
-			set
-			{
-				if ((this._Folio != value))
-				{
-					this.OnFolioChanging(value);
-					this.SendPropertyChanging();
-					this._Folio = value;
-					this.SendPropertyChanged("Folio");
-					this.OnFolioChanged();
-				}
-			}
-		}
-		
-		[global::System.Data.Linq.Mapping.ColumnAttribute(Storage="_FechaOrden", DbType="Date NOT NULL")]
-		public System.DateTime FechaOrden
-		{
-			get
-			{
-				return this._FechaOrden;
-			}
-			set
-			{
-				if ((this._FechaOrden != value))
-				{
-					this.OnFechaOrdenChanging(value);
-					this.SendPropertyChanging();
-					this._FechaOrden = value;
-					this.SendPropertyChanged("FechaOrden");
-					this.OnFechaOrdenChanged();
-				}
-			}
-		}
-		
-		[global::System.Data.Linq.Mapping.ColumnAttribute(Storage="_ClienteID", DbType="Int NOT NULL")]
-		public int ClienteID
-		{
-			get
-			{
-				return this._ClienteID;
-			}
-			set
-			{
-				if ((this._ClienteID != value))
-				{
-					if (this._Clientes.HasLoadedOrAssignedValue)
-					{
-						throw new System.Data.Linq.ForeignKeyReferenceAlreadyHasValueException();
-					}
-					this.OnClienteIDChanging(value);
-					this.SendPropertyChanging();
-					this._ClienteID = value;
-					this.SendPropertyChanged("ClienteID");
-					this.OnClienteIDChanged();
-				}
-			}
-		}
-		
-		[global::System.Data.Linq.Mapping.ColumnAttribute(Storage="_BaseOrigenID", DbType="Int NOT NULL")]
-		public int BaseOrigenID
-		{
-			get
-			{
-				return this._BaseOrigenID;
-			}
-			set
-			{
-				if ((this._BaseOrigenID != value))
-				{
-					if (this._Bases.HasLoadedOrAssignedValue)
-					{
-						throw new System.Data.Linq.ForeignKeyReferenceAlreadyHasValueException();
-					}
-					this.OnBaseOrigenIDChanging(value);
-					this.SendPropertyChanging();
-					this._BaseOrigenID = value;
-					this.SendPropertyChanged("BaseOrigenID");
-					this.OnBaseOrigenIDChanged();
-				}
-			}
-		}
-		
-		[global::System.Data.Linq.Mapping.ColumnAttribute(Storage="_Estado", DbType="VarChar(25) NOT NULL", CanBeNull=false)]
-		public string Estado
-		{
-			get
-			{
-				return this._Estado;
-			}
-			set
-			{
-				if ((this._Estado != value))
-				{
-					this.OnEstadoChanging(value);
-					this.SendPropertyChanging();
-					this._Estado = value;
-					this.SendPropertyChanged("Estado");
-					this.OnEstadoChanged();
-				}
-			}
-		}
-		
-		[global::System.Data.Linq.Mapping.ColumnAttribute(Storage="_Observaciones", DbType="VarChar(500)")]
-		public string Observaciones
-		{
-			get
-			{
-				return this._Observaciones;
-			}
-			set
-			{
-				if ((this._Observaciones != value))
-				{
-					this.OnObservacionesChanging(value);
-					this.SendPropertyChanging();
-					this._Observaciones = value;
-					this.SendPropertyChanged("Observaciones");
-					this.OnObservacionesChanged();
-				}
-			}
-		}
-		
-		[global::System.Data.Linq.Mapping.ColumnAttribute(Storage="_RegistradoPorID", DbType="Int NOT NULL")]
-		public int RegistradoPorID
-		{
-			get
-			{
-				return this._RegistradoPorID;
-			}
-			set
-			{
-				if ((this._RegistradoPorID != value))
-				{
-					if (this._Usuario.HasLoadedOrAssignedValue)
-					{
-						throw new System.Data.Linq.ForeignKeyReferenceAlreadyHasValueException();
-					}
-					this.OnRegistradoPorIDChanging(value);
-					this.SendPropertyChanging();
-					this._RegistradoPorID = value;
-					this.SendPropertyChanged("RegistradoPorID");
-					this.OnRegistradoPorIDChanged();
-				}
-			}
-		}
-		
-		[global::System.Data.Linq.Mapping.ColumnAttribute(Storage="_FechaRegistro", DbType="DateTime2 NOT NULL")]
-		public System.DateTime FechaRegistro
-		{
-			get
-			{
-				return this._FechaRegistro;
-			}
-			set
-			{
-				if ((this._FechaRegistro != value))
-				{
-					this.OnFechaRegistroChanging(value);
-					this.SendPropertyChanging();
-					this._FechaRegistro = value;
-					this.SendPropertyChanged("FechaRegistro");
-					this.OnFechaRegistroChanged();
-				}
-			}
-		}
-		
-		[global::System.Data.Linq.Mapping.ColumnAttribute(Storage="_FechaModif", DbType="DateTime2")]
-		public System.Nullable<System.DateTime> FechaModif
-		{
-			get
-			{
-				return this._FechaModif;
-			}
-			set
-			{
-				if ((this._FechaModif != value))
-				{
-					this.OnFechaModifChanging(value);
-					this.SendPropertyChanging();
-					this._FechaModif = value;
-					this.SendPropertyChanged("FechaModif");
-					this.OnFechaModifChanged();
-				}
-			}
-		}
-		
-		[global::System.Data.Linq.Mapping.AssociationAttribute(Name="Ordenes_DetalleOrdenes", Storage="_DetalleOrdenes", ThisKey="OrdenID", OtherKey="OrdenID")]
-		public EntitySet<DetalleOrdenes> DetalleOrdenes
-		{
-			get
-			{
-				return this._DetalleOrdenes;
-			}
-			set
-			{
-				this._DetalleOrdenes.Assign(value);
-			}
-		}
-		
-		[global::System.Data.Linq.Mapping.AssociationAttribute(Name="Ordenes_Entregas", Storage="_Entregas", ThisKey="OrdenID", OtherKey="OrdenID")]
-		public EntitySet<Entregas> Entregas
-		{
-			get
-			{
-				return this._Entregas;
-			}
-			set
-			{
-				this._Entregas.Assign(value);
-			}
-		}
-		
-		[global::System.Data.Linq.Mapping.AssociationAttribute(Name="Clientes_Ordenes", Storage="_Clientes", ThisKey="ClienteID", OtherKey="ClienteID", IsForeignKey=true)]
-		public Clientes Clientes
-		{
-			get
-			{
-				return this._Clientes.Entity;
-			}
-			set
-			{
-				Clientes previousValue = this._Clientes.Entity;
-				if (((previousValue != value) 
-							|| (this._Clientes.HasLoadedOrAssignedValue == false)))
-				{
-					this.SendPropertyChanging();
-					if ((previousValue != null))
-					{
-						this._Clientes.Entity = null;
-						previousValue.Ordenes.Remove(this);
-					}
-					this._Clientes.Entity = value;
-					if ((value != null))
-					{
-						value.Ordenes.Add(this);
-						this._ClienteID = value.ClienteID;
-					}
-					else
-					{
-						this._ClienteID = default(int);
-					}
-					this.SendPropertyChanged("Clientes");
-				}
-			}
-		}
-		
-		[global::System.Data.Linq.Mapping.AssociationAttribute(Name="Usuario_Ordenes", Storage="_Usuario", ThisKey="RegistradoPorID", OtherKey="ClaveID", IsForeignKey=true)]
-		public Usuario Usuario
-		{
-			get
-			{
-				return this._Usuario.Entity;
-			}
-			set
-			{
-				Usuario previousValue = this._Usuario.Entity;
-				if (((previousValue != value) 
-							|| (this._Usuario.HasLoadedOrAssignedValue == false)))
-				{
-					this.SendPropertyChanging();
-					if ((previousValue != null))
-					{
-						this._Usuario.Entity = null;
-						previousValue.Ordenes.Remove(this);
-					}
-					this._Usuario.Entity = value;
-					if ((value != null))
-					{
-						value.Ordenes.Add(this);
-						this._RegistradoPorID = value.ClaveID;
-					}
-					else
-					{
-						this._RegistradoPorID = default(int);
-					}
-					this.SendPropertyChanged("Usuario");
-				}
-			}
-		}
-		
-		[global::System.Data.Linq.Mapping.AssociationAttribute(Name="Bases_Ordenes", Storage="_Bases", ThisKey="BaseOrigenID", OtherKey="BaseID", IsForeignKey=true)]
-		public Bases Bases
-		{
-			get
-			{
-				return this._Bases.Entity;
-			}
-			set
-			{
-				Bases previousValue = this._Bases.Entity;
-				if (((previousValue != value) 
-							|| (this._Bases.HasLoadedOrAssignedValue == false)))
-				{
-					this.SendPropertyChanging();
-					if ((previousValue != null))
-					{
-						this._Bases.Entity = null;
-						previousValue.Ordenes.Remove(this);
-					}
-					this._Bases.Entity = value;
-					if ((value != null))
-					{
-						value.Ordenes.Add(this);
-						this._BaseOrigenID = value.BaseID;
-					}
-					else
-					{
-						this._BaseOrigenID = default(int);
-					}
-					this.SendPropertyChanged("Bases");
-				}
-			}
-		}
-		
-		public event PropertyChangingEventHandler PropertyChanging;
-		
-		public event PropertyChangedEventHandler PropertyChanged;
-		
-		protected virtual void SendPropertyChanging()
-		{
-			if ((this.PropertyChanging != null))
-			{
-				this.PropertyChanging(this, emptyChangingEventArgs);
-			}
-		}
-		
-		protected virtual void SendPropertyChanged(String propertyName)
-		{
-			if ((this.PropertyChanged != null))
-			{
-				this.PropertyChanged(this, new PropertyChangedEventArgs(propertyName));
-			}
-		}
-		
-		private void attach_DetalleOrdenes(DetalleOrdenes entity)
-		{
-			this.SendPropertyChanging();
-			entity.Ordenes = this;
-		}
-		
-		private void detach_DetalleOrdenes(DetalleOrdenes entity)
-		{
-			this.SendPropertyChanging();
-			entity.Ordenes = null;
-		}
-		
-		private void attach_Entregas(Entregas entity)
-		{
-			this.SendPropertyChanging();
-			entity.Ordenes = this;
-		}
-		
-		private void detach_Entregas(Entregas entity)
-		{
-			this.SendPropertyChanging();
-			entity.Ordenes = null;
-		}
-	}
-	
 	[global::System.Data.Linq.Mapping.TableAttribute(Name="dbo.DetalleOrdenes")]
 	public partial class DetalleOrdenes : INotifyPropertyChanging, INotifyPropertyChanged
 	{
@@ -10105,11 +9821,11 @@ namespace GrupoAnkhalInventario.Modelo
 		
 		private System.DateTime _FechaRegistro;
 		
-		private EntityRef<Ordenes> _Ordenes;
-		
 		private EntityRef<Productos> _Productos;
 		
 		private EntityRef<Materiales> _Materiales;
+		
+		private EntityRef<Ordenes> _Ordenes;
 		
     #region Definiciones de métodos de extensibilidad
     partial void OnLoaded();
@@ -10143,9 +9859,9 @@ namespace GrupoAnkhalInventario.Modelo
 		
 		public DetalleOrdenes()
 		{
-			this._Ordenes = default(EntityRef<Ordenes>);
 			this._Productos = default(EntityRef<Productos>);
 			this._Materiales = default(EntityRef<Materiales>);
+			this._Ordenes = default(EntityRef<Ordenes>);
 			OnCreated();
 		}
 		
@@ -10401,40 +10117,6 @@ namespace GrupoAnkhalInventario.Modelo
 			}
 		}
 		
-		[global::System.Data.Linq.Mapping.AssociationAttribute(Name="Ordenes_DetalleOrdenes", Storage="_Ordenes", ThisKey="OrdenID", OtherKey="OrdenID", IsForeignKey=true)]
-		public Ordenes Ordenes
-		{
-			get
-			{
-				return this._Ordenes.Entity;
-			}
-			set
-			{
-				Ordenes previousValue = this._Ordenes.Entity;
-				if (((previousValue != value) 
-							|| (this._Ordenes.HasLoadedOrAssignedValue == false)))
-				{
-					this.SendPropertyChanging();
-					if ((previousValue != null))
-					{
-						this._Ordenes.Entity = null;
-						previousValue.DetalleOrdenes.Remove(this);
-					}
-					this._Ordenes.Entity = value;
-					if ((value != null))
-					{
-						value.DetalleOrdenes.Add(this);
-						this._OrdenID = value.OrdenID;
-					}
-					else
-					{
-						this._OrdenID = default(int);
-					}
-					this.SendPropertyChanged("Ordenes");
-				}
-			}
-		}
-		
 		[global::System.Data.Linq.Mapping.AssociationAttribute(Name="Productos_DetalleOrdenes", Storage="_Productos", ThisKey="ProductoID", OtherKey="ProductoID", IsForeignKey=true)]
 		public Productos Productos
 		{
@@ -10499,6 +10181,40 @@ namespace GrupoAnkhalInventario.Modelo
 						this._MaterialID = default(Nullable<int>);
 					}
 					this.SendPropertyChanged("Materiales");
+				}
+			}
+		}
+		
+		[global::System.Data.Linq.Mapping.AssociationAttribute(Name="Ordenes_DetalleOrdenes", Storage="_Ordenes", ThisKey="OrdenID", OtherKey="OrdenID", IsForeignKey=true)]
+		public Ordenes Ordenes
+		{
+			get
+			{
+				return this._Ordenes.Entity;
+			}
+			set
+			{
+				Ordenes previousValue = this._Ordenes.Entity;
+				if (((previousValue != value) 
+							|| (this._Ordenes.HasLoadedOrAssignedValue == false)))
+				{
+					this.SendPropertyChanging();
+					if ((previousValue != null))
+					{
+						this._Ordenes.Entity = null;
+						previousValue.DetalleOrdenes.Remove(this);
+					}
+					this._Ordenes.Entity = value;
+					if ((value != null))
+					{
+						value.DetalleOrdenes.Add(this);
+						this._OrdenID = value.OrdenID;
+					}
+					else
+					{
+						this._OrdenID = default(int);
+					}
+					this.SendPropertyChanged("Ordenes");
 				}
 			}
 		}
@@ -12458,600 +12174,6 @@ namespace GrupoAnkhalInventario.Modelo
 		}
 	}
 	
-	[global::System.Data.Linq.Mapping.TableAttribute(Name="dbo.Entregas")]
-	public partial class Entregas : INotifyPropertyChanging, INotifyPropertyChanged
-	{
-		
-		private static PropertyChangingEventArgs emptyChangingEventArgs = new PropertyChangingEventArgs(String.Empty);
-		
-		private int _EntregaID;
-		
-		private string _Folio;
-		
-		private System.DateTime _FechaEntrega;
-		
-		private int _BaseOrigenID;
-		
-		private string _Cliente;
-		
-		private string _Estado;
-		
-		private string _Observaciones;
-		
-		private int _RegistradoPorID;
-		
-		private System.DateTime _FechaRegistro;
-		
-		private System.Nullable<System.DateTime> _FechaModif;
-		
-		private System.Nullable<int> _ClienteID;
-		
-		private System.Nullable<int> _OrdenID;
-		
-		private string _NumeroFactura;
-		
-		private System.Nullable<int> _FacturaID;
-		
-		private EntitySet<Movimientos> _Movimientos;
-		
-		private EntitySet<DetalleEntregas> _DetalleEntregas;
-		
-		private EntityRef<Clientes> _Clientes;
-		
-		private EntityRef<Ordenes> _Ordenes;
-		
-		private EntityRef<Usuario> _Usuario;
-		
-		private EntityRef<Bases> _Bases;
-		
-    #region Definiciones de métodos de extensibilidad
-    partial void OnLoaded();
-    partial void OnValidate(System.Data.Linq.ChangeAction action);
-    partial void OnCreated();
-    partial void OnEntregaIDChanging(int value);
-    partial void OnEntregaIDChanged();
-    partial void OnFolioChanging(string value);
-    partial void OnFolioChanged();
-    partial void OnFechaEntregaChanging(System.DateTime value);
-    partial void OnFechaEntregaChanged();
-    partial void OnBaseOrigenIDChanging(int value);
-    partial void OnBaseOrigenIDChanged();
-    partial void OnClienteChanging(string value);
-    partial void OnClienteChanged();
-    partial void OnEstadoChanging(string value);
-    partial void OnEstadoChanged();
-    partial void OnObservacionesChanging(string value);
-    partial void OnObservacionesChanged();
-    partial void OnRegistradoPorIDChanging(int value);
-    partial void OnRegistradoPorIDChanged();
-    partial void OnFechaRegistroChanging(System.DateTime value);
-    partial void OnFechaRegistroChanged();
-    partial void OnFechaModifChanging(System.Nullable<System.DateTime> value);
-    partial void OnFechaModifChanged();
-    partial void OnClienteIDChanging(System.Nullable<int> value);
-    partial void OnClienteIDChanged();
-    partial void OnOrdenIDChanging(System.Nullable<int> value);
-    partial void OnOrdenIDChanged();
-    partial void OnNumeroFacturaChanging(string value);
-    partial void OnNumeroFacturaChanged();
-    partial void OnFacturaIDChanging(System.Nullable<int> value);
-    partial void OnFacturaIDChanged();
-    #endregion
-		
-		public Entregas()
-		{
-			this._Movimientos = new EntitySet<Movimientos>(new Action<Movimientos>(this.attach_Movimientos), new Action<Movimientos>(this.detach_Movimientos));
-			this._DetalleEntregas = new EntitySet<DetalleEntregas>(new Action<DetalleEntregas>(this.attach_DetalleEntregas), new Action<DetalleEntregas>(this.detach_DetalleEntregas));
-			this._Clientes = default(EntityRef<Clientes>);
-			this._Ordenes = default(EntityRef<Ordenes>);
-			this._Usuario = default(EntityRef<Usuario>);
-			this._Bases = default(EntityRef<Bases>);
-			OnCreated();
-		}
-		
-		[global::System.Data.Linq.Mapping.ColumnAttribute(Storage="_EntregaID", AutoSync=AutoSync.OnInsert, DbType="Int NOT NULL IDENTITY", IsPrimaryKey=true, IsDbGenerated=true)]
-		public int EntregaID
-		{
-			get
-			{
-				return this._EntregaID;
-			}
-			set
-			{
-				if ((this._EntregaID != value))
-				{
-					this.OnEntregaIDChanging(value);
-					this.SendPropertyChanging();
-					this._EntregaID = value;
-					this.SendPropertyChanged("EntregaID");
-					this.OnEntregaIDChanged();
-				}
-			}
-		}
-		
-		[global::System.Data.Linq.Mapping.ColumnAttribute(Storage="_Folio", DbType="VarChar(30) NOT NULL", CanBeNull=false)]
-		public string Folio
-		{
-			get
-			{
-				return this._Folio;
-			}
-			set
-			{
-				if ((this._Folio != value))
-				{
-					this.OnFolioChanging(value);
-					this.SendPropertyChanging();
-					this._Folio = value;
-					this.SendPropertyChanged("Folio");
-					this.OnFolioChanged();
-				}
-			}
-		}
-		
-		[global::System.Data.Linq.Mapping.ColumnAttribute(Storage="_FechaEntrega", DbType="Date NOT NULL")]
-		public System.DateTime FechaEntrega
-		{
-			get
-			{
-				return this._FechaEntrega;
-			}
-			set
-			{
-				if ((this._FechaEntrega != value))
-				{
-					this.OnFechaEntregaChanging(value);
-					this.SendPropertyChanging();
-					this._FechaEntrega = value;
-					this.SendPropertyChanged("FechaEntrega");
-					this.OnFechaEntregaChanged();
-				}
-			}
-		}
-		
-		[global::System.Data.Linq.Mapping.ColumnAttribute(Storage="_BaseOrigenID", DbType="Int NOT NULL")]
-		public int BaseOrigenID
-		{
-			get
-			{
-				return this._BaseOrigenID;
-			}
-			set
-			{
-				if ((this._BaseOrigenID != value))
-				{
-					if (this._Bases.HasLoadedOrAssignedValue)
-					{
-						throw new System.Data.Linq.ForeignKeyReferenceAlreadyHasValueException();
-					}
-					this.OnBaseOrigenIDChanging(value);
-					this.SendPropertyChanging();
-					this._BaseOrigenID = value;
-					this.SendPropertyChanged("BaseOrigenID");
-					this.OnBaseOrigenIDChanged();
-				}
-			}
-		}
-		
-		[global::System.Data.Linq.Mapping.ColumnAttribute(Storage="_Cliente", DbType="VarChar(200) NOT NULL", CanBeNull=false)]
-		public string Cliente
-		{
-			get
-			{
-				return this._Cliente;
-			}
-			set
-			{
-				if ((this._Cliente != value))
-				{
-					this.OnClienteChanging(value);
-					this.SendPropertyChanging();
-					this._Cliente = value;
-					this.SendPropertyChanged("Cliente");
-					this.OnClienteChanged();
-				}
-			}
-		}
-		
-		[global::System.Data.Linq.Mapping.ColumnAttribute(Storage="_Estado", DbType="VarChar(20) NOT NULL", CanBeNull=false)]
-		public string Estado
-		{
-			get
-			{
-				return this._Estado;
-			}
-			set
-			{
-				if ((this._Estado != value))
-				{
-					this.OnEstadoChanging(value);
-					this.SendPropertyChanging();
-					this._Estado = value;
-					this.SendPropertyChanged("Estado");
-					this.OnEstadoChanged();
-				}
-			}
-		}
-		
-		[global::System.Data.Linq.Mapping.ColumnAttribute(Storage="_Observaciones", DbType="VarChar(500)")]
-		public string Observaciones
-		{
-			get
-			{
-				return this._Observaciones;
-			}
-			set
-			{
-				if ((this._Observaciones != value))
-				{
-					this.OnObservacionesChanging(value);
-					this.SendPropertyChanging();
-					this._Observaciones = value;
-					this.SendPropertyChanged("Observaciones");
-					this.OnObservacionesChanged();
-				}
-			}
-		}
-		
-		[global::System.Data.Linq.Mapping.ColumnAttribute(Storage="_RegistradoPorID", DbType="Int NOT NULL")]
-		public int RegistradoPorID
-		{
-			get
-			{
-				return this._RegistradoPorID;
-			}
-			set
-			{
-				if ((this._RegistradoPorID != value))
-				{
-					if (this._Usuario.HasLoadedOrAssignedValue)
-					{
-						throw new System.Data.Linq.ForeignKeyReferenceAlreadyHasValueException();
-					}
-					this.OnRegistradoPorIDChanging(value);
-					this.SendPropertyChanging();
-					this._RegistradoPorID = value;
-					this.SendPropertyChanged("RegistradoPorID");
-					this.OnRegistradoPorIDChanged();
-				}
-			}
-		}
-		
-		[global::System.Data.Linq.Mapping.ColumnAttribute(Storage="_FechaRegistro", DbType="DateTime2 NOT NULL")]
-		public System.DateTime FechaRegistro
-		{
-			get
-			{
-				return this._FechaRegistro;
-			}
-			set
-			{
-				if ((this._FechaRegistro != value))
-				{
-					this.OnFechaRegistroChanging(value);
-					this.SendPropertyChanging();
-					this._FechaRegistro = value;
-					this.SendPropertyChanged("FechaRegistro");
-					this.OnFechaRegistroChanged();
-				}
-			}
-		}
-		
-		[global::System.Data.Linq.Mapping.ColumnAttribute(Storage="_FechaModif", DbType="DateTime2")]
-		public System.Nullable<System.DateTime> FechaModif
-		{
-			get
-			{
-				return this._FechaModif;
-			}
-			set
-			{
-				if ((this._FechaModif != value))
-				{
-					this.OnFechaModifChanging(value);
-					this.SendPropertyChanging();
-					this._FechaModif = value;
-					this.SendPropertyChanged("FechaModif");
-					this.OnFechaModifChanged();
-				}
-			}
-		}
-		
-		[global::System.Data.Linq.Mapping.ColumnAttribute(Storage="_ClienteID", DbType="Int")]
-		public System.Nullable<int> ClienteID
-		{
-			get
-			{
-				return this._ClienteID;
-			}
-			set
-			{
-				if ((this._ClienteID != value))
-				{
-					if (this._Clientes.HasLoadedOrAssignedValue)
-					{
-						throw new System.Data.Linq.ForeignKeyReferenceAlreadyHasValueException();
-					}
-					this.OnClienteIDChanging(value);
-					this.SendPropertyChanging();
-					this._ClienteID = value;
-					this.SendPropertyChanged("ClienteID");
-					this.OnClienteIDChanged();
-				}
-			}
-		}
-		
-		[global::System.Data.Linq.Mapping.ColumnAttribute(Storage="_OrdenID", DbType="Int")]
-		public System.Nullable<int> OrdenID
-		{
-			get
-			{
-				return this._OrdenID;
-			}
-			set
-			{
-				if ((this._OrdenID != value))
-				{
-					if (this._Ordenes.HasLoadedOrAssignedValue)
-					{
-						throw new System.Data.Linq.ForeignKeyReferenceAlreadyHasValueException();
-					}
-					this.OnOrdenIDChanging(value);
-					this.SendPropertyChanging();
-					this._OrdenID = value;
-					this.SendPropertyChanged("OrdenID");
-					this.OnOrdenIDChanged();
-				}
-			}
-		}
-		
-		[global::System.Data.Linq.Mapping.ColumnAttribute(Storage="_NumeroFactura", DbType="VarChar(50)")]
-		public string NumeroFactura
-		{
-			get
-			{
-				return this._NumeroFactura;
-			}
-			set
-			{
-				if ((this._NumeroFactura != value))
-				{
-					this.OnNumeroFacturaChanging(value);
-					this.SendPropertyChanging();
-					this._NumeroFactura = value;
-					this.SendPropertyChanged("NumeroFactura");
-					this.OnNumeroFacturaChanged();
-				}
-			}
-		}
-		
-		[global::System.Data.Linq.Mapping.ColumnAttribute(Storage="_FacturaID", DbType="Int")]
-		public System.Nullable<int> FacturaID
-		{
-			get
-			{
-				return this._FacturaID;
-			}
-			set
-			{
-				if ((this._FacturaID != value))
-				{
-					this.OnFacturaIDChanging(value);
-					this.SendPropertyChanging();
-					this._FacturaID = value;
-					this.SendPropertyChanged("FacturaID");
-					this.OnFacturaIDChanged();
-				}
-			}
-		}
-		
-		[global::System.Data.Linq.Mapping.AssociationAttribute(Name="Entregas_Movimientos", Storage="_Movimientos", ThisKey="EntregaID", OtherKey="EntregaID")]
-		public EntitySet<Movimientos> Movimientos
-		{
-			get
-			{
-				return this._Movimientos;
-			}
-			set
-			{
-				this._Movimientos.Assign(value);
-			}
-		}
-		
-		[global::System.Data.Linq.Mapping.AssociationAttribute(Name="Entregas_DetalleEntregas", Storage="_DetalleEntregas", ThisKey="EntregaID", OtherKey="EntregaID")]
-		public EntitySet<DetalleEntregas> DetalleEntregas
-		{
-			get
-			{
-				return this._DetalleEntregas;
-			}
-			set
-			{
-				this._DetalleEntregas.Assign(value);
-			}
-		}
-		
-		[global::System.Data.Linq.Mapping.AssociationAttribute(Name="Clientes_Entregas", Storage="_Clientes", ThisKey="ClienteID", OtherKey="ClienteID", IsForeignKey=true)]
-		public Clientes Clientes
-		{
-			get
-			{
-				return this._Clientes.Entity;
-			}
-			set
-			{
-				Clientes previousValue = this._Clientes.Entity;
-				if (((previousValue != value) 
-							|| (this._Clientes.HasLoadedOrAssignedValue == false)))
-				{
-					this.SendPropertyChanging();
-					if ((previousValue != null))
-					{
-						this._Clientes.Entity = null;
-						previousValue.Entregas.Remove(this);
-					}
-					this._Clientes.Entity = value;
-					if ((value != null))
-					{
-						value.Entregas.Add(this);
-						this._ClienteID = value.ClienteID;
-					}
-					else
-					{
-						this._ClienteID = default(Nullable<int>);
-					}
-					this.SendPropertyChanged("Clientes");
-				}
-			}
-		}
-		
-		[global::System.Data.Linq.Mapping.AssociationAttribute(Name="Ordenes_Entregas", Storage="_Ordenes", ThisKey="OrdenID", OtherKey="OrdenID", IsForeignKey=true)]
-		public Ordenes Ordenes
-		{
-			get
-			{
-				return this._Ordenes.Entity;
-			}
-			set
-			{
-				Ordenes previousValue = this._Ordenes.Entity;
-				if (((previousValue != value) 
-							|| (this._Ordenes.HasLoadedOrAssignedValue == false)))
-				{
-					this.SendPropertyChanging();
-					if ((previousValue != null))
-					{
-						this._Ordenes.Entity = null;
-						previousValue.Entregas.Remove(this);
-					}
-					this._Ordenes.Entity = value;
-					if ((value != null))
-					{
-						value.Entregas.Add(this);
-						this._OrdenID = value.OrdenID;
-					}
-					else
-					{
-						this._OrdenID = default(Nullable<int>);
-					}
-					this.SendPropertyChanged("Ordenes");
-				}
-			}
-		}
-		
-		[global::System.Data.Linq.Mapping.AssociationAttribute(Name="Usuario_Entregas", Storage="_Usuario", ThisKey="RegistradoPorID", OtherKey="ClaveID", IsForeignKey=true)]
-		public Usuario Usuario
-		{
-			get
-			{
-				return this._Usuario.Entity;
-			}
-			set
-			{
-				Usuario previousValue = this._Usuario.Entity;
-				if (((previousValue != value) 
-							|| (this._Usuario.HasLoadedOrAssignedValue == false)))
-				{
-					this.SendPropertyChanging();
-					if ((previousValue != null))
-					{
-						this._Usuario.Entity = null;
-						previousValue.Entregas.Remove(this);
-					}
-					this._Usuario.Entity = value;
-					if ((value != null))
-					{
-						value.Entregas.Add(this);
-						this._RegistradoPorID = value.ClaveID;
-					}
-					else
-					{
-						this._RegistradoPorID = default(int);
-					}
-					this.SendPropertyChanged("Usuario");
-				}
-			}
-		}
-		
-		[global::System.Data.Linq.Mapping.AssociationAttribute(Name="Bases_Entregas", Storage="_Bases", ThisKey="BaseOrigenID", OtherKey="BaseID", IsForeignKey=true)]
-		public Bases Bases
-		{
-			get
-			{
-				return this._Bases.Entity;
-			}
-			set
-			{
-				Bases previousValue = this._Bases.Entity;
-				if (((previousValue != value) 
-							|| (this._Bases.HasLoadedOrAssignedValue == false)))
-				{
-					this.SendPropertyChanging();
-					if ((previousValue != null))
-					{
-						this._Bases.Entity = null;
-						previousValue.Entregas.Remove(this);
-					}
-					this._Bases.Entity = value;
-					if ((value != null))
-					{
-						value.Entregas.Add(this);
-						this._BaseOrigenID = value.BaseID;
-					}
-					else
-					{
-						this._BaseOrigenID = default(int);
-					}
-					this.SendPropertyChanged("Bases");
-				}
-			}
-		}
-		
-		public event PropertyChangingEventHandler PropertyChanging;
-		
-		public event PropertyChangedEventHandler PropertyChanged;
-		
-		protected virtual void SendPropertyChanging()
-		{
-			if ((this.PropertyChanging != null))
-			{
-				this.PropertyChanging(this, emptyChangingEventArgs);
-			}
-		}
-		
-		protected virtual void SendPropertyChanged(String propertyName)
-		{
-			if ((this.PropertyChanged != null))
-			{
-				this.PropertyChanged(this, new PropertyChangedEventArgs(propertyName));
-			}
-		}
-		
-		private void attach_Movimientos(Movimientos entity)
-		{
-			this.SendPropertyChanging();
-			entity.Entregas = this;
-		}
-		
-		private void detach_Movimientos(Movimientos entity)
-		{
-			this.SendPropertyChanging();
-			entity.Entregas = null;
-		}
-		
-		private void attach_DetalleEntregas(DetalleEntregas entity)
-		{
-			this.SendPropertyChanging();
-			entity.Entregas = this;
-		}
-		
-		private void detach_DetalleEntregas(DetalleEntregas entity)
-		{
-			this.SendPropertyChanging();
-			entity.Entregas = null;
-		}
-	}
-	
 	[global::System.Data.Linq.Mapping.TableAttribute(Name="dbo.Bases")]
 	public partial class Bases : INotifyPropertyChanging, INotifyPropertyChanged
 	{
@@ -13110,13 +12232,13 @@ namespace GrupoAnkhalInventario.Modelo
 		
 		private EntitySet<Movimientos> _Movimientos1;
 		
-		private EntitySet<Ordenes> _Ordenes;
-		
-		private EntitySet<Entregas> _Entregas;
-		
 		private EntitySet<LotesMovimiento> _LotesMovimiento;
 		
 		private EntitySet<LotesMovimiento> _LotesMovimiento1;
+		
+		private EntitySet<Ordenes> _Ordenes;
+		
+		private EntitySet<Entregas> _Entregas;
 		
 		private EntityRef<Usuario> _Usuario;
 		
@@ -13175,10 +12297,10 @@ namespace GrupoAnkhalInventario.Modelo
 			this._UsuarioBases = new EntitySet<UsuarioBases>(new Action<UsuarioBases>(this.attach_UsuarioBases), new Action<UsuarioBases>(this.detach_UsuarioBases));
 			this._Movimientos = new EntitySet<Movimientos>(new Action<Movimientos>(this.attach_Movimientos), new Action<Movimientos>(this.detach_Movimientos));
 			this._Movimientos1 = new EntitySet<Movimientos>(new Action<Movimientos>(this.attach_Movimientos1), new Action<Movimientos>(this.detach_Movimientos1));
-			this._Ordenes = new EntitySet<Ordenes>(new Action<Ordenes>(this.attach_Ordenes), new Action<Ordenes>(this.detach_Ordenes));
-			this._Entregas = new EntitySet<Entregas>(new Action<Entregas>(this.attach_Entregas), new Action<Entregas>(this.detach_Entregas));
 			this._LotesMovimiento = new EntitySet<LotesMovimiento>(new Action<LotesMovimiento>(this.attach_LotesMovimiento), new Action<LotesMovimiento>(this.detach_LotesMovimiento));
 			this._LotesMovimiento1 = new EntitySet<LotesMovimiento>(new Action<LotesMovimiento>(this.attach_LotesMovimiento1), new Action<LotesMovimiento>(this.detach_LotesMovimiento1));
+			this._Ordenes = new EntitySet<Ordenes>(new Action<Ordenes>(this.attach_Ordenes), new Action<Ordenes>(this.detach_Ordenes));
+			this._Entregas = new EntitySet<Entregas>(new Action<Entregas>(this.attach_Entregas), new Action<Entregas>(this.detach_Entregas));
 			this._Usuario = default(EntityRef<Usuario>);
 			this._Usuario1 = default(EntityRef<Usuario>);
 			OnCreated();
@@ -13663,32 +12785,6 @@ namespace GrupoAnkhalInventario.Modelo
 			}
 		}
 		
-		[global::System.Data.Linq.Mapping.AssociationAttribute(Name="Bases_Ordenes", Storage="_Ordenes", ThisKey="BaseID", OtherKey="BaseOrigenID")]
-		public EntitySet<Ordenes> Ordenes
-		{
-			get
-			{
-				return this._Ordenes;
-			}
-			set
-			{
-				this._Ordenes.Assign(value);
-			}
-		}
-		
-		[global::System.Data.Linq.Mapping.AssociationAttribute(Name="Bases_Entregas", Storage="_Entregas", ThisKey="BaseID", OtherKey="BaseOrigenID")]
-		public EntitySet<Entregas> Entregas
-		{
-			get
-			{
-				return this._Entregas;
-			}
-			set
-			{
-				this._Entregas.Assign(value);
-			}
-		}
-		
 		[global::System.Data.Linq.Mapping.AssociationAttribute(Name="Bases_LotesMovimiento", Storage="_LotesMovimiento", ThisKey="BaseID", OtherKey="BaseDestinoID")]
 		public EntitySet<LotesMovimiento> LotesMovimiento
 		{
@@ -13712,6 +12808,32 @@ namespace GrupoAnkhalInventario.Modelo
 			set
 			{
 				this._LotesMovimiento1.Assign(value);
+			}
+		}
+		
+		[global::System.Data.Linq.Mapping.AssociationAttribute(Name="Bases_Ordenes", Storage="_Ordenes", ThisKey="BaseID", OtherKey="BaseOrigenID")]
+		public EntitySet<Ordenes> Ordenes
+		{
+			get
+			{
+				return this._Ordenes;
+			}
+			set
+			{
+				this._Ordenes.Assign(value);
+			}
+		}
+		
+		[global::System.Data.Linq.Mapping.AssociationAttribute(Name="Bases_Entregas", Storage="_Entregas", ThisKey="BaseID", OtherKey="BaseOrigenID")]
+		public EntitySet<Entregas> Entregas
+		{
+			get
+			{
+				return this._Entregas;
+			}
+			set
+			{
+				this._Entregas.Assign(value);
 			}
 		}
 		
@@ -13887,30 +13009,6 @@ namespace GrupoAnkhalInventario.Modelo
 			entity.Bases1 = null;
 		}
 		
-		private void attach_Ordenes(Ordenes entity)
-		{
-			this.SendPropertyChanging();
-			entity.Bases = this;
-		}
-		
-		private void detach_Ordenes(Ordenes entity)
-		{
-			this.SendPropertyChanging();
-			entity.Bases = null;
-		}
-		
-		private void attach_Entregas(Entregas entity)
-		{
-			this.SendPropertyChanging();
-			entity.Bases = this;
-		}
-		
-		private void detach_Entregas(Entregas entity)
-		{
-			this.SendPropertyChanging();
-			entity.Bases = null;
-		}
-		
 		private void attach_LotesMovimiento(LotesMovimiento entity)
 		{
 			this.SendPropertyChanging();
@@ -13933,6 +13031,30 @@ namespace GrupoAnkhalInventario.Modelo
 		{
 			this.SendPropertyChanging();
 			entity.Bases1 = null;
+		}
+		
+		private void attach_Ordenes(Ordenes entity)
+		{
+			this.SendPropertyChanging();
+			entity.Bases = this;
+		}
+		
+		private void detach_Ordenes(Ordenes entity)
+		{
+			this.SendPropertyChanging();
+			entity.Bases = null;
+		}
+		
+		private void attach_Entregas(Entregas entity)
+		{
+			this.SendPropertyChanging();
+			entity.Bases = this;
+		}
+		
+		private void detach_Entregas(Entregas entity)
+		{
+			this.SendPropertyChanging();
+			entity.Bases = null;
 		}
 	}
 	
@@ -14499,6 +13621,2931 @@ namespace GrupoAnkhalInventario.Modelo
 		}
 	}
 	
+	[global::System.Data.Linq.Mapping.TableAttribute(Name="dbo.AbonosCuentasPorPagar")]
+	public partial class AbonosCuentasPorPagar : INotifyPropertyChanging, INotifyPropertyChanged
+	{
+		
+		private static PropertyChangingEventArgs emptyChangingEventArgs = new PropertyChangingEventArgs(String.Empty);
+		
+		private int _AbonoID;
+		
+		private int _CuentaPorPagarID;
+		
+		private decimal _MontoAbono;
+		
+		private System.DateTime _FechaAbono;
+		
+		private string _ReferenciaPago;
+		
+		private string _Observaciones;
+		
+		private string _Estado;
+		
+		private int _RegistradoPorID;
+		
+		private System.DateTime _FechaRegistro;
+		
+		private EntitySet<CancelacionesAbonosCxP> _CancelacionesAbonosCxP;
+		
+		private EntityRef<Usuario> _Usuario;
+		
+		private EntityRef<CuentasPorPagar> _CuentasPorPagar;
+		
+    #region Definiciones de métodos de extensibilidad
+    partial void OnLoaded();
+    partial void OnValidate(System.Data.Linq.ChangeAction action);
+    partial void OnCreated();
+    partial void OnAbonoIDChanging(int value);
+    partial void OnAbonoIDChanged();
+    partial void OnCuentaPorPagarIDChanging(int value);
+    partial void OnCuentaPorPagarIDChanged();
+    partial void OnMontoAbonoChanging(decimal value);
+    partial void OnMontoAbonoChanged();
+    partial void OnFechaAbonoChanging(System.DateTime value);
+    partial void OnFechaAbonoChanged();
+    partial void OnReferenciaPagoChanging(string value);
+    partial void OnReferenciaPagoChanged();
+    partial void OnObservacionesChanging(string value);
+    partial void OnObservacionesChanged();
+    partial void OnEstadoChanging(string value);
+    partial void OnEstadoChanged();
+    partial void OnRegistradoPorIDChanging(int value);
+    partial void OnRegistradoPorIDChanged();
+    partial void OnFechaRegistroChanging(System.DateTime value);
+    partial void OnFechaRegistroChanged();
+    #endregion
+		
+		public AbonosCuentasPorPagar()
+		{
+			this._CancelacionesAbonosCxP = new EntitySet<CancelacionesAbonosCxP>(new Action<CancelacionesAbonosCxP>(this.attach_CancelacionesAbonosCxP), new Action<CancelacionesAbonosCxP>(this.detach_CancelacionesAbonosCxP));
+			this._Usuario = default(EntityRef<Usuario>);
+			this._CuentasPorPagar = default(EntityRef<CuentasPorPagar>);
+			OnCreated();
+		}
+		
+		[global::System.Data.Linq.Mapping.ColumnAttribute(Storage="_AbonoID", AutoSync=AutoSync.OnInsert, DbType="Int NOT NULL IDENTITY", IsPrimaryKey=true, IsDbGenerated=true)]
+		public int AbonoID
+		{
+			get
+			{
+				return this._AbonoID;
+			}
+			set
+			{
+				if ((this._AbonoID != value))
+				{
+					this.OnAbonoIDChanging(value);
+					this.SendPropertyChanging();
+					this._AbonoID = value;
+					this.SendPropertyChanged("AbonoID");
+					this.OnAbonoIDChanged();
+				}
+			}
+		}
+		
+		[global::System.Data.Linq.Mapping.ColumnAttribute(Storage="_CuentaPorPagarID", DbType="Int NOT NULL")]
+		public int CuentaPorPagarID
+		{
+			get
+			{
+				return this._CuentaPorPagarID;
+			}
+			set
+			{
+				if ((this._CuentaPorPagarID != value))
+				{
+					if (this._CuentasPorPagar.HasLoadedOrAssignedValue)
+					{
+						throw new System.Data.Linq.ForeignKeyReferenceAlreadyHasValueException();
+					}
+					this.OnCuentaPorPagarIDChanging(value);
+					this.SendPropertyChanging();
+					this._CuentaPorPagarID = value;
+					this.SendPropertyChanged("CuentaPorPagarID");
+					this.OnCuentaPorPagarIDChanged();
+				}
+			}
+		}
+		
+		[global::System.Data.Linq.Mapping.ColumnAttribute(Storage="_MontoAbono", DbType="Decimal(18,2) NOT NULL")]
+		public decimal MontoAbono
+		{
+			get
+			{
+				return this._MontoAbono;
+			}
+			set
+			{
+				if ((this._MontoAbono != value))
+				{
+					this.OnMontoAbonoChanging(value);
+					this.SendPropertyChanging();
+					this._MontoAbono = value;
+					this.SendPropertyChanged("MontoAbono");
+					this.OnMontoAbonoChanged();
+				}
+			}
+		}
+		
+		[global::System.Data.Linq.Mapping.ColumnAttribute(Storage="_FechaAbono", DbType="DateTime2 NOT NULL")]
+		public System.DateTime FechaAbono
+		{
+			get
+			{
+				return this._FechaAbono;
+			}
+			set
+			{
+				if ((this._FechaAbono != value))
+				{
+					this.OnFechaAbonoChanging(value);
+					this.SendPropertyChanging();
+					this._FechaAbono = value;
+					this.SendPropertyChanged("FechaAbono");
+					this.OnFechaAbonoChanged();
+				}
+			}
+		}
+		
+		[global::System.Data.Linq.Mapping.ColumnAttribute(Storage="_ReferenciaPago", DbType="VarChar(100)")]
+		public string ReferenciaPago
+		{
+			get
+			{
+				return this._ReferenciaPago;
+			}
+			set
+			{
+				if ((this._ReferenciaPago != value))
+				{
+					this.OnReferenciaPagoChanging(value);
+					this.SendPropertyChanging();
+					this._ReferenciaPago = value;
+					this.SendPropertyChanged("ReferenciaPago");
+					this.OnReferenciaPagoChanged();
+				}
+			}
+		}
+		
+		[global::System.Data.Linq.Mapping.ColumnAttribute(Storage="_Observaciones", DbType="VarChar(500)")]
+		public string Observaciones
+		{
+			get
+			{
+				return this._Observaciones;
+			}
+			set
+			{
+				if ((this._Observaciones != value))
+				{
+					this.OnObservacionesChanging(value);
+					this.SendPropertyChanging();
+					this._Observaciones = value;
+					this.SendPropertyChanged("Observaciones");
+					this.OnObservacionesChanged();
+				}
+			}
+		}
+		
+		[global::System.Data.Linq.Mapping.ColumnAttribute(Storage="_Estado", DbType="VarChar(20) NOT NULL", CanBeNull=false)]
+		public string Estado
+		{
+			get
+			{
+				return this._Estado;
+			}
+			set
+			{
+				if ((this._Estado != value))
+				{
+					this.OnEstadoChanging(value);
+					this.SendPropertyChanging();
+					this._Estado = value;
+					this.SendPropertyChanged("Estado");
+					this.OnEstadoChanged();
+				}
+			}
+		}
+		
+		[global::System.Data.Linq.Mapping.ColumnAttribute(Storage="_RegistradoPorID", DbType="Int NOT NULL")]
+		public int RegistradoPorID
+		{
+			get
+			{
+				return this._RegistradoPorID;
+			}
+			set
+			{
+				if ((this._RegistradoPorID != value))
+				{
+					if (this._Usuario.HasLoadedOrAssignedValue)
+					{
+						throw new System.Data.Linq.ForeignKeyReferenceAlreadyHasValueException();
+					}
+					this.OnRegistradoPorIDChanging(value);
+					this.SendPropertyChanging();
+					this._RegistradoPorID = value;
+					this.SendPropertyChanged("RegistradoPorID");
+					this.OnRegistradoPorIDChanged();
+				}
+			}
+		}
+		
+		[global::System.Data.Linq.Mapping.ColumnAttribute(Storage="_FechaRegistro", DbType="DateTime2 NOT NULL")]
+		public System.DateTime FechaRegistro
+		{
+			get
+			{
+				return this._FechaRegistro;
+			}
+			set
+			{
+				if ((this._FechaRegistro != value))
+				{
+					this.OnFechaRegistroChanging(value);
+					this.SendPropertyChanging();
+					this._FechaRegistro = value;
+					this.SendPropertyChanged("FechaRegistro");
+					this.OnFechaRegistroChanged();
+				}
+			}
+		}
+		
+		[global::System.Data.Linq.Mapping.AssociationAttribute(Name="AbonosCuentasPorPagar_CancelacionesAbonosCxP", Storage="_CancelacionesAbonosCxP", ThisKey="AbonoID", OtherKey="AbonoID")]
+		public EntitySet<CancelacionesAbonosCxP> CancelacionesAbonosCxP
+		{
+			get
+			{
+				return this._CancelacionesAbonosCxP;
+			}
+			set
+			{
+				this._CancelacionesAbonosCxP.Assign(value);
+			}
+		}
+		
+		[global::System.Data.Linq.Mapping.AssociationAttribute(Name="Usuario_AbonosCuentasPorPagar", Storage="_Usuario", ThisKey="RegistradoPorID", OtherKey="ClaveID", IsForeignKey=true)]
+		public Usuario Usuario
+		{
+			get
+			{
+				return this._Usuario.Entity;
+			}
+			set
+			{
+				Usuario previousValue = this._Usuario.Entity;
+				if (((previousValue != value) 
+							|| (this._Usuario.HasLoadedOrAssignedValue == false)))
+				{
+					this.SendPropertyChanging();
+					if ((previousValue != null))
+					{
+						this._Usuario.Entity = null;
+						previousValue.AbonosCuentasPorPagar.Remove(this);
+					}
+					this._Usuario.Entity = value;
+					if ((value != null))
+					{
+						value.AbonosCuentasPorPagar.Add(this);
+						this._RegistradoPorID = value.ClaveID;
+					}
+					else
+					{
+						this._RegistradoPorID = default(int);
+					}
+					this.SendPropertyChanged("Usuario");
+				}
+			}
+		}
+		
+		[global::System.Data.Linq.Mapping.AssociationAttribute(Name="CuentasPorPagar_AbonosCuentasPorPagar", Storage="_CuentasPorPagar", ThisKey="CuentaPorPagarID", OtherKey="CuentaPorPagarID", IsForeignKey=true)]
+		public CuentasPorPagar CuentasPorPagar
+		{
+			get
+			{
+				return this._CuentasPorPagar.Entity;
+			}
+			set
+			{
+				CuentasPorPagar previousValue = this._CuentasPorPagar.Entity;
+				if (((previousValue != value) 
+							|| (this._CuentasPorPagar.HasLoadedOrAssignedValue == false)))
+				{
+					this.SendPropertyChanging();
+					if ((previousValue != null))
+					{
+						this._CuentasPorPagar.Entity = null;
+						previousValue.AbonosCuentasPorPagar.Remove(this);
+					}
+					this._CuentasPorPagar.Entity = value;
+					if ((value != null))
+					{
+						value.AbonosCuentasPorPagar.Add(this);
+						this._CuentaPorPagarID = value.CuentaPorPagarID;
+					}
+					else
+					{
+						this._CuentaPorPagarID = default(int);
+					}
+					this.SendPropertyChanged("CuentasPorPagar");
+				}
+			}
+		}
+		
+		public event PropertyChangingEventHandler PropertyChanging;
+		
+		public event PropertyChangedEventHandler PropertyChanged;
+		
+		protected virtual void SendPropertyChanging()
+		{
+			if ((this.PropertyChanging != null))
+			{
+				this.PropertyChanging(this, emptyChangingEventArgs);
+			}
+		}
+		
+		protected virtual void SendPropertyChanged(String propertyName)
+		{
+			if ((this.PropertyChanged != null))
+			{
+				this.PropertyChanged(this, new PropertyChangedEventArgs(propertyName));
+			}
+		}
+		
+		private void attach_CancelacionesAbonosCxP(CancelacionesAbonosCxP entity)
+		{
+			this.SendPropertyChanging();
+			entity.AbonosCuentasPorPagar = this;
+		}
+		
+		private void detach_CancelacionesAbonosCxP(CancelacionesAbonosCxP entity)
+		{
+			this.SendPropertyChanging();
+			entity.AbonosCuentasPorPagar = null;
+		}
+	}
+	
+	[global::System.Data.Linq.Mapping.TableAttribute(Name="dbo.CancelacionesAbonosCxP")]
+	public partial class CancelacionesAbonosCxP : INotifyPropertyChanging, INotifyPropertyChanged
+	{
+		
+		private static PropertyChangingEventArgs emptyChangingEventArgs = new PropertyChangingEventArgs(String.Empty);
+		
+		private int _CancelacionID;
+		
+		private int _AbonoID;
+		
+		private string _Motivo;
+		
+		private int _CanceladoPorID;
+		
+		private System.DateTime _FechaCancelacion;
+		
+		private EntityRef<AbonosCuentasPorPagar> _AbonosCuentasPorPagar;
+		
+		private EntityRef<Usuario> _Usuario;
+		
+    #region Definiciones de métodos de extensibilidad
+    partial void OnLoaded();
+    partial void OnValidate(System.Data.Linq.ChangeAction action);
+    partial void OnCreated();
+    partial void OnCancelacionIDChanging(int value);
+    partial void OnCancelacionIDChanged();
+    partial void OnAbonoIDChanging(int value);
+    partial void OnAbonoIDChanged();
+    partial void OnMotivoChanging(string value);
+    partial void OnMotivoChanged();
+    partial void OnCanceladoPorIDChanging(int value);
+    partial void OnCanceladoPorIDChanged();
+    partial void OnFechaCancelacionChanging(System.DateTime value);
+    partial void OnFechaCancelacionChanged();
+    #endregion
+		
+		public CancelacionesAbonosCxP()
+		{
+			this._AbonosCuentasPorPagar = default(EntityRef<AbonosCuentasPorPagar>);
+			this._Usuario = default(EntityRef<Usuario>);
+			OnCreated();
+		}
+		
+		[global::System.Data.Linq.Mapping.ColumnAttribute(Storage="_CancelacionID", AutoSync=AutoSync.OnInsert, DbType="Int NOT NULL IDENTITY", IsPrimaryKey=true, IsDbGenerated=true)]
+		public int CancelacionID
+		{
+			get
+			{
+				return this._CancelacionID;
+			}
+			set
+			{
+				if ((this._CancelacionID != value))
+				{
+					this.OnCancelacionIDChanging(value);
+					this.SendPropertyChanging();
+					this._CancelacionID = value;
+					this.SendPropertyChanged("CancelacionID");
+					this.OnCancelacionIDChanged();
+				}
+			}
+		}
+		
+		[global::System.Data.Linq.Mapping.ColumnAttribute(Storage="_AbonoID", DbType="Int NOT NULL")]
+		public int AbonoID
+		{
+			get
+			{
+				return this._AbonoID;
+			}
+			set
+			{
+				if ((this._AbonoID != value))
+				{
+					if (this._AbonosCuentasPorPagar.HasLoadedOrAssignedValue)
+					{
+						throw new System.Data.Linq.ForeignKeyReferenceAlreadyHasValueException();
+					}
+					this.OnAbonoIDChanging(value);
+					this.SendPropertyChanging();
+					this._AbonoID = value;
+					this.SendPropertyChanged("AbonoID");
+					this.OnAbonoIDChanged();
+				}
+			}
+		}
+		
+		[global::System.Data.Linq.Mapping.ColumnAttribute(Storage="_Motivo", DbType="VarChar(500) NOT NULL", CanBeNull=false)]
+		public string Motivo
+		{
+			get
+			{
+				return this._Motivo;
+			}
+			set
+			{
+				if ((this._Motivo != value))
+				{
+					this.OnMotivoChanging(value);
+					this.SendPropertyChanging();
+					this._Motivo = value;
+					this.SendPropertyChanged("Motivo");
+					this.OnMotivoChanged();
+				}
+			}
+		}
+		
+		[global::System.Data.Linq.Mapping.ColumnAttribute(Storage="_CanceladoPorID", DbType="Int NOT NULL")]
+		public int CanceladoPorID
+		{
+			get
+			{
+				return this._CanceladoPorID;
+			}
+			set
+			{
+				if ((this._CanceladoPorID != value))
+				{
+					if (this._Usuario.HasLoadedOrAssignedValue)
+					{
+						throw new System.Data.Linq.ForeignKeyReferenceAlreadyHasValueException();
+					}
+					this.OnCanceladoPorIDChanging(value);
+					this.SendPropertyChanging();
+					this._CanceladoPorID = value;
+					this.SendPropertyChanged("CanceladoPorID");
+					this.OnCanceladoPorIDChanged();
+				}
+			}
+		}
+		
+		[global::System.Data.Linq.Mapping.ColumnAttribute(Storage="_FechaCancelacion", DbType="DateTime2 NOT NULL")]
+		public System.DateTime FechaCancelacion
+		{
+			get
+			{
+				return this._FechaCancelacion;
+			}
+			set
+			{
+				if ((this._FechaCancelacion != value))
+				{
+					this.OnFechaCancelacionChanging(value);
+					this.SendPropertyChanging();
+					this._FechaCancelacion = value;
+					this.SendPropertyChanged("FechaCancelacion");
+					this.OnFechaCancelacionChanged();
+				}
+			}
+		}
+		
+		[global::System.Data.Linq.Mapping.AssociationAttribute(Name="AbonosCuentasPorPagar_CancelacionesAbonosCxP", Storage="_AbonosCuentasPorPagar", ThisKey="AbonoID", OtherKey="AbonoID", IsForeignKey=true)]
+		public AbonosCuentasPorPagar AbonosCuentasPorPagar
+		{
+			get
+			{
+				return this._AbonosCuentasPorPagar.Entity;
+			}
+			set
+			{
+				AbonosCuentasPorPagar previousValue = this._AbonosCuentasPorPagar.Entity;
+				if (((previousValue != value) 
+							|| (this._AbonosCuentasPorPagar.HasLoadedOrAssignedValue == false)))
+				{
+					this.SendPropertyChanging();
+					if ((previousValue != null))
+					{
+						this._AbonosCuentasPorPagar.Entity = null;
+						previousValue.CancelacionesAbonosCxP.Remove(this);
+					}
+					this._AbonosCuentasPorPagar.Entity = value;
+					if ((value != null))
+					{
+						value.CancelacionesAbonosCxP.Add(this);
+						this._AbonoID = value.AbonoID;
+					}
+					else
+					{
+						this._AbonoID = default(int);
+					}
+					this.SendPropertyChanged("AbonosCuentasPorPagar");
+				}
+			}
+		}
+		
+		[global::System.Data.Linq.Mapping.AssociationAttribute(Name="Usuario_CancelacionesAbonosCxP", Storage="_Usuario", ThisKey="CanceladoPorID", OtherKey="ClaveID", IsForeignKey=true)]
+		public Usuario Usuario
+		{
+			get
+			{
+				return this._Usuario.Entity;
+			}
+			set
+			{
+				Usuario previousValue = this._Usuario.Entity;
+				if (((previousValue != value) 
+							|| (this._Usuario.HasLoadedOrAssignedValue == false)))
+				{
+					this.SendPropertyChanging();
+					if ((previousValue != null))
+					{
+						this._Usuario.Entity = null;
+						previousValue.CancelacionesAbonosCxP.Remove(this);
+					}
+					this._Usuario.Entity = value;
+					if ((value != null))
+					{
+						value.CancelacionesAbonosCxP.Add(this);
+						this._CanceladoPorID = value.ClaveID;
+					}
+					else
+					{
+						this._CanceladoPorID = default(int);
+					}
+					this.SendPropertyChanged("Usuario");
+				}
+			}
+		}
+		
+		public event PropertyChangingEventHandler PropertyChanging;
+		
+		public event PropertyChangedEventHandler PropertyChanged;
+		
+		protected virtual void SendPropertyChanging()
+		{
+			if ((this.PropertyChanging != null))
+			{
+				this.PropertyChanging(this, emptyChangingEventArgs);
+			}
+		}
+		
+		protected virtual void SendPropertyChanged(String propertyName)
+		{
+			if ((this.PropertyChanged != null))
+			{
+				this.PropertyChanged(this, new PropertyChangedEventArgs(propertyName));
+			}
+		}
+	}
+	
+	[global::System.Data.Linq.Mapping.TableAttribute(Name="dbo.Ordenes")]
+	public partial class Ordenes : INotifyPropertyChanging, INotifyPropertyChanged
+	{
+		
+		private static PropertyChangingEventArgs emptyChangingEventArgs = new PropertyChangingEventArgs(String.Empty);
+		
+		private int _OrdenID;
+		
+		private string _Folio;
+		
+		private System.DateTime _FechaOrden;
+		
+		private int _ClienteID;
+		
+		private int _BaseOrigenID;
+		
+		private string _Estado;
+		
+		private string _Observaciones;
+		
+		private int _RegistradoPorID;
+		
+		private System.DateTime _FechaRegistro;
+		
+		private System.Nullable<System.DateTime> _FechaModif;
+		
+		private bool _EsCredito;
+		
+		private EntitySet<DetalleOrdenes> _DetalleOrdenes;
+		
+		private EntitySet<Entregas> _Entregas;
+		
+		private EntityRef<Bases> _Bases;
+		
+		private EntityRef<Clientes> _Clientes;
+		
+		private EntityRef<Usuario> _Usuario;
+		
+    #region Definiciones de métodos de extensibilidad
+    partial void OnLoaded();
+    partial void OnValidate(System.Data.Linq.ChangeAction action);
+    partial void OnCreated();
+    partial void OnOrdenIDChanging(int value);
+    partial void OnOrdenIDChanged();
+    partial void OnFolioChanging(string value);
+    partial void OnFolioChanged();
+    partial void OnFechaOrdenChanging(System.DateTime value);
+    partial void OnFechaOrdenChanged();
+    partial void OnClienteIDChanging(int value);
+    partial void OnClienteIDChanged();
+    partial void OnBaseOrigenIDChanging(int value);
+    partial void OnBaseOrigenIDChanged();
+    partial void OnEstadoChanging(string value);
+    partial void OnEstadoChanged();
+    partial void OnObservacionesChanging(string value);
+    partial void OnObservacionesChanged();
+    partial void OnRegistradoPorIDChanging(int value);
+    partial void OnRegistradoPorIDChanged();
+    partial void OnFechaRegistroChanging(System.DateTime value);
+    partial void OnFechaRegistroChanged();
+    partial void OnFechaModifChanging(System.Nullable<System.DateTime> value);
+    partial void OnFechaModifChanged();
+    partial void OnEsCreditoChanging(bool value);
+    partial void OnEsCreditoChanged();
+    #endregion
+		
+		public Ordenes()
+		{
+			this._DetalleOrdenes = new EntitySet<DetalleOrdenes>(new Action<DetalleOrdenes>(this.attach_DetalleOrdenes), new Action<DetalleOrdenes>(this.detach_DetalleOrdenes));
+			this._Entregas = new EntitySet<Entregas>(new Action<Entregas>(this.attach_Entregas), new Action<Entregas>(this.detach_Entregas));
+			this._Bases = default(EntityRef<Bases>);
+			this._Clientes = default(EntityRef<Clientes>);
+			this._Usuario = default(EntityRef<Usuario>);
+			OnCreated();
+		}
+		
+		[global::System.Data.Linq.Mapping.ColumnAttribute(Storage="_OrdenID", AutoSync=AutoSync.OnInsert, DbType="Int NOT NULL IDENTITY", IsPrimaryKey=true, IsDbGenerated=true)]
+		public int OrdenID
+		{
+			get
+			{
+				return this._OrdenID;
+			}
+			set
+			{
+				if ((this._OrdenID != value))
+				{
+					this.OnOrdenIDChanging(value);
+					this.SendPropertyChanging();
+					this._OrdenID = value;
+					this.SendPropertyChanged("OrdenID");
+					this.OnOrdenIDChanged();
+				}
+			}
+		}
+		
+		[global::System.Data.Linq.Mapping.ColumnAttribute(Storage="_Folio", DbType="VarChar(30) NOT NULL", CanBeNull=false)]
+		public string Folio
+		{
+			get
+			{
+				return this._Folio;
+			}
+			set
+			{
+				if ((this._Folio != value))
+				{
+					this.OnFolioChanging(value);
+					this.SendPropertyChanging();
+					this._Folio = value;
+					this.SendPropertyChanged("Folio");
+					this.OnFolioChanged();
+				}
+			}
+		}
+		
+		[global::System.Data.Linq.Mapping.ColumnAttribute(Storage="_FechaOrden", DbType="Date NOT NULL")]
+		public System.DateTime FechaOrden
+		{
+			get
+			{
+				return this._FechaOrden;
+			}
+			set
+			{
+				if ((this._FechaOrden != value))
+				{
+					this.OnFechaOrdenChanging(value);
+					this.SendPropertyChanging();
+					this._FechaOrden = value;
+					this.SendPropertyChanged("FechaOrden");
+					this.OnFechaOrdenChanged();
+				}
+			}
+		}
+		
+		[global::System.Data.Linq.Mapping.ColumnAttribute(Storage="_ClienteID", DbType="Int NOT NULL")]
+		public int ClienteID
+		{
+			get
+			{
+				return this._ClienteID;
+			}
+			set
+			{
+				if ((this._ClienteID != value))
+				{
+					if (this._Clientes.HasLoadedOrAssignedValue)
+					{
+						throw new System.Data.Linq.ForeignKeyReferenceAlreadyHasValueException();
+					}
+					this.OnClienteIDChanging(value);
+					this.SendPropertyChanging();
+					this._ClienteID = value;
+					this.SendPropertyChanged("ClienteID");
+					this.OnClienteIDChanged();
+				}
+			}
+		}
+		
+		[global::System.Data.Linq.Mapping.ColumnAttribute(Storage="_BaseOrigenID", DbType="Int NOT NULL")]
+		public int BaseOrigenID
+		{
+			get
+			{
+				return this._BaseOrigenID;
+			}
+			set
+			{
+				if ((this._BaseOrigenID != value))
+				{
+					if (this._Bases.HasLoadedOrAssignedValue)
+					{
+						throw new System.Data.Linq.ForeignKeyReferenceAlreadyHasValueException();
+					}
+					this.OnBaseOrigenIDChanging(value);
+					this.SendPropertyChanging();
+					this._BaseOrigenID = value;
+					this.SendPropertyChanged("BaseOrigenID");
+					this.OnBaseOrigenIDChanged();
+				}
+			}
+		}
+		
+		[global::System.Data.Linq.Mapping.ColumnAttribute(Storage="_Estado", DbType="VarChar(25) NOT NULL", CanBeNull=false)]
+		public string Estado
+		{
+			get
+			{
+				return this._Estado;
+			}
+			set
+			{
+				if ((this._Estado != value))
+				{
+					this.OnEstadoChanging(value);
+					this.SendPropertyChanging();
+					this._Estado = value;
+					this.SendPropertyChanged("Estado");
+					this.OnEstadoChanged();
+				}
+			}
+		}
+		
+		[global::System.Data.Linq.Mapping.ColumnAttribute(Storage="_Observaciones", DbType="VarChar(500)")]
+		public string Observaciones
+		{
+			get
+			{
+				return this._Observaciones;
+			}
+			set
+			{
+				if ((this._Observaciones != value))
+				{
+					this.OnObservacionesChanging(value);
+					this.SendPropertyChanging();
+					this._Observaciones = value;
+					this.SendPropertyChanged("Observaciones");
+					this.OnObservacionesChanged();
+				}
+			}
+		}
+		
+		[global::System.Data.Linq.Mapping.ColumnAttribute(Storage="_RegistradoPorID", DbType="Int NOT NULL")]
+		public int RegistradoPorID
+		{
+			get
+			{
+				return this._RegistradoPorID;
+			}
+			set
+			{
+				if ((this._RegistradoPorID != value))
+				{
+					if (this._Usuario.HasLoadedOrAssignedValue)
+					{
+						throw new System.Data.Linq.ForeignKeyReferenceAlreadyHasValueException();
+					}
+					this.OnRegistradoPorIDChanging(value);
+					this.SendPropertyChanging();
+					this._RegistradoPorID = value;
+					this.SendPropertyChanged("RegistradoPorID");
+					this.OnRegistradoPorIDChanged();
+				}
+			}
+		}
+		
+		[global::System.Data.Linq.Mapping.ColumnAttribute(Storage="_FechaRegistro", DbType="DateTime2 NOT NULL")]
+		public System.DateTime FechaRegistro
+		{
+			get
+			{
+				return this._FechaRegistro;
+			}
+			set
+			{
+				if ((this._FechaRegistro != value))
+				{
+					this.OnFechaRegistroChanging(value);
+					this.SendPropertyChanging();
+					this._FechaRegistro = value;
+					this.SendPropertyChanged("FechaRegistro");
+					this.OnFechaRegistroChanged();
+				}
+			}
+		}
+		
+		[global::System.Data.Linq.Mapping.ColumnAttribute(Storage="_FechaModif", DbType="DateTime2")]
+		public System.Nullable<System.DateTime> FechaModif
+		{
+			get
+			{
+				return this._FechaModif;
+			}
+			set
+			{
+				if ((this._FechaModif != value))
+				{
+					this.OnFechaModifChanging(value);
+					this.SendPropertyChanging();
+					this._FechaModif = value;
+					this.SendPropertyChanged("FechaModif");
+					this.OnFechaModifChanged();
+				}
+			}
+		}
+		
+		[global::System.Data.Linq.Mapping.ColumnAttribute(Storage="_EsCredito", DbType="Bit NOT NULL")]
+		public bool EsCredito
+		{
+			get
+			{
+				return this._EsCredito;
+			}
+			set
+			{
+				if ((this._EsCredito != value))
+				{
+					this.OnEsCreditoChanging(value);
+					this.SendPropertyChanging();
+					this._EsCredito = value;
+					this.SendPropertyChanged("EsCredito");
+					this.OnEsCreditoChanged();
+				}
+			}
+		}
+		
+		[global::System.Data.Linq.Mapping.AssociationAttribute(Name="Ordenes_DetalleOrdenes", Storage="_DetalleOrdenes", ThisKey="OrdenID", OtherKey="OrdenID")]
+		public EntitySet<DetalleOrdenes> DetalleOrdenes
+		{
+			get
+			{
+				return this._DetalleOrdenes;
+			}
+			set
+			{
+				this._DetalleOrdenes.Assign(value);
+			}
+		}
+		
+		[global::System.Data.Linq.Mapping.AssociationAttribute(Name="Ordenes_Entregas", Storage="_Entregas", ThisKey="OrdenID", OtherKey="OrdenID")]
+		public EntitySet<Entregas> Entregas
+		{
+			get
+			{
+				return this._Entregas;
+			}
+			set
+			{
+				this._Entregas.Assign(value);
+			}
+		}
+		
+		[global::System.Data.Linq.Mapping.AssociationAttribute(Name="Bases_Ordenes", Storage="_Bases", ThisKey="BaseOrigenID", OtherKey="BaseID", IsForeignKey=true)]
+		public Bases Bases
+		{
+			get
+			{
+				return this._Bases.Entity;
+			}
+			set
+			{
+				Bases previousValue = this._Bases.Entity;
+				if (((previousValue != value) 
+							|| (this._Bases.HasLoadedOrAssignedValue == false)))
+				{
+					this.SendPropertyChanging();
+					if ((previousValue != null))
+					{
+						this._Bases.Entity = null;
+						previousValue.Ordenes.Remove(this);
+					}
+					this._Bases.Entity = value;
+					if ((value != null))
+					{
+						value.Ordenes.Add(this);
+						this._BaseOrigenID = value.BaseID;
+					}
+					else
+					{
+						this._BaseOrigenID = default(int);
+					}
+					this.SendPropertyChanged("Bases");
+				}
+			}
+		}
+		
+		[global::System.Data.Linq.Mapping.AssociationAttribute(Name="Clientes_Ordenes", Storage="_Clientes", ThisKey="ClienteID", OtherKey="ClienteID", IsForeignKey=true)]
+		public Clientes Clientes
+		{
+			get
+			{
+				return this._Clientes.Entity;
+			}
+			set
+			{
+				Clientes previousValue = this._Clientes.Entity;
+				if (((previousValue != value) 
+							|| (this._Clientes.HasLoadedOrAssignedValue == false)))
+				{
+					this.SendPropertyChanging();
+					if ((previousValue != null))
+					{
+						this._Clientes.Entity = null;
+						previousValue.Ordenes.Remove(this);
+					}
+					this._Clientes.Entity = value;
+					if ((value != null))
+					{
+						value.Ordenes.Add(this);
+						this._ClienteID = value.ClienteID;
+					}
+					else
+					{
+						this._ClienteID = default(int);
+					}
+					this.SendPropertyChanged("Clientes");
+				}
+			}
+		}
+		
+		[global::System.Data.Linq.Mapping.AssociationAttribute(Name="Usuario_Ordenes", Storage="_Usuario", ThisKey="RegistradoPorID", OtherKey="ClaveID", IsForeignKey=true)]
+		public Usuario Usuario
+		{
+			get
+			{
+				return this._Usuario.Entity;
+			}
+			set
+			{
+				Usuario previousValue = this._Usuario.Entity;
+				if (((previousValue != value) 
+							|| (this._Usuario.HasLoadedOrAssignedValue == false)))
+				{
+					this.SendPropertyChanging();
+					if ((previousValue != null))
+					{
+						this._Usuario.Entity = null;
+						previousValue.Ordenes.Remove(this);
+					}
+					this._Usuario.Entity = value;
+					if ((value != null))
+					{
+						value.Ordenes.Add(this);
+						this._RegistradoPorID = value.ClaveID;
+					}
+					else
+					{
+						this._RegistradoPorID = default(int);
+					}
+					this.SendPropertyChanged("Usuario");
+				}
+			}
+		}
+		
+		public event PropertyChangingEventHandler PropertyChanging;
+		
+		public event PropertyChangedEventHandler PropertyChanged;
+		
+		protected virtual void SendPropertyChanging()
+		{
+			if ((this.PropertyChanging != null))
+			{
+				this.PropertyChanging(this, emptyChangingEventArgs);
+			}
+		}
+		
+		protected virtual void SendPropertyChanged(String propertyName)
+		{
+			if ((this.PropertyChanged != null))
+			{
+				this.PropertyChanged(this, new PropertyChangedEventArgs(propertyName));
+			}
+		}
+		
+		private void attach_DetalleOrdenes(DetalleOrdenes entity)
+		{
+			this.SendPropertyChanging();
+			entity.Ordenes = this;
+		}
+		
+		private void detach_DetalleOrdenes(DetalleOrdenes entity)
+		{
+			this.SendPropertyChanging();
+			entity.Ordenes = null;
+		}
+		
+		private void attach_Entregas(Entregas entity)
+		{
+			this.SendPropertyChanging();
+			entity.Ordenes = this;
+		}
+		
+		private void detach_Entregas(Entregas entity)
+		{
+			this.SendPropertyChanging();
+			entity.Ordenes = null;
+		}
+	}
+	
+	[global::System.Data.Linq.Mapping.TableAttribute(Name="dbo.Entregas")]
+	public partial class Entregas : INotifyPropertyChanging, INotifyPropertyChanged
+	{
+		
+		private static PropertyChangingEventArgs emptyChangingEventArgs = new PropertyChangingEventArgs(String.Empty);
+		
+		private int _EntregaID;
+		
+		private string _Folio;
+		
+		private System.DateTime _FechaEntrega;
+		
+		private int _BaseOrigenID;
+		
+		private string _Cliente;
+		
+		private string _Estado;
+		
+		private string _Observaciones;
+		
+		private int _RegistradoPorID;
+		
+		private System.DateTime _FechaRegistro;
+		
+		private System.Nullable<System.DateTime> _FechaModif;
+		
+		private System.Nullable<int> _ClienteID;
+		
+		private System.Nullable<int> _OrdenID;
+		
+		private string _NumeroFactura;
+		
+		private System.Nullable<int> _FacturaID;
+		
+		private bool _EsCredito;
+		
+		private EntitySet<Movimientos> _Movimientos;
+		
+		private EntitySet<DetalleEntregas> _DetalleEntregas;
+		
+		private EntitySet<CuentasPorCobrar> _CuentasPorCobrar;
+		
+		private EntityRef<Bases> _Bases;
+		
+		private EntityRef<Clientes> _Clientes;
+		
+		private EntityRef<Ordenes> _Ordenes;
+		
+		private EntityRef<Usuario> _Usuario;
+		
+    #region Definiciones de métodos de extensibilidad
+    partial void OnLoaded();
+    partial void OnValidate(System.Data.Linq.ChangeAction action);
+    partial void OnCreated();
+    partial void OnEntregaIDChanging(int value);
+    partial void OnEntregaIDChanged();
+    partial void OnFolioChanging(string value);
+    partial void OnFolioChanged();
+    partial void OnFechaEntregaChanging(System.DateTime value);
+    partial void OnFechaEntregaChanged();
+    partial void OnBaseOrigenIDChanging(int value);
+    partial void OnBaseOrigenIDChanged();
+    partial void OnClienteChanging(string value);
+    partial void OnClienteChanged();
+    partial void OnEstadoChanging(string value);
+    partial void OnEstadoChanged();
+    partial void OnObservacionesChanging(string value);
+    partial void OnObservacionesChanged();
+    partial void OnRegistradoPorIDChanging(int value);
+    partial void OnRegistradoPorIDChanged();
+    partial void OnFechaRegistroChanging(System.DateTime value);
+    partial void OnFechaRegistroChanged();
+    partial void OnFechaModifChanging(System.Nullable<System.DateTime> value);
+    partial void OnFechaModifChanged();
+    partial void OnClienteIDChanging(System.Nullable<int> value);
+    partial void OnClienteIDChanged();
+    partial void OnOrdenIDChanging(System.Nullable<int> value);
+    partial void OnOrdenIDChanged();
+    partial void OnNumeroFacturaChanging(string value);
+    partial void OnNumeroFacturaChanged();
+    partial void OnFacturaIDChanging(System.Nullable<int> value);
+    partial void OnFacturaIDChanged();
+    partial void OnEsCreditoChanging(bool value);
+    partial void OnEsCreditoChanged();
+    #endregion
+		
+		public Entregas()
+		{
+			this._Movimientos = new EntitySet<Movimientos>(new Action<Movimientos>(this.attach_Movimientos), new Action<Movimientos>(this.detach_Movimientos));
+			this._DetalleEntregas = new EntitySet<DetalleEntregas>(new Action<DetalleEntregas>(this.attach_DetalleEntregas), new Action<DetalleEntregas>(this.detach_DetalleEntregas));
+			this._CuentasPorCobrar = new EntitySet<CuentasPorCobrar>(new Action<CuentasPorCobrar>(this.attach_CuentasPorCobrar), new Action<CuentasPorCobrar>(this.detach_CuentasPorCobrar));
+			this._Bases = default(EntityRef<Bases>);
+			this._Clientes = default(EntityRef<Clientes>);
+			this._Ordenes = default(EntityRef<Ordenes>);
+			this._Usuario = default(EntityRef<Usuario>);
+			OnCreated();
+		}
+		
+		[global::System.Data.Linq.Mapping.ColumnAttribute(Storage="_EntregaID", AutoSync=AutoSync.OnInsert, DbType="Int NOT NULL IDENTITY", IsPrimaryKey=true, IsDbGenerated=true)]
+		public int EntregaID
+		{
+			get
+			{
+				return this._EntregaID;
+			}
+			set
+			{
+				if ((this._EntregaID != value))
+				{
+					this.OnEntregaIDChanging(value);
+					this.SendPropertyChanging();
+					this._EntregaID = value;
+					this.SendPropertyChanged("EntregaID");
+					this.OnEntregaIDChanged();
+				}
+			}
+		}
+		
+		[global::System.Data.Linq.Mapping.ColumnAttribute(Storage="_Folio", DbType="VarChar(30) NOT NULL", CanBeNull=false)]
+		public string Folio
+		{
+			get
+			{
+				return this._Folio;
+			}
+			set
+			{
+				if ((this._Folio != value))
+				{
+					this.OnFolioChanging(value);
+					this.SendPropertyChanging();
+					this._Folio = value;
+					this.SendPropertyChanged("Folio");
+					this.OnFolioChanged();
+				}
+			}
+		}
+		
+		[global::System.Data.Linq.Mapping.ColumnAttribute(Storage="_FechaEntrega", DbType="Date NOT NULL")]
+		public System.DateTime FechaEntrega
+		{
+			get
+			{
+				return this._FechaEntrega;
+			}
+			set
+			{
+				if ((this._FechaEntrega != value))
+				{
+					this.OnFechaEntregaChanging(value);
+					this.SendPropertyChanging();
+					this._FechaEntrega = value;
+					this.SendPropertyChanged("FechaEntrega");
+					this.OnFechaEntregaChanged();
+				}
+			}
+		}
+		
+		[global::System.Data.Linq.Mapping.ColumnAttribute(Storage="_BaseOrigenID", DbType="Int NOT NULL")]
+		public int BaseOrigenID
+		{
+			get
+			{
+				return this._BaseOrigenID;
+			}
+			set
+			{
+				if ((this._BaseOrigenID != value))
+				{
+					if (this._Bases.HasLoadedOrAssignedValue)
+					{
+						throw new System.Data.Linq.ForeignKeyReferenceAlreadyHasValueException();
+					}
+					this.OnBaseOrigenIDChanging(value);
+					this.SendPropertyChanging();
+					this._BaseOrigenID = value;
+					this.SendPropertyChanged("BaseOrigenID");
+					this.OnBaseOrigenIDChanged();
+				}
+			}
+		}
+		
+		[global::System.Data.Linq.Mapping.ColumnAttribute(Storage="_Cliente", DbType="VarChar(200) NOT NULL", CanBeNull=false)]
+		public string Cliente
+		{
+			get
+			{
+				return this._Cliente;
+			}
+			set
+			{
+				if ((this._Cliente != value))
+				{
+					this.OnClienteChanging(value);
+					this.SendPropertyChanging();
+					this._Cliente = value;
+					this.SendPropertyChanged("Cliente");
+					this.OnClienteChanged();
+				}
+			}
+		}
+		
+		[global::System.Data.Linq.Mapping.ColumnAttribute(Storage="_Estado", DbType="VarChar(20) NOT NULL", CanBeNull=false)]
+		public string Estado
+		{
+			get
+			{
+				return this._Estado;
+			}
+			set
+			{
+				if ((this._Estado != value))
+				{
+					this.OnEstadoChanging(value);
+					this.SendPropertyChanging();
+					this._Estado = value;
+					this.SendPropertyChanged("Estado");
+					this.OnEstadoChanged();
+				}
+			}
+		}
+		
+		[global::System.Data.Linq.Mapping.ColumnAttribute(Storage="_Observaciones", DbType="VarChar(500)")]
+		public string Observaciones
+		{
+			get
+			{
+				return this._Observaciones;
+			}
+			set
+			{
+				if ((this._Observaciones != value))
+				{
+					this.OnObservacionesChanging(value);
+					this.SendPropertyChanging();
+					this._Observaciones = value;
+					this.SendPropertyChanged("Observaciones");
+					this.OnObservacionesChanged();
+				}
+			}
+		}
+		
+		[global::System.Data.Linq.Mapping.ColumnAttribute(Storage="_RegistradoPorID", DbType="Int NOT NULL")]
+		public int RegistradoPorID
+		{
+			get
+			{
+				return this._RegistradoPorID;
+			}
+			set
+			{
+				if ((this._RegistradoPorID != value))
+				{
+					if (this._Usuario.HasLoadedOrAssignedValue)
+					{
+						throw new System.Data.Linq.ForeignKeyReferenceAlreadyHasValueException();
+					}
+					this.OnRegistradoPorIDChanging(value);
+					this.SendPropertyChanging();
+					this._RegistradoPorID = value;
+					this.SendPropertyChanged("RegistradoPorID");
+					this.OnRegistradoPorIDChanged();
+				}
+			}
+		}
+		
+		[global::System.Data.Linq.Mapping.ColumnAttribute(Storage="_FechaRegistro", DbType="DateTime2 NOT NULL")]
+		public System.DateTime FechaRegistro
+		{
+			get
+			{
+				return this._FechaRegistro;
+			}
+			set
+			{
+				if ((this._FechaRegistro != value))
+				{
+					this.OnFechaRegistroChanging(value);
+					this.SendPropertyChanging();
+					this._FechaRegistro = value;
+					this.SendPropertyChanged("FechaRegistro");
+					this.OnFechaRegistroChanged();
+				}
+			}
+		}
+		
+		[global::System.Data.Linq.Mapping.ColumnAttribute(Storage="_FechaModif", DbType="DateTime2")]
+		public System.Nullable<System.DateTime> FechaModif
+		{
+			get
+			{
+				return this._FechaModif;
+			}
+			set
+			{
+				if ((this._FechaModif != value))
+				{
+					this.OnFechaModifChanging(value);
+					this.SendPropertyChanging();
+					this._FechaModif = value;
+					this.SendPropertyChanged("FechaModif");
+					this.OnFechaModifChanged();
+				}
+			}
+		}
+		
+		[global::System.Data.Linq.Mapping.ColumnAttribute(Storage="_ClienteID", DbType="Int")]
+		public System.Nullable<int> ClienteID
+		{
+			get
+			{
+				return this._ClienteID;
+			}
+			set
+			{
+				if ((this._ClienteID != value))
+				{
+					if (this._Clientes.HasLoadedOrAssignedValue)
+					{
+						throw new System.Data.Linq.ForeignKeyReferenceAlreadyHasValueException();
+					}
+					this.OnClienteIDChanging(value);
+					this.SendPropertyChanging();
+					this._ClienteID = value;
+					this.SendPropertyChanged("ClienteID");
+					this.OnClienteIDChanged();
+				}
+			}
+		}
+		
+		[global::System.Data.Linq.Mapping.ColumnAttribute(Storage="_OrdenID", DbType="Int")]
+		public System.Nullable<int> OrdenID
+		{
+			get
+			{
+				return this._OrdenID;
+			}
+			set
+			{
+				if ((this._OrdenID != value))
+				{
+					if (this._Ordenes.HasLoadedOrAssignedValue)
+					{
+						throw new System.Data.Linq.ForeignKeyReferenceAlreadyHasValueException();
+					}
+					this.OnOrdenIDChanging(value);
+					this.SendPropertyChanging();
+					this._OrdenID = value;
+					this.SendPropertyChanged("OrdenID");
+					this.OnOrdenIDChanged();
+				}
+			}
+		}
+		
+		[global::System.Data.Linq.Mapping.ColumnAttribute(Storage="_NumeroFactura", DbType="VarChar(50)")]
+		public string NumeroFactura
+		{
+			get
+			{
+				return this._NumeroFactura;
+			}
+			set
+			{
+				if ((this._NumeroFactura != value))
+				{
+					this.OnNumeroFacturaChanging(value);
+					this.SendPropertyChanging();
+					this._NumeroFactura = value;
+					this.SendPropertyChanged("NumeroFactura");
+					this.OnNumeroFacturaChanged();
+				}
+			}
+		}
+		
+		[global::System.Data.Linq.Mapping.ColumnAttribute(Storage="_FacturaID", DbType="Int")]
+		public System.Nullable<int> FacturaID
+		{
+			get
+			{
+				return this._FacturaID;
+			}
+			set
+			{
+				if ((this._FacturaID != value))
+				{
+					this.OnFacturaIDChanging(value);
+					this.SendPropertyChanging();
+					this._FacturaID = value;
+					this.SendPropertyChanged("FacturaID");
+					this.OnFacturaIDChanged();
+				}
+			}
+		}
+		
+		[global::System.Data.Linq.Mapping.ColumnAttribute(Storage="_EsCredito", DbType="Bit NOT NULL")]
+		public bool EsCredito
+		{
+			get
+			{
+				return this._EsCredito;
+			}
+			set
+			{
+				if ((this._EsCredito != value))
+				{
+					this.OnEsCreditoChanging(value);
+					this.SendPropertyChanging();
+					this._EsCredito = value;
+					this.SendPropertyChanged("EsCredito");
+					this.OnEsCreditoChanged();
+				}
+			}
+		}
+		
+		[global::System.Data.Linq.Mapping.AssociationAttribute(Name="Entregas_Movimientos", Storage="_Movimientos", ThisKey="EntregaID", OtherKey="EntregaID")]
+		public EntitySet<Movimientos> Movimientos
+		{
+			get
+			{
+				return this._Movimientos;
+			}
+			set
+			{
+				this._Movimientos.Assign(value);
+			}
+		}
+		
+		[global::System.Data.Linq.Mapping.AssociationAttribute(Name="Entregas_DetalleEntregas", Storage="_DetalleEntregas", ThisKey="EntregaID", OtherKey="EntregaID")]
+		public EntitySet<DetalleEntregas> DetalleEntregas
+		{
+			get
+			{
+				return this._DetalleEntregas;
+			}
+			set
+			{
+				this._DetalleEntregas.Assign(value);
+			}
+		}
+		
+		[global::System.Data.Linq.Mapping.AssociationAttribute(Name="Entregas_CuentasPorCobrar", Storage="_CuentasPorCobrar", ThisKey="EntregaID", OtherKey="EntregaID")]
+		public EntitySet<CuentasPorCobrar> CuentasPorCobrar
+		{
+			get
+			{
+				return this._CuentasPorCobrar;
+			}
+			set
+			{
+				this._CuentasPorCobrar.Assign(value);
+			}
+		}
+		
+		[global::System.Data.Linq.Mapping.AssociationAttribute(Name="Bases_Entregas", Storage="_Bases", ThisKey="BaseOrigenID", OtherKey="BaseID", IsForeignKey=true)]
+		public Bases Bases
+		{
+			get
+			{
+				return this._Bases.Entity;
+			}
+			set
+			{
+				Bases previousValue = this._Bases.Entity;
+				if (((previousValue != value) 
+							|| (this._Bases.HasLoadedOrAssignedValue == false)))
+				{
+					this.SendPropertyChanging();
+					if ((previousValue != null))
+					{
+						this._Bases.Entity = null;
+						previousValue.Entregas.Remove(this);
+					}
+					this._Bases.Entity = value;
+					if ((value != null))
+					{
+						value.Entregas.Add(this);
+						this._BaseOrigenID = value.BaseID;
+					}
+					else
+					{
+						this._BaseOrigenID = default(int);
+					}
+					this.SendPropertyChanged("Bases");
+				}
+			}
+		}
+		
+		[global::System.Data.Linq.Mapping.AssociationAttribute(Name="Clientes_Entregas", Storage="_Clientes", ThisKey="ClienteID", OtherKey="ClienteID", IsForeignKey=true)]
+		public Clientes Clientes
+		{
+			get
+			{
+				return this._Clientes.Entity;
+			}
+			set
+			{
+				Clientes previousValue = this._Clientes.Entity;
+				if (((previousValue != value) 
+							|| (this._Clientes.HasLoadedOrAssignedValue == false)))
+				{
+					this.SendPropertyChanging();
+					if ((previousValue != null))
+					{
+						this._Clientes.Entity = null;
+						previousValue.Entregas.Remove(this);
+					}
+					this._Clientes.Entity = value;
+					if ((value != null))
+					{
+						value.Entregas.Add(this);
+						this._ClienteID = value.ClienteID;
+					}
+					else
+					{
+						this._ClienteID = default(Nullable<int>);
+					}
+					this.SendPropertyChanged("Clientes");
+				}
+			}
+		}
+		
+		[global::System.Data.Linq.Mapping.AssociationAttribute(Name="Ordenes_Entregas", Storage="_Ordenes", ThisKey="OrdenID", OtherKey="OrdenID", IsForeignKey=true)]
+		public Ordenes Ordenes
+		{
+			get
+			{
+				return this._Ordenes.Entity;
+			}
+			set
+			{
+				Ordenes previousValue = this._Ordenes.Entity;
+				if (((previousValue != value) 
+							|| (this._Ordenes.HasLoadedOrAssignedValue == false)))
+				{
+					this.SendPropertyChanging();
+					if ((previousValue != null))
+					{
+						this._Ordenes.Entity = null;
+						previousValue.Entregas.Remove(this);
+					}
+					this._Ordenes.Entity = value;
+					if ((value != null))
+					{
+						value.Entregas.Add(this);
+						this._OrdenID = value.OrdenID;
+					}
+					else
+					{
+						this._OrdenID = default(Nullable<int>);
+					}
+					this.SendPropertyChanged("Ordenes");
+				}
+			}
+		}
+		
+		[global::System.Data.Linq.Mapping.AssociationAttribute(Name="Usuario_Entregas", Storage="_Usuario", ThisKey="RegistradoPorID", OtherKey="ClaveID", IsForeignKey=true)]
+		public Usuario Usuario
+		{
+			get
+			{
+				return this._Usuario.Entity;
+			}
+			set
+			{
+				Usuario previousValue = this._Usuario.Entity;
+				if (((previousValue != value) 
+							|| (this._Usuario.HasLoadedOrAssignedValue == false)))
+				{
+					this.SendPropertyChanging();
+					if ((previousValue != null))
+					{
+						this._Usuario.Entity = null;
+						previousValue.Entregas.Remove(this);
+					}
+					this._Usuario.Entity = value;
+					if ((value != null))
+					{
+						value.Entregas.Add(this);
+						this._RegistradoPorID = value.ClaveID;
+					}
+					else
+					{
+						this._RegistradoPorID = default(int);
+					}
+					this.SendPropertyChanged("Usuario");
+				}
+			}
+		}
+		
+		public event PropertyChangingEventHandler PropertyChanging;
+		
+		public event PropertyChangedEventHandler PropertyChanged;
+		
+		protected virtual void SendPropertyChanging()
+		{
+			if ((this.PropertyChanging != null))
+			{
+				this.PropertyChanging(this, emptyChangingEventArgs);
+			}
+		}
+		
+		protected virtual void SendPropertyChanged(String propertyName)
+		{
+			if ((this.PropertyChanged != null))
+			{
+				this.PropertyChanged(this, new PropertyChangedEventArgs(propertyName));
+			}
+		}
+		
+		private void attach_Movimientos(Movimientos entity)
+		{
+			this.SendPropertyChanging();
+			entity.Entregas = this;
+		}
+		
+		private void detach_Movimientos(Movimientos entity)
+		{
+			this.SendPropertyChanging();
+			entity.Entregas = null;
+		}
+		
+		private void attach_DetalleEntregas(DetalleEntregas entity)
+		{
+			this.SendPropertyChanging();
+			entity.Entregas = this;
+		}
+		
+		private void detach_DetalleEntregas(DetalleEntregas entity)
+		{
+			this.SendPropertyChanging();
+			entity.Entregas = null;
+		}
+		
+		private void attach_CuentasPorCobrar(CuentasPorCobrar entity)
+		{
+			this.SendPropertyChanging();
+			entity.Entregas = this;
+		}
+		
+		private void detach_CuentasPorCobrar(CuentasPorCobrar entity)
+		{
+			this.SendPropertyChanging();
+			entity.Entregas = null;
+		}
+	}
+	
+	[global::System.Data.Linq.Mapping.TableAttribute(Name="dbo.CuentasPorCobrar")]
+	public partial class CuentasPorCobrar : INotifyPropertyChanging, INotifyPropertyChanged
+	{
+		
+		private static PropertyChangingEventArgs emptyChangingEventArgs = new PropertyChangingEventArgs(String.Empty);
+		
+		private int _CuentaPorCobrarID;
+		
+		private int _EntregaID;
+		
+		private int _ClienteID;
+		
+		private string _NumeroFactura;
+		
+		private System.DateTime _FechaEntrega;
+		
+		private int _DiasCreditoAplicados;
+		
+		private System.DateTime _FechaVencimiento;
+		
+		private decimal _MontoTotal;
+		
+		private string _Estado;
+		
+		private System.Nullable<System.DateTime> _FechaCobro;
+		
+		private string _ReferenciaCobro;
+		
+		private string _Observaciones;
+		
+		private System.Nullable<int> _CobradaPorID;
+		
+		private System.DateTime _FechaRegistro;
+		
+		private int _RegistradoPorID;
+		
+		private EntitySet<AbonosCuentasPorCobrar> _AbonosCuentasPorCobrar;
+		
+		private EntityRef<Clientes> _Clientes;
+		
+		private EntityRef<Usuario> _Usuario;
+		
+		private EntityRef<Entregas> _Entregas;
+		
+		private EntityRef<Usuario> _Usuario1;
+		
+    #region Definiciones de métodos de extensibilidad
+    partial void OnLoaded();
+    partial void OnValidate(System.Data.Linq.ChangeAction action);
+    partial void OnCreated();
+    partial void OnCuentaPorCobrarIDChanging(int value);
+    partial void OnCuentaPorCobrarIDChanged();
+    partial void OnEntregaIDChanging(int value);
+    partial void OnEntregaIDChanged();
+    partial void OnClienteIDChanging(int value);
+    partial void OnClienteIDChanged();
+    partial void OnNumeroFacturaChanging(string value);
+    partial void OnNumeroFacturaChanged();
+    partial void OnFechaEntregaChanging(System.DateTime value);
+    partial void OnFechaEntregaChanged();
+    partial void OnDiasCreditoAplicadosChanging(int value);
+    partial void OnDiasCreditoAplicadosChanged();
+    partial void OnFechaVencimientoChanging(System.DateTime value);
+    partial void OnFechaVencimientoChanged();
+    partial void OnMontoTotalChanging(decimal value);
+    partial void OnMontoTotalChanged();
+    partial void OnEstadoChanging(string value);
+    partial void OnEstadoChanged();
+    partial void OnFechaCobroChanging(System.Nullable<System.DateTime> value);
+    partial void OnFechaCobroChanged();
+    partial void OnReferenciaCobroChanging(string value);
+    partial void OnReferenciaCobroChanged();
+    partial void OnObservacionesChanging(string value);
+    partial void OnObservacionesChanged();
+    partial void OnCobradaPorIDChanging(System.Nullable<int> value);
+    partial void OnCobradaPorIDChanged();
+    partial void OnFechaRegistroChanging(System.DateTime value);
+    partial void OnFechaRegistroChanged();
+    partial void OnRegistradoPorIDChanging(int value);
+    partial void OnRegistradoPorIDChanged();
+    #endregion
+		
+		public CuentasPorCobrar()
+		{
+			this._AbonosCuentasPorCobrar = new EntitySet<AbonosCuentasPorCobrar>(new Action<AbonosCuentasPorCobrar>(this.attach_AbonosCuentasPorCobrar), new Action<AbonosCuentasPorCobrar>(this.detach_AbonosCuentasPorCobrar));
+			this._Clientes = default(EntityRef<Clientes>);
+			this._Usuario = default(EntityRef<Usuario>);
+			this._Entregas = default(EntityRef<Entregas>);
+			this._Usuario1 = default(EntityRef<Usuario>);
+			OnCreated();
+		}
+		
+		[global::System.Data.Linq.Mapping.ColumnAttribute(Storage="_CuentaPorCobrarID", AutoSync=AutoSync.OnInsert, DbType="Int NOT NULL IDENTITY", IsPrimaryKey=true, IsDbGenerated=true)]
+		public int CuentaPorCobrarID
+		{
+			get
+			{
+				return this._CuentaPorCobrarID;
+			}
+			set
+			{
+				if ((this._CuentaPorCobrarID != value))
+				{
+					this.OnCuentaPorCobrarIDChanging(value);
+					this.SendPropertyChanging();
+					this._CuentaPorCobrarID = value;
+					this.SendPropertyChanged("CuentaPorCobrarID");
+					this.OnCuentaPorCobrarIDChanged();
+				}
+			}
+		}
+		
+		[global::System.Data.Linq.Mapping.ColumnAttribute(Storage="_EntregaID", DbType="Int NOT NULL")]
+		public int EntregaID
+		{
+			get
+			{
+				return this._EntregaID;
+			}
+			set
+			{
+				if ((this._EntregaID != value))
+				{
+					if (this._Entregas.HasLoadedOrAssignedValue)
+					{
+						throw new System.Data.Linq.ForeignKeyReferenceAlreadyHasValueException();
+					}
+					this.OnEntregaIDChanging(value);
+					this.SendPropertyChanging();
+					this._EntregaID = value;
+					this.SendPropertyChanged("EntregaID");
+					this.OnEntregaIDChanged();
+				}
+			}
+		}
+		
+		[global::System.Data.Linq.Mapping.ColumnAttribute(Storage="_ClienteID", DbType="Int NOT NULL")]
+		public int ClienteID
+		{
+			get
+			{
+				return this._ClienteID;
+			}
+			set
+			{
+				if ((this._ClienteID != value))
+				{
+					if (this._Clientes.HasLoadedOrAssignedValue)
+					{
+						throw new System.Data.Linq.ForeignKeyReferenceAlreadyHasValueException();
+					}
+					this.OnClienteIDChanging(value);
+					this.SendPropertyChanging();
+					this._ClienteID = value;
+					this.SendPropertyChanged("ClienteID");
+					this.OnClienteIDChanged();
+				}
+			}
+		}
+		
+		[global::System.Data.Linq.Mapping.ColumnAttribute(Storage="_NumeroFactura", DbType="VarChar(50)")]
+		public string NumeroFactura
+		{
+			get
+			{
+				return this._NumeroFactura;
+			}
+			set
+			{
+				if ((this._NumeroFactura != value))
+				{
+					this.OnNumeroFacturaChanging(value);
+					this.SendPropertyChanging();
+					this._NumeroFactura = value;
+					this.SendPropertyChanged("NumeroFactura");
+					this.OnNumeroFacturaChanged();
+				}
+			}
+		}
+		
+		[global::System.Data.Linq.Mapping.ColumnAttribute(Storage="_FechaEntrega", DbType="Date NOT NULL")]
+		public System.DateTime FechaEntrega
+		{
+			get
+			{
+				return this._FechaEntrega;
+			}
+			set
+			{
+				if ((this._FechaEntrega != value))
+				{
+					this.OnFechaEntregaChanging(value);
+					this.SendPropertyChanging();
+					this._FechaEntrega = value;
+					this.SendPropertyChanged("FechaEntrega");
+					this.OnFechaEntregaChanged();
+				}
+			}
+		}
+		
+		[global::System.Data.Linq.Mapping.ColumnAttribute(Storage="_DiasCreditoAplicados", DbType="Int NOT NULL")]
+		public int DiasCreditoAplicados
+		{
+			get
+			{
+				return this._DiasCreditoAplicados;
+			}
+			set
+			{
+				if ((this._DiasCreditoAplicados != value))
+				{
+					this.OnDiasCreditoAplicadosChanging(value);
+					this.SendPropertyChanging();
+					this._DiasCreditoAplicados = value;
+					this.SendPropertyChanged("DiasCreditoAplicados");
+					this.OnDiasCreditoAplicadosChanged();
+				}
+			}
+		}
+		
+		[global::System.Data.Linq.Mapping.ColumnAttribute(Storage="_FechaVencimiento", DbType="Date NOT NULL")]
+		public System.DateTime FechaVencimiento
+		{
+			get
+			{
+				return this._FechaVencimiento;
+			}
+			set
+			{
+				if ((this._FechaVencimiento != value))
+				{
+					this.OnFechaVencimientoChanging(value);
+					this.SendPropertyChanging();
+					this._FechaVencimiento = value;
+					this.SendPropertyChanged("FechaVencimiento");
+					this.OnFechaVencimientoChanged();
+				}
+			}
+		}
+		
+		[global::System.Data.Linq.Mapping.ColumnAttribute(Storage="_MontoTotal", DbType="Decimal(18,2) NOT NULL")]
+		public decimal MontoTotal
+		{
+			get
+			{
+				return this._MontoTotal;
+			}
+			set
+			{
+				if ((this._MontoTotal != value))
+				{
+					this.OnMontoTotalChanging(value);
+					this.SendPropertyChanging();
+					this._MontoTotal = value;
+					this.SendPropertyChanged("MontoTotal");
+					this.OnMontoTotalChanged();
+				}
+			}
+		}
+		
+		[global::System.Data.Linq.Mapping.ColumnAttribute(Storage="_Estado", DbType="VarChar(20) NOT NULL", CanBeNull=false)]
+		public string Estado
+		{
+			get
+			{
+				return this._Estado;
+			}
+			set
+			{
+				if ((this._Estado != value))
+				{
+					this.OnEstadoChanging(value);
+					this.SendPropertyChanging();
+					this._Estado = value;
+					this.SendPropertyChanged("Estado");
+					this.OnEstadoChanged();
+				}
+			}
+		}
+		
+		[global::System.Data.Linq.Mapping.ColumnAttribute(Storage="_FechaCobro", DbType="DateTime2")]
+		public System.Nullable<System.DateTime> FechaCobro
+		{
+			get
+			{
+				return this._FechaCobro;
+			}
+			set
+			{
+				if ((this._FechaCobro != value))
+				{
+					this.OnFechaCobroChanging(value);
+					this.SendPropertyChanging();
+					this._FechaCobro = value;
+					this.SendPropertyChanged("FechaCobro");
+					this.OnFechaCobroChanged();
+				}
+			}
+		}
+		
+		[global::System.Data.Linq.Mapping.ColumnAttribute(Storage="_ReferenciaCobro", DbType="VarChar(100)")]
+		public string ReferenciaCobro
+		{
+			get
+			{
+				return this._ReferenciaCobro;
+			}
+			set
+			{
+				if ((this._ReferenciaCobro != value))
+				{
+					this.OnReferenciaCobroChanging(value);
+					this.SendPropertyChanging();
+					this._ReferenciaCobro = value;
+					this.SendPropertyChanged("ReferenciaCobro");
+					this.OnReferenciaCobroChanged();
+				}
+			}
+		}
+		
+		[global::System.Data.Linq.Mapping.ColumnAttribute(Storage="_Observaciones", DbType="VarChar(500)")]
+		public string Observaciones
+		{
+			get
+			{
+				return this._Observaciones;
+			}
+			set
+			{
+				if ((this._Observaciones != value))
+				{
+					this.OnObservacionesChanging(value);
+					this.SendPropertyChanging();
+					this._Observaciones = value;
+					this.SendPropertyChanged("Observaciones");
+					this.OnObservacionesChanged();
+				}
+			}
+		}
+		
+		[global::System.Data.Linq.Mapping.ColumnAttribute(Storage="_CobradaPorID", DbType="Int")]
+		public System.Nullable<int> CobradaPorID
+		{
+			get
+			{
+				return this._CobradaPorID;
+			}
+			set
+			{
+				if ((this._CobradaPorID != value))
+				{
+					if (this._Usuario.HasLoadedOrAssignedValue)
+					{
+						throw new System.Data.Linq.ForeignKeyReferenceAlreadyHasValueException();
+					}
+					this.OnCobradaPorIDChanging(value);
+					this.SendPropertyChanging();
+					this._CobradaPorID = value;
+					this.SendPropertyChanged("CobradaPorID");
+					this.OnCobradaPorIDChanged();
+				}
+			}
+		}
+		
+		[global::System.Data.Linq.Mapping.ColumnAttribute(Storage="_FechaRegistro", DbType="DateTime2 NOT NULL")]
+		public System.DateTime FechaRegistro
+		{
+			get
+			{
+				return this._FechaRegistro;
+			}
+			set
+			{
+				if ((this._FechaRegistro != value))
+				{
+					this.OnFechaRegistroChanging(value);
+					this.SendPropertyChanging();
+					this._FechaRegistro = value;
+					this.SendPropertyChanged("FechaRegistro");
+					this.OnFechaRegistroChanged();
+				}
+			}
+		}
+		
+		[global::System.Data.Linq.Mapping.ColumnAttribute(Storage="_RegistradoPorID", DbType="Int NOT NULL")]
+		public int RegistradoPorID
+		{
+			get
+			{
+				return this._RegistradoPorID;
+			}
+			set
+			{
+				if ((this._RegistradoPorID != value))
+				{
+					if (this._Usuario1.HasLoadedOrAssignedValue)
+					{
+						throw new System.Data.Linq.ForeignKeyReferenceAlreadyHasValueException();
+					}
+					this.OnRegistradoPorIDChanging(value);
+					this.SendPropertyChanging();
+					this._RegistradoPorID = value;
+					this.SendPropertyChanged("RegistradoPorID");
+					this.OnRegistradoPorIDChanged();
+				}
+			}
+		}
+		
+		[global::System.Data.Linq.Mapping.AssociationAttribute(Name="CuentasPorCobrar_AbonosCuentasPorCobrar", Storage="_AbonosCuentasPorCobrar", ThisKey="CuentaPorCobrarID", OtherKey="CuentaPorCobrarID")]
+		public EntitySet<AbonosCuentasPorCobrar> AbonosCuentasPorCobrar
+		{
+			get
+			{
+				return this._AbonosCuentasPorCobrar;
+			}
+			set
+			{
+				this._AbonosCuentasPorCobrar.Assign(value);
+			}
+		}
+		
+		[global::System.Data.Linq.Mapping.AssociationAttribute(Name="Clientes_CuentasPorCobrar", Storage="_Clientes", ThisKey="ClienteID", OtherKey="ClienteID", IsForeignKey=true)]
+		public Clientes Clientes
+		{
+			get
+			{
+				return this._Clientes.Entity;
+			}
+			set
+			{
+				Clientes previousValue = this._Clientes.Entity;
+				if (((previousValue != value) 
+							|| (this._Clientes.HasLoadedOrAssignedValue == false)))
+				{
+					this.SendPropertyChanging();
+					if ((previousValue != null))
+					{
+						this._Clientes.Entity = null;
+						previousValue.CuentasPorCobrar.Remove(this);
+					}
+					this._Clientes.Entity = value;
+					if ((value != null))
+					{
+						value.CuentasPorCobrar.Add(this);
+						this._ClienteID = value.ClienteID;
+					}
+					else
+					{
+						this._ClienteID = default(int);
+					}
+					this.SendPropertyChanged("Clientes");
+				}
+			}
+		}
+		
+		[global::System.Data.Linq.Mapping.AssociationAttribute(Name="Usuario_CuentasPorCobrar", Storage="_Usuario", ThisKey="CobradaPorID", OtherKey="ClaveID", IsForeignKey=true)]
+		public Usuario Usuario
+		{
+			get
+			{
+				return this._Usuario.Entity;
+			}
+			set
+			{
+				Usuario previousValue = this._Usuario.Entity;
+				if (((previousValue != value) 
+							|| (this._Usuario.HasLoadedOrAssignedValue == false)))
+				{
+					this.SendPropertyChanging();
+					if ((previousValue != null))
+					{
+						this._Usuario.Entity = null;
+						previousValue.CuentasPorCobrar.Remove(this);
+					}
+					this._Usuario.Entity = value;
+					if ((value != null))
+					{
+						value.CuentasPorCobrar.Add(this);
+						this._CobradaPorID = value.ClaveID;
+					}
+					else
+					{
+						this._CobradaPorID = default(Nullable<int>);
+					}
+					this.SendPropertyChanged("Usuario");
+				}
+			}
+		}
+		
+		[global::System.Data.Linq.Mapping.AssociationAttribute(Name="Entregas_CuentasPorCobrar", Storage="_Entregas", ThisKey="EntregaID", OtherKey="EntregaID", IsForeignKey=true)]
+		public Entregas Entregas
+		{
+			get
+			{
+				return this._Entregas.Entity;
+			}
+			set
+			{
+				Entregas previousValue = this._Entregas.Entity;
+				if (((previousValue != value) 
+							|| (this._Entregas.HasLoadedOrAssignedValue == false)))
+				{
+					this.SendPropertyChanging();
+					if ((previousValue != null))
+					{
+						this._Entregas.Entity = null;
+						previousValue.CuentasPorCobrar.Remove(this);
+					}
+					this._Entregas.Entity = value;
+					if ((value != null))
+					{
+						value.CuentasPorCobrar.Add(this);
+						this._EntregaID = value.EntregaID;
+					}
+					else
+					{
+						this._EntregaID = default(int);
+					}
+					this.SendPropertyChanged("Entregas");
+				}
+			}
+		}
+		
+		[global::System.Data.Linq.Mapping.AssociationAttribute(Name="Usuario_CuentasPorCobrar1", Storage="_Usuario1", ThisKey="RegistradoPorID", OtherKey="ClaveID", IsForeignKey=true)]
+		public Usuario Usuario1
+		{
+			get
+			{
+				return this._Usuario1.Entity;
+			}
+			set
+			{
+				Usuario previousValue = this._Usuario1.Entity;
+				if (((previousValue != value) 
+							|| (this._Usuario1.HasLoadedOrAssignedValue == false)))
+				{
+					this.SendPropertyChanging();
+					if ((previousValue != null))
+					{
+						this._Usuario1.Entity = null;
+						previousValue.CuentasPorCobrar1.Remove(this);
+					}
+					this._Usuario1.Entity = value;
+					if ((value != null))
+					{
+						value.CuentasPorCobrar1.Add(this);
+						this._RegistradoPorID = value.ClaveID;
+					}
+					else
+					{
+						this._RegistradoPorID = default(int);
+					}
+					this.SendPropertyChanged("Usuario1");
+				}
+			}
+		}
+		
+		public event PropertyChangingEventHandler PropertyChanging;
+		
+		public event PropertyChangedEventHandler PropertyChanged;
+		
+		protected virtual void SendPropertyChanging()
+		{
+			if ((this.PropertyChanging != null))
+			{
+				this.PropertyChanging(this, emptyChangingEventArgs);
+			}
+		}
+		
+		protected virtual void SendPropertyChanged(String propertyName)
+		{
+			if ((this.PropertyChanged != null))
+			{
+				this.PropertyChanged(this, new PropertyChangedEventArgs(propertyName));
+			}
+		}
+		
+		private void attach_AbonosCuentasPorCobrar(AbonosCuentasPorCobrar entity)
+		{
+			this.SendPropertyChanging();
+			entity.CuentasPorCobrar = this;
+		}
+		
+		private void detach_AbonosCuentasPorCobrar(AbonosCuentasPorCobrar entity)
+		{
+			this.SendPropertyChanging();
+			entity.CuentasPorCobrar = null;
+		}
+	}
+	
+	[global::System.Data.Linq.Mapping.TableAttribute(Name="dbo.AbonosCuentasPorCobrar")]
+	public partial class AbonosCuentasPorCobrar : INotifyPropertyChanging, INotifyPropertyChanged
+	{
+		
+		private static PropertyChangingEventArgs emptyChangingEventArgs = new PropertyChangingEventArgs(String.Empty);
+		
+		private int _AbonoID;
+		
+		private int _CuentaPorCobrarID;
+		
+		private decimal _MontoAbono;
+		
+		private System.DateTime _FechaAbono;
+		
+		private string _ReferenciaPago;
+		
+		private string _Observaciones;
+		
+		private string _Estado;
+		
+		private int _RegistradoPorID;
+		
+		private System.DateTime _FechaRegistro;
+		
+		private EntitySet<CancelacionesAbonosCxC> _CancelacionesAbonosCxC;
+		
+		private EntityRef<CuentasPorCobrar> _CuentasPorCobrar;
+		
+		private EntityRef<Usuario> _Usuario;
+		
+    #region Definiciones de métodos de extensibilidad
+    partial void OnLoaded();
+    partial void OnValidate(System.Data.Linq.ChangeAction action);
+    partial void OnCreated();
+    partial void OnAbonoIDChanging(int value);
+    partial void OnAbonoIDChanged();
+    partial void OnCuentaPorCobrarIDChanging(int value);
+    partial void OnCuentaPorCobrarIDChanged();
+    partial void OnMontoAbonoChanging(decimal value);
+    partial void OnMontoAbonoChanged();
+    partial void OnFechaAbonoChanging(System.DateTime value);
+    partial void OnFechaAbonoChanged();
+    partial void OnReferenciaPagoChanging(string value);
+    partial void OnReferenciaPagoChanged();
+    partial void OnObservacionesChanging(string value);
+    partial void OnObservacionesChanged();
+    partial void OnEstadoChanging(string value);
+    partial void OnEstadoChanged();
+    partial void OnRegistradoPorIDChanging(int value);
+    partial void OnRegistradoPorIDChanged();
+    partial void OnFechaRegistroChanging(System.DateTime value);
+    partial void OnFechaRegistroChanged();
+    #endregion
+		
+		public AbonosCuentasPorCobrar()
+		{
+			this._CancelacionesAbonosCxC = new EntitySet<CancelacionesAbonosCxC>(new Action<CancelacionesAbonosCxC>(this.attach_CancelacionesAbonosCxC), new Action<CancelacionesAbonosCxC>(this.detach_CancelacionesAbonosCxC));
+			this._CuentasPorCobrar = default(EntityRef<CuentasPorCobrar>);
+			this._Usuario = default(EntityRef<Usuario>);
+			OnCreated();
+		}
+		
+		[global::System.Data.Linq.Mapping.ColumnAttribute(Storage="_AbonoID", AutoSync=AutoSync.OnInsert, DbType="Int NOT NULL IDENTITY", IsPrimaryKey=true, IsDbGenerated=true)]
+		public int AbonoID
+		{
+			get
+			{
+				return this._AbonoID;
+			}
+			set
+			{
+				if ((this._AbonoID != value))
+				{
+					this.OnAbonoIDChanging(value);
+					this.SendPropertyChanging();
+					this._AbonoID = value;
+					this.SendPropertyChanged("AbonoID");
+					this.OnAbonoIDChanged();
+				}
+			}
+		}
+		
+		[global::System.Data.Linq.Mapping.ColumnAttribute(Storage="_CuentaPorCobrarID", DbType="Int NOT NULL")]
+		public int CuentaPorCobrarID
+		{
+			get
+			{
+				return this._CuentaPorCobrarID;
+			}
+			set
+			{
+				if ((this._CuentaPorCobrarID != value))
+				{
+					if (this._CuentasPorCobrar.HasLoadedOrAssignedValue)
+					{
+						throw new System.Data.Linq.ForeignKeyReferenceAlreadyHasValueException();
+					}
+					this.OnCuentaPorCobrarIDChanging(value);
+					this.SendPropertyChanging();
+					this._CuentaPorCobrarID = value;
+					this.SendPropertyChanged("CuentaPorCobrarID");
+					this.OnCuentaPorCobrarIDChanged();
+				}
+			}
+		}
+		
+		[global::System.Data.Linq.Mapping.ColumnAttribute(Storage="_MontoAbono", DbType="Decimal(18,2) NOT NULL")]
+		public decimal MontoAbono
+		{
+			get
+			{
+				return this._MontoAbono;
+			}
+			set
+			{
+				if ((this._MontoAbono != value))
+				{
+					this.OnMontoAbonoChanging(value);
+					this.SendPropertyChanging();
+					this._MontoAbono = value;
+					this.SendPropertyChanged("MontoAbono");
+					this.OnMontoAbonoChanged();
+				}
+			}
+		}
+		
+		[global::System.Data.Linq.Mapping.ColumnAttribute(Storage="_FechaAbono", DbType="DateTime2 NOT NULL")]
+		public System.DateTime FechaAbono
+		{
+			get
+			{
+				return this._FechaAbono;
+			}
+			set
+			{
+				if ((this._FechaAbono != value))
+				{
+					this.OnFechaAbonoChanging(value);
+					this.SendPropertyChanging();
+					this._FechaAbono = value;
+					this.SendPropertyChanged("FechaAbono");
+					this.OnFechaAbonoChanged();
+				}
+			}
+		}
+		
+		[global::System.Data.Linq.Mapping.ColumnAttribute(Storage="_ReferenciaPago", DbType="VarChar(100)")]
+		public string ReferenciaPago
+		{
+			get
+			{
+				return this._ReferenciaPago;
+			}
+			set
+			{
+				if ((this._ReferenciaPago != value))
+				{
+					this.OnReferenciaPagoChanging(value);
+					this.SendPropertyChanging();
+					this._ReferenciaPago = value;
+					this.SendPropertyChanged("ReferenciaPago");
+					this.OnReferenciaPagoChanged();
+				}
+			}
+		}
+		
+		[global::System.Data.Linq.Mapping.ColumnAttribute(Storage="_Observaciones", DbType="VarChar(500)")]
+		public string Observaciones
+		{
+			get
+			{
+				return this._Observaciones;
+			}
+			set
+			{
+				if ((this._Observaciones != value))
+				{
+					this.OnObservacionesChanging(value);
+					this.SendPropertyChanging();
+					this._Observaciones = value;
+					this.SendPropertyChanged("Observaciones");
+					this.OnObservacionesChanged();
+				}
+			}
+		}
+		
+		[global::System.Data.Linq.Mapping.ColumnAttribute(Storage="_Estado", DbType="VarChar(20) NOT NULL", CanBeNull=false)]
+		public string Estado
+		{
+			get
+			{
+				return this._Estado;
+			}
+			set
+			{
+				if ((this._Estado != value))
+				{
+					this.OnEstadoChanging(value);
+					this.SendPropertyChanging();
+					this._Estado = value;
+					this.SendPropertyChanged("Estado");
+					this.OnEstadoChanged();
+				}
+			}
+		}
+		
+		[global::System.Data.Linq.Mapping.ColumnAttribute(Storage="_RegistradoPorID", DbType="Int NOT NULL")]
+		public int RegistradoPorID
+		{
+			get
+			{
+				return this._RegistradoPorID;
+			}
+			set
+			{
+				if ((this._RegistradoPorID != value))
+				{
+					if (this._Usuario.HasLoadedOrAssignedValue)
+					{
+						throw new System.Data.Linq.ForeignKeyReferenceAlreadyHasValueException();
+					}
+					this.OnRegistradoPorIDChanging(value);
+					this.SendPropertyChanging();
+					this._RegistradoPorID = value;
+					this.SendPropertyChanged("RegistradoPorID");
+					this.OnRegistradoPorIDChanged();
+				}
+			}
+		}
+		
+		[global::System.Data.Linq.Mapping.ColumnAttribute(Storage="_FechaRegistro", DbType="DateTime2 NOT NULL")]
+		public System.DateTime FechaRegistro
+		{
+			get
+			{
+				return this._FechaRegistro;
+			}
+			set
+			{
+				if ((this._FechaRegistro != value))
+				{
+					this.OnFechaRegistroChanging(value);
+					this.SendPropertyChanging();
+					this._FechaRegistro = value;
+					this.SendPropertyChanged("FechaRegistro");
+					this.OnFechaRegistroChanged();
+				}
+			}
+		}
+		
+		[global::System.Data.Linq.Mapping.AssociationAttribute(Name="AbonosCuentasPorCobrar_CancelacionesAbonosCxC", Storage="_CancelacionesAbonosCxC", ThisKey="AbonoID", OtherKey="AbonoID")]
+		public EntitySet<CancelacionesAbonosCxC> CancelacionesAbonosCxC
+		{
+			get
+			{
+				return this._CancelacionesAbonosCxC;
+			}
+			set
+			{
+				this._CancelacionesAbonosCxC.Assign(value);
+			}
+		}
+		
+		[global::System.Data.Linq.Mapping.AssociationAttribute(Name="CuentasPorCobrar_AbonosCuentasPorCobrar", Storage="_CuentasPorCobrar", ThisKey="CuentaPorCobrarID", OtherKey="CuentaPorCobrarID", IsForeignKey=true)]
+		public CuentasPorCobrar CuentasPorCobrar
+		{
+			get
+			{
+				return this._CuentasPorCobrar.Entity;
+			}
+			set
+			{
+				CuentasPorCobrar previousValue = this._CuentasPorCobrar.Entity;
+				if (((previousValue != value) 
+							|| (this._CuentasPorCobrar.HasLoadedOrAssignedValue == false)))
+				{
+					this.SendPropertyChanging();
+					if ((previousValue != null))
+					{
+						this._CuentasPorCobrar.Entity = null;
+						previousValue.AbonosCuentasPorCobrar.Remove(this);
+					}
+					this._CuentasPorCobrar.Entity = value;
+					if ((value != null))
+					{
+						value.AbonosCuentasPorCobrar.Add(this);
+						this._CuentaPorCobrarID = value.CuentaPorCobrarID;
+					}
+					else
+					{
+						this._CuentaPorCobrarID = default(int);
+					}
+					this.SendPropertyChanged("CuentasPorCobrar");
+				}
+			}
+		}
+		
+		[global::System.Data.Linq.Mapping.AssociationAttribute(Name="Usuario_AbonosCuentasPorCobrar", Storage="_Usuario", ThisKey="RegistradoPorID", OtherKey="ClaveID", IsForeignKey=true)]
+		public Usuario Usuario
+		{
+			get
+			{
+				return this._Usuario.Entity;
+			}
+			set
+			{
+				Usuario previousValue = this._Usuario.Entity;
+				if (((previousValue != value) 
+							|| (this._Usuario.HasLoadedOrAssignedValue == false)))
+				{
+					this.SendPropertyChanging();
+					if ((previousValue != null))
+					{
+						this._Usuario.Entity = null;
+						previousValue.AbonosCuentasPorCobrar.Remove(this);
+					}
+					this._Usuario.Entity = value;
+					if ((value != null))
+					{
+						value.AbonosCuentasPorCobrar.Add(this);
+						this._RegistradoPorID = value.ClaveID;
+					}
+					else
+					{
+						this._RegistradoPorID = default(int);
+					}
+					this.SendPropertyChanged("Usuario");
+				}
+			}
+		}
+		
+		public event PropertyChangingEventHandler PropertyChanging;
+		
+		public event PropertyChangedEventHandler PropertyChanged;
+		
+		protected virtual void SendPropertyChanging()
+		{
+			if ((this.PropertyChanging != null))
+			{
+				this.PropertyChanging(this, emptyChangingEventArgs);
+			}
+		}
+		
+		protected virtual void SendPropertyChanged(String propertyName)
+		{
+			if ((this.PropertyChanged != null))
+			{
+				this.PropertyChanged(this, new PropertyChangedEventArgs(propertyName));
+			}
+		}
+		
+		private void attach_CancelacionesAbonosCxC(CancelacionesAbonosCxC entity)
+		{
+			this.SendPropertyChanging();
+			entity.AbonosCuentasPorCobrar = this;
+		}
+		
+		private void detach_CancelacionesAbonosCxC(CancelacionesAbonosCxC entity)
+		{
+			this.SendPropertyChanging();
+			entity.AbonosCuentasPorCobrar = null;
+		}
+	}
+	
+	[global::System.Data.Linq.Mapping.TableAttribute(Name="dbo.CancelacionesAbonosCxC")]
+	public partial class CancelacionesAbonosCxC : INotifyPropertyChanging, INotifyPropertyChanged
+	{
+		
+		private static PropertyChangingEventArgs emptyChangingEventArgs = new PropertyChangingEventArgs(String.Empty);
+		
+		private int _CancelacionID;
+		
+		private int _AbonoID;
+		
+		private string _Motivo;
+		
+		private int _CanceladoPorID;
+		
+		private System.DateTime _FechaCancelacion;
+		
+		private EntityRef<AbonosCuentasPorCobrar> _AbonosCuentasPorCobrar;
+		
+		private EntityRef<Usuario> _Usuario;
+		
+    #region Definiciones de métodos de extensibilidad
+    partial void OnLoaded();
+    partial void OnValidate(System.Data.Linq.ChangeAction action);
+    partial void OnCreated();
+    partial void OnCancelacionIDChanging(int value);
+    partial void OnCancelacionIDChanged();
+    partial void OnAbonoIDChanging(int value);
+    partial void OnAbonoIDChanged();
+    partial void OnMotivoChanging(string value);
+    partial void OnMotivoChanged();
+    partial void OnCanceladoPorIDChanging(int value);
+    partial void OnCanceladoPorIDChanged();
+    partial void OnFechaCancelacionChanging(System.DateTime value);
+    partial void OnFechaCancelacionChanged();
+    #endregion
+		
+		public CancelacionesAbonosCxC()
+		{
+			this._AbonosCuentasPorCobrar = default(EntityRef<AbonosCuentasPorCobrar>);
+			this._Usuario = default(EntityRef<Usuario>);
+			OnCreated();
+		}
+		
+		[global::System.Data.Linq.Mapping.ColumnAttribute(Storage="_CancelacionID", AutoSync=AutoSync.OnInsert, DbType="Int NOT NULL IDENTITY", IsPrimaryKey=true, IsDbGenerated=true)]
+		public int CancelacionID
+		{
+			get
+			{
+				return this._CancelacionID;
+			}
+			set
+			{
+				if ((this._CancelacionID != value))
+				{
+					this.OnCancelacionIDChanging(value);
+					this.SendPropertyChanging();
+					this._CancelacionID = value;
+					this.SendPropertyChanged("CancelacionID");
+					this.OnCancelacionIDChanged();
+				}
+			}
+		}
+		
+		[global::System.Data.Linq.Mapping.ColumnAttribute(Storage="_AbonoID", DbType="Int NOT NULL")]
+		public int AbonoID
+		{
+			get
+			{
+				return this._AbonoID;
+			}
+			set
+			{
+				if ((this._AbonoID != value))
+				{
+					if (this._AbonosCuentasPorCobrar.HasLoadedOrAssignedValue)
+					{
+						throw new System.Data.Linq.ForeignKeyReferenceAlreadyHasValueException();
+					}
+					this.OnAbonoIDChanging(value);
+					this.SendPropertyChanging();
+					this._AbonoID = value;
+					this.SendPropertyChanged("AbonoID");
+					this.OnAbonoIDChanged();
+				}
+			}
+		}
+		
+		[global::System.Data.Linq.Mapping.ColumnAttribute(Storage="_Motivo", DbType="VarChar(500) NOT NULL", CanBeNull=false)]
+		public string Motivo
+		{
+			get
+			{
+				return this._Motivo;
+			}
+			set
+			{
+				if ((this._Motivo != value))
+				{
+					this.OnMotivoChanging(value);
+					this.SendPropertyChanging();
+					this._Motivo = value;
+					this.SendPropertyChanged("Motivo");
+					this.OnMotivoChanged();
+				}
+			}
+		}
+		
+		[global::System.Data.Linq.Mapping.ColumnAttribute(Storage="_CanceladoPorID", DbType="Int NOT NULL")]
+		public int CanceladoPorID
+		{
+			get
+			{
+				return this._CanceladoPorID;
+			}
+			set
+			{
+				if ((this._CanceladoPorID != value))
+				{
+					if (this._Usuario.HasLoadedOrAssignedValue)
+					{
+						throw new System.Data.Linq.ForeignKeyReferenceAlreadyHasValueException();
+					}
+					this.OnCanceladoPorIDChanging(value);
+					this.SendPropertyChanging();
+					this._CanceladoPorID = value;
+					this.SendPropertyChanged("CanceladoPorID");
+					this.OnCanceladoPorIDChanged();
+				}
+			}
+		}
+		
+		[global::System.Data.Linq.Mapping.ColumnAttribute(Storage="_FechaCancelacion", DbType="DateTime2 NOT NULL")]
+		public System.DateTime FechaCancelacion
+		{
+			get
+			{
+				return this._FechaCancelacion;
+			}
+			set
+			{
+				if ((this._FechaCancelacion != value))
+				{
+					this.OnFechaCancelacionChanging(value);
+					this.SendPropertyChanging();
+					this._FechaCancelacion = value;
+					this.SendPropertyChanged("FechaCancelacion");
+					this.OnFechaCancelacionChanged();
+				}
+			}
+		}
+		
+		[global::System.Data.Linq.Mapping.AssociationAttribute(Name="AbonosCuentasPorCobrar_CancelacionesAbonosCxC", Storage="_AbonosCuentasPorCobrar", ThisKey="AbonoID", OtherKey="AbonoID", IsForeignKey=true)]
+		public AbonosCuentasPorCobrar AbonosCuentasPorCobrar
+		{
+			get
+			{
+				return this._AbonosCuentasPorCobrar.Entity;
+			}
+			set
+			{
+				AbonosCuentasPorCobrar previousValue = this._AbonosCuentasPorCobrar.Entity;
+				if (((previousValue != value) 
+							|| (this._AbonosCuentasPorCobrar.HasLoadedOrAssignedValue == false)))
+				{
+					this.SendPropertyChanging();
+					if ((previousValue != null))
+					{
+						this._AbonosCuentasPorCobrar.Entity = null;
+						previousValue.CancelacionesAbonosCxC.Remove(this);
+					}
+					this._AbonosCuentasPorCobrar.Entity = value;
+					if ((value != null))
+					{
+						value.CancelacionesAbonosCxC.Add(this);
+						this._AbonoID = value.AbonoID;
+					}
+					else
+					{
+						this._AbonoID = default(int);
+					}
+					this.SendPropertyChanged("AbonosCuentasPorCobrar");
+				}
+			}
+		}
+		
+		[global::System.Data.Linq.Mapping.AssociationAttribute(Name="Usuario_CancelacionesAbonosCxC", Storage="_Usuario", ThisKey="CanceladoPorID", OtherKey="ClaveID", IsForeignKey=true)]
+		public Usuario Usuario
+		{
+			get
+			{
+				return this._Usuario.Entity;
+			}
+			set
+			{
+				Usuario previousValue = this._Usuario.Entity;
+				if (((previousValue != value) 
+							|| (this._Usuario.HasLoadedOrAssignedValue == false)))
+				{
+					this.SendPropertyChanging();
+					if ((previousValue != null))
+					{
+						this._Usuario.Entity = null;
+						previousValue.CancelacionesAbonosCxC.Remove(this);
+					}
+					this._Usuario.Entity = value;
+					if ((value != null))
+					{
+						value.CancelacionesAbonosCxC.Add(this);
+						this._CanceladoPorID = value.ClaveID;
+					}
+					else
+					{
+						this._CanceladoPorID = default(int);
+					}
+					this.SendPropertyChanged("Usuario");
+				}
+			}
+		}
+		
+		public event PropertyChangingEventHandler PropertyChanging;
+		
+		public event PropertyChangedEventHandler PropertyChanged;
+		
+		protected virtual void SendPropertyChanging()
+		{
+			if ((this.PropertyChanging != null))
+			{
+				this.PropertyChanging(this, emptyChangingEventArgs);
+			}
+		}
+		
+		protected virtual void SendPropertyChanged(String propertyName)
+		{
+			if ((this.PropertyChanged != null))
+			{
+				this.PropertyChanged(this, new PropertyChangedEventArgs(propertyName));
+			}
+		}
+	}
+	
 	[global::System.Data.Linq.Mapping.TableAttribute(Name="dbo.CuentasPorPagar")]
 	public partial class CuentasPorPagar : INotifyPropertyChanging, INotifyPropertyChanged
 	{
@@ -14532,6 +16579,8 @@ namespace GrupoAnkhalInventario.Modelo
 		private System.DateTime _FechaRegistro;
 		
 		private int _RegistradoPorID;
+		
+		private int _DiasCreditoAplicados;
 		
 		private EntitySet<AbonosCuentasPorPagar> _AbonosCuentasPorPagar;
 		
@@ -14575,6 +16624,8 @@ namespace GrupoAnkhalInventario.Modelo
     partial void OnFechaRegistroChanged();
     partial void OnRegistradoPorIDChanging(int value);
     partial void OnRegistradoPorIDChanged();
+    partial void OnDiasCreditoAplicadosChanging(int value);
+    partial void OnDiasCreditoAplicadosChanged();
     #endregion
 		
 		public CuentasPorPagar()
@@ -14883,6 +16934,26 @@ namespace GrupoAnkhalInventario.Modelo
 			}
 		}
 		
+		[global::System.Data.Linq.Mapping.ColumnAttribute(Storage="_DiasCreditoAplicados", DbType="Int NOT NULL")]
+		public int DiasCreditoAplicados
+		{
+			get
+			{
+				return this._DiasCreditoAplicados;
+			}
+			set
+			{
+				if ((this._DiasCreditoAplicados != value))
+				{
+					this.OnDiasCreditoAplicadosChanging(value);
+					this.SendPropertyChanging();
+					this._DiasCreditoAplicados = value;
+					this.SendPropertyChanged("DiasCreditoAplicados");
+					this.OnDiasCreditoAplicadosChanged();
+				}
+			}
+		}
+		
 		[global::System.Data.Linq.Mapping.AssociationAttribute(Name="CuentasPorPagar_AbonosCuentasPorPagar", Storage="_AbonosCuentasPorPagar", ThisKey="CuentaPorPagarID", OtherKey="CuentaPorPagarID")]
 		public EntitySet<AbonosCuentasPorPagar> AbonosCuentasPorPagar
 		{
@@ -15062,610 +17133,6 @@ namespace GrupoAnkhalInventario.Modelo
 		{
 			this.SendPropertyChanging();
 			entity.CuentasPorPagar = null;
-		}
-	}
-	
-	[global::System.Data.Linq.Mapping.TableAttribute(Name="dbo.AbonosCuentasPorPagar")]
-	public partial class AbonosCuentasPorPagar : INotifyPropertyChanging, INotifyPropertyChanged
-	{
-		
-		private static PropertyChangingEventArgs emptyChangingEventArgs = new PropertyChangingEventArgs(String.Empty);
-		
-		private int _AbonoID;
-		
-		private int _CuentaPorPagarID;
-		
-		private decimal _MontoAbono;
-		
-		private System.DateTime _FechaAbono;
-		
-		private string _ReferenciaPago;
-		
-		private string _Observaciones;
-		
-		private string _Estado;
-		
-		private int _RegistradoPorID;
-		
-		private System.DateTime _FechaRegistro;
-		
-		private EntitySet<CancelacionesAbonosCxP> _CancelacionesAbonosCxP;
-		
-		private EntityRef<CuentasPorPagar> _CuentasPorPagar;
-		
-		private EntityRef<Usuario> _Usuario;
-		
-    #region Definiciones de métodos de extensibilidad
-    partial void OnLoaded();
-    partial void OnValidate(System.Data.Linq.ChangeAction action);
-    partial void OnCreated();
-    partial void OnAbonoIDChanging(int value);
-    partial void OnAbonoIDChanged();
-    partial void OnCuentaPorPagarIDChanging(int value);
-    partial void OnCuentaPorPagarIDChanged();
-    partial void OnMontoAbonoChanging(decimal value);
-    partial void OnMontoAbonoChanged();
-    partial void OnFechaAbonoChanging(System.DateTime value);
-    partial void OnFechaAbonoChanged();
-    partial void OnReferenciaPagoChanging(string value);
-    partial void OnReferenciaPagoChanged();
-    partial void OnObservacionesChanging(string value);
-    partial void OnObservacionesChanged();
-    partial void OnEstadoChanging(string value);
-    partial void OnEstadoChanged();
-    partial void OnRegistradoPorIDChanging(int value);
-    partial void OnRegistradoPorIDChanged();
-    partial void OnFechaRegistroChanging(System.DateTime value);
-    partial void OnFechaRegistroChanged();
-    #endregion
-		
-		public AbonosCuentasPorPagar()
-		{
-			this._CancelacionesAbonosCxP = new EntitySet<CancelacionesAbonosCxP>(new Action<CancelacionesAbonosCxP>(this.attach_CancelacionesAbonosCxP), new Action<CancelacionesAbonosCxP>(this.detach_CancelacionesAbonosCxP));
-			this._CuentasPorPagar = default(EntityRef<CuentasPorPagar>);
-			this._Usuario = default(EntityRef<Usuario>);
-			OnCreated();
-		}
-		
-		[global::System.Data.Linq.Mapping.ColumnAttribute(Storage="_AbonoID", AutoSync=AutoSync.OnInsert, DbType="Int NOT NULL IDENTITY", IsPrimaryKey=true, IsDbGenerated=true)]
-		public int AbonoID
-		{
-			get
-			{
-				return this._AbonoID;
-			}
-			set
-			{
-				if ((this._AbonoID != value))
-				{
-					this.OnAbonoIDChanging(value);
-					this.SendPropertyChanging();
-					this._AbonoID = value;
-					this.SendPropertyChanged("AbonoID");
-					this.OnAbonoIDChanged();
-				}
-			}
-		}
-		
-		[global::System.Data.Linq.Mapping.ColumnAttribute(Storage="_CuentaPorPagarID", DbType="Int NOT NULL")]
-		public int CuentaPorPagarID
-		{
-			get
-			{
-				return this._CuentaPorPagarID;
-			}
-			set
-			{
-				if ((this._CuentaPorPagarID != value))
-				{
-					if (this._CuentasPorPagar.HasLoadedOrAssignedValue)
-					{
-						throw new System.Data.Linq.ForeignKeyReferenceAlreadyHasValueException();
-					}
-					this.OnCuentaPorPagarIDChanging(value);
-					this.SendPropertyChanging();
-					this._CuentaPorPagarID = value;
-					this.SendPropertyChanged("CuentaPorPagarID");
-					this.OnCuentaPorPagarIDChanged();
-				}
-			}
-		}
-		
-		[global::System.Data.Linq.Mapping.ColumnAttribute(Storage="_MontoAbono", DbType="Decimal(18,2) NOT NULL")]
-		public decimal MontoAbono
-		{
-			get
-			{
-				return this._MontoAbono;
-			}
-			set
-			{
-				if ((this._MontoAbono != value))
-				{
-					this.OnMontoAbonoChanging(value);
-					this.SendPropertyChanging();
-					this._MontoAbono = value;
-					this.SendPropertyChanged("MontoAbono");
-					this.OnMontoAbonoChanged();
-				}
-			}
-		}
-		
-		[global::System.Data.Linq.Mapping.ColumnAttribute(Storage="_FechaAbono", DbType="DateTime2 NOT NULL")]
-		public System.DateTime FechaAbono
-		{
-			get
-			{
-				return this._FechaAbono;
-			}
-			set
-			{
-				if ((this._FechaAbono != value))
-				{
-					this.OnFechaAbonoChanging(value);
-					this.SendPropertyChanging();
-					this._FechaAbono = value;
-					this.SendPropertyChanged("FechaAbono");
-					this.OnFechaAbonoChanged();
-				}
-			}
-		}
-		
-		[global::System.Data.Linq.Mapping.ColumnAttribute(Storage="_ReferenciaPago", DbType="VarChar(100)")]
-		public string ReferenciaPago
-		{
-			get
-			{
-				return this._ReferenciaPago;
-			}
-			set
-			{
-				if ((this._ReferenciaPago != value))
-				{
-					this.OnReferenciaPagoChanging(value);
-					this.SendPropertyChanging();
-					this._ReferenciaPago = value;
-					this.SendPropertyChanged("ReferenciaPago");
-					this.OnReferenciaPagoChanged();
-				}
-			}
-		}
-		
-		[global::System.Data.Linq.Mapping.ColumnAttribute(Storage="_Observaciones", DbType="VarChar(500)")]
-		public string Observaciones
-		{
-			get
-			{
-				return this._Observaciones;
-			}
-			set
-			{
-				if ((this._Observaciones != value))
-				{
-					this.OnObservacionesChanging(value);
-					this.SendPropertyChanging();
-					this._Observaciones = value;
-					this.SendPropertyChanged("Observaciones");
-					this.OnObservacionesChanged();
-				}
-			}
-		}
-		
-		[global::System.Data.Linq.Mapping.ColumnAttribute(Storage="_Estado", DbType="VarChar(20) NOT NULL", CanBeNull=false)]
-		public string Estado
-		{
-			get
-			{
-				return this._Estado;
-			}
-			set
-			{
-				if ((this._Estado != value))
-				{
-					this.OnEstadoChanging(value);
-					this.SendPropertyChanging();
-					this._Estado = value;
-					this.SendPropertyChanged("Estado");
-					this.OnEstadoChanged();
-				}
-			}
-		}
-		
-		[global::System.Data.Linq.Mapping.ColumnAttribute(Storage="_RegistradoPorID", DbType="Int NOT NULL")]
-		public int RegistradoPorID
-		{
-			get
-			{
-				return this._RegistradoPorID;
-			}
-			set
-			{
-				if ((this._RegistradoPorID != value))
-				{
-					if (this._Usuario.HasLoadedOrAssignedValue)
-					{
-						throw new System.Data.Linq.ForeignKeyReferenceAlreadyHasValueException();
-					}
-					this.OnRegistradoPorIDChanging(value);
-					this.SendPropertyChanging();
-					this._RegistradoPorID = value;
-					this.SendPropertyChanged("RegistradoPorID");
-					this.OnRegistradoPorIDChanged();
-				}
-			}
-		}
-		
-		[global::System.Data.Linq.Mapping.ColumnAttribute(Storage="_FechaRegistro", DbType="DateTime2 NOT NULL")]
-		public System.DateTime FechaRegistro
-		{
-			get
-			{
-				return this._FechaRegistro;
-			}
-			set
-			{
-				if ((this._FechaRegistro != value))
-				{
-					this.OnFechaRegistroChanging(value);
-					this.SendPropertyChanging();
-					this._FechaRegistro = value;
-					this.SendPropertyChanged("FechaRegistro");
-					this.OnFechaRegistroChanged();
-				}
-			}
-		}
-		
-		[global::System.Data.Linq.Mapping.AssociationAttribute(Name="AbonosCuentasPorPagar_CancelacionesAbonosCxP", Storage="_CancelacionesAbonosCxP", ThisKey="AbonoID", OtherKey="AbonoID")]
-		public EntitySet<CancelacionesAbonosCxP> CancelacionesAbonosCxP
-		{
-			get
-			{
-				return this._CancelacionesAbonosCxP;
-			}
-			set
-			{
-				this._CancelacionesAbonosCxP.Assign(value);
-			}
-		}
-		
-		[global::System.Data.Linq.Mapping.AssociationAttribute(Name="CuentasPorPagar_AbonosCuentasPorPagar", Storage="_CuentasPorPagar", ThisKey="CuentaPorPagarID", OtherKey="CuentaPorPagarID", IsForeignKey=true)]
-		public CuentasPorPagar CuentasPorPagar
-		{
-			get
-			{
-				return this._CuentasPorPagar.Entity;
-			}
-			set
-			{
-				CuentasPorPagar previousValue = this._CuentasPorPagar.Entity;
-				if (((previousValue != value) 
-							|| (this._CuentasPorPagar.HasLoadedOrAssignedValue == false)))
-				{
-					this.SendPropertyChanging();
-					if ((previousValue != null))
-					{
-						this._CuentasPorPagar.Entity = null;
-						previousValue.AbonosCuentasPorPagar.Remove(this);
-					}
-					this._CuentasPorPagar.Entity = value;
-					if ((value != null))
-					{
-						value.AbonosCuentasPorPagar.Add(this);
-						this._CuentaPorPagarID = value.CuentaPorPagarID;
-					}
-					else
-					{
-						this._CuentaPorPagarID = default(int);
-					}
-					this.SendPropertyChanged("CuentasPorPagar");
-				}
-			}
-		}
-		
-		[global::System.Data.Linq.Mapping.AssociationAttribute(Name="Usuario_AbonosCuentasPorPagar", Storage="_Usuario", ThisKey="RegistradoPorID", OtherKey="ClaveID", IsForeignKey=true)]
-		public Usuario Usuario
-		{
-			get
-			{
-				return this._Usuario.Entity;
-			}
-			set
-			{
-				Usuario previousValue = this._Usuario.Entity;
-				if (((previousValue != value) 
-							|| (this._Usuario.HasLoadedOrAssignedValue == false)))
-				{
-					this.SendPropertyChanging();
-					if ((previousValue != null))
-					{
-						this._Usuario.Entity = null;
-						previousValue.AbonosCuentasPorPagar.Remove(this);
-					}
-					this._Usuario.Entity = value;
-					if ((value != null))
-					{
-						value.AbonosCuentasPorPagar.Add(this);
-						this._RegistradoPorID = value.ClaveID;
-					}
-					else
-					{
-						this._RegistradoPorID = default(int);
-					}
-					this.SendPropertyChanged("Usuario");
-				}
-			}
-		}
-		
-		public event PropertyChangingEventHandler PropertyChanging;
-		
-		public event PropertyChangedEventHandler PropertyChanged;
-		
-		protected virtual void SendPropertyChanging()
-		{
-			if ((this.PropertyChanging != null))
-			{
-				this.PropertyChanging(this, emptyChangingEventArgs);
-			}
-		}
-		
-		protected virtual void SendPropertyChanged(String propertyName)
-		{
-			if ((this.PropertyChanged != null))
-			{
-				this.PropertyChanged(this, new PropertyChangedEventArgs(propertyName));
-			}
-		}
-		
-		private void attach_CancelacionesAbonosCxP(CancelacionesAbonosCxP entity)
-		{
-			this.SendPropertyChanging();
-			entity.AbonosCuentasPorPagar = this;
-		}
-		
-		private void detach_CancelacionesAbonosCxP(CancelacionesAbonosCxP entity)
-		{
-			this.SendPropertyChanging();
-			entity.AbonosCuentasPorPagar = null;
-		}
-	}
-	
-	[global::System.Data.Linq.Mapping.TableAttribute(Name="dbo.CancelacionesAbonosCxP")]
-	public partial class CancelacionesAbonosCxP : INotifyPropertyChanging, INotifyPropertyChanged
-	{
-		
-		private static PropertyChangingEventArgs emptyChangingEventArgs = new PropertyChangingEventArgs(String.Empty);
-		
-		private int _CancelacionID;
-		
-		private int _AbonoID;
-		
-		private string _Motivo;
-		
-		private int _CanceladoPorID;
-		
-		private System.DateTime _FechaCancelacion;
-		
-		private EntityRef<AbonosCuentasPorPagar> _AbonosCuentasPorPagar;
-		
-		private EntityRef<Usuario> _Usuario;
-		
-    #region Definiciones de métodos de extensibilidad
-    partial void OnLoaded();
-    partial void OnValidate(System.Data.Linq.ChangeAction action);
-    partial void OnCreated();
-    partial void OnCancelacionIDChanging(int value);
-    partial void OnCancelacionIDChanged();
-    partial void OnAbonoIDChanging(int value);
-    partial void OnAbonoIDChanged();
-    partial void OnMotivoChanging(string value);
-    partial void OnMotivoChanged();
-    partial void OnCanceladoPorIDChanging(int value);
-    partial void OnCanceladoPorIDChanged();
-    partial void OnFechaCancelacionChanging(System.DateTime value);
-    partial void OnFechaCancelacionChanged();
-    #endregion
-		
-		public CancelacionesAbonosCxP()
-		{
-			this._AbonosCuentasPorPagar = default(EntityRef<AbonosCuentasPorPagar>);
-			this._Usuario = default(EntityRef<Usuario>);
-			OnCreated();
-		}
-		
-		[global::System.Data.Linq.Mapping.ColumnAttribute(Storage="_CancelacionID", AutoSync=AutoSync.OnInsert, DbType="Int NOT NULL IDENTITY", IsPrimaryKey=true, IsDbGenerated=true)]
-		public int CancelacionID
-		{
-			get
-			{
-				return this._CancelacionID;
-			}
-			set
-			{
-				if ((this._CancelacionID != value))
-				{
-					this.OnCancelacionIDChanging(value);
-					this.SendPropertyChanging();
-					this._CancelacionID = value;
-					this.SendPropertyChanged("CancelacionID");
-					this.OnCancelacionIDChanged();
-				}
-			}
-		}
-		
-		[global::System.Data.Linq.Mapping.ColumnAttribute(Storage="_AbonoID", DbType="Int NOT NULL")]
-		public int AbonoID
-		{
-			get
-			{
-				return this._AbonoID;
-			}
-			set
-			{
-				if ((this._AbonoID != value))
-				{
-					if (this._AbonosCuentasPorPagar.HasLoadedOrAssignedValue)
-					{
-						throw new System.Data.Linq.ForeignKeyReferenceAlreadyHasValueException();
-					}
-					this.OnAbonoIDChanging(value);
-					this.SendPropertyChanging();
-					this._AbonoID = value;
-					this.SendPropertyChanged("AbonoID");
-					this.OnAbonoIDChanged();
-				}
-			}
-		}
-		
-		[global::System.Data.Linq.Mapping.ColumnAttribute(Storage="_Motivo", DbType="VarChar(500) NOT NULL", CanBeNull=false)]
-		public string Motivo
-		{
-			get
-			{
-				return this._Motivo;
-			}
-			set
-			{
-				if ((this._Motivo != value))
-				{
-					this.OnMotivoChanging(value);
-					this.SendPropertyChanging();
-					this._Motivo = value;
-					this.SendPropertyChanged("Motivo");
-					this.OnMotivoChanged();
-				}
-			}
-		}
-		
-		[global::System.Data.Linq.Mapping.ColumnAttribute(Storage="_CanceladoPorID", DbType="Int NOT NULL")]
-		public int CanceladoPorID
-		{
-			get
-			{
-				return this._CanceladoPorID;
-			}
-			set
-			{
-				if ((this._CanceladoPorID != value))
-				{
-					if (this._Usuario.HasLoadedOrAssignedValue)
-					{
-						throw new System.Data.Linq.ForeignKeyReferenceAlreadyHasValueException();
-					}
-					this.OnCanceladoPorIDChanging(value);
-					this.SendPropertyChanging();
-					this._CanceladoPorID = value;
-					this.SendPropertyChanged("CanceladoPorID");
-					this.OnCanceladoPorIDChanged();
-				}
-			}
-		}
-		
-		[global::System.Data.Linq.Mapping.ColumnAttribute(Storage="_FechaCancelacion", DbType="DateTime2 NOT NULL")]
-		public System.DateTime FechaCancelacion
-		{
-			get
-			{
-				return this._FechaCancelacion;
-			}
-			set
-			{
-				if ((this._FechaCancelacion != value))
-				{
-					this.OnFechaCancelacionChanging(value);
-					this.SendPropertyChanging();
-					this._FechaCancelacion = value;
-					this.SendPropertyChanged("FechaCancelacion");
-					this.OnFechaCancelacionChanged();
-				}
-			}
-		}
-		
-		[global::System.Data.Linq.Mapping.AssociationAttribute(Name="AbonosCuentasPorPagar_CancelacionesAbonosCxP", Storage="_AbonosCuentasPorPagar", ThisKey="AbonoID", OtherKey="AbonoID", IsForeignKey=true)]
-		public AbonosCuentasPorPagar AbonosCuentasPorPagar
-		{
-			get
-			{
-				return this._AbonosCuentasPorPagar.Entity;
-			}
-			set
-			{
-				AbonosCuentasPorPagar previousValue = this._AbonosCuentasPorPagar.Entity;
-				if (((previousValue != value) 
-							|| (this._AbonosCuentasPorPagar.HasLoadedOrAssignedValue == false)))
-				{
-					this.SendPropertyChanging();
-					if ((previousValue != null))
-					{
-						this._AbonosCuentasPorPagar.Entity = null;
-						previousValue.CancelacionesAbonosCxP.Remove(this);
-					}
-					this._AbonosCuentasPorPagar.Entity = value;
-					if ((value != null))
-					{
-						value.CancelacionesAbonosCxP.Add(this);
-						this._AbonoID = value.AbonoID;
-					}
-					else
-					{
-						this._AbonoID = default(int);
-					}
-					this.SendPropertyChanged("AbonosCuentasPorPagar");
-				}
-			}
-		}
-		
-		[global::System.Data.Linq.Mapping.AssociationAttribute(Name="Usuario_CancelacionesAbonosCxP", Storage="_Usuario", ThisKey="CanceladoPorID", OtherKey="ClaveID", IsForeignKey=true)]
-		public Usuario Usuario
-		{
-			get
-			{
-				return this._Usuario.Entity;
-			}
-			set
-			{
-				Usuario previousValue = this._Usuario.Entity;
-				if (((previousValue != value) 
-							|| (this._Usuario.HasLoadedOrAssignedValue == false)))
-				{
-					this.SendPropertyChanging();
-					if ((previousValue != null))
-					{
-						this._Usuario.Entity = null;
-						previousValue.CancelacionesAbonosCxP.Remove(this);
-					}
-					this._Usuario.Entity = value;
-					if ((value != null))
-					{
-						value.CancelacionesAbonosCxP.Add(this);
-						this._CanceladoPorID = value.ClaveID;
-					}
-					else
-					{
-						this._CanceladoPorID = default(int);
-					}
-					this.SendPropertyChanged("Usuario");
-				}
-			}
-		}
-		
-		public event PropertyChangingEventHandler PropertyChanging;
-		
-		public event PropertyChangedEventHandler PropertyChanged;
-		
-		protected virtual void SendPropertyChanging()
-		{
-			if ((this.PropertyChanging != null))
-			{
-				this.PropertyChanging(this, emptyChangingEventArgs);
-			}
-		}
-		
-		protected virtual void SendPropertyChanged(String propertyName)
-		{
-			if ((this.PropertyChanged != null))
-			{
-				this.PropertyChanged(this, new PropertyChangedEventArgs(propertyName));
-			}
 		}
 	}
 }

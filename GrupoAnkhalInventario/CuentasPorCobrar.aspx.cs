@@ -12,7 +12,7 @@ using GrupoAnkhalInventario.Services;
 
 namespace GrupoAnkhalInventario
 {
-    public partial class CuentasPorPagar : System.Web.UI.Page
+    public partial class CuentasPorCobrar : System.Web.UI.Page
     {
         // ══ Infraestructura ══════════════════════════════════════════════════
         private static readonly string _connStr =
@@ -29,14 +29,14 @@ namespace GrupoAnkhalInventario
         }
 
         // ══ ViewModel ════════════════════════════════════════════════════════
-        public class CxPRow
+        public class CxCRow
         {
-            public int CuentaPorPagarID { get; set; }
-            public int LoteID { get; set; }
-            public string FolioLote { get; set; }
-            public string NumeroNota { get; set; }
-            public string ProveedorNombre { get; set; }
-            public DateTime FechaRecepcion { get; set; }
+            public int CuentaPorCobrarID { get; set; }
+            public int EntregaID { get; set; }
+            public string FolioEntrega { get; set; }
+            public string NumeroFactura { get; set; }
+            public string ClienteNombre { get; set; }
+            public DateTime FechaEntrega { get; set; }
             public DateTime FechaVencimiento { get; set; }
             public int DiasCreditoAplicados { get; set; }
             public decimal MontoTotal { get; set; }
@@ -52,26 +52,26 @@ namespace GrupoAnkhalInventario
         {
             if (!IsPostBack)
             {
-                CargarFiltroProveedores();
+                CargarFiltroClientes();
                 CargarResumen();
                 CargarGrid();
             }
         }
 
         // ══ Catálogos de filtros ══════════════════════════════════════════════
-        private void CargarFiltroProveedores()
+        private void CargarFiltroClientes()
         {
             using (var db = NuevoDb(false))
             {
-                ddlFiltroProveedor.Items.Clear();
-                ddlFiltroProveedor.Items.Add(new ListItem("-- Todos --", ""));
-                var provs = db.Proveedores
-                    .Where(p => p.Activo)
-                    .OrderBy(p => p.Nombre)
-                    .Select(p => new { p.ProveedorID, p.Nombre })
+                ddlFiltroCliente.Items.Clear();
+                ddlFiltroCliente.Items.Add(new ListItem("-- Todos --", ""));
+                var clis = db.Clientes
+                    .Where(c => c.Activo)
+                    .OrderBy(c => c.Nombre)
+                    .Select(c => new { c.ClienteID, c.Nombre })
                     .ToList();
-                foreach (var p in provs)
-                    ddlFiltroProveedor.Items.Add(new ListItem(p.Nombre, p.ProveedorID.ToString()));
+                foreach (var c in clis)
+                    ddlFiltroCliente.Items.Add(new ListItem(c.Nombre, c.ClienteID.ToString()));
             }
         }
 
@@ -82,17 +82,16 @@ namespace GrupoAnkhalInventario
             {
                 DateTime hoy = AppHelper.Hoy;
 
-                // Mismos filtros que CargarGrid para que los cards coincidan con lo visible
-                IQueryable<Modelo.CuentasPorPagar> q = db.CuentasPorPagar.AsQueryable();
+                IQueryable<Modelo.CuentasPorCobrar> q = db.CuentasPorCobrar.AsQueryable();
 
-                if (!string.IsNullOrEmpty(ddlFiltroProveedor.SelectedValue))
+                if (!string.IsNullOrEmpty(ddlFiltroCliente.SelectedValue))
                 {
-                    int provID = int.Parse(ddlFiltroProveedor.SelectedValue);
-                    q = q.Where(c => c.ProveedorID == provID);
+                    int cliID = int.Parse(ddlFiltroCliente.SelectedValue);
+                    q = q.Where(c => c.ClienteID == cliID);
                 }
 
                 string filtroEstado = ddlFiltroEstado.SelectedValue;
-                if (filtroEstado == "SINPAGAR")
+                if (filtroEstado == "SINCOBRAR")
                     q = q.Where(c => c.Estado == "PENDIENTE" || c.Estado == "PARCIAL");
                 else if (filtroEstado == "VENCIDA")
                     q = q.Where(c => (c.Estado == "PENDIENTE" || c.Estado == "PARCIAL") && c.FechaVencimiento < hoy);
@@ -111,27 +110,27 @@ namespace GrupoAnkhalInventario
                 if (!string.IsNullOrEmpty(txtFiltroFechaDesde.Text))
                 {
                     DateTime fd = DateTime.Parse(txtFiltroFechaDesde.Text);
-                    q = q.Where(c => c.FechaRecepcion >= fd);
+                    q = q.Where(c => c.FechaEntrega >= fd);
                 }
                 if (!string.IsNullOrEmpty(txtFiltroFechaHasta.Text))
                 {
                     DateTime fh = DateTime.Parse(txtFiltroFechaHasta.Text).AddDays(1);
-                    q = q.Where(c => c.FechaRecepcion < fh);
+                    q = q.Where(c => c.FechaEntrega < fh);
                 }
 
-                var datos = q.Select(c => new { c.CuentaPorPagarID, c.MontoTotal, c.FechaVencimiento, c.Estado }).ToList();
+                var datos = q.Select(c => new { c.CuentaPorCobrarID, c.MontoTotal, c.FechaVencimiento, c.Estado }).ToList();
 
-                var idsResumen = datos.Select(c => c.CuentaPorPagarID).ToList();
-                var abonosResumen = db.AbonosCuentasPorPagar
-                    .Where(a => idsResumen.Contains(a.CuentaPorPagarID) && a.Estado == "ACTIVO")
-                    .GroupBy(a => a.CuentaPorPagarID)
-                    .Select(g => new { CuentaPorPagarID = g.Key, Total = g.Sum(a => a.MontoAbono) })
-                    .ToDictionary(x => x.CuentaPorPagarID, x => x.Total);
+                var idsResumen = datos.Select(c => c.CuentaPorCobrarID).ToList();
+                var abonosResumen = db.AbonosCuentasPorCobrar
+                    .Where(a => idsResumen.Contains(a.CuentaPorCobrarID) && a.Estado == "ACTIVO")
+                    .GroupBy(a => a.CuentaPorCobrarID)
+                    .Select(g => new { CuentaPorCobrarID = g.Key, Total = g.Sum(a => a.MontoAbono) })
+                    .ToDictionary(x => x.CuentaPorCobrarID, x => x.Total);
 
                 // Sobre el conjunto filtrado, calcular el saldo pendiente real (excluye pagadas)
                 decimal totalPendiente = datos
                     .Where(c => c.Estado == "PENDIENTE" || c.Estado == "PARCIAL")
-                    .Sum(c => c.MontoTotal - (abonosResumen.TryGetValue(c.CuentaPorPagarID, out var ab) ? ab : 0m));
+                    .Sum(c => c.MontoTotal - (abonosResumen.TryGetValue(c.CuentaPorCobrarID, out var ab) ? ab : 0m));
                 int notasPendientes = datos.Count(c => (c.Estado == "PENDIENTE" || c.Estado == "PARCIAL") && c.FechaVencimiento > hoy.AddDays(7));
                 int vencidas = datos.Count(c => (c.Estado == "PENDIENTE" || c.Estado == "PARCIAL") && c.FechaVencimiento < hoy);
                 int porVencer = datos.Count(c => (c.Estado == "PENDIENTE" || c.Estado == "PARCIAL")
@@ -152,18 +151,18 @@ namespace GrupoAnkhalInventario
             {
                 DateTime hoy = AppHelper.Hoy;
 
-                IQueryable<Modelo.CuentasPorPagar> q = db.CuentasPorPagar.AsQueryable();
+                IQueryable<Modelo.CuentasPorCobrar> q = db.CuentasPorCobrar.AsQueryable();
 
-                // Filtro proveedor
-                if (!string.IsNullOrEmpty(ddlFiltroProveedor.SelectedValue))
+                // Filtro cliente
+                if (!string.IsNullOrEmpty(ddlFiltroCliente.SelectedValue))
                 {
-                    int provID = int.Parse(ddlFiltroProveedor.SelectedValue);
-                    q = q.Where(c => c.ProveedorID == provID);
+                    int cliID = int.Parse(ddlFiltroCliente.SelectedValue);
+                    q = q.Where(c => c.ClienteID == cliID);
                 }
 
                 // Filtro estado
                 string filtroEstado = ddlFiltroEstado.SelectedValue;
-                if (filtroEstado == "SINPAGAR")
+                if (filtroEstado == "SINCOBRAR")
                     q = q.Where(c => c.Estado == "PENDIENTE" || c.Estado == "PARCIAL");
                 else if (filtroEstado == "VENCIDA")
                     q = q.Where(c => (c.Estado == "PENDIENTE" || c.Estado == "PARCIAL") && c.FechaVencimiento < hoy);
@@ -179,22 +178,22 @@ namespace GrupoAnkhalInventario
                     q = q.Where(c => c.Estado == "PAGADA");
                 // filtroEstado == "" = todas, sin filtro adicional
 
-                // Filtro rango de fechas (fecha de recepción)
+                // Filtro rango de fechas (fecha de entrega)
                 if (!string.IsNullOrEmpty(txtFiltroFechaDesde.Text))
                 {
                     DateTime fd = DateTime.Parse(txtFiltroFechaDesde.Text);
-                    q = q.Where(c => c.FechaRecepcion >= fd);
+                    q = q.Where(c => c.FechaEntrega >= fd);
                 }
                 if (!string.IsNullOrEmpty(txtFiltroFechaHasta.Text))
                 {
                     DateTime fh = DateTime.Parse(txtFiltroFechaHasta.Text).AddDays(1);
-                    q = q.Where(c => c.FechaRecepcion < fh);
+                    q = q.Where(c => c.FechaEntrega < fh);
                 }
 
                 int total = q.Count();
-                int pageIdx = gvCxP.PageIndex;
-                int pageSz = gvCxP.PageSize;
-                gvCxP.VirtualItemCount = total;
+                int pageIdx = gvCxC.PageIndex;
+                int pageSz = gvCxC.PageSize;
+                gvCxC.VirtualItemCount = total;
 
                 lblResultados.Text = total == 0
                     ? "Sin registros para los filtros aplicados."
@@ -202,54 +201,58 @@ namespace GrupoAnkhalInventario
 
                 if (total == 0)
                 {
-                    gvCxP.DataSource = new List<CxPRow>();
-                    gvCxP.DataBind();
+                    gvCxC.DataSource = new List<CxCRow>();
+                    gvCxC.DataBind();
                     return;
                 }
 
                 var ids = q
                     .OrderBy(c => c.Estado == "PAGADA" ? 1 : 0)       // pendientes primero
                     .ThenBy(c => c.FechaVencimiento)                   // más urgentes arriba
-                    .Select(c => c.CuentaPorPagarID)
+                    .Select(c => c.CuentaPorCobrarID)
                     .Skip(pageIdx * pageSz)
                     .Take(pageSz)
                     .ToList();
 
-                var raw = (from c in db.CuentasPorPagar
-                           where ids.Contains(c.CuentaPorPagarID)
-                           join lm in db.LotesMovimiento on c.LoteID equals lm.LoteID
-                           join prov in db.Proveedores on c.ProveedorID equals prov.ProveedorID
+                var raw = (from c in db.CuentasPorCobrar
+                           where ids.Contains(c.CuentaPorCobrarID)
+                           join ent in db.Entregas on c.EntregaID equals ent.EntregaID
+                           join cli in db.Clientes on c.ClienteID equals cli.ClienteID
                            select new
                            {
-                               c.CuentaPorPagarID,
-                               c.LoteID,
-                               c.NumeroNota,
-                               c.FechaRecepcion,
+                               c.CuentaPorCobrarID,
+                               c.EntregaID,
+                               c.NumeroFactura,
+                               c.FechaEntrega,
                                c.FechaVencimiento,
                                c.DiasCreditoAplicados,
                                c.MontoTotal,
                                c.Estado,
-                               FolioLote = lm.Folio,
-                               ProveedorNombre = prov.Nombre
+                               FolioEntrega = ent.Folio,
+                               ClienteNombre = cli.Nombre
                            }).ToList();
 
                 string rol = Session["Rol"]?.ToString() ?? "";
-                bool puedeRegistrarPago = (rol == "Administrador" || rol == "Compras");
+                bool puedeRegistrarCobro = (rol == "Administrador" || rol == "Ventas" || rol == "Jefe de planta");
 
-                var totalesAbonados = db.AbonosCuentasPorPagar
-                    .Where(a => ids.Contains(a.CuentaPorPagarID) && a.Estado == "ACTIVO")
-                    .GroupBy(a => a.CuentaPorPagarID)
-                    .Select(g => new { CuentaPorPagarID = g.Key, Total = g.Sum(a => a.MontoAbono) })
-                    .ToDictionary(x => x.CuentaPorPagarID, x => x.Total);
+                var totalesAbonados = db.AbonosCuentasPorCobrar
+                    .Where(a => ids.Contains(a.CuentaPorCobrarID) && a.Estado == "ACTIVO")
+                    .GroupBy(a => a.CuentaPorCobrarID)
+                    .Select(g => new { CuentaPorCobrarID = g.Key, Total = g.Sum(a => a.MontoAbono) })
+                    .ToDictionary(x => x.CuentaPorCobrarID, x => x.Total);
 
-                var pagina = new List<CxPRow>();
+                var pagina = new List<CxCRow>();
                 foreach (var id in ids)
                 {
-                    var r = raw.FirstOrDefault(x => x.CuentaPorPagarID == id);
+                    var r = raw.FirstOrDefault(x => x.CuentaPorCobrarID == id);
                     if (r == null) continue;
 
                     string estadoVisual, badgeClass;
-                    if (r.Estado == "PAGADA")
+                    if (r.Estado == "CANCELADA")
+                    {
+                        estadoVisual = "CANCELADA"; badgeClass = "badge-secondary";
+                    }
+                    else if (r.Estado == "PAGADA")
                     {
                         estadoVisual = "PAGADA"; badgeClass = "badge-success";
                     }
@@ -272,14 +275,14 @@ namespace GrupoAnkhalInventario
 
                     decimal abonado = totalesAbonados.TryGetValue(id, out var ab) ? ab : 0m;
 
-                    pagina.Add(new CxPRow
+                    pagina.Add(new CxCRow
                     {
-                        CuentaPorPagarID = r.CuentaPorPagarID,
-                        LoteID = r.LoteID,
-                        FolioLote = r.FolioLote ?? "",
-                        NumeroNota = r.NumeroNota ?? "",
-                        ProveedorNombre = r.ProveedorNombre ?? "",
-                        FechaRecepcion = r.FechaRecepcion,
+                        CuentaPorCobrarID = r.CuentaPorCobrarID,
+                        EntregaID = r.EntregaID,
+                        FolioEntrega = r.FolioEntrega ?? "",
+                        NumeroFactura = r.NumeroFactura ?? "",
+                        ClienteNombre = r.ClienteNombre ?? "",
+                        FechaEntrega = r.FechaEntrega,
                         FechaVencimiento = r.FechaVencimiento,
                         DiasCreditoAplicados = r.DiasCreditoAplicados,
                         MontoTotal = r.MontoTotal,
@@ -287,64 +290,64 @@ namespace GrupoAnkhalInventario
                         Estado = r.Estado,
                         EstadoVisual = estadoVisual,
                         BadgeClass = badgeClass,
-                        PuedeAbonar = puedeRegistrarPago && (r.Estado == "PENDIENTE" || r.Estado == "PARCIAL")
+                        PuedeAbonar = puedeRegistrarCobro && (r.Estado == "PENDIENTE" || r.Estado == "PARCIAL")
                     });
                 }
 
-                gvCxP.DataSource = pagina;
-                gvCxP.DataBind();
+                gvCxC.DataSource = pagina;
+                gvCxC.DataBind();
             }
         }
 
         // ══ Eventos de filtros y grid ═════════════════════════════════════════
         protected void btnFiltrar_Click(object sender, EventArgs e)
         {
-            gvCxP.PageIndex = 0;
+            gvCxC.PageIndex = 0;
             CargarResumen();
             CargarGrid();
         }
 
         protected void btnLimpiar_Click(object sender, EventArgs e)
         {
-            ddlFiltroProveedor.SelectedIndex = 0;
+            ddlFiltroCliente.SelectedIndex = 0;
             ddlFiltroEstado.SelectedIndex = 0;
             txtFiltroFechaDesde.Text = "";
             txtFiltroFechaHasta.Text = "";
-            gvCxP.PageIndex = 0;
+            gvCxC.PageIndex = 0;
             CargarResumen();
             CargarGrid();
         }
 
-        protected void gvCxP_PageIndexChanging(object sender, GridViewPageEventArgs e)
+        protected void gvCxC_PageIndexChanging(object sender, GridViewPageEventArgs e)
         {
-            gvCxP.PageIndex = e.NewPageIndex;
+            gvCxC.PageIndex = e.NewPageIndex;
             CargarGrid();
         }
 
         // ══ Helper para botones Abonar / Ver Abonos en GridView ══════════════
-        public string GetBotonesAccion(object cxpIDObj, object puedeObj, object provObj,
-                                        object notaObj, object saldoObj)
+        public string GetBotonesAccion(object cxcIDObj, object puedeObj, object clienteObj,
+                                        object facturaObj, object saldoObj)
         {
-            int cxpID = Convert.ToInt32(cxpIDObj);
-            string proveedor = System.Web.HttpUtility.JavaScriptStringEncode(provObj?.ToString() ?? "");
-            string nota = System.Web.HttpUtility.JavaScriptStringEncode(notaObj?.ToString() ?? "");
+            int cxcID = Convert.ToInt32(cxcIDObj);
+            string cliente = System.Web.HttpUtility.JavaScriptStringEncode(clienteObj?.ToString() ?? "");
+            string factura = System.Web.HttpUtility.JavaScriptStringEncode(facturaObj?.ToString() ?? "");
             string saldo = ((decimal)saldoObj).ToString("C2");
             bool puede = puedeObj is bool b && b;
 
             string btnAbonar = puede
                 ? string.Format(
-                    "<button type='button' class='btn btn-sm btn-success mr-1' title='Abonar' " +
+                    "<button type='button' class='btn btn-sm btn-success mr-1' title='Registrar Cobro' " +
                     "onclick=\"abrirAbono({0}, '{1}', '{2}', '{3}')\">" +
                     "<i class='fas fa-money-bill-wave'></i></button>",
-                    cxpID, proveedor, nota, saldo)
+                    cxcID, cliente, factura, saldo)
                 : "<button type='button' class='btn btn-sm btn-outline-success mr-1' disabled title='Sin permiso'>" +
                   "<i class='fas fa-money-bill-wave'></i></button>";
 
             string btnVerAbonos = string.Format(
-                "<button type='button' class='btn btn-sm btn-outline-primary' title='Ver Abonos' " +
+                "<button type='button' class='btn btn-sm btn-outline-primary' title='Ver Cobros' " +
                 "onclick=\"abrirHistorialAbonos({0}, '{1}', '{2}')\">" +
                 "<i class='fas fa-list'></i></button>",
-                cxpID, proveedor, nota);
+                cxcID, cliente, factura);
 
             return btnAbonar + btnVerAbonos;
         }
@@ -358,56 +361,56 @@ namespace GrupoAnkhalInventario
 
         // ══ WebMethods ═══════════════════════════════════════════════════════
 
-        // Recalcula Estado/FechaPago/ReferenciaPago/PagadaPorID de la cabecera a partir
-        // de la suma de abonos ACTIVOs. Fuente de verdad real: AbonosCuentasPorPagar.
-        private static void RecalcularEstadoCuenta(InventarioAnkhalDBDataContext db, int cuentaPorPagarID)
+        // Recalcula Estado/FechaCobro/ReferenciaCobro/CobradaPorID de la cabecera a partir
+        // de la suma de abonos ACTIVOs. Fuente de verdad real: AbonosCuentasPorCobrar.
+        private static void RecalcularEstadoCuentaCxC(InventarioAnkhalDBDataContext db, int cuentaPorCobrarID)
         {
-            var cxp = db.CuentasPorPagar.First(c => c.CuentaPorPagarID == cuentaPorPagarID);
-            if (cxp.Estado == "CANCELADA") return; // estado reservado, sin lógica activa hoy
+            var cxc = db.CuentasPorCobrar.First(c => c.CuentaPorCobrarID == cuentaPorCobrarID);
+            if (cxc.Estado == "CANCELADA") return; // estado reservado, sin lógica activa hoy
 
-            decimal totalAbonado = db.AbonosCuentasPorPagar
-                .Where(a => a.CuentaPorPagarID == cuentaPorPagarID && a.Estado == "ACTIVO")
+            decimal totalAbonado = db.AbonosCuentasPorCobrar
+                .Where(a => a.CuentaPorCobrarID == cuentaPorCobrarID && a.Estado == "ACTIVO")
                 .Sum(a => (decimal?)a.MontoAbono) ?? 0m;
 
             if (totalAbonado <= 0m)
             {
-                cxp.Estado = "PENDIENTE";
-                cxp.FechaPago = null;
-                cxp.ReferenciaPago = null;
-                cxp.PagadaPorID = null;
+                cxc.Estado = "PENDIENTE";
+                cxc.FechaCobro = null;
+                cxc.ReferenciaCobro = null;
+                cxc.CobradaPorID = null;
             }
-            else if (totalAbonado < cxp.MontoTotal)
+            else if (totalAbonado < cxc.MontoTotal)
             {
-                cxp.Estado = "PARCIAL";
-                cxp.FechaPago = null;
-                cxp.ReferenciaPago = null;
-                cxp.PagadaPorID = null;
+                cxc.Estado = "PARCIAL";
+                cxc.FechaCobro = null;
+                cxc.ReferenciaCobro = null;
+                cxc.CobradaPorID = null;
             }
             else
             {
-                cxp.Estado = "PAGADA";
-                var ultimo = db.AbonosCuentasPorPagar
-                    .Where(a => a.CuentaPorPagarID == cuentaPorPagarID && a.Estado == "ACTIVO")
+                cxc.Estado = "PAGADA";
+                var ultimo = db.AbonosCuentasPorCobrar
+                    .Where(a => a.CuentaPorCobrarID == cuentaPorCobrarID && a.Estado == "ACTIVO")
                     .OrderByDescending(a => a.FechaAbono).ThenByDescending(a => a.AbonoID)
                     .First();
-                cxp.FechaPago = ultimo.FechaAbono;
-                cxp.ReferenciaPago = ultimo.ReferenciaPago;
-                cxp.PagadaPorID = ultimo.RegistradoPorID;
+                cxc.FechaCobro = ultimo.FechaAbono;
+                cxc.ReferenciaCobro = ultimo.ReferenciaPago;
+                cxc.CobradaPorID = ultimo.RegistradoPorID;
             }
         }
 
         [WebMethod(EnableSession = true), ScriptMethod]
-        public static object RegistrarAbono(int cuentaPorPagarID, decimal monto, string referencia, string observaciones)
+        public static object RegistrarAbono(int cuentaPorCobrarID, decimal monto, string referencia, string observaciones)
         {
             if (HttpContext.Current.Session["ClaveID"] == null)
                 return new { ok = false, msg = "Sesión expirada. Recargue la página." };
 
             string rol = HttpContext.Current.Session["Rol"]?.ToString() ?? "";
-            if (rol != "Administrador" && rol != "Compras")
-                return new { ok = false, msg = "No tiene permiso para registrar abonos." };
+            if (rol != "Administrador" && rol != "Ventas" && rol != "Jefe de planta")
+                return new { ok = false, msg = "No tiene permiso para registrar cobros." };
 
             if (monto <= 0)
-                return new { ok = false, msg = "El monto del abono debe ser mayor a cero." };
+                return new { ok = false, msg = "El monto del cobro debe ser mayor a cero." };
 
             int claveID = (int)HttpContext.Current.Session["ClaveID"];
             string connStr = ConfigurationManager
@@ -421,32 +424,32 @@ namespace GrupoAnkhalInventario
                     db.Transaction = tx;
                     try
                     {
-                        // Lock de fila — evita condiciones de carrera entre abonos concurrentes
+                        // Lock de fila — evita condiciones de carrera entre cobros concurrentes
                         db.ExecuteQuery<int>(
-                            "SELECT CuentaPorPagarID FROM dbo.CuentasPorPagar WITH (UPDLOCK, HOLDLOCK) WHERE CuentaPorPagarID = {0}",
-                            cuentaPorPagarID).FirstOrDefault();
+                            "SELECT CuentaPorCobrarID FROM dbo.CuentasPorCobrar WITH (UPDLOCK, HOLDLOCK) WHERE CuentaPorCobrarID = {0}",
+                            cuentaPorCobrarID).FirstOrDefault();
 
-                        var cxp = db.CuentasPorPagar.SingleOrDefault(c => c.CuentaPorPagarID == cuentaPorPagarID);
-                        if (cxp == null)
+                        var cxc = db.CuentasPorCobrar.SingleOrDefault(c => c.CuentaPorCobrarID == cuentaPorCobrarID);
+                        if (cxc == null)
                         {
                             tx.Rollback();
-                            return new { ok = false, msg = "Nota no encontrada." };
+                            return new { ok = false, msg = "Cuenta no encontrada." };
                         }
-                        if (cxp.Estado == "PAGADA")
+                        if (cxc.Estado == "PAGADA")
                         {
                             tx.Rollback();
-                            return new { ok = false, msg = "Esta nota ya está liquidada." };
+                            return new { ok = false, msg = "Esta cuenta ya está liquidada." };
                         }
-                        if (cxp.Estado == "CANCELADA")
+                        if (cxc.Estado == "CANCELADA")
                         {
                             tx.Rollback();
-                            return new { ok = false, msg = "Esta nota está cancelada." };
+                            return new { ok = false, msg = "Esta cuenta está cancelada." };
                         }
 
-                        decimal totalAbonado = db.AbonosCuentasPorPagar
-                            .Where(a => a.CuentaPorPagarID == cuentaPorPagarID && a.Estado == "ACTIVO")
+                        decimal totalAbonado = db.AbonosCuentasPorCobrar
+                            .Where(a => a.CuentaPorCobrarID == cuentaPorCobrarID && a.Estado == "ACTIVO")
                             .Sum(a => (decimal?)a.MontoAbono) ?? 0m;
-                        decimal saldoPendiente = cxp.MontoTotal - totalAbonado;
+                        decimal saldoPendiente = cxc.MontoTotal - totalAbonado;
 
                         if (monto > saldoPendiente)
                         {
@@ -454,9 +457,9 @@ namespace GrupoAnkhalInventario
                             return new { ok = false, msg = string.Format("El monto excede el saldo pendiente ({0:C2}).", saldoPendiente) };
                         }
 
-                        db.AbonosCuentasPorPagar.InsertOnSubmit(new AbonosCuentasPorPagar
+                        db.AbonosCuentasPorCobrar.InsertOnSubmit(new AbonosCuentasPorCobrar
                         {
-                            CuentaPorPagarID = cuentaPorPagarID,
+                            CuentaPorCobrarID = cuentaPorCobrarID,
                             MontoAbono = monto,
                             FechaAbono = AppHelper.Ahora,
                             ReferenciaPago = string.IsNullOrWhiteSpace(referencia) ? null : referencia.Trim(),
@@ -467,7 +470,7 @@ namespace GrupoAnkhalInventario
                         });
                         db.SubmitChanges();
 
-                        RecalcularEstadoCuenta(db, cuentaPorPagarID);
+                        RecalcularEstadoCuentaCxC(db, cuentaPorCobrarID);
                         db.SubmitChanges();
 
                         tx.Commit();
@@ -476,7 +479,7 @@ namespace GrupoAnkhalInventario
                     catch (Exception ex)
                     {
                         tx.Rollback();
-                        return new { ok = false, msg = "Error al registrar el abono: " + ex.Message };
+                        return new { ok = false, msg = "Error al registrar el cobro: " + ex.Message };
                     }
                 }
             }
@@ -489,8 +492,8 @@ namespace GrupoAnkhalInventario
                 return new { ok = false, msg = "Sesión expirada. Recargue la página." };
 
             string rol = HttpContext.Current.Session["Rol"]?.ToString() ?? "";
-            if (rol != "Administrador" && rol != "Compras")
-                return new { ok = false, msg = "No tiene permiso para cancelar abonos." };
+            if (rol != "Administrador" && rol != "Ventas" && rol != "Jefe de planta")
+                return new { ok = false, msg = "No tiene permiso para cancelar cobros." };
 
             if (string.IsNullOrWhiteSpace(motivo))
                 return new { ok = false, msg = "Debe indicar un motivo de cancelación." };
@@ -501,10 +504,10 @@ namespace GrupoAnkhalInventario
 
             using (var db = new InventarioAnkhalDBDataContext(connStr))
             {
-                var abonoPrev = db.AbonosCuentasPorPagar.SingleOrDefault(a => a.AbonoID == abonoID);
+                var abonoPrev = db.AbonosCuentasPorCobrar.SingleOrDefault(a => a.AbonoID == abonoID);
                 if (abonoPrev == null)
-                    return new { ok = false, msg = "Abono no encontrado." };
-                int cuentaPorPagarID = abonoPrev.CuentaPorPagarID;
+                    return new { ok = false, msg = "Cobro no encontrado." };
+                int cuentaPorCobrarID = abonoPrev.CuentaPorCobrarID;
 
                 db.Connection.Open();
                 using (var tx = db.Connection.BeginTransaction())
@@ -513,24 +516,24 @@ namespace GrupoAnkhalInventario
                     try
                     {
                         db.ExecuteQuery<int>(
-                            "SELECT CuentaPorPagarID FROM dbo.CuentasPorPagar WITH (UPDLOCK, HOLDLOCK) WHERE CuentaPorPagarID = {0}",
-                            cuentaPorPagarID).FirstOrDefault();
+                            "SELECT CuentaPorCobrarID FROM dbo.CuentasPorCobrar WITH (UPDLOCK, HOLDLOCK) WHERE CuentaPorCobrarID = {0}",
+                            cuentaPorCobrarID).FirstOrDefault();
 
-                        var abono = db.AbonosCuentasPorPagar.Single(a => a.AbonoID == abonoID);
+                        var abono = db.AbonosCuentasPorCobrar.Single(a => a.AbonoID == abonoID);
                         if (abono.Estado != "ACTIVO")
                         {
                             tx.Rollback();
-                            return new { ok = false, msg = "Este abono ya fue cancelado." };
+                            return new { ok = false, msg = "Este cobro ya fue cancelado." };
                         }
 
-                        var cxp = db.CuentasPorPagar.Single(c => c.CuentaPorPagarID == cuentaPorPagarID);
-                        if (cxp.Estado == "CANCELADA")
+                        var cxc = db.CuentasPorCobrar.Single(c => c.CuentaPorCobrarID == cuentaPorCobrarID);
+                        if (cxc.Estado == "CANCELADA")
                         {
                             tx.Rollback();
                             return new { ok = false, msg = "La cuenta está cancelada; no se puede modificar." };
                         }
 
-                        db.CancelacionesAbonosCxP.InsertOnSubmit(new CancelacionesAbonosCxP
+                        db.CancelacionesAbonosCxC.InsertOnSubmit(new CancelacionesAbonosCxC
                         {
                             AbonoID = abonoID,
                             Motivo = motivo.Trim(),
@@ -540,7 +543,7 @@ namespace GrupoAnkhalInventario
                         abono.Estado = "CANCELADO";
                         db.SubmitChanges();
 
-                        RecalcularEstadoCuenta(db, cuentaPorPagarID);
+                        RecalcularEstadoCuentaCxC(db, cuentaPorCobrarID);
                         db.SubmitChanges();
 
                         tx.Commit();
@@ -549,14 +552,14 @@ namespace GrupoAnkhalInventario
                     catch (Exception ex)
                     {
                         tx.Rollback();
-                        return new { ok = false, msg = "Error al cancelar el abono: " + ex.Message };
+                        return new { ok = false, msg = "Error al cancelar el cobro: " + ex.Message };
                     }
                 }
             }
         }
 
         [WebMethod(EnableSession = true), ScriptMethod]
-        public static object ObtenerAbonos(int cuentaPorPagarID)
+        public static object ObtenerAbonos(int cuentaPorCobrarID)
         {
             string connStr = ConfigurationManager
                 .ConnectionStrings["InventarioAnkhalDBConnectionString"].ConnectionString;
@@ -564,18 +567,18 @@ namespace GrupoAnkhalInventario
             using (var db = new InventarioAnkhalDBDataContext(connStr))
             {
                 string rol = HttpContext.Current.Session["Rol"]?.ToString() ?? "";
-                bool puedeCancelar = (rol == "Administrador" || rol == "Compras");
+                bool puedeCancelar = (rol == "Administrador" || rol == "Ventas" || rol == "Jefe de planta");
 
-                var abonos = db.AbonosCuentasPorPagar
-                    .Where(a => a.CuentaPorPagarID == cuentaPorPagarID)
+                var abonos = db.AbonosCuentasPorCobrar
+                    .Where(a => a.CuentaPorCobrarID == cuentaPorCobrarID)
                     .OrderByDescending(a => a.FechaAbono)
                     .ToList();
                 var abonoIds = abonos.Select(a => a.AbonoID).ToList();
-                var cancelaciones = db.CancelacionesAbonosCxP
+                var cancelaciones = db.CancelacionesAbonosCxC
                     .Where(c => abonoIds.Contains(c.AbonoID))
                     .ToList();
 
-                // Resolver nombres: mismo patrón que Movimientos.aspx.cs (ClaveID → DatosUsuario
+                // Resolver nombres: mismo patrón que CuentasPorPagar.aspx.cs (ClaveID → DatosUsuario
                 // → UsuarioID → UsuarioService API externa, con fallback si falla).
                 var claveIds = abonos.Select(a => a.RegistradoPorID)
                     .Concat(cancelaciones.Select(c => c.CanceladoPorID))
@@ -623,40 +626,40 @@ namespace GrupoAnkhalInventario
         }
 
         [WebMethod]
-        public static object ObtenerDetalleLote(int loteID)
+        public static object ObtenerDetalleEntrega(int entregaID)
         {
             string connStr = ConfigurationManager
                 .ConnectionStrings["InventarioAnkhalDBConnectionString"].ConnectionString;
 
             using (var db = new InventarioAnkhalDBDataContext(connStr))
             {
-                var raw = (from mv in db.Movimientos
-                           where mv.LoteID == loteID
+                var raw = (from de in db.DetalleEntregas
+                           where de.EntregaID == entregaID
                            join mat in db.Materiales
-                               on mv.MaterialID equals (int?)mat.MaterialID into matG
+                               on de.MaterialID equals (int?)mat.MaterialID into matG
                            from mat in matG.DefaultIfEmpty()
                            join prd in db.Productos
-                               on mv.ProductoID equals (int?)prd.ProductoID into prdG
+                               on de.ProductoID equals (int?)prd.ProductoID into prdG
                            from prd in prdG.DefaultIfEmpty()
                            select new
                            {
-                               mv.TipoItem,
+                               de.TipoItem,
                                MatDesc = mat.Descripcion,
                                MatCod = mat.Codigo,
                                PrdDesc = prd.Descripcion,
                                PrdCod = prd.Codigo,
-                               mv.Cantidad,
-                               mv.Costo
+                               de.Cantidad,
+                               de.PrecioUnitario
                            }).ToList();
 
                 return raw.Select(r => new
                 {
-                    nombre = (r.TipoItem == "Material" || r.TipoItem == "MermaMaterial")
+                    nombre = (r.TipoItem == "MATERIAL")
                                  ? "[" + (r.MatCod ?? "") + "] " + (r.MatDesc ?? "")
                                  : "[" + (r.PrdCod ?? "") + "] " + (r.PrdDesc ?? ""),
                     cantidad = r.Cantidad,
-                    costo = r.Costo,
-                    subtotal = r.Cantidad * r.Costo
+                    precio = r.PrecioUnitario,
+                    subtotal = r.Cantidad * r.PrecioUnitario
                 }).ToList();
             }
         }

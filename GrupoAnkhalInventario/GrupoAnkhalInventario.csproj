@@ -92,6 +92,7 @@
     <Content Include="Bases.aspx" />
     <Content Include="css\estilosMenu.css" />
     <Content Include="css\gridviewPantalla.css" />
+    <Content Include="CuentasPorCobrar.aspx" />
     <Content Include="CuentasPorPagar.aspx" />
     <Content Include="Default.aspx" />
     <Content Include="dist\css\adminlte.css" />
@@ -2046,6 +2047,13 @@
     <Compile Include="Bases.aspx.designer.cs">
       <DependentUpon>Bases.aspx</DependentUpon>
     </Compile>
+    <Compile Include="CuentasPorCobrar.aspx.cs">
+      <DependentUpon>CuentasPorCobrar.aspx</DependentUpon>
+      <SubType>ASPXCodeBehind</SubType>
+    </Compile>
+    <Compile Include="CuentasPorCobrar.aspx.designer.cs">
+      <DependentUpon>CuentasPorCobrar.aspx</DependentUpon>
+    </Compile>
     <Compile Include="CuentasPorPagar.aspx.cs">
       <DependentUpon>CuentasPorPagar.aspx</DependentUpon>
       <SubType>ASPXCodeBehind</SubType>
@@ -2078,6 +2086,7 @@
       <DependentUpon>Global.asax</DependentUpon>
     </Compile>
     <Compile Include="Helpers\AppHelper.cs" />
+    <Compile Include="Helpers\CuentasPorCobrarHelper.cs" />
     <Compile Include="Mermas.aspx.cs">
       <DependentUpon>Mermas.aspx</DependentUpon>
       <SubType>ASPXCodeBehind</SubType>

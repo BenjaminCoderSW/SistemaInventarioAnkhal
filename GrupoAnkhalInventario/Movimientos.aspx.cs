@@ -657,6 +657,7 @@ namespace GrupoAnkhalInventario
                                     NumeroNota = lote.NumeroNota,
                                     FechaRecepcion = lote.FechaLote,
                                     FechaVencimiento = lote.FechaLote.AddDays(dias),
+                                    DiasCreditoAplicados = dias,
                                     MontoTotal = monto,
                                     Estado = "PENDIENTE",
                                     RegistradoPorID = claveID,

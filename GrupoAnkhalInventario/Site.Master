@@ -310,6 +310,25 @@
                                 </ul>
                             </li>
 
+                            <!-- Cuentas por Cobrar (desplegable) -->
+                            <li class="nav-item" id="menuCxC" runat="server">
+                                <a href="#" class="nav-link">
+                                    <i class="nav-icon fas fa-hand-holding-usd"></i>
+                                    <p>
+                                        Cuentas por Cobrar
+                                        <i class="fas fa-angle-left right"></i>
+                                    </p>
+                                </a>
+                                <ul class="nav nav-treeview">
+                                    <li class="nav-item">
+                                        <a href="CuentasPorCobrar.aspx" class="nav-link">
+                                            <i class="far fa-circle nav-icon"></i>
+                                            <p>Seguimiento de Cuentas por Cobrar</p>
+                                        </a>
+                                    </li>
+                                </ul>
+                            </li>
+
                             <!-- Mermas (desplegable) -->
                             <li class="nav-item" id="menuMermas" runat="server">
                                 <a href="#" class="nav-link">

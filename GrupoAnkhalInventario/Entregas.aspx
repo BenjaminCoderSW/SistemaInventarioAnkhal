@@ -234,7 +234,8 @@
                     </div>
                     <div class="col-md-3">
                         <label class="font-weight-bold">Cliente <span class="text-danger">*</span></label>
-                        <asp:DropDownList ID="ddlNuevoCliente" runat="server" CssClass="form-control"></asp:DropDownList>
+                        <asp:DropDownList ID="ddlNuevoCliente" runat="server" CssClass="form-control"
+                            onchange="onClienteNuevoChange()"></asp:DropDownList>
                     </div>
                 </div>
                 <div class="row mb-3">
@@ -242,6 +243,16 @@
                         <label class="font-weight-bold">Observaciones</label>
                         <asp:TextBox ID="txtNuevoObservaciones" runat="server" CssClass="form-control"
                             TextMode="MultiLine" Rows="2" MaxLength="500"></asp:TextBox>
+                    </div>
+                </div>
+                <div class="row mb-3">
+                    <div class="col-md-4">
+                        <div class="form-check">
+                            <asp:CheckBox ID="chkEsCredito" runat="server" CssClass="form-check-input" />
+                            <label class="form-check-label font-weight-bold" for="<%= chkEsCredito.ClientID %>">
+                                Es a crédito (genera Cuenta por Cobrar)
+                            </label>
+                        </div>
                     </div>
                 </div>
 
@@ -662,6 +673,16 @@
 
     function escHtml(s) {
         return (s || '').replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;');
+    }
+
+    // ─────────────────────────────────────────────────────────────────
+    // Auto-marcar "Es a crédito" según los días de crédito del cliente
+    // ─────────────────────────────────────────────────────────────────
+    function onClienteNuevoChange() {
+        var ddl = document.getElementById('<%= ddlNuevoCliente.ClientID %>');
+        var opt = ddl.options[ddl.selectedIndex];
+        var dias = opt ? parseInt(opt.getAttribute('data-dias') || '0', 10) : 0;
+        document.getElementById('<%= chkEsCredito.ClientID %>').checked = dias > 0;
     }
 
     // ─────────────────────────────────────────────────────────────────

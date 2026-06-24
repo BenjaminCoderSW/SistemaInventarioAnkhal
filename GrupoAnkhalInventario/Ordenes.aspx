@@ -268,7 +268,8 @@
                     </div>
                     <div class="col-md-3">
                         <label class="font-weight-bold">Cliente <span class="text-danger">*</span></label>
-                        <asp:DropDownList ID="ddlNuevoCliente" runat="server" CssClass="form-control"></asp:DropDownList>
+                        <asp:DropDownList ID="ddlNuevoCliente" runat="server" CssClass="form-control"
+                            onchange="onClienteOrdenChange()"></asp:DropDownList>
                     </div>
                 </div>
                 <div class="row mb-3">
@@ -276,6 +277,16 @@
                         <label class="font-weight-bold">Observaciones</label>
                         <asp:TextBox ID="txtNuevoObservaciones" runat="server" CssClass="form-control"
                             TextMode="MultiLine" Rows="2" MaxLength="500"></asp:TextBox>
+                    </div>
+                </div>
+                <div class="row mb-3">
+                    <div class="col-md-4">
+                        <div class="form-check">
+                            <asp:CheckBox ID="chkEsCreditoOrden" runat="server" CssClass="form-check-input" />
+                            <label class="form-check-label font-weight-bold" for="<%= chkEsCreditoOrden.ClientID %>">
+                                Es a crédito (aplica como default a sus entregas parciales)
+                            </label>
+                        </div>
                     </div>
                 </div>
 
@@ -430,6 +441,16 @@
                         <label class="font-weight-bold">Observaciones</label>
                         <asp:TextBox ID="txtPartidaObs" runat="server" CssClass="form-control"
                             TextMode="MultiLine" Rows="2" MaxLength="500"></asp:TextBox>
+                    </div>
+                </div>
+                <div class="row mt-2">
+                    <div class="col-md-4">
+                        <div class="form-check">
+                            <asp:CheckBox ID="chkEsCreditoPartida" runat="server" CssClass="form-check-input" />
+                            <label class="form-check-label font-weight-bold" for="<%= chkEsCreditoPartida.ClientID %>">
+                                Es a crédito (genera Cuenta por Cobrar para esta entrega)
+                            </label>
+                        </div>
                     </div>
                 </div>
 
@@ -924,8 +945,17 @@ function mostrarModalRegistrarEntrega(p) {
     document.getElementById('<%= txtPartidaFecha.ClientID %>').value = getTodayDate();
     document.getElementById('<%= txtPartidaFactura.ClientID %>').value = '';
     document.getElementById('<%= txtPartidaObs.ClientID %>').value    = '';
+    document.getElementById('<%= chkEsCreditoPartida.ClientID %>').checked = !!p.EsCredito;
     document.getElementById('<%= hdnPartidaJson.ClientID %>').value   = '';
     $('#modalRegistrarEntrega').modal('show');
+}
+
+// Auto-marcar "Es a crédito" en la orden según los días de crédito del cliente
+function onClienteOrdenChange() {
+    var ddl = document.getElementById('<%= ddlNuevoCliente.ClientID %>');
+    var opt = ddl.options[ddl.selectedIndex];
+    var dias = opt ? parseInt(opt.getAttribute('data-dias') || '0', 10) : 0;
+    document.getElementById('<%= chkEsCreditoOrden.ClientID %>').checked = dias > 0;
 }
 
 // Recalcular el max del input según la unidad seleccionada

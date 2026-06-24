@@ -37,6 +37,7 @@ namespace GrupoAnkhalInventario
                 { "metasproduccion.aspx", new List<string> { "Administrador", "Produccion" } },
                 { "metasventas.aspx",     new List<string> { "Administrador", "Ventas" } },
                 { "cuentasporpagar.aspx", new List<string> { "Administrador", "Compras",   "Jefe de planta" } },
+                { "cuentasporcobrar.aspx", new List<string> { "Administrador", "Ventas",   "Jefe de planta" } },
 
                 // ── Inventario (todos excepto roles no definidos) ──
                 { "inventario.aspx", new List<string>
@@ -154,6 +155,7 @@ namespace GrupoAnkhalInventario
             liMenuMetasVentas.Visible = false;
             menuMovimientos.Visible = false;
             menuCxP.Visible = false;
+            menuCxC.Visible = false;
             menuMermas.Visible = false;
             headerInventario.Visible = false;
             menuInventario.Visible = false;
@@ -177,6 +179,7 @@ namespace GrupoAnkhalInventario
                     liMenuMetasVentas.Visible = true;
                     menuMovimientos.Visible = true;
                     menuCxP.Visible = true;
+                    menuCxC.Visible = true;
                     menuMermas.Visible = true;
                     headerInventario.Visible = true;
                     menuInventario.Visible = true;
@@ -192,6 +195,7 @@ namespace GrupoAnkhalInventario
                     headerOperaciones.Visible = true;
                     menuEntregas.Visible = true;
                     liMenuMetasVentas.Visible = true;
+                    menuCxC.Visible = true;
                     headerInventario.Visible = true;
                     menuInventario.Visible = true;
                     break;
@@ -246,6 +250,7 @@ namespace GrupoAnkhalInventario
                     headerOperaciones.Visible = true;
                     menuMovimientos.Visible = true;
                     menuCxP.Visible = true;
+                    menuCxC.Visible = true;
                     menuMermas.Visible = true;
                     headerInventario.Visible = true;
                     menuInventario.Visible = true;

@@ -126,13 +126,17 @@ namespace GrupoAnkhalInventario
                 var clientes = db.Clientes
                     .Where(c => c.Activo)
                     .OrderBy(c => c.Nombre)
-                    .Select(c => new { c.ClienteID, c.Nombre })
+                    .Select(c => new { c.ClienteID, c.Nombre, c.DiasCredito })
                     .ToList();
 
                 ddlNuevoCliente.Items.Clear();
                 ddlNuevoCliente.Items.Add(new ListItem("-- Seleccione --", ""));
                 foreach (var c in clientes)
-                    ddlNuevoCliente.Items.Add(new ListItem(c.Nombre, c.ClienteID.ToString()));
+                {
+                    var item = new ListItem(c.Nombre, c.ClienteID.ToString());
+                    item.Attributes["data-dias"] = (c.DiasCredito ?? 0).ToString();
+                    ddlNuevoCliente.Items.Add(item);
+                }
 
             }
         }
@@ -413,7 +417,7 @@ namespace GrupoAnkhalInventario
                         db.Transaction = tx;
                         try
                         {
-                            var entrega = CrearEntregaEntity(db, baseID, clienteID, fecha, "PROGRAMADA");
+                            var entrega = CrearEntregaEntity(db, baseID, clienteID, fecha, "PROGRAMADA", chkEsCredito.Checked);
                             db.Entregas.InsertOnSubmit(entrega);
                             db.SubmitChanges(); // Obtener EntregaID
 
@@ -474,7 +478,7 @@ namespace GrupoAnkhalInventario
                         db.Transaction = tx;
                         try
                         {
-                            var entrega = CrearEntregaEntity(db, baseID, clienteID, fecha, "ENTREGADA");
+                            var entrega = CrearEntregaEntity(db, baseID, clienteID, fecha, "ENTREGADA", chkEsCredito.Checked);
                             db.Entregas.InsertOnSubmit(entrega);
                             db.SubmitChanges(); // Obtener EntregaID
 
@@ -485,6 +489,9 @@ namespace GrupoAnkhalInventario
                             DescontarStockYRegistrarMovimientos(db, entrega.EntregaID, baseID, items, tipoSalidaID, entrega.Observaciones);
 
                             db.SubmitChanges();
+
+                            CuentasPorCobrarHelper.GenerarSiAplica(db, entrega.EntregaID, Convert.ToInt32(Session["ClaveID"]));
+
                             tx.Commit();
 
                             LimpiarModalNuevo();
@@ -583,6 +590,9 @@ namespace GrupoAnkhalInventario
                             entrega.FechaModif = AppHelper.Ahora;
 
                             db.SubmitChanges();
+
+                            CuentasPorCobrarHelper.GenerarSiAplica(db, entregaID, Convert.ToInt32(Session["ClaveID"]));
+
                             tx.Commit();
 
                             SetMsg("success", "Entrega confirmada",
@@ -619,6 +629,11 @@ namespace GrupoAnkhalInventario
                         {
                             var entrega = db.Entregas.First(e => e.EntregaID == entregaID);
 
+                            if (CuentasPorCobrarHelper.HayCobrosActivos(db, entregaID))
+                                throw new CxCConCobrosActivosException(
+                                    "Esta entrega tiene cobros (abonos) registrados en su Cuenta por Cobrar. " +
+                                    "Cancele primero esos cobros desde el módulo de Cuentas por Cobrar antes de cancelar la entrega.");
+
                             // Si estaba ENTREGADA, devolver stock y marcar movimientos SALIDA como anulados
                             if (entrega.Estado == "ENTREGADA")
                             {
@@ -634,6 +649,8 @@ namespace GrupoAnkhalInventario
                                 foreach (var mv in movsOriginal)
                                     mv.Observaciones = mv.Observaciones + " [ANULADO - entrega cancelada]";
                             }
+
+                            CuentasPorCobrarHelper.CancelarCxCSiExiste(db, entregaID);
 
                             entrega.Estado     = "CANCELADA";
                             entrega.FechaModif = AppHelper.Ahora;
@@ -652,6 +669,10 @@ namespace GrupoAnkhalInventario
                         }
                     }
                 }
+            }
+            catch (CxCConCobrosActivosException cex)
+            {
+                SetMsg("warning", "Cobros pendientes", cex.Message);
             }
             catch (Exception ex)
             {
@@ -1093,7 +1114,7 @@ namespace GrupoAnkhalInventario
         }
 
         private Modelo.Entregas CrearEntregaEntity(InventarioAnkhalDBDataContext db,
-            int baseID, int clienteID, DateTime fecha, string estado)
+            int baseID, int clienteID, DateTime fecha, string estado, bool esCredito)
         {
             // Folio real: contar por PREFIJO de folio (no por FechaEntrega) para evitar
             // duplicados cuando otra página (Ordenes.aspx) genera entregas con la misma
@@ -1118,6 +1139,7 @@ namespace GrupoAnkhalInventario
                 Cliente         = clienteNombre,
                 ClienteID       = clienteID,
                 Estado          = estado,
+                EsCredito       = esCredito,
                 Observaciones   = string.IsNullOrEmpty(txtNuevoObservaciones.Text.Trim())
                                     ? null
                                     : txtNuevoObservaciones.Text.Trim(),
@@ -1463,6 +1485,7 @@ namespace GrupoAnkhalInventario
             ddlNuevoBase.SelectedIndex   = 0;
             ddlNuevoCliente.SelectedIndex= 0;
             txtNuevoObservaciones.Text   = "";
+            chkEsCredito.Checked         = false;
             hdnItemsJson.Value           = "[]";
         }
 
