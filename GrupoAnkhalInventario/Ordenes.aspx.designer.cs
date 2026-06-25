@@ -1,10 +1,10 @@
 //------------------------------------------------------------------------------
-// <generado autom醫icamente>
-//     Este c骴igo fue generado por una herramienta.
+// <generado autom谩ticamente>
+//     Este c贸digo fue generado por una herramienta.
 //
-//     Los cambios en este archivo podr韆n causar un comportamiento incorrecto y se perder醤 si
-//     se vuelve a generar el c骴igo. 
-// </generado autom醫icamente>
+//     Los cambios en este archivo podr铆an causar un comportamiento incorrecto y se perder谩n si
+//     se vuelve a generar el c贸digo. 
+// </generado autom谩ticamente>
 //------------------------------------------------------------------------------
 
 namespace GrupoAnkhalInventario
@@ -18,8 +18,8 @@ namespace GrupoAnkhalInventario
         /// Control lblTotal.
         /// </summary>
         /// <remarks>
-        /// Campo generado autom醫icamente.
-        /// Para modificarlo, mueva la declaraci髇 del campo del archivo del dise馻dor al archivo de c骴igo subyacente.
+        /// Campo generado autom谩ticamente.
+        /// Para modificarlo, mueva la declaraci贸n del campo del archivo del dise帽ador al archivo de c贸digo subyacente.
         /// </remarks>
         protected global::System.Web.UI.WebControls.Label lblTotal;
 
@@ -27,8 +27,8 @@ namespace GrupoAnkhalInventario
         /// Control lblAbiertas.
         /// </summary>
         /// <remarks>
-        /// Campo generado autom醫icamente.
-        /// Para modificarlo, mueva la declaraci髇 del campo del archivo del dise馻dor al archivo de c骴igo subyacente.
+        /// Campo generado autom谩ticamente.
+        /// Para modificarlo, mueva la declaraci贸n del campo del archivo del dise帽ador al archivo de c贸digo subyacente.
         /// </remarks>
         protected global::System.Web.UI.WebControls.Label lblAbiertas;
 
@@ -36,8 +36,8 @@ namespace GrupoAnkhalInventario
         /// Control lblParciales.
         /// </summary>
         /// <remarks>
-        /// Campo generado autom醫icamente.
-        /// Para modificarlo, mueva la declaraci髇 del campo del archivo del dise馻dor al archivo de c骴igo subyacente.
+        /// Campo generado autom谩ticamente.
+        /// Para modificarlo, mueva la declaraci贸n del campo del archivo del dise帽ador al archivo de c贸digo subyacente.
         /// </remarks>
         protected global::System.Web.UI.WebControls.Label lblParciales;
 
@@ -45,8 +45,8 @@ namespace GrupoAnkhalInventario
         /// Control lblCompletadas.
         /// </summary>
         /// <remarks>
-        /// Campo generado autom醫icamente.
-        /// Para modificarlo, mueva la declaraci髇 del campo del archivo del dise馻dor al archivo de c骴igo subyacente.
+        /// Campo generado autom谩ticamente.
+        /// Para modificarlo, mueva la declaraci贸n del campo del archivo del dise帽ador al archivo de c贸digo subyacente.
         /// </remarks>
         protected global::System.Web.UI.WebControls.Label lblCompletadas;
 
@@ -54,8 +54,8 @@ namespace GrupoAnkhalInventario
         /// Control lblCanceladas.
         /// </summary>
         /// <remarks>
-        /// Campo generado autom醫icamente.
-        /// Para modificarlo, mueva la declaraci髇 del campo del archivo del dise馻dor al archivo de c骴igo subyacente.
+        /// Campo generado autom谩ticamente.
+        /// Para modificarlo, mueva la declaraci贸n del campo del archivo del dise帽ador al archivo de c贸digo subyacente.
         /// </remarks>
         protected global::System.Web.UI.WebControls.Label lblCanceladas;
 
@@ -63,8 +63,8 @@ namespace GrupoAnkhalInventario
         /// Control lblValorTotal.
         /// </summary>
         /// <remarks>
-        /// Campo generado autom醫icamente.
-        /// Para modificarlo, mueva la declaraci髇 del campo del archivo del dise馻dor al archivo de c骴igo subyacente.
+        /// Campo generado autom谩ticamente.
+        /// Para modificarlo, mueva la declaraci贸n del campo del archivo del dise帽ador al archivo de c贸digo subyacente.
         /// </remarks>
         protected global::System.Web.UI.WebControls.Label lblValorTotal;
 
@@ -72,8 +72,8 @@ namespace GrupoAnkhalInventario
         /// Control ddlFiltrBase.
         /// </summary>
         /// <remarks>
-        /// Campo generado autom醫icamente.
-        /// Para modificarlo, mueva la declaraci髇 del campo del archivo del dise馻dor al archivo de c骴igo subyacente.
+        /// Campo generado autom谩ticamente.
+        /// Para modificarlo, mueva la declaraci贸n del campo del archivo del dise帽ador al archivo de c贸digo subyacente.
         /// </remarks>
         protected global::System.Web.UI.WebControls.DropDownList ddlFiltrBase;
 
@@ -81,8 +81,8 @@ namespace GrupoAnkhalInventario
         /// Control ddlFiltrEstado.
         /// </summary>
         /// <remarks>
-        /// Campo generado autom醫icamente.
-        /// Para modificarlo, mueva la declaraci髇 del campo del archivo del dise馻dor al archivo de c骴igo subyacente.
+        /// Campo generado autom谩ticamente.
+        /// Para modificarlo, mueva la declaraci贸n del campo del archivo del dise帽ador al archivo de c贸digo subyacente.
         /// </remarks>
         protected global::System.Web.UI.WebControls.DropDownList ddlFiltrEstado;
 
@@ -90,8 +90,8 @@ namespace GrupoAnkhalInventario
         /// Control txtFiltrCliente.
         /// </summary>
         /// <remarks>
-        /// Campo generado autom醫icamente.
-        /// Para modificarlo, mueva la declaraci髇 del campo del archivo del dise馻dor al archivo de c骴igo subyacente.
+        /// Campo generado autom谩ticamente.
+        /// Para modificarlo, mueva la declaraci贸n del campo del archivo del dise帽ador al archivo de c贸digo subyacente.
         /// </remarks>
         protected global::System.Web.UI.WebControls.TextBox txtFiltrCliente;
 
@@ -99,8 +99,8 @@ namespace GrupoAnkhalInventario
         /// Control txtFiltrFolio.
         /// </summary>
         /// <remarks>
-        /// Campo generado autom醫icamente.
-        /// Para modificarlo, mueva la declaraci髇 del campo del archivo del dise馻dor al archivo de c骴igo subyacente.
+        /// Campo generado autom谩ticamente.
+        /// Para modificarlo, mueva la declaraci贸n del campo del archivo del dise帽ador al archivo de c贸digo subyacente.
         /// </remarks>
         protected global::System.Web.UI.WebControls.TextBox txtFiltrFolio;
 
@@ -108,8 +108,8 @@ namespace GrupoAnkhalInventario
         /// Control txtFiltrDesde.
         /// </summary>
         /// <remarks>
-        /// Campo generado autom醫icamente.
-        /// Para modificarlo, mueva la declaraci髇 del campo del archivo del dise馻dor al archivo de c骴igo subyacente.
+        /// Campo generado autom谩ticamente.
+        /// Para modificarlo, mueva la declaraci贸n del campo del archivo del dise帽ador al archivo de c贸digo subyacente.
         /// </remarks>
         protected global::System.Web.UI.WebControls.TextBox txtFiltrDesde;
 
@@ -117,8 +117,8 @@ namespace GrupoAnkhalInventario
         /// Control txtFiltrHasta.
         /// </summary>
         /// <remarks>
-        /// Campo generado autom醫icamente.
-        /// Para modificarlo, mueva la declaraci髇 del campo del archivo del dise馻dor al archivo de c骴igo subyacente.
+        /// Campo generado autom谩ticamente.
+        /// Para modificarlo, mueva la declaraci贸n del campo del archivo del dise帽ador al archivo de c贸digo subyacente.
         /// </remarks>
         protected global::System.Web.UI.WebControls.TextBox txtFiltrHasta;
 
@@ -126,8 +126,8 @@ namespace GrupoAnkhalInventario
         /// Control btnBuscar.
         /// </summary>
         /// <remarks>
-        /// Campo generado autom醫icamente.
-        /// Para modificarlo, mueva la declaraci髇 del campo del archivo del dise馻dor al archivo de c骴igo subyacente.
+        /// Campo generado autom谩ticamente.
+        /// Para modificarlo, mueva la declaraci贸n del campo del archivo del dise帽ador al archivo de c贸digo subyacente.
         /// </remarks>
         protected global::System.Web.UI.WebControls.Button btnBuscar;
 
@@ -135,8 +135,8 @@ namespace GrupoAnkhalInventario
         /// Control btnLimpiar.
         /// </summary>
         /// <remarks>
-        /// Campo generado autom醫icamente.
-        /// Para modificarlo, mueva la declaraci髇 del campo del archivo del dise馻dor al archivo de c骴igo subyacente.
+        /// Campo generado autom谩ticamente.
+        /// Para modificarlo, mueva la declaraci贸n del campo del archivo del dise帽ador al archivo de c贸digo subyacente.
         /// </remarks>
         protected global::System.Web.UI.WebControls.Button btnLimpiar;
 
@@ -144,8 +144,8 @@ namespace GrupoAnkhalInventario
         /// Control btnNuevoOrden.
         /// </summary>
         /// <remarks>
-        /// Campo generado autom醫icamente.
-        /// Para modificarlo, mueva la declaraci髇 del campo del archivo del dise馻dor al archivo de c骴igo subyacente.
+        /// Campo generado autom谩ticamente.
+        /// Para modificarlo, mueva la declaraci贸n del campo del archivo del dise帽ador al archivo de c贸digo subyacente.
         /// </remarks>
         protected global::System.Web.UI.WebControls.Button btnNuevoOrden;
 
@@ -153,8 +153,8 @@ namespace GrupoAnkhalInventario
         /// Control lblResultados.
         /// </summary>
         /// <remarks>
-        /// Campo generado autom醫icamente.
-        /// Para modificarlo, mueva la declaraci髇 del campo del archivo del dise馻dor al archivo de c骴igo subyacente.
+        /// Campo generado autom谩ticamente.
+        /// Para modificarlo, mueva la declaraci贸n del campo del archivo del dise帽ador al archivo de c贸digo subyacente.
         /// </remarks>
         protected global::System.Web.UI.WebControls.Label lblResultados;
 
@@ -162,8 +162,8 @@ namespace GrupoAnkhalInventario
         /// Control gvOrdenes.
         /// </summary>
         /// <remarks>
-        /// Campo generado autom醫icamente.
-        /// Para modificarlo, mueva la declaraci髇 del campo del archivo del dise馻dor al archivo de c骴igo subyacente.
+        /// Campo generado autom谩ticamente.
+        /// Para modificarlo, mueva la declaraci贸n del campo del archivo del dise帽ador al archivo de c贸digo subyacente.
         /// </remarks>
         protected global::System.Web.UI.WebControls.GridView gvOrdenes;
 
@@ -171,17 +171,26 @@ namespace GrupoAnkhalInventario
         /// Control hdnMensajePendiente.
         /// </summary>
         /// <remarks>
-        /// Campo generado autom醫icamente.
-        /// Para modificarlo, mueva la declaraci髇 del campo del archivo del dise馻dor al archivo de c骴igo subyacente.
+        /// Campo generado autom谩ticamente.
+        /// Para modificarlo, mueva la declaraci贸n del campo del archivo del dise帽ador al archivo de c贸digo subyacente.
         /// </remarks>
         protected global::System.Web.UI.WebControls.HiddenField hdnMensajePendiente;
+
+        /// <summary>
+        /// Control hdnForzarLimiteCredito.
+        /// </summary>
+        /// <remarks>
+        /// Campo generado autom谩ticamente.
+        /// Para modificarlo, mueva la declaraci贸n del campo del archivo del dise帽ador al archivo de c贸digo subyacente.
+        /// </remarks>
+        protected global::System.Web.UI.WebControls.HiddenField hdnForzarLimiteCredito;
 
         /// <summary>
         /// Control hdnOrdenIDAccion.
         /// </summary>
         /// <remarks>
-        /// Campo generado autom醫icamente.
-        /// Para modificarlo, mueva la declaraci髇 del campo del archivo del dise馻dor al archivo de c骴igo subyacente.
+        /// Campo generado autom谩ticamente.
+        /// Para modificarlo, mueva la declaraci贸n del campo del archivo del dise帽ador al archivo de c贸digo subyacente.
         /// </remarks>
         protected global::System.Web.UI.WebControls.HiddenField hdnOrdenIDAccion;
 
@@ -189,8 +198,8 @@ namespace GrupoAnkhalInventario
         /// Control hdnAccion.
         /// </summary>
         /// <remarks>
-        /// Campo generado autom醫icamente.
-        /// Para modificarlo, mueva la declaraci髇 del campo del archivo del dise馻dor al archivo de c骴igo subyacente.
+        /// Campo generado autom谩ticamente.
+        /// Para modificarlo, mueva la declaraci贸n del campo del archivo del dise帽ador al archivo de c贸digo subyacente.
         /// </remarks>
         protected global::System.Web.UI.WebControls.HiddenField hdnAccion;
 
@@ -198,8 +207,8 @@ namespace GrupoAnkhalInventario
         /// Control hdnItemsJson.
         /// </summary>
         /// <remarks>
-        /// Campo generado autom醫icamente.
-        /// Para modificarlo, mueva la declaraci髇 del campo del archivo del dise馻dor al archivo de c骴igo subyacente.
+        /// Campo generado autom谩ticamente.
+        /// Para modificarlo, mueva la declaraci贸n del campo del archivo del dise帽ador al archivo de c贸digo subyacente.
         /// </remarks>
         protected global::System.Web.UI.WebControls.HiddenField hdnItemsJson;
 
@@ -207,8 +216,8 @@ namespace GrupoAnkhalInventario
         /// Control hdnDetalleJson.
         /// </summary>
         /// <remarks>
-        /// Campo generado autom醫icamente.
-        /// Para modificarlo, mueva la declaraci髇 del campo del archivo del dise馻dor al archivo de c骴igo subyacente.
+        /// Campo generado autom谩ticamente.
+        /// Para modificarlo, mueva la declaraci贸n del campo del archivo del dise帽ador al archivo de c贸digo subyacente.
         /// </remarks>
         protected global::System.Web.UI.WebControls.HiddenField hdnDetalleJson;
 
@@ -216,8 +225,8 @@ namespace GrupoAnkhalInventario
         /// Control hdnPartidaJson.
         /// </summary>
         /// <remarks>
-        /// Campo generado autom醫icamente.
-        /// Para modificarlo, mueva la declaraci髇 del campo del archivo del dise馻dor al archivo de c骴igo subyacente.
+        /// Campo generado autom谩ticamente.
+        /// Para modificarlo, mueva la declaraci贸n del campo del archivo del dise帽ador al archivo de c贸digo subyacente.
         /// </remarks>
         protected global::System.Web.UI.WebControls.HiddenField hdnPartidaJson;
 
@@ -225,8 +234,8 @@ namespace GrupoAnkhalInventario
         /// Control hdnEntregaItemsJson.
         /// </summary>
         /// <remarks>
-        /// Campo generado autom醫icamente.
-        /// Para modificarlo, mueva la declaraci髇 del campo del archivo del dise馻dor al archivo de c骴igo subyacente.
+        /// Campo generado autom谩ticamente.
+        /// Para modificarlo, mueva la declaraci贸n del campo del archivo del dise帽ador al archivo de c贸digo subyacente.
         /// </remarks>
         protected global::System.Web.UI.WebControls.HiddenField hdnEntregaItemsJson;
 
@@ -234,8 +243,8 @@ namespace GrupoAnkhalInventario
         /// Control hdnEntregaIDAccion.
         /// </summary>
         /// <remarks>
-        /// Campo generado autom醫icamente.
-        /// Para modificarlo, mueva la declaraci髇 del campo del archivo del dise馻dor al archivo de c骴igo subyacente.
+        /// Campo generado autom谩ticamente.
+        /// Para modificarlo, mueva la declaraci贸n del campo del archivo del dise帽ador al archivo de c贸digo subyacente.
         /// </remarks>
         protected global::System.Web.UI.WebControls.HiddenField hdnEntregaIDAccion;
 
@@ -243,8 +252,8 @@ namespace GrupoAnkhalInventario
         /// Control hdnModoGuardado.
         /// </summary>
         /// <remarks>
-        /// Campo generado autom醫icamente.
-        /// Para modificarlo, mueva la declaraci髇 del campo del archivo del dise馻dor al archivo de c骴igo subyacente.
+        /// Campo generado autom谩ticamente.
+        /// Para modificarlo, mueva la declaraci贸n del campo del archivo del dise帽ador al archivo de c贸digo subyacente.
         /// </remarks>
         protected global::System.Web.UI.WebControls.HiddenField hdnModoGuardado;
 
@@ -252,8 +261,8 @@ namespace GrupoAnkhalInventario
         /// Control hdnNumeroFactura.
         /// </summary>
         /// <remarks>
-        /// Campo generado autom醫icamente.
-        /// Para modificarlo, mueva la declaraci髇 del campo del archivo del dise馻dor al archivo de c骴igo subyacente.
+        /// Campo generado autom谩ticamente.
+        /// Para modificarlo, mueva la declaraci贸n del campo del archivo del dise帽ador al archivo de c贸digo subyacente.
         /// </remarks>
         protected global::System.Web.UI.WebControls.HiddenField hdnNumeroFactura;
 
@@ -261,8 +270,8 @@ namespace GrupoAnkhalInventario
         /// Control hdnFechaEntregaConf.
         /// </summary>
         /// <remarks>
-        /// Campo generado autom醫icamente.
-        /// Para modificarlo, mueva la declaraci髇 del campo del archivo del dise馻dor al archivo de c骴igo subyacente.
+        /// Campo generado autom谩ticamente.
+        /// Para modificarlo, mueva la declaraci贸n del campo del archivo del dise帽ador al archivo de c贸digo subyacente.
         /// </remarks>
         protected global::System.Web.UI.WebControls.HiddenField hdnFechaEntregaConf;
 
@@ -270,8 +279,8 @@ namespace GrupoAnkhalInventario
         /// Control btnProcesarAccion.
         /// </summary>
         /// <remarks>
-        /// Campo generado autom醫icamente.
-        /// Para modificarlo, mueva la declaraci髇 del campo del archivo del dise馻dor al archivo de c骴igo subyacente.
+        /// Campo generado autom谩ticamente.
+        /// Para modificarlo, mueva la declaraci贸n del campo del archivo del dise帽ador al archivo de c贸digo subyacente.
         /// </remarks>
         protected global::System.Web.UI.WebControls.Button btnProcesarAccion;
 
@@ -279,8 +288,8 @@ namespace GrupoAnkhalInventario
         /// Control btnGuardarPartida.
         /// </summary>
         /// <remarks>
-        /// Campo generado autom醫icamente.
-        /// Para modificarlo, mueva la declaraci髇 del campo del archivo del dise馻dor al archivo de c骴igo subyacente.
+        /// Campo generado autom谩ticamente.
+        /// Para modificarlo, mueva la declaraci贸n del campo del archivo del dise帽ador al archivo de c贸digo subyacente.
         /// </remarks>
         protected global::System.Web.UI.WebControls.Button btnGuardarPartida;
 
@@ -288,8 +297,8 @@ namespace GrupoAnkhalInventario
         /// Control txtNuevoFolio.
         /// </summary>
         /// <remarks>
-        /// Campo generado autom醫icamente.
-        /// Para modificarlo, mueva la declaraci髇 del campo del archivo del dise馻dor al archivo de c骴igo subyacente.
+        /// Campo generado autom谩ticamente.
+        /// Para modificarlo, mueva la declaraci贸n del campo del archivo del dise帽ador al archivo de c贸digo subyacente.
         /// </remarks>
         protected global::System.Web.UI.WebControls.TextBox txtNuevoFolio;
 
@@ -297,8 +306,8 @@ namespace GrupoAnkhalInventario
         /// Control txtNuevoFecha.
         /// </summary>
         /// <remarks>
-        /// Campo generado autom醫icamente.
-        /// Para modificarlo, mueva la declaraci髇 del campo del archivo del dise馻dor al archivo de c骴igo subyacente.
+        /// Campo generado autom谩ticamente.
+        /// Para modificarlo, mueva la declaraci贸n del campo del archivo del dise帽ador al archivo de c贸digo subyacente.
         /// </remarks>
         protected global::System.Web.UI.WebControls.TextBox txtNuevoFecha;
 
@@ -306,8 +315,8 @@ namespace GrupoAnkhalInventario
         /// Control ddlNuevoBase.
         /// </summary>
         /// <remarks>
-        /// Campo generado autom醫icamente.
-        /// Para modificarlo, mueva la declaraci髇 del campo del archivo del dise馻dor al archivo de c骴igo subyacente.
+        /// Campo generado autom谩ticamente.
+        /// Para modificarlo, mueva la declaraci贸n del campo del archivo del dise帽ador al archivo de c贸digo subyacente.
         /// </remarks>
         protected global::System.Web.UI.WebControls.DropDownList ddlNuevoBase;
 
@@ -315,8 +324,8 @@ namespace GrupoAnkhalInventario
         /// Control ddlNuevoCliente.
         /// </summary>
         /// <remarks>
-        /// Campo generado autom醫icamente.
-        /// Para modificarlo, mueva la declaraci髇 del campo del archivo del dise馻dor al archivo de c骴igo subyacente.
+        /// Campo generado autom谩ticamente.
+        /// Para modificarlo, mueva la declaraci贸n del campo del archivo del dise帽ador al archivo de c贸digo subyacente.
         /// </remarks>
         protected global::System.Web.UI.WebControls.DropDownList ddlNuevoCliente;
 
@@ -324,8 +333,8 @@ namespace GrupoAnkhalInventario
         /// Control txtNuevoObservaciones.
         /// </summary>
         /// <remarks>
-        /// Campo generado autom醫icamente.
-        /// Para modificarlo, mueva la declaraci髇 del campo del archivo del dise馻dor al archivo de c骴igo subyacente.
+        /// Campo generado autom谩ticamente.
+        /// Para modificarlo, mueva la declaraci贸n del campo del archivo del dise帽ador al archivo de c贸digo subyacente.
         /// </remarks>
         protected global::System.Web.UI.WebControls.TextBox txtNuevoObservaciones;
 
@@ -333,8 +342,8 @@ namespace GrupoAnkhalInventario
         /// Control chkEsCreditoOrden.
         /// </summary>
         /// <remarks>
-        /// Campo generado autom醫icamente.
-        /// Para modificarlo, mueva la declaraci髇 del campo del archivo del dise馻dor al archivo de c骴igo subyacente.
+        /// Campo generado autom谩ticamente.
+        /// Para modificarlo, mueva la declaraci贸n del campo del archivo del dise帽ador al archivo de c贸digo subyacente.
         /// </remarks>
         protected global::System.Web.UI.WebControls.CheckBox chkEsCreditoOrden;
 
@@ -342,8 +351,8 @@ namespace GrupoAnkhalInventario
         /// Control btnGuardarOrden.
         /// </summary>
         /// <remarks>
-        /// Campo generado autom醫icamente.
-        /// Para modificarlo, mueva la declaraci髇 del campo del archivo del dise馻dor al archivo de c骴igo subyacente.
+        /// Campo generado autom谩ticamente.
+        /// Para modificarlo, mueva la declaraci贸n del campo del archivo del dise帽ador al archivo de c贸digo subyacente.
         /// </remarks>
         protected global::System.Web.UI.WebControls.Button btnGuardarOrden;
 
@@ -351,8 +360,8 @@ namespace GrupoAnkhalInventario
         /// Control txtPartidaFecha.
         /// </summary>
         /// <remarks>
-        /// Campo generado autom醫icamente.
-        /// Para modificarlo, mueva la declaraci髇 del campo del archivo del dise馻dor al archivo de c骴igo subyacente.
+        /// Campo generado autom谩ticamente.
+        /// Para modificarlo, mueva la declaraci贸n del campo del archivo del dise帽ador al archivo de c贸digo subyacente.
         /// </remarks>
         protected global::System.Web.UI.WebControls.TextBox txtPartidaFecha;
 
@@ -360,8 +369,8 @@ namespace GrupoAnkhalInventario
         /// Control txtPartidaFactura.
         /// </summary>
         /// <remarks>
-        /// Campo generado autom醫icamente.
-        /// Para modificarlo, mueva la declaraci髇 del campo del archivo del dise馻dor al archivo de c骴igo subyacente.
+        /// Campo generado autom谩ticamente.
+        /// Para modificarlo, mueva la declaraci贸n del campo del archivo del dise帽ador al archivo de c贸digo subyacente.
         /// </remarks>
         protected global::System.Web.UI.WebControls.TextBox txtPartidaFactura;
 
@@ -369,8 +378,8 @@ namespace GrupoAnkhalInventario
         /// Control txtPartidaObs.
         /// </summary>
         /// <remarks>
-        /// Campo generado autom醫icamente.
-        /// Para modificarlo, mueva la declaraci髇 del campo del archivo del dise馻dor al archivo de c骴igo subyacente.
+        /// Campo generado autom谩ticamente.
+        /// Para modificarlo, mueva la declaraci贸n del campo del archivo del dise帽ador al archivo de c贸digo subyacente.
         /// </remarks>
         protected global::System.Web.UI.WebControls.TextBox txtPartidaObs;
 
@@ -378,8 +387,8 @@ namespace GrupoAnkhalInventario
         /// Control chkEsCreditoPartida.
         /// </summary>
         /// <remarks>
-        /// Campo generado autom醫icamente.
-        /// Para modificarlo, mueva la declaraci髇 del campo del archivo del dise馻dor al archivo de c骴igo subyacente.
+        /// Campo generado autom谩ticamente.
+        /// Para modificarlo, mueva la declaraci贸n del campo del archivo del dise帽ador al archivo de c贸digo subyacente.
         /// </remarks>
         protected global::System.Web.UI.WebControls.CheckBox chkEsCreditoPartida;
     }

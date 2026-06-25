@@ -650,6 +650,22 @@ namespace GrupoAnkhalInventario
                                 var prov = db.Proveedores
                                     .Single(p => p.ProveedorID == lote.ProveedorID.Value);
                                 int dias = prov.DiasCredito ?? 0;
+
+                                bool forzarCredito = hdnForzarLimiteCredito.Value == "true";
+                                hdnForzarLimiteCredito.Value = "";
+                                var infoCredito = EvaluarLimiteCreditoProveedor(db, prov, monto);
+                                if (infoCredito != null)
+                                {
+                                    if (!forzarCredito)
+                                    {
+                                        tx.Rollback();
+                                        SetMsg("warning", "Límite de crédito excedido", FormatearMensajeProveedor(infoCredito),
+                                            "modalNuevo", new { accion = "reintentar-guardar-lote" });
+                                        return;
+                                    }
+                                    RegistrarBitacoraProveedor(db, infoCredito, lote.LoteID, claveID);
+                                }
+
                                 db.CuentasPorPagar.InsertOnSubmit(new Modelo.CuentasPorPagar
                                 {
                                     LoteID = lote.LoteID,
@@ -998,10 +1014,84 @@ namespace GrupoAnkhalInventario
             txtObservaciones.Text = "";
         }
 
-        private void SetMsg(string icon, string title, string text, string modal = null)
+        private void SetMsg(string icon, string title, string text, string modal = null, object confirmar = null)
         {
-            var obj = new { icon, title, text, modal = modal ?? "" };
+            var obj = new { icon, title, text, modal = modal ?? "", confirmar };
             hdnMensajePendiente.Value = _json.Serialize(obj);
+        }
+
+        // ══ Límite de crédito de proveedores (CxP) ══════════════════════════
+        private class InfoLimiteCreditoProveedor
+        {
+            public int ProveedorID;
+            public string NombreProveedor;
+            public decimal Limite, SaldoActual, MontoNuevo, SaldoProyectado, Excedente;
+            public decimal PorcentajeActual     => Limite == 0 ? 0 : Math.Round(SaldoActual / Limite * 100, 0);
+            public decimal PorcentajeProyectado => Limite == 0 ? 0 : Math.Round(SaldoProyectado / Limite * 100, 0);
+        }
+
+        private decimal ObtenerSaldoActualProveedor(InventarioAnkhalDBDataContext db, int proveedorId)
+        {
+            decimal? total = db.ExecuteQuery<decimal?>(@"
+                SELECT SUM(c.MontoTotal - ISNULL(ab.TotalAbonado, 0))
+                FROM dbo.CuentasPorPagar c
+                LEFT JOIN (
+                    SELECT CuentaPorPagarID, SUM(MontoAbono) AS TotalAbonado
+                    FROM dbo.AbonosCuentasPorPagar
+                    WHERE Estado = 'ACTIVO'
+                    GROUP BY CuentaPorPagarID
+                ) ab ON ab.CuentaPorPagarID = c.CuentaPorPagarID
+                WHERE c.ProveedorID = {0} AND c.Estado IN ('PENDIENTE','PARCIAL')",
+                proveedorId).FirstOrDefault();
+            return total ?? 0m;
+        }
+
+        private InfoLimiteCreditoProveedor EvaluarLimiteCreditoProveedor(InventarioAnkhalDBDataContext db, Modelo.Proveedores prov, decimal montoNuevo)
+        {
+            if (!prov.LimiteCredito.HasValue) return null;
+            decimal saldoActual = ObtenerSaldoActualProveedor(db, prov.ProveedorID);
+            decimal saldoProyectado = saldoActual + montoNuevo;
+            if (saldoProyectado <= prov.LimiteCredito.Value) return null;
+            return new InfoLimiteCreditoProveedor
+            {
+                ProveedorID = prov.ProveedorID, NombreProveedor = prov.Nombre, Limite = prov.LimiteCredito.Value,
+                SaldoActual = saldoActual, MontoNuevo = montoNuevo,
+                SaldoProyectado = saldoProyectado, Excedente = saldoProyectado - prov.LimiteCredito.Value
+            };
+        }
+
+        private string FormatearMensajeProveedor(InfoLimiteCreditoProveedor info)
+        {
+            return string.Format(
+                "Proveedor: {0}<br>Límite de crédito: {1:C}<br>Saldo actual: {2:C} ({3}%)<br>" +
+                "Esta compra: {4:C}<br>Saldo proyectado: {5:C} ({6}%)<br>Excede por: <b>{7:C}</b>" +
+                "<br><br>¿Desea continuar de todos modos?",
+                info.NombreProveedor, info.Limite, info.SaldoActual, info.PorcentajeActual,
+                info.MontoNuevo, info.SaldoProyectado, info.PorcentajeProyectado, info.Excedente);
+        }
+
+        // Usa ADO.NET directo (no db.ExecuteCommand) porque LINQ to SQL no infiere correctamente
+        // el tipo SQL de parámetros nulos (ni con null ni con DBNull.Value).
+        private void RegistrarBitacoraProveedor(InventarioAnkhalDBDataContext db, InfoLimiteCreditoProveedor info, int loteId, int usuarioId, string motivo = null)
+        {
+            using (var cmd = db.Connection.CreateCommand())
+            {
+                cmd.Transaction = db.Transaction;
+                cmd.CommandText = @"
+                    INSERT INTO dbo.BitacoraLimitesCredito
+                        (Fecha, UsuarioID, TipoEntidad, ClienteID, ProveedorID, EntregaID, LoteID, MontoOperacion, LimiteCredito, SaldoActual, Excedente, Motivo)
+                    VALUES (@fecha, @usuarioId, 'PROVEEDOR', NULL, @proveedorId, NULL, @loteId, @monto, @limite, @saldoActual, @excedente, @motivo)";
+                var p1 = cmd.CreateParameter(); p1.ParameterName = "@fecha"; p1.Value = AppHelper.Ahora; cmd.Parameters.Add(p1);
+                var p2 = cmd.CreateParameter(); p2.ParameterName = "@usuarioId"; p2.Value = usuarioId; cmd.Parameters.Add(p2);
+                var p3 = cmd.CreateParameter(); p3.ParameterName = "@proveedorId"; p3.Value = info.ProveedorID; cmd.Parameters.Add(p3);
+                var p4 = cmd.CreateParameter(); p4.ParameterName = "@loteId"; p4.Value = loteId; cmd.Parameters.Add(p4);
+                var p5 = cmd.CreateParameter(); p5.ParameterName = "@monto"; p5.Value = info.MontoNuevo; cmd.Parameters.Add(p5);
+                var p6 = cmd.CreateParameter(); p6.ParameterName = "@limite"; p6.Value = info.Limite; cmd.Parameters.Add(p6);
+                var p7 = cmd.CreateParameter(); p7.ParameterName = "@saldoActual"; p7.Value = info.SaldoActual; cmd.Parameters.Add(p7);
+                var p8 = cmd.CreateParameter(); p8.ParameterName = "@excedente"; p8.Value = info.Excedente; cmd.Parameters.Add(p8);
+                var p9 = cmd.CreateParameter(); p9.ParameterName = "@motivo"; p9.Value = (object)motivo ?? DBNull.Value; cmd.Parameters.Add(p9);
+                cmd.ExecuteNonQuery();
+            }
         }
 
         // ══ WebMethods ═══════════════════════════════════════════════════════

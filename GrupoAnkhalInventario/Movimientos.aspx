@@ -340,6 +340,7 @@
 
 <!-- ── HIDDEN FIELDS ────────────────────────────── -->
 <asp:HiddenField ID="hdnMensajePendiente" runat="server" Value="" />
+<asp:HiddenField ID="hdnForzarLimiteCredito" runat="server" Value="" />
 <asp:HiddenField ID="hdnTipoItemSeleccionado" runat="server" Value="Material" />
 <asp:HiddenField ID="hdnItemsJson" runat="server" Value="" />
 <asp:Button ID="btnCargarItems" runat="server" style="display:none" OnClick="btnCargarItems_Click" />
@@ -590,11 +591,35 @@
         if (tipoItem === 'Producto') document.getElementById('rbProducto').checked = true;
         else document.getElementById('rbMaterial').checked = true;
 
+        // Restaurar ítems del lote si quedaron guardados (postback con error/advertencia)
+        var hdnItems = document.getElementById('<%= hdnItemsJson.ClientID %>');
+        if (hdnItems && hdnItems.value && hdnItems.value !== '[]') {
+            try {
+                var savedItems = JSON.parse(hdnItems.value);
+                savedItems.forEach(function (it) { _items.push(it); });
+                renderTablaItems();
+            } catch (e) { }
+        }
+
         var hdnMsg = document.getElementById('<%= hdnMensajePendiente.ClientID %>');
         if (!hdnMsg || !hdnMsg.value) return;
         try {
             var msg = JSON.parse(hdnMsg.value);
             hdnMsg.value = '';
+            if (msg.confirmar) {
+                Swal.fire({
+                    icon: 'warning', title: msg.title, html: msg.text,
+                    showCancelButton: true, confirmButtonColor: '#e67e22',
+                    confirmButtonText: 'Sí, continuar', cancelButtonText: 'Cancelar'
+                }).then(function (r) {
+                    if (!r.isConfirmed) return;
+                    document.getElementById('<%= hdnForzarLimiteCredito.ClientID %>').value = 'true';
+                    if (msg.confirmar.accion === 'reintentar-guardar-lote') {
+                        document.getElementById('<%= btnGuardar.ClientID %>').click();
+                    }
+                });
+                return;
+            }
             var opts = { icon: msg.icon, title: msg.title, text: msg.text, confirmButtonColor: '#003366' };
             if (msg.icon === 'success') { opts.showConfirmButton = false; opts.timer = 2000; }
             if (msg.modal) {

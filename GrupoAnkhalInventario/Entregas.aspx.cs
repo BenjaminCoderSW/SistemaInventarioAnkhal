@@ -490,6 +490,25 @@ namespace GrupoAnkhalInventario
 
                             db.SubmitChanges();
 
+                            if (chkEsCredito.Checked)
+                            {
+                                bool forzarCredito = hdnForzarLimiteCredito.Value == "true";
+                                hdnForzarLimiteCredito.Value = "";
+                                decimal montoNuevo = items.Sum(i => i.Cantidad * i.PrecioUnitario);
+                                var infoCredito = CuentasPorCobrarHelper.EvaluarLimiteCredito(db, clienteID, montoNuevo);
+                                if (infoCredito != null)
+                                {
+                                    if (!forzarCredito)
+                                    {
+                                        tx.Rollback();
+                                        SetMsg("warning", "Límite de crédito excedido", CuentasPorCobrarHelper.FormatearMensaje(infoCredito),
+                                            "modalNuevo", new { accion = "reintentar-confirmar-entregar" });
+                                        return;
+                                    }
+                                    CuentasPorCobrarHelper.RegistrarBitacora(db, infoCredito, entrega.EntregaID, Convert.ToInt32(Session["ClaveID"]));
+                                }
+                            }
+
                             CuentasPorCobrarHelper.GenerarSiAplica(db, entrega.EntregaID, Convert.ToInt32(Session["ClaveID"]));
 
                             tx.Commit();
@@ -568,7 +587,25 @@ namespace GrupoAnkhalInventario
                     CargarGrid();
                     return;
                 }
+
+                bool forzarCreditoChk = hdnForzarLimiteCredito.Value == "true";
+                if (entrega.EsCredito && entrega.ClienteID.HasValue && !forzarCreditoChk)
+                {
+                    decimal montoChk = items.Sum(i => i.Cantidad * i.PrecioUnitario);
+                    var infoChk = CuentasPorCobrarHelper.EvaluarLimiteCredito(dbVal, entrega.ClienteID.Value, montoChk);
+                    if (infoChk != null)
+                    {
+                        SetMsg("warning", "Límite de crédito excedido", CuentasPorCobrarHelper.FormatearMensaje(infoChk),
+                            null, new { accion = "reintentar-confirmar-grid", entregaId = entregaID });
+                        CargarDashboard();
+                        CargarGrid();
+                        return;
+                    }
+                }
             }
+
+            bool forzarCredito = hdnForzarLimiteCredito.Value == "true";
+            hdnForzarLimiteCredito.Value = "";
 
             try
             {
@@ -590,6 +627,14 @@ namespace GrupoAnkhalInventario
                             entrega.FechaModif = AppHelper.Ahora;
 
                             db.SubmitChanges();
+
+                            if (forzarCredito && entrega.EsCredito && entrega.ClienteID.HasValue)
+                            {
+                                decimal montoNuevo = items.Sum(i => i.Cantidad * i.PrecioUnitario);
+                                var infoCredito = CuentasPorCobrarHelper.EvaluarLimiteCredito(db, entrega.ClienteID.Value, montoNuevo);
+                                if (infoCredito != null)
+                                    CuentasPorCobrarHelper.RegistrarBitacora(db, infoCredito, entregaID, Convert.ToInt32(Session["ClaveID"]));
+                            }
 
                             CuentasPorCobrarHelper.GenerarSiAplica(db, entregaID, Convert.ToInt32(Session["ClaveID"]));
 
@@ -1489,9 +1534,9 @@ namespace GrupoAnkhalInventario
             hdnItemsJson.Value           = "[]";
         }
 
-        private void SetMsg(string icon, string title, string text, string modal = null)
+        private void SetMsg(string icon, string title, string text, string modal = null, object confirmar = null)
         {
-            var obj = new { icon, title, text, modal = modal ?? "" };
+            var obj = new { icon, title, text, modal = modal ?? "", confirmar };
             hdnMensajePendiente.Value = _json.Serialize(obj);
         }
 

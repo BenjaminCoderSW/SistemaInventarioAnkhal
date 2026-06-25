@@ -138,6 +138,9 @@ namespace GrupoAnkhalInventario.Modelo
     partial void InsertCuentasPorPagar(CuentasPorPagar instance);
     partial void UpdateCuentasPorPagar(CuentasPorPagar instance);
     partial void DeleteCuentasPorPagar(CuentasPorPagar instance);
+    partial void InsertBitacoraLimitesCredito(BitacoraLimitesCredito instance);
+    partial void UpdateBitacoraLimitesCredito(BitacoraLimitesCredito instance);
+    partial void DeleteBitacoraLimitesCredito(BitacoraLimitesCredito instance);
     #endregion
 		
 		public InventarioAnkhalDBDataContext(string connection) : 
@@ -459,6 +462,14 @@ namespace GrupoAnkhalInventario.Modelo
 				return this.GetTable<CuentasPorPagar>();
 			}
 		}
+		
+		public System.Data.Linq.Table<BitacoraLimitesCredito> BitacoraLimitesCredito
+		{
+			get
+			{
+				return this.GetTable<BitacoraLimitesCredito>();
+			}
+		}
 	}
 	
 	[global::System.Data.Linq.Mapping.TableAttribute(Name="dbo.Clientes")]
@@ -527,6 +538,8 @@ namespace GrupoAnkhalInventario.Modelo
 		
 		private EntitySet<CuentasPorCobrar> _CuentasPorCobrar;
 		
+		private EntitySet<BitacoraLimitesCredito> _BitacoraLimitesCredito;
+		
 		private EntityRef<Usuario> _Usuario;
 		
     #region Definiciones de métodos de extensibilidad
@@ -594,6 +607,7 @@ namespace GrupoAnkhalInventario.Modelo
 			this._Ordenes = new EntitySet<Ordenes>(new Action<Ordenes>(this.attach_Ordenes), new Action<Ordenes>(this.detach_Ordenes));
 			this._Entregas = new EntitySet<Entregas>(new Action<Entregas>(this.attach_Entregas), new Action<Entregas>(this.detach_Entregas));
 			this._CuentasPorCobrar = new EntitySet<CuentasPorCobrar>(new Action<CuentasPorCobrar>(this.attach_CuentasPorCobrar), new Action<CuentasPorCobrar>(this.detach_CuentasPorCobrar));
+			this._BitacoraLimitesCredito = new EntitySet<BitacoraLimitesCredito>(new Action<BitacoraLimitesCredito>(this.attach_BitacoraLimitesCredito), new Action<BitacoraLimitesCredito>(this.detach_BitacoraLimitesCredito));
 			this._Usuario = default(EntityRef<Usuario>);
 			OnCreated();
 		}
@@ -1181,6 +1195,19 @@ namespace GrupoAnkhalInventario.Modelo
 			}
 		}
 		
+		[global::System.Data.Linq.Mapping.AssociationAttribute(Name="Clientes_BitacoraLimitesCredito", Storage="_BitacoraLimitesCredito", ThisKey="ClienteID", OtherKey="ClienteID")]
+		public EntitySet<BitacoraLimitesCredito> BitacoraLimitesCredito
+		{
+			get
+			{
+				return this._BitacoraLimitesCredito;
+			}
+			set
+			{
+				this._BitacoraLimitesCredito.Assign(value);
+			}
+		}
+		
 		[global::System.Data.Linq.Mapping.AssociationAttribute(Name="Usuario_Clientes", Storage="_Usuario", ThisKey="UsuarioAltaID", OtherKey="ClaveID", IsForeignKey=true)]
 		public Usuario Usuario
 		{
@@ -1266,6 +1293,18 @@ namespace GrupoAnkhalInventario.Modelo
 		}
 		
 		private void detach_CuentasPorCobrar(CuentasPorCobrar entity)
+		{
+			this.SendPropertyChanging();
+			entity.Clientes = null;
+		}
+		
+		private void attach_BitacoraLimitesCredito(BitacoraLimitesCredito entity)
+		{
+			this.SendPropertyChanging();
+			entity.Clientes = this;
+		}
+		
+		private void detach_BitacoraLimitesCredito(BitacoraLimitesCredito entity)
 		{
 			this.SendPropertyChanging();
 			entity.Clientes = null;
@@ -3233,6 +3272,8 @@ namespace GrupoAnkhalInventario.Modelo
 		
 		private EntitySet<CuentasPorPagar> _CuentasPorPagar;
 		
+		private EntitySet<BitacoraLimitesCredito> _BitacoraLimitesCredito;
+		
 		private EntityRef<Usuario> _Usuario;
 		
     #region Definiciones de métodos de extensibilidad
@@ -3307,6 +3348,7 @@ namespace GrupoAnkhalInventario.Modelo
 			this._Materiales = new EntitySet<Materiales>(new Action<Materiales>(this.attach_Materiales), new Action<Materiales>(this.detach_Materiales));
 			this._LotesMovimiento = new EntitySet<LotesMovimiento>(new Action<LotesMovimiento>(this.attach_LotesMovimiento), new Action<LotesMovimiento>(this.detach_LotesMovimiento));
 			this._CuentasPorPagar = new EntitySet<CuentasPorPagar>(new Action<CuentasPorPagar>(this.attach_CuentasPorPagar), new Action<CuentasPorPagar>(this.detach_CuentasPorPagar));
+			this._BitacoraLimitesCredito = new EntitySet<BitacoraLimitesCredito>(new Action<BitacoraLimitesCredito>(this.attach_BitacoraLimitesCredito), new Action<BitacoraLimitesCredito>(this.detach_BitacoraLimitesCredito));
 			this._Usuario = default(EntityRef<Usuario>);
 			OnCreated();
 		}
@@ -3967,6 +4009,19 @@ namespace GrupoAnkhalInventario.Modelo
 			}
 		}
 		
+		[global::System.Data.Linq.Mapping.AssociationAttribute(Name="Proveedores_BitacoraLimitesCredito", Storage="_BitacoraLimitesCredito", ThisKey="ProveedorID", OtherKey="ProveedorID")]
+		public EntitySet<BitacoraLimitesCredito> BitacoraLimitesCredito
+		{
+			get
+			{
+				return this._BitacoraLimitesCredito;
+			}
+			set
+			{
+				this._BitacoraLimitesCredito.Assign(value);
+			}
+		}
+		
 		[global::System.Data.Linq.Mapping.AssociationAttribute(Name="Usuario_Proveedores", Storage="_Usuario", ThisKey="UsuarioAltaID", OtherKey="ClaveID", IsForeignKey=true)]
 		public Usuario Usuario
 		{
@@ -4064,6 +4119,18 @@ namespace GrupoAnkhalInventario.Modelo
 		}
 		
 		private void detach_CuentasPorPagar(CuentasPorPagar entity)
+		{
+			this.SendPropertyChanging();
+			entity.Proveedores = null;
+		}
+		
+		private void attach_BitacoraLimitesCredito(BitacoraLimitesCredito entity)
+		{
+			this.SendPropertyChanging();
+			entity.Proveedores = this;
+		}
+		
+		private void detach_BitacoraLimitesCredito(BitacoraLimitesCredito entity)
 		{
 			this.SendPropertyChanging();
 			entity.Proveedores = null;
@@ -5386,6 +5453,8 @@ namespace GrupoAnkhalInventario.Modelo
 		
 		private EntitySet<CuentasPorPagar> _CuentasPorPagar1;
 		
+		private EntitySet<BitacoraLimitesCredito> _BitacoraLimitesCredito;
+		
 		private EntityRef<Usuario> _Usuario2;
 		
     #region Definiciones de métodos de extensibilidad
@@ -5451,6 +5520,7 @@ namespace GrupoAnkhalInventario.Modelo
 			this._CancelacionesAbonosCxC = new EntitySet<CancelacionesAbonosCxC>(new Action<CancelacionesAbonosCxC>(this.attach_CancelacionesAbonosCxC), new Action<CancelacionesAbonosCxC>(this.detach_CancelacionesAbonosCxC));
 			this._CuentasPorPagar = new EntitySet<CuentasPorPagar>(new Action<CuentasPorPagar>(this.attach_CuentasPorPagar), new Action<CuentasPorPagar>(this.detach_CuentasPorPagar));
 			this._CuentasPorPagar1 = new EntitySet<CuentasPorPagar>(new Action<CuentasPorPagar>(this.attach_CuentasPorPagar1), new Action<CuentasPorPagar>(this.detach_CuentasPorPagar1));
+			this._BitacoraLimitesCredito = new EntitySet<BitacoraLimitesCredito>(new Action<BitacoraLimitesCredito>(this.attach_BitacoraLimitesCredito), new Action<BitacoraLimitesCredito>(this.detach_BitacoraLimitesCredito));
 			this._Usuario2 = default(EntityRef<Usuario>);
 			OnCreated();
 		}
@@ -6090,6 +6160,19 @@ namespace GrupoAnkhalInventario.Modelo
 			}
 		}
 		
+		[global::System.Data.Linq.Mapping.AssociationAttribute(Name="Usuario_BitacoraLimitesCredito", Storage="_BitacoraLimitesCredito", ThisKey="ClaveID", OtherKey="UsuarioID")]
+		public EntitySet<BitacoraLimitesCredito> BitacoraLimitesCredito
+		{
+			get
+			{
+				return this._BitacoraLimitesCredito;
+			}
+			set
+			{
+				this._BitacoraLimitesCredito.Assign(value);
+			}
+		}
+		
 		[global::System.Data.Linq.Mapping.AssociationAttribute(Name="Usuario_Usuario", Storage="_Usuario2", ThisKey="UsuarioAltaID", OtherKey="ClaveID", IsForeignKey=true)]
 		public Usuario Usuario2
 		{
@@ -6466,6 +6549,18 @@ namespace GrupoAnkhalInventario.Modelo
 		{
 			this.SendPropertyChanging();
 			entity.Usuario1 = null;
+		}
+		
+		private void attach_BitacoraLimitesCredito(BitacoraLimitesCredito entity)
+		{
+			this.SendPropertyChanging();
+			entity.Usuario = this;
+		}
+		
+		private void detach_BitacoraLimitesCredito(BitacoraLimitesCredito entity)
+		{
+			this.SendPropertyChanging();
+			entity.Usuario = null;
 		}
 	}
 	
@@ -17133,6 +17228,479 @@ namespace GrupoAnkhalInventario.Modelo
 		{
 			this.SendPropertyChanging();
 			entity.CuentasPorPagar = null;
+		}
+	}
+	
+	[global::System.Data.Linq.Mapping.TableAttribute(Name="dbo.BitacoraLimitesCredito")]
+	public partial class BitacoraLimitesCredito : INotifyPropertyChanging, INotifyPropertyChanged
+	{
+		
+		private static PropertyChangingEventArgs emptyChangingEventArgs = new PropertyChangingEventArgs(String.Empty);
+		
+		private int _BitacoraID;
+		
+		private System.DateTime _Fecha;
+		
+		private int _UsuarioID;
+		
+		private string _TipoEntidad;
+		
+		private System.Nullable<int> _ClienteID;
+		
+		private System.Nullable<int> _ProveedorID;
+		
+		private System.Nullable<int> _EntregaID;
+		
+		private System.Nullable<int> _LoteID;
+		
+		private decimal _MontoOperacion;
+		
+		private decimal _LimiteCredito;
+		
+		private decimal _SaldoActual;
+		
+		private decimal _Excedente;
+		
+		private string _Motivo;
+		
+		private EntityRef<Clientes> _Clientes;
+		
+		private EntityRef<Proveedores> _Proveedores;
+		
+		private EntityRef<Usuario> _Usuario;
+		
+    #region Definiciones de métodos de extensibilidad
+    partial void OnLoaded();
+    partial void OnValidate(System.Data.Linq.ChangeAction action);
+    partial void OnCreated();
+    partial void OnBitacoraIDChanging(int value);
+    partial void OnBitacoraIDChanged();
+    partial void OnFechaChanging(System.DateTime value);
+    partial void OnFechaChanged();
+    partial void OnUsuarioIDChanging(int value);
+    partial void OnUsuarioIDChanged();
+    partial void OnTipoEntidadChanging(string value);
+    partial void OnTipoEntidadChanged();
+    partial void OnClienteIDChanging(System.Nullable<int> value);
+    partial void OnClienteIDChanged();
+    partial void OnProveedorIDChanging(System.Nullable<int> value);
+    partial void OnProveedorIDChanged();
+    partial void OnEntregaIDChanging(System.Nullable<int> value);
+    partial void OnEntregaIDChanged();
+    partial void OnLoteIDChanging(System.Nullable<int> value);
+    partial void OnLoteIDChanged();
+    partial void OnMontoOperacionChanging(decimal value);
+    partial void OnMontoOperacionChanged();
+    partial void OnLimiteCreditoChanging(decimal value);
+    partial void OnLimiteCreditoChanged();
+    partial void OnSaldoActualChanging(decimal value);
+    partial void OnSaldoActualChanged();
+    partial void OnExcedenteChanging(decimal value);
+    partial void OnExcedenteChanged();
+    partial void OnMotivoChanging(string value);
+    partial void OnMotivoChanged();
+    #endregion
+		
+		public BitacoraLimitesCredito()
+		{
+			this._Clientes = default(EntityRef<Clientes>);
+			this._Proveedores = default(EntityRef<Proveedores>);
+			this._Usuario = default(EntityRef<Usuario>);
+			OnCreated();
+		}
+		
+		[global::System.Data.Linq.Mapping.ColumnAttribute(Storage="_BitacoraID", AutoSync=AutoSync.OnInsert, DbType="Int NOT NULL IDENTITY", IsPrimaryKey=true, IsDbGenerated=true)]
+		public int BitacoraID
+		{
+			get
+			{
+				return this._BitacoraID;
+			}
+			set
+			{
+				if ((this._BitacoraID != value))
+				{
+					this.OnBitacoraIDChanging(value);
+					this.SendPropertyChanging();
+					this._BitacoraID = value;
+					this.SendPropertyChanged("BitacoraID");
+					this.OnBitacoraIDChanged();
+				}
+			}
+		}
+		
+		[global::System.Data.Linq.Mapping.ColumnAttribute(Storage="_Fecha", DbType="DateTime2 NOT NULL")]
+		public System.DateTime Fecha
+		{
+			get
+			{
+				return this._Fecha;
+			}
+			set
+			{
+				if ((this._Fecha != value))
+				{
+					this.OnFechaChanging(value);
+					this.SendPropertyChanging();
+					this._Fecha = value;
+					this.SendPropertyChanged("Fecha");
+					this.OnFechaChanged();
+				}
+			}
+		}
+		
+		[global::System.Data.Linq.Mapping.ColumnAttribute(Storage="_UsuarioID", DbType="Int NOT NULL")]
+		public int UsuarioID
+		{
+			get
+			{
+				return this._UsuarioID;
+			}
+			set
+			{
+				if ((this._UsuarioID != value))
+				{
+					if (this._Usuario.HasLoadedOrAssignedValue)
+					{
+						throw new System.Data.Linq.ForeignKeyReferenceAlreadyHasValueException();
+					}
+					this.OnUsuarioIDChanging(value);
+					this.SendPropertyChanging();
+					this._UsuarioID = value;
+					this.SendPropertyChanged("UsuarioID");
+					this.OnUsuarioIDChanged();
+				}
+			}
+		}
+		
+		[global::System.Data.Linq.Mapping.ColumnAttribute(Storage="_TipoEntidad", DbType="VarChar(10) NOT NULL", CanBeNull=false)]
+		public string TipoEntidad
+		{
+			get
+			{
+				return this._TipoEntidad;
+			}
+			set
+			{
+				if ((this._TipoEntidad != value))
+				{
+					this.OnTipoEntidadChanging(value);
+					this.SendPropertyChanging();
+					this._TipoEntidad = value;
+					this.SendPropertyChanged("TipoEntidad");
+					this.OnTipoEntidadChanged();
+				}
+			}
+		}
+		
+		[global::System.Data.Linq.Mapping.ColumnAttribute(Storage="_ClienteID", DbType="Int")]
+		public System.Nullable<int> ClienteID
+		{
+			get
+			{
+				return this._ClienteID;
+			}
+			set
+			{
+				if ((this._ClienteID != value))
+				{
+					if (this._Clientes.HasLoadedOrAssignedValue)
+					{
+						throw new System.Data.Linq.ForeignKeyReferenceAlreadyHasValueException();
+					}
+					this.OnClienteIDChanging(value);
+					this.SendPropertyChanging();
+					this._ClienteID = value;
+					this.SendPropertyChanged("ClienteID");
+					this.OnClienteIDChanged();
+				}
+			}
+		}
+		
+		[global::System.Data.Linq.Mapping.ColumnAttribute(Storage="_ProveedorID", DbType="Int")]
+		public System.Nullable<int> ProveedorID
+		{
+			get
+			{
+				return this._ProveedorID;
+			}
+			set
+			{
+				if ((this._ProveedorID != value))
+				{
+					if (this._Proveedores.HasLoadedOrAssignedValue)
+					{
+						throw new System.Data.Linq.ForeignKeyReferenceAlreadyHasValueException();
+					}
+					this.OnProveedorIDChanging(value);
+					this.SendPropertyChanging();
+					this._ProveedorID = value;
+					this.SendPropertyChanged("ProveedorID");
+					this.OnProveedorIDChanged();
+				}
+			}
+		}
+		
+		[global::System.Data.Linq.Mapping.ColumnAttribute(Storage="_EntregaID", DbType="Int")]
+		public System.Nullable<int> EntregaID
+		{
+			get
+			{
+				return this._EntregaID;
+			}
+			set
+			{
+				if ((this._EntregaID != value))
+				{
+					this.OnEntregaIDChanging(value);
+					this.SendPropertyChanging();
+					this._EntregaID = value;
+					this.SendPropertyChanged("EntregaID");
+					this.OnEntregaIDChanged();
+				}
+			}
+		}
+		
+		[global::System.Data.Linq.Mapping.ColumnAttribute(Storage="_LoteID", DbType="Int")]
+		public System.Nullable<int> LoteID
+		{
+			get
+			{
+				return this._LoteID;
+			}
+			set
+			{
+				if ((this._LoteID != value))
+				{
+					this.OnLoteIDChanging(value);
+					this.SendPropertyChanging();
+					this._LoteID = value;
+					this.SendPropertyChanged("LoteID");
+					this.OnLoteIDChanged();
+				}
+			}
+		}
+		
+		[global::System.Data.Linq.Mapping.ColumnAttribute(Storage="_MontoOperacion", DbType="Decimal(18,2) NOT NULL")]
+		public decimal MontoOperacion
+		{
+			get
+			{
+				return this._MontoOperacion;
+			}
+			set
+			{
+				if ((this._MontoOperacion != value))
+				{
+					this.OnMontoOperacionChanging(value);
+					this.SendPropertyChanging();
+					this._MontoOperacion = value;
+					this.SendPropertyChanged("MontoOperacion");
+					this.OnMontoOperacionChanged();
+				}
+			}
+		}
+		
+		[global::System.Data.Linq.Mapping.ColumnAttribute(Storage="_LimiteCredito", DbType="Decimal(18,2) NOT NULL")]
+		public decimal LimiteCredito
+		{
+			get
+			{
+				return this._LimiteCredito;
+			}
+			set
+			{
+				if ((this._LimiteCredito != value))
+				{
+					this.OnLimiteCreditoChanging(value);
+					this.SendPropertyChanging();
+					this._LimiteCredito = value;
+					this.SendPropertyChanged("LimiteCredito");
+					this.OnLimiteCreditoChanged();
+				}
+			}
+		}
+		
+		[global::System.Data.Linq.Mapping.ColumnAttribute(Storage="_SaldoActual", DbType="Decimal(18,2) NOT NULL")]
+		public decimal SaldoActual
+		{
+			get
+			{
+				return this._SaldoActual;
+			}
+			set
+			{
+				if ((this._SaldoActual != value))
+				{
+					this.OnSaldoActualChanging(value);
+					this.SendPropertyChanging();
+					this._SaldoActual = value;
+					this.SendPropertyChanged("SaldoActual");
+					this.OnSaldoActualChanged();
+				}
+			}
+		}
+		
+		[global::System.Data.Linq.Mapping.ColumnAttribute(Storage="_Excedente", DbType="Decimal(18,2) NOT NULL")]
+		public decimal Excedente
+		{
+			get
+			{
+				return this._Excedente;
+			}
+			set
+			{
+				if ((this._Excedente != value))
+				{
+					this.OnExcedenteChanging(value);
+					this.SendPropertyChanging();
+					this._Excedente = value;
+					this.SendPropertyChanged("Excedente");
+					this.OnExcedenteChanged();
+				}
+			}
+		}
+		
+		[global::System.Data.Linq.Mapping.ColumnAttribute(Storage="_Motivo", DbType="VarChar(500)")]
+		public string Motivo
+		{
+			get
+			{
+				return this._Motivo;
+			}
+			set
+			{
+				if ((this._Motivo != value))
+				{
+					this.OnMotivoChanging(value);
+					this.SendPropertyChanging();
+					this._Motivo = value;
+					this.SendPropertyChanged("Motivo");
+					this.OnMotivoChanged();
+				}
+			}
+		}
+		
+		[global::System.Data.Linq.Mapping.AssociationAttribute(Name="Clientes_BitacoraLimitesCredito", Storage="_Clientes", ThisKey="ClienteID", OtherKey="ClienteID", IsForeignKey=true)]
+		public Clientes Clientes
+		{
+			get
+			{
+				return this._Clientes.Entity;
+			}
+			set
+			{
+				Clientes previousValue = this._Clientes.Entity;
+				if (((previousValue != value) 
+							|| (this._Clientes.HasLoadedOrAssignedValue == false)))
+				{
+					this.SendPropertyChanging();
+					if ((previousValue != null))
+					{
+						this._Clientes.Entity = null;
+						previousValue.BitacoraLimitesCredito.Remove(this);
+					}
+					this._Clientes.Entity = value;
+					if ((value != null))
+					{
+						value.BitacoraLimitesCredito.Add(this);
+						this._ClienteID = value.ClienteID;
+					}
+					else
+					{
+						this._ClienteID = default(Nullable<int>);
+					}
+					this.SendPropertyChanged("Clientes");
+				}
+			}
+		}
+		
+		[global::System.Data.Linq.Mapping.AssociationAttribute(Name="Proveedores_BitacoraLimitesCredito", Storage="_Proveedores", ThisKey="ProveedorID", OtherKey="ProveedorID", IsForeignKey=true)]
+		public Proveedores Proveedores
+		{
+			get
+			{
+				return this._Proveedores.Entity;
+			}
+			set
+			{
+				Proveedores previousValue = this._Proveedores.Entity;
+				if (((previousValue != value) 
+							|| (this._Proveedores.HasLoadedOrAssignedValue == false)))
+				{
+					this.SendPropertyChanging();
+					if ((previousValue != null))
+					{
+						this._Proveedores.Entity = null;
+						previousValue.BitacoraLimitesCredito.Remove(this);
+					}
+					this._Proveedores.Entity = value;
+					if ((value != null))
+					{
+						value.BitacoraLimitesCredito.Add(this);
+						this._ProveedorID = value.ProveedorID;
+					}
+					else
+					{
+						this._ProveedorID = default(Nullable<int>);
+					}
+					this.SendPropertyChanged("Proveedores");
+				}
+			}
+		}
+		
+		[global::System.Data.Linq.Mapping.AssociationAttribute(Name="Usuario_BitacoraLimitesCredito", Storage="_Usuario", ThisKey="UsuarioID", OtherKey="ClaveID", IsForeignKey=true)]
+		public Usuario Usuario
+		{
+			get
+			{
+				return this._Usuario.Entity;
+			}
+			set
+			{
+				Usuario previousValue = this._Usuario.Entity;
+				if (((previousValue != value) 
+							|| (this._Usuario.HasLoadedOrAssignedValue == false)))
+				{
+					this.SendPropertyChanging();
+					if ((previousValue != null))
+					{
+						this._Usuario.Entity = null;
+						previousValue.BitacoraLimitesCredito.Remove(this);
+					}
+					this._Usuario.Entity = value;
+					if ((value != null))
+					{
+						value.BitacoraLimitesCredito.Add(this);
+						this._UsuarioID = value.ClaveID;
+					}
+					else
+					{
+						this._UsuarioID = default(int);
+					}
+					this.SendPropertyChanged("Usuario");
+				}
+			}
+		}
+		
+		public event PropertyChangingEventHandler PropertyChanging;
+		
+		public event PropertyChangedEventHandler PropertyChanged;
+		
+		protected virtual void SendPropertyChanging()
+		{
+			if ((this.PropertyChanging != null))
+			{
+				this.PropertyChanging(this, emptyChangingEventArgs);
+			}
+		}
+		
+		protected virtual void SendPropertyChanged(String propertyName)
+		{
+			if ((this.PropertyChanged != null))
+			{
+				this.PropertyChanged(this, new PropertyChangedEventArgs(propertyName));
+			}
 		}
 	}
 }

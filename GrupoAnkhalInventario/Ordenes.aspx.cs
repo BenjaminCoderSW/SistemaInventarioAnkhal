@@ -853,6 +853,30 @@ namespace GrupoAnkhalInventario
                 CargarGrid(); return;
             }
 
+            bool forzarCredito = hdnForzarLimiteCredito.Value == "true";
+            hdnForzarLimiteCredito.Value = "";
+
+            if (confirmarDirecto && chkEsCreditoPartida.Checked && !forzarCredito)
+            {
+                using (var dbValCred = NuevoDb(false))
+                {
+                    var ordenChk = dbValCred.Ordenes.FirstOrDefault(o => o.OrdenID == ordenID);
+                    if (ordenChk != null)
+                    {
+                        decimal montoChk = items.Sum(i => (i.TipoItem == "MATERIAL" && i.Factor > 0m
+                            ? i.CantidadAEntregar * i.Factor : i.CantidadAEntregar) * i.PrecioUnitario);
+                        var infoChk = CuentasPorCobrarHelper.EvaluarLimiteCredito(dbValCred, ordenChk.ClienteID, montoChk);
+                        if (infoChk != null)
+                        {
+                            SetMsg("warning", "Límite de crédito excedido", CuentasPorCobrarHelper.FormatearMensaje(infoChk),
+                                null, new { accion = "reintentar-guardar-partida" });
+                            CargarGrid();
+                            return;
+                        }
+                    }
+                }
+            }
+
             string fechaStr = hdnFechaEntregaConf.Value;
             DateTime fecha;
             if (!DateTime.TryParse(fechaStr, out fecha)) fecha = AppHelper.Hoy;
@@ -1002,6 +1026,14 @@ namespace GrupoAnkhalInventario
                                 ActualizarEstadoOrden(ordenID, db);
                                 db.SubmitChanges();
 
+                                if (forzarCredito && chkEsCreditoPartida.Checked)
+                                {
+                                    decimal montoNuevo = itemsStock.Sum(i => i.Cantidad * i.PrecioUnitario);
+                                    var infoCredito = CuentasPorCobrarHelper.EvaluarLimiteCredito(db, orden.ClienteID, montoNuevo);
+                                    if (infoCredito != null)
+                                        CuentasPorCobrarHelper.RegistrarBitacora(db, infoCredito, entrega.EntregaID, Convert.ToInt32(Session["ClaveID"]));
+                                }
+
                                 CuentasPorCobrarHelper.GenerarSiAplica(db, entrega.EntregaID, Convert.ToInt32(Session["ClaveID"]));
                             }
                             else if (orden.Estado == "ABIERTA")
@@ -1038,6 +1070,28 @@ namespace GrupoAnkhalInventario
                                 ? null : hdnNumeroFactura.Value.Trim();
             DateTime fecha;
             if (!DateTime.TryParse(hdnFechaEntregaConf.Value, out fecha)) fecha = AppHelper.Hoy;
+
+            bool forzarCreditoEntrega = hdnForzarLimiteCredito.Value == "true";
+            if (!forzarCreditoEntrega)
+            {
+                using (var dbValCred = NuevoDb(false))
+                {
+                    var entregaChk = dbValCred.Entregas.FirstOrDefault(e => e.EntregaID == entregaID);
+                    if (entregaChk != null && entregaChk.EsCredito && entregaChk.ClienteID.HasValue)
+                    {
+                        var itemsChk = ObtenerItemsEntrega(dbValCred, entregaID);
+                        decimal montoChk = itemsChk.Sum(i => i.Cantidad * i.PrecioUnitario);
+                        var infoChk = CuentasPorCobrarHelper.EvaluarLimiteCredito(dbValCred, entregaChk.ClienteID.Value, montoChk);
+                        if (infoChk != null)
+                        {
+                            SetMsg("warning", "Límite de crédito excedido", CuentasPorCobrarHelper.FormatearMensaje(infoChk),
+                                null, new { accion = "reintentar-confirmar-entrega-orden", entregaId = entregaID });
+                            return;
+                        }
+                    }
+                }
+            }
+            hdnForzarLimiteCredito.Value = "";
 
             hdnNumeroFactura.Value    = "";
             hdnFechaEntregaConf.Value = "";
@@ -1096,6 +1150,14 @@ namespace GrupoAnkhalInventario
                             {
                                 ActualizarEstadoOrden(entrega.OrdenID.Value, db);
                                 db.SubmitChanges();
+                            }
+
+                            if (forzarCreditoEntrega && entrega.EsCredito && entrega.ClienteID.HasValue)
+                            {
+                                decimal montoNuevo = items.Sum(i => i.Cantidad * i.PrecioUnitario);
+                                var infoCredito = CuentasPorCobrarHelper.EvaluarLimiteCredito(db, entrega.ClienteID.Value, montoNuevo);
+                                if (infoCredito != null)
+                                    CuentasPorCobrarHelper.RegistrarBitacora(db, infoCredito, entregaID, Convert.ToInt32(Session["ClaveID"]));
                             }
 
                             CuentasPorCobrarHelper.GenerarSiAplica(db, entregaID, Convert.ToInt32(Session["ClaveID"]));
@@ -1774,9 +1836,9 @@ namespace GrupoAnkhalInventario
             hdnItemsJson.Value            = "[]";
         }
 
-        private void SetMsg(string icon, string title, string text, string modal = null)
+        private void SetMsg(string icon, string title, string text, string modal = null, object confirmar = null)
         {
-            hdnMensajePendiente.Value = _json.Serialize(new { icon, title, text, modal = modal ?? "" });
+            hdnMensajePendiente.Value = _json.Serialize(new { icon, title, text, modal = modal ?? "", confirmar });
         }
 
         private int? ObtenerUnidadCapturaIDEntrega(int matID, string selectedVal,

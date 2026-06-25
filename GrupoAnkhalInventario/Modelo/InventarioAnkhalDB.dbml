@@ -31,6 +31,7 @@
       <Association Name="Clientes_Ordenes" Member="Ordenes" ThisKey="ClienteID" OtherKey="ClienteID" Type="Ordenes" />
       <Association Name="Clientes_Entregas" Member="Entregas" ThisKey="ClienteID" OtherKey="ClienteID" Type="Entregas" />
       <Association Name="Clientes_CuentasPorCobrar" Member="CuentasPorCobrar" ThisKey="ClienteID" OtherKey="ClienteID" Type="CuentasPorCobrar" />
+      <Association Name="Clientes_BitacoraLimitesCredito" Member="BitacoraLimitesCredito" ThisKey="ClienteID" OtherKey="ClienteID" Type="BitacoraLimitesCredito" />
       <Association Name="Usuario_Clientes" Member="Usuario" ThisKey="UsuarioAltaID" OtherKey="ClaveID" Type="Usuario" IsForeignKey="true" />
     </Type>
   </Table>
@@ -151,6 +152,7 @@
       <Association Name="Proveedores_Materiales" Member="Materiales" ThisKey="ProveedorID" OtherKey="ProveedorPrincipalID" Type="Materiales" />
       <Association Name="Proveedores_LotesMovimiento" Member="LotesMovimiento" ThisKey="ProveedorID" OtherKey="ProveedorID" Type="LotesMovimiento" />
       <Association Name="Proveedores_CuentasPorPagar" Member="CuentasPorPagar" ThisKey="ProveedorID" OtherKey="ProveedorID" Type="CuentasPorPagar" />
+      <Association Name="Proveedores_BitacoraLimitesCredito" Member="BitacoraLimitesCredito" ThisKey="ProveedorID" OtherKey="ProveedorID" Type="BitacoraLimitesCredito" />
       <Association Name="Usuario_Proveedores" Member="Usuario" ThisKey="UsuarioAltaID" OtherKey="ClaveID" Type="Usuario" IsForeignKey="true" />
     </Type>
   </Table>
@@ -259,6 +261,7 @@
       <Association Name="Usuario_CancelacionesAbonosCxC" Member="CancelacionesAbonosCxC" ThisKey="ClaveID" OtherKey="CanceladoPorID" Type="CancelacionesAbonosCxC" />
       <Association Name="Usuario_CuentasPorPagar" Member="CuentasPorPagar" ThisKey="ClaveID" OtherKey="PagadaPorID" Type="CuentasPorPagar" />
       <Association Name="Usuario_CuentasPorPagar1" Member="CuentasPorPagar1" ThisKey="ClaveID" OtherKey="RegistradoPorID" Type="CuentasPorPagar" />
+      <Association Name="Usuario_BitacoraLimitesCredito" Member="BitacoraLimitesCredito" ThisKey="ClaveID" OtherKey="UsuarioID" Type="BitacoraLimitesCredito" />
       <Association Name="Usuario_Usuario" Member="Usuario2" ThisKey="UsuarioAltaID" OtherKey="ClaveID" Type="Usuario" IsForeignKey="true" />
     </Type>
   </Table>
@@ -713,6 +716,26 @@
       <Association Name="Usuario_CuentasPorPagar" Member="Usuario" ThisKey="PagadaPorID" OtherKey="ClaveID" Type="Usuario" IsForeignKey="true" />
       <Association Name="Proveedores_CuentasPorPagar" Member="Proveedores" ThisKey="ProveedorID" OtherKey="ProveedorID" Type="Proveedores" IsForeignKey="true" />
       <Association Name="Usuario_CuentasPorPagar1" Member="Usuario1" ThisKey="RegistradoPorID" OtherKey="ClaveID" Type="Usuario" IsForeignKey="true" />
+    </Type>
+  </Table>
+  <Table Name="dbo.BitacoraLimitesCredito" Member="BitacoraLimitesCredito">
+    <Type Name="BitacoraLimitesCredito">
+      <Column Name="BitacoraID" Type="System.Int32" DbType="Int NOT NULL IDENTITY" IsPrimaryKey="true" IsDbGenerated="true" CanBeNull="false" />
+      <Column Name="Fecha" Type="System.DateTime" DbType="DateTime2 NOT NULL" CanBeNull="false" />
+      <Column Name="UsuarioID" Type="System.Int32" DbType="Int NOT NULL" CanBeNull="false" />
+      <Column Name="TipoEntidad" Type="System.String" DbType="VarChar(10) NOT NULL" CanBeNull="false" />
+      <Column Name="ClienteID" Type="System.Int32" DbType="Int" CanBeNull="true" />
+      <Column Name="ProveedorID" Type="System.Int32" DbType="Int" CanBeNull="true" />
+      <Column Name="EntregaID" Type="System.Int32" DbType="Int" CanBeNull="true" />
+      <Column Name="LoteID" Type="System.Int32" DbType="Int" CanBeNull="true" />
+      <Column Name="MontoOperacion" Type="System.Decimal" DbType="Decimal(18,2) NOT NULL" CanBeNull="false" />
+      <Column Name="LimiteCredito" Type="System.Decimal" DbType="Decimal(18,2) NOT NULL" CanBeNull="false" />
+      <Column Name="SaldoActual" Type="System.Decimal" DbType="Decimal(18,2) NOT NULL" CanBeNull="false" />
+      <Column Name="Excedente" Type="System.Decimal" DbType="Decimal(18,2) NOT NULL" CanBeNull="false" />
+      <Column Name="Motivo" Type="System.String" DbType="VarChar(500)" CanBeNull="true" />
+      <Association Name="Clientes_BitacoraLimitesCredito" Member="Clientes" ThisKey="ClienteID" OtherKey="ClienteID" Type="Clientes" IsForeignKey="true" />
+      <Association Name="Proveedores_BitacoraLimitesCredito" Member="Proveedores" ThisKey="ProveedorID" OtherKey="ProveedorID" Type="Proveedores" IsForeignKey="true" />
+      <Association Name="Usuario_BitacoraLimitesCredito" Member="Usuario" ThisKey="UsuarioID" OtherKey="ClaveID" Type="Usuario" IsForeignKey="true" />
     </Type>
   </Table>
 </Database>

@@ -196,6 +196,7 @@
 <!-- HIDDEN FIELDS Y BOTONES DE ACCIÓN                                -->
 <!-- ══════════════════════════════════════════════════════════════════ -->
 <asp:HiddenField ID="hdnMensajePendiente"  runat="server" Value="" />
+<asp:HiddenField ID="hdnForzarLimiteCredito" runat="server" Value="" />
 <asp:HiddenField ID="hdnItemsJson"         runat="server" Value="[]" />
 <asp:HiddenField ID="hdnAccion"            runat="server" Value="" />
 <asp:HiddenField ID="hdnEntregaIDAccion"   runat="server" Value="" />
@@ -430,12 +431,30 @@
             try {
                 var m = JSON.parse(h.value);
                 h.value = '';
-                Swal.fire({
-                    icon: m.icon, title: m.title, text: m.text,
-                    confirmButtonColor: '#003366'
-                }).then(function () {
-                    if (m.modal) $('#' + m.modal).modal('show');
-                });
+                if (m.confirmar) {
+                    Swal.fire({
+                        icon: 'warning', title: m.title, html: m.text,
+                        showCancelButton: true, confirmButtonColor: '#e67e22',
+                        confirmButtonText: 'Sí, continuar', cancelButtonText: 'Cancelar'
+                    }).then(function (r) {
+                        if (!r.isConfirmed) return;
+                        document.getElementById('<%= hdnForzarLimiteCredito.ClientID %>').value = 'true';
+                        if (m.confirmar.accion === 'reintentar-confirmar-entregar') {
+                            document.getElementById('<%= btnConfirmarEntregar.ClientID %>').click();
+                        } else if (m.confirmar.accion === 'reintentar-confirmar-grid') {
+                            document.getElementById('<%= hdnAccion.ClientID %>').value = 'confirmar';
+                            document.getElementById('<%= hdnEntregaIDAccion.ClientID %>').value = m.confirmar.entregaId;
+                            document.getElementById('<%= btnProcesarAccion.ClientID %>').click();
+                        }
+                    });
+                } else {
+                    Swal.fire({
+                        icon: m.icon, title: m.title, text: m.text,
+                        confirmButtonColor: '#003366'
+                    }).then(function () {
+                        if (m.modal) $('#' + m.modal).modal('show');
+                    });
+                }
             } catch (e) { }
         }
 
@@ -444,8 +463,8 @@
         if (hdnItems && hdnItems.value && hdnItems.value !== '[]') {
             try {
                 var items = JSON.parse(hdnItems.value);
-                items.forEach(function (it) { renderizarFila(it); });
-                actualizarTotal();
+                items.forEach(function (it) { _items.push(it); });
+                renderizarTabla();
             } catch (e) { }
         }
 
