@@ -127,6 +127,11 @@ namespace GrupoAnkhalInventario
                 hdnItemsJson.Value = "[]";
                 CargarDashboard();
                 CargarGrid();
+
+                // Si se llega desde Entregas.aspx con ?ordenId=X, abrir directamente el detalle de esa orden
+                int ordenIDQuery;
+                if (int.TryParse(Request.QueryString["ordenId"], out ordenIDQuery))
+                    AccionVerDetalle(ordenIDQuery);
             }
             else
             {

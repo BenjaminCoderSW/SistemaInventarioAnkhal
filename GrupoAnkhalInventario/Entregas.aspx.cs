@@ -38,6 +38,8 @@ namespace GrupoAnkhalInventario
             public int      NumItems      { get; set; }
             public decimal  TotalValor    { get; set; }
             public string   Estado        { get; set; }
+            public int?     OrdenID       { get; set; }
+            public string   OrdenFolio    { get; set; }
         }
 
         // Modelo de item para serializar/deserializar JSON (modal ↔ servidor)
@@ -145,8 +147,11 @@ namespace GrupoAnkhalInventario
         // ══ Filtros ══════════════════════════════════════════════════════════
         private IQueryable<Modelo.Entregas> AplicarFiltros(IQueryable<Modelo.Entregas> q)
         {
-            // Excluir entregas vinculadas a una Orden (se gestionan desde Ordenes.aspx)
-            q = q.Where(e => e.OrdenID == null);
+            // Filtro por origen: directa (sin Orden) o de pedido (con Orden vinculada)
+            if (ddlFiltrOrigen.SelectedValue == "DIRECTA")
+                q = q.Where(e => e.OrdenID == null);
+            else if (ddlFiltrOrigen.SelectedValue == "PEDIDO")
+                q = q.Where(e => e.OrdenID != null);
 
             // Restringir por las bases del usuario (null = Administrador, ve todo)
             var basesUsuario = AppHelper.ObtenerBasesUsuario(Session);
@@ -260,7 +265,8 @@ namespace GrupoAnkhalInventario
                                BaseNombre = b.Nombre,
                                e.Cliente,
                                e.ClienteID,
-                               e.Estado
+                               e.Estado,
+                               e.OrdenID
                            }).ToList();
 
                 // Contar items y calcular total por entrega
@@ -279,6 +285,17 @@ namespace GrupoAnkhalInventario
                     nombresClientes = db.Clientes
                         .Where(c => clienteIDs.Contains(c.ClienteID))
                         .ToDictionary(c => c.ClienteID, c => c.Nombre);
+                }
+
+                // Folios de las órdenes vinculadas (entregas parciales)
+                var ordenIDs = raw.Where(r => r.OrdenID.HasValue)
+                                  .Select(r => r.OrdenID.Value).Distinct().ToList();
+                var foliosOrdenes = new Dictionary<int, string>();
+                if (ordenIDs.Any())
+                {
+                    foliosOrdenes = db.Ordenes
+                        .Where(o => ordenIDs.Contains(o.OrdenID))
+                        .ToDictionary(o => o.OrdenID, o => o.Folio);
                 }
 
                 var pagina = ids
@@ -304,7 +321,10 @@ namespace GrupoAnkhalInventario
                             ClienteNombre = clienteNombre,
                             NumItems      = numItems,
                             TotalValor    = val,
-                            Estado        = r.Estado
+                            Estado        = r.Estado,
+                            OrdenID       = r.OrdenID,
+                            OrdenFolio    = r.OrdenID.HasValue && foliosOrdenes.ContainsKey(r.OrdenID.Value)
+                                                ? foliosOrdenes[r.OrdenID.Value] : null
                         };
                     }).ToList();
 
@@ -326,8 +346,22 @@ namespace GrupoAnkhalInventario
             }
         }
 
-        public string MostrarBtnConfirmar(string estado, string entregaID)
+        public string GetOrigenHtml(object ordenID, object ordenFolio)
         {
+            if (ordenID == null || ordenID == DBNull.Value)
+                return "<span class='badge badge-secondary'>Directa</span>";
+
+            string folio = (ordenFolio == null || ordenFolio == DBNull.Value)
+                ? ordenID.ToString() : ordenFolio.ToString();
+
+            return string.Format(
+                "<span class='badge badge-info' style='cursor:pointer' onclick=\"irAOrden({0})\">{1}</span>",
+                ordenID, System.Web.HttpUtility.HtmlEncode(folio));
+        }
+
+        public string MostrarBtnConfirmar(string estado, string entregaID, object ordenID)
+        {
+            if (ordenID != null && ordenID != DBNull.Value) return "";
             if (estado == "PROGRAMADA" || estado == "PENDIENTE_STOCK")
             {
                 return string.Format(
@@ -338,8 +372,9 @@ namespace GrupoAnkhalInventario
             return "";
         }
 
-        public string MostrarBtnCancelar(string estado, string entregaID)
+        public string MostrarBtnCancelar(string estado, string entregaID, object ordenID)
         {
+            if (ordenID != null && ordenID != DBNull.Value) return "";
             if (estado == "CANCELADA") return "";
             return string.Format(
                 "<button type='button' class='btn btn-xs btn-danger' " +
@@ -359,6 +394,7 @@ namespace GrupoAnkhalInventario
         {
             ddlFiltrBase.SelectedIndex   = 0;
             ddlFiltrEstado.SelectedIndex = 0;
+            ddlFiltrOrigen.SelectedIndex = 0;
             txtFiltrCliente.Text         = "";
             txtFiltrFolio.Text           = "";
             string hoy = AppHelper.Hoy.ToString("yyyy-MM-dd");

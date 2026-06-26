@@ -97,11 +97,11 @@
 <!-- ══ FILTROS ══ -->
 <div class="filtros-bar">
     <div class="row align-items-end">
-        <div class="col-md-2">
+        <div class="col-sm-6 col-md-2 mb-2">
             <label>Base</label>
             <asp:DropDownList ID="ddlFiltrBase" runat="server" CssClass="form-control form-control-sm"></asp:DropDownList>
         </div>
-        <div class="col-md-2">
+        <div class="col-sm-6 col-md-2 mb-2">
             <label>Estado</label>
             <asp:DropDownList ID="ddlFiltrEstado" runat="server" CssClass="form-control form-control-sm">
                 <asp:ListItem Text="-- Todos --" Value="" />
@@ -111,27 +111,35 @@
                 <asp:ListItem Text="Pendiente Stock" Value="PENDIENTE_STOCK" />
             </asp:DropDownList>
         </div>
-        <div class="col-md-2">
+        <div class="col-sm-6 col-md-2 mb-2">
+            <label>Origen</label>
+            <asp:DropDownList ID="ddlFiltrOrigen" runat="server" CssClass="form-control form-control-sm">
+                <asp:ListItem Text="-- Todas --" Value="" />
+                <asp:ListItem Text="Directa" Value="DIRECTA" />
+                <asp:ListItem Text="De Pedido" Value="PEDIDO" />
+            </asp:DropDownList>
+        </div>
+        <div class="col-sm-6 col-md-3 mb-2">
             <label>Cliente</label>
             <asp:TextBox ID="txtFiltrCliente" runat="server" CssClass="form-control form-control-sm" placeholder="Nombre..."></asp:TextBox>
         </div>
-        <div class="col-md-1">
+        <div class="col-sm-6 col-md-3 mb-2">
             <label>Folio</label>
             <asp:TextBox ID="txtFiltrFolio" runat="server" CssClass="form-control form-control-sm" placeholder="ENT-..."></asp:TextBox>
         </div>
-        <div class="col-md-2">
+        <div class="col-sm-6 col-md-3 mb-2">
             <label>Desde</label>
             <asp:TextBox ID="txtFiltrDesde" runat="server" CssClass="form-control form-control-sm" TextMode="Date"></asp:TextBox>
         </div>
-        <div class="col-md-2">
+        <div class="col-sm-6 col-md-3 mb-2">
             <label>Hasta</label>
             <asp:TextBox ID="txtFiltrHasta" runat="server" CssClass="form-control form-control-sm" TextMode="Date"></asp:TextBox>
         </div>
-        <div class="col-md-1">
+        <div class="col-sm-12 col-md-3 mb-2 d-flex">
             <asp:Button ID="btnBuscar" runat="server" Text="Buscar"
-                CssClass="btn btn-sm btn-primary btn-block mb-1" OnClick="btnBuscar_Click" />
+                CssClass="btn btn-sm btn-primary mr-2" OnClick="btnBuscar_Click" />
             <asp:Button ID="btnLimpiar" runat="server" Text="Limpiar"
-                CssClass="btn btn-sm btn-outline-secondary btn-block" OnClick="btnLimpiar_Click" />
+                CssClass="btn btn-sm btn-outline-secondary" OnClick="btnLimpiar_Click" />
         </div>
     </div>
 </div>
@@ -162,6 +170,12 @@
             <asp:BoundField DataField="FechaEntrega" HeaderText="Fecha" DataFormatString="{0:dd/MM/yyyy}" />
             <asp:BoundField DataField="BaseNombre"  HeaderText="Base" />
             <asp:BoundField DataField="ClienteNombre" HeaderText="Cliente" />
+            <asp:TemplateField HeaderText="Origen">
+                <ItemStyle CssClass="text-center" />
+                <ItemTemplate>
+                    <%# GetOrigenHtml(Eval("OrdenID"), Eval("OrdenFolio")) %>
+                </ItemTemplate>
+            </asp:TemplateField>
             <asp:BoundField DataField="NumItems"    HeaderText="Items" ItemStyle-CssClass="text-center" />
             <asp:BoundField DataField="TotalValor"  HeaderText="Total ($)" DataFormatString="{0:C2}" ItemStyle-CssClass="text-right font-weight-bold" />
             <asp:TemplateField HeaderText="Estado">
@@ -184,8 +198,8 @@
                         onclick="imprimirEntrega(<%# Eval("EntregaID") %>)">
                         <i class="fas fa-print"></i>
                     </button>
-                    <%# MostrarBtnConfirmar(Eval("Estado").ToString(), Eval("EntregaID").ToString()) %>
-                    <%# MostrarBtnCancelar(Eval("Estado").ToString(), Eval("EntregaID").ToString()) %>
+                    <%# MostrarBtnConfirmar(Eval("Estado").ToString(), Eval("EntregaID").ToString(), Eval("OrdenID")) %>
+                    <%# MostrarBtnCancelar(Eval("Estado").ToString(), Eval("EntregaID").ToString(), Eval("OrdenID")) %>
                 </ItemTemplate>
             </asp:TemplateField>
         </Columns>
@@ -732,6 +746,10 @@
         document.getElementById('<%= hdnAccion.ClientID %>').value = 'detalle';
         document.getElementById('<%= hdnEntregaIDAccion.ClientID %>').value = id;
         document.getElementById('<%= btnProcesarAccion.ClientID %>').click();
+    }
+
+    function irAOrden(ordenId) {
+        window.location.href = 'Ordenes.aspx?ordenId=' + ordenId;
     }
 
     function imprimirEntrega(id) {
