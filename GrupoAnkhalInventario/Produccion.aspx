@@ -522,7 +522,10 @@
                 var m = JSON.parse(h.value);
                 h.value = '';
                 Swal.fire({ icon: m.icon, title: m.title, text: m.text, confirmButtonColor: '#003366' }).then(function () {
-                    if (m.modal) $('#' + m.modal).modal('show');
+                    if (m.modal) {
+                        $('#' + m.modal).modal('show');
+                        if (m.modal === 'modalRegistrar') actualizarTotalProd();
+                    }
                 });
             } catch (e) { }
         }

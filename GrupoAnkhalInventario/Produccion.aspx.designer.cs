@@ -60,15 +60,6 @@ namespace GrupoAnkhalInventario
         protected global::System.Web.UI.WebControls.DropDownList ddlFiltrBase;
 
         /// <summary>
-        /// Control ddlFiltrProducto.
-        /// </summary>
-        /// <remarks>
-        /// Campo generado automáticamente.
-        /// Para modificarlo, mueva la declaración del campo del archivo del diseñador al archivo de código subyacente.
-        /// </remarks>
-        protected global::System.Web.UI.WebControls.DropDownList ddlFiltrProducto;
-
-        /// <summary>
         /// Control txtFechaDesde.
         /// </summary>
         /// <remarks>
@@ -103,6 +94,15 @@ namespace GrupoAnkhalInventario
         /// Para modificarlo, mueva la declaración del campo del archivo del diseñador al archivo de código subyacente.
         /// </remarks>
         protected global::System.Web.UI.WebControls.Button btnLimpiar;
+
+        /// <summary>
+        /// Control chkMostrarBorradores.
+        /// </summary>
+        /// <remarks>
+        /// Campo generado automáticamente.
+        /// Para modificarlo, mueva la declaración del campo del archivo del diseñador al archivo de código subyacente.
+        /// </remarks>
+        protected global::System.Web.UI.WebControls.CheckBox chkMostrarBorradores;
 
         /// <summary>
         /// Control btnNuevo.
@@ -149,6 +149,13 @@ namespace GrupoAnkhalInventario
         /// </remarks>
         protected global::System.Web.UI.WebControls.HiddenField hdnProductoSeleccionado;
 
+        /// <summary>
+        /// Control hdnProductoNombre.
+        /// </summary>
+        /// <remarks>
+        /// Campo generado automáticamente.
+        /// Para modificarlo, mueva la declaración del campo del archivo del diseñador al archivo de código subyacente.
+        /// </remarks>
         protected global::System.Web.UI.WebControls.HiddenField hdnProductoNombre;
 
         /// <summary>
@@ -160,15 +167,23 @@ namespace GrupoAnkhalInventario
         /// </remarks>
         protected global::System.Web.UI.WebControls.HiddenField hdnConfirmarSinConsumos;
 
+        /// <summary>
+        /// Control hdnProduccionID.
+        /// </summary>
+        /// <remarks>
+        /// Campo generado automáticamente.
+        /// Para modificarlo, mueva la declaración del campo del archivo del diseñador al archivo de código subyacente.
+        /// </remarks>
         protected global::System.Web.UI.WebControls.HiddenField hdnProduccionID;
 
+        /// <summary>
+        /// Control hdnModoEdicion.
+        /// </summary>
+        /// <remarks>
+        /// Campo generado automáticamente.
+        /// Para modificarlo, mueva la declaración del campo del archivo del diseñador al archivo de código subyacente.
+        /// </remarks>
         protected global::System.Web.UI.WebControls.HiddenField hdnModoEdicion;
-
-        protected global::System.Web.UI.WebControls.CheckBox chkMostrarBorradores;
-
-        protected global::System.Web.UI.WebControls.Label lblModalTitulo;
-
-        protected global::System.Web.UI.WebControls.Button btnGuardarBorrador;
 
         /// <summary>
         /// Control btnCargarConsumos.
@@ -178,6 +193,15 @@ namespace GrupoAnkhalInventario
         /// Para modificarlo, mueva la declaración del campo del archivo del diseñador al archivo de código subyacente.
         /// </remarks>
         protected global::System.Web.UI.WebControls.Button btnCargarConsumos;
+
+        /// <summary>
+        /// Control lblModalTitulo.
+        /// </summary>
+        /// <remarks>
+        /// Campo generado automáticamente.
+        /// Para modificarlo, mueva la declaración del campo del archivo del diseñador al archivo de código subyacente.
+        /// </remarks>
+        protected global::System.Web.UI.WebControls.Label lblModalTitulo;
 
         /// <summary>
         /// Control ddlBase.
@@ -205,15 +229,6 @@ namespace GrupoAnkhalInventario
         /// Para modificarlo, mueva la declaración del campo del archivo del diseñador al archivo de código subyacente.
         /// </remarks>
         protected global::System.Web.UI.WebControls.DropDownList ddlTurno;
-
-        /// <summary>
-        /// Control ddlProducto.
-        /// </summary>
-        /// <remarks>
-        /// Campo generado automáticamente.
-        /// Para modificarlo, mueva la declaración del campo del archivo del diseñador al archivo de código subyacente.
-        /// </remarks>
-        protected global::System.Web.UI.WebControls.DropDownList ddlProducto;
 
         /// <summary>
         /// Control txtResponsable.
@@ -279,6 +294,15 @@ namespace GrupoAnkhalInventario
         protected global::System.Web.UI.WebControls.TextBox txtObservaciones;
 
         /// <summary>
+        /// Control btnGuardarBorrador.
+        /// </summary>
+        /// <remarks>
+        /// Campo generado automáticamente.
+        /// Para modificarlo, mueva la declaración del campo del archivo del diseñador al archivo de código subyacente.
+        /// </remarks>
+        protected global::System.Web.UI.WebControls.Button btnGuardarBorrador;
+
+        /// <summary>
         /// Control btnGuardar.
         /// </summary>
         /// <remarks>
@@ -286,15 +310,6 @@ namespace GrupoAnkhalInventario
         /// Para modificarlo, mueva la declaración del campo del archivo del diseñador al archivo de código subyacente.
         /// </remarks>
         protected global::System.Web.UI.WebControls.Button btnGuardar;
-
-        /// <summary>
-        /// Control ddlProductoHoja.
-        /// </summary>
-        /// <remarks>
-        /// Campo generado automáticamente.
-        /// Para modificarlo, mueva la declaración del campo del archivo del diseñador al archivo de código subyacente.
-        /// </remarks>
-        protected global::System.Web.UI.WebControls.DropDownList ddlProductoHoja;
 
         /// <summary>
         /// Control txtCantidadHoja.
