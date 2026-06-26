@@ -1310,6 +1310,9 @@ namespace GrupoAnkhalInventario
                                 ent.FechaModif = AppHelper.Ahora;
                             }
 
+                            db.SubmitChanges();
+                            ActualizarEstadoOrden(ordenID, db);
+
                             orden.Estado     = "CANCELADA";
                             orden.FechaModif = AppHelper.Ahora;
                             db.SubmitChanges();
