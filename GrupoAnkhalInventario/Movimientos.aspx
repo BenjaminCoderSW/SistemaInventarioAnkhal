@@ -341,6 +341,7 @@
 <!-- ── HIDDEN FIELDS ────────────────────────────── -->
 <asp:HiddenField ID="hdnMensajePendiente" runat="server" Value="" />
 <asp:HiddenField ID="hdnForzarLimiteCredito" runat="server" Value="" />
+<asp:HiddenField ID="hdnMotivoLimiteCredito" runat="server" Value="" />
 <asp:HiddenField ID="hdnTipoItemSeleccionado" runat="server" Value="Material" />
 <asp:HiddenField ID="hdnItemsJson" runat="server" Value="" />
 <asp:Button ID="btnCargarItems" runat="server" style="display:none" OnClick="btnCargarItems_Click" />
@@ -609,10 +610,14 @@
             if (msg.confirmar) {
                 Swal.fire({
                     icon: 'warning', title: msg.title, html: msg.text,
+                    input: 'textarea',
+                    inputLabel: 'Motivo (opcional)',
+                    inputPlaceholder: 'Escriba el motivo de continuar a pesar del límite (opcional)...',
                     showCancelButton: true, confirmButtonColor: '#e67e22',
                     confirmButtonText: 'Sí, continuar', cancelButtonText: 'Cancelar'
                 }).then(function (r) {
                     if (!r.isConfirmed) return;
+                    document.getElementById('<%= hdnMotivoLimiteCredito.ClientID %>').value = (r.value || '').trim();
                     document.getElementById('<%= hdnForzarLimiteCredito.ClientID %>').value = 'true';
                     if (msg.confirmar.accion === 'reintentar-guardar-lote') {
                         document.getElementById('<%= btnGuardar.ClientID %>').click();

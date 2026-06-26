@@ -197,6 +197,7 @@
 <!-- ══════════════════════════════════════════════════════════════════ -->
 <asp:HiddenField ID="hdnMensajePendiente"  runat="server" Value="" />
 <asp:HiddenField ID="hdnForzarLimiteCredito" runat="server" Value="" />
+<asp:HiddenField ID="hdnMotivoLimiteCredito" runat="server" Value="" />
 <asp:HiddenField ID="hdnItemsJson"         runat="server" Value="[]" />
 <asp:HiddenField ID="hdnAccion"            runat="server" Value="" />
 <asp:HiddenField ID="hdnEntregaIDAccion"   runat="server" Value="" />
@@ -434,10 +435,14 @@
                 if (m.confirmar) {
                     Swal.fire({
                         icon: 'warning', title: m.title, html: m.text,
+                        input: 'textarea',
+                        inputLabel: 'Motivo (opcional)',
+                        inputPlaceholder: 'Escriba el motivo de continuar a pesar del límite (opcional)...',
                         showCancelButton: true, confirmButtonColor: '#e67e22',
                         confirmButtonText: 'Sí, continuar', cancelButtonText: 'Cancelar'
                     }).then(function (r) {
                         if (!r.isConfirmed) return;
+                        document.getElementById('<%= hdnMotivoLimiteCredito.ClientID %>').value = (r.value || '').trim();
                         document.getElementById('<%= hdnForzarLimiteCredito.ClientID %>').value = 'true';
                         if (m.confirmar.accion === 'reintentar-confirmar-entregar') {
                             document.getElementById('<%= btnConfirmarEntregar.ClientID %>').click();

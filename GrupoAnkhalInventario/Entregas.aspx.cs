@@ -494,6 +494,8 @@ namespace GrupoAnkhalInventario
                             {
                                 bool forzarCredito = hdnForzarLimiteCredito.Value == "true";
                                 hdnForzarLimiteCredito.Value = "";
+                                string motivoLimite = string.IsNullOrWhiteSpace(hdnMotivoLimiteCredito.Value) ? null : hdnMotivoLimiteCredito.Value.Trim();
+                                hdnMotivoLimiteCredito.Value = "";
                                 decimal montoNuevo = items.Sum(i => i.Cantidad * i.PrecioUnitario);
                                 var infoCredito = CuentasPorCobrarHelper.EvaluarLimiteCredito(db, clienteID, montoNuevo);
                                 if (infoCredito != null)
@@ -505,7 +507,7 @@ namespace GrupoAnkhalInventario
                                             "modalNuevo", new { accion = "reintentar-confirmar-entregar" });
                                         return;
                                     }
-                                    CuentasPorCobrarHelper.RegistrarBitacora(db, infoCredito, entrega.EntregaID, Convert.ToInt32(Session["ClaveID"]));
+                                    CuentasPorCobrarHelper.RegistrarBitacora(db, infoCredito, entrega.EntregaID, Convert.ToInt32(Session["ClaveID"]), motivoLimite);
                                 }
                             }
 
@@ -606,6 +608,8 @@ namespace GrupoAnkhalInventario
 
             bool forzarCredito = hdnForzarLimiteCredito.Value == "true";
             hdnForzarLimiteCredito.Value = "";
+            string motivoLimite = string.IsNullOrWhiteSpace(hdnMotivoLimiteCredito.Value) ? null : hdnMotivoLimiteCredito.Value.Trim();
+            hdnMotivoLimiteCredito.Value = "";
 
             try
             {
@@ -633,7 +637,7 @@ namespace GrupoAnkhalInventario
                                 decimal montoNuevo = items.Sum(i => i.Cantidad * i.PrecioUnitario);
                                 var infoCredito = CuentasPorCobrarHelper.EvaluarLimiteCredito(db, entrega.ClienteID.Value, montoNuevo);
                                 if (infoCredito != null)
-                                    CuentasPorCobrarHelper.RegistrarBitacora(db, infoCredito, entregaID, Convert.ToInt32(Session["ClaveID"]));
+                                    CuentasPorCobrarHelper.RegistrarBitacora(db, infoCredito, entregaID, Convert.ToInt32(Session["ClaveID"]), motivoLimite);
                             }
 
                             CuentasPorCobrarHelper.GenerarSiAplica(db, entregaID, Convert.ToInt32(Session["ClaveID"]));

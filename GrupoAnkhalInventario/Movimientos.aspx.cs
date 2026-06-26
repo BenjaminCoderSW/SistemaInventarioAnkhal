@@ -653,6 +653,8 @@ namespace GrupoAnkhalInventario
 
                                 bool forzarCredito = hdnForzarLimiteCredito.Value == "true";
                                 hdnForzarLimiteCredito.Value = "";
+                                string motivoLimite = string.IsNullOrWhiteSpace(hdnMotivoLimiteCredito.Value) ? null : hdnMotivoLimiteCredito.Value.Trim();
+                                hdnMotivoLimiteCredito.Value = "";
                                 var infoCredito = EvaluarLimiteCreditoProveedor(db, prov, monto);
                                 if (infoCredito != null)
                                 {
@@ -663,7 +665,7 @@ namespace GrupoAnkhalInventario
                                             "modalNuevo", new { accion = "reintentar-guardar-lote" });
                                         return;
                                     }
-                                    RegistrarBitacoraProveedor(db, infoCredito, lote.LoteID, claveID);
+                                    RegistrarBitacoraProveedor(db, infoCredito, lote.LoteID, claveID, motivoLimite);
                                 }
 
                                 db.CuentasPorPagar.InsertOnSubmit(new Modelo.CuentasPorPagar
