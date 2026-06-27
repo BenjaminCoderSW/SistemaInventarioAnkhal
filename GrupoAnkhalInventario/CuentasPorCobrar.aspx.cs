@@ -118,6 +118,14 @@ namespace GrupoAnkhalInventario
                     q = q.Where(c => c.FechaEntrega < fh);
                 }
 
+                string buscar = (txtFiltroBusqueda.Text ?? "").Trim().ToLower();
+                if (!string.IsNullOrEmpty(buscar))
+                {
+                    q = q.Where(c =>
+                        (c.NumeroFactura != null && c.NumeroFactura.ToLower().Contains(buscar)) ||
+                        c.Entregas.Folio.ToLower().Contains(buscar));
+                }
+
                 var datos = q.Select(c => new { c.CuentaPorCobrarID, c.MontoTotal, c.FechaVencimiento, c.Estado }).ToList();
 
                 var idsResumen = datos.Select(c => c.CuentaPorCobrarID).ToList();
@@ -188,6 +196,15 @@ namespace GrupoAnkhalInventario
                 {
                     DateTime fh = DateTime.Parse(txtFiltroFechaHasta.Text).AddDays(1);
                     q = q.Where(c => c.FechaEntrega < fh);
+                }
+
+                // Filtro de búsqueda por Folio de Entrega o No. de Factura
+                string buscar = (txtFiltroBusqueda.Text ?? "").Trim().ToLower();
+                if (!string.IsNullOrEmpty(buscar))
+                {
+                    q = q.Where(c =>
+                        (c.NumeroFactura != null && c.NumeroFactura.ToLower().Contains(buscar)) ||
+                        c.Entregas.Folio.ToLower().Contains(buscar));
                 }
 
                 int total = q.Count();
@@ -309,6 +326,7 @@ namespace GrupoAnkhalInventario
 
         protected void btnLimpiar_Click(object sender, EventArgs e)
         {
+            txtFiltroBusqueda.Text = "";
             ddlFiltroCliente.SelectedIndex = 0;
             ddlFiltroEstado.SelectedIndex = 0;
             txtFiltroFechaDesde.Text = "";

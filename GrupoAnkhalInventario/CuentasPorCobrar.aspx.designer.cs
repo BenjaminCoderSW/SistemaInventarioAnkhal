@@ -51,6 +51,15 @@ namespace GrupoAnkhalInventario
         protected global::System.Web.UI.WebControls.Label lblTotalPendiente;
 
         /// <summary>
+        /// Control txtFiltroBusqueda.
+        /// </summary>
+        /// <remarks>
+        /// Campo generado automáticamente.
+        /// Para modificarlo, mueva la declaración del campo del archivo del diseñador al archivo de código subyacente.
+        /// </remarks>
+        protected global::System.Web.UI.WebControls.TextBox txtFiltroBusqueda;
+
+        /// <summary>
         /// Control ddlFiltroCliente.
         /// </summary>
         /// <remarks>

@@ -106,6 +106,11 @@
             <div class="filtros-bar">
                 <div class="row align-items-end">
                     <div class="col-md-2">
+                        <label>Buscar por Folio o Factura</label>
+                        <asp:TextBox ID="txtFiltroBusqueda" runat="server" CssClass="form-control form-control-sm"
+                            Placeholder="Folio o No. Factura..."></asp:TextBox>
+                    </div>
+                    <div class="col-md-2">
                         <label>Cliente</label>
                         <asp:DropDownList ID="ddlFiltroCliente" runat="server" CssClass="form-control form-control-sm">
                             <asp:ListItem Value="">-- Todos --</asp:ListItem>
@@ -131,7 +136,7 @@
                         <label>F. Entrega hasta</label>
                         <asp:TextBox ID="txtFiltroFechaHasta" runat="server" CssClass="form-control form-control-sm" TextMode="Date"></asp:TextBox>
                     </div>
-                    <div class="col-md-4 mt-2 mt-md-0">
+                    <div class="col-md-2 mt-2 mt-md-0">
                         <asp:Button ID="btnFiltrar" runat="server" Text="Buscar"
                             CssClass="btn btn-primary btn-sm mr-1" OnClick="btnFiltrar_Click" />
                         <asp:Button ID="btnLimpiar" runat="server" Text="Limpiar"
