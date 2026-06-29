@@ -1213,14 +1213,14 @@ namespace GrupoAnkhalInventario
                                 var items = ObtenerItemsEntrega(db, entregaID);
                                 int tipoAjusteID = ObtenerTipoMovimientoID(db, "AJUSTE_POS");
                                 DevolverStockYRegistrarMovimientos(db, entregaID,
-                                    entrega.BaseOrigenID, items, tipoAjusteID);
+                                    entrega.BaseOrigenID, items, tipoAjusteID, entrega.Folio);
 
                                 int tipoSalidaID = ObtenerTipoMovimientoID(db, "SALIDA");
                                 var movsOriginal = db.Movimientos
                                     .Where(m => m.EntregaID == entregaID && m.TipoMovimientoID == tipoSalidaID)
                                     .ToList();
                                 foreach (var mv in movsOriginal)
-                                    mv.Observaciones = (mv.Observaciones ?? "") + " [ANULADO - entrega cancelada]";
+                                    mv.Observaciones = (mv.Observaciones ?? "") + " [ANULADO - entrega " + entrega.Folio + " cancelada]";
                             }
 
                             CuentasPorCobrarHelper.CancelarCxCSiExiste(db, entregaID);
@@ -1294,14 +1294,14 @@ namespace GrupoAnkhalInventario
                                     var items = ObtenerItemsEntrega(db, ent.EntregaID);
                                     int tipoAjusteID = ObtenerTipoMovimientoID(db, "AJUSTE_POS");
                                     DevolverStockYRegistrarMovimientos(db, ent.EntregaID,
-                                        ent.BaseOrigenID, items, tipoAjusteID);
+                                        ent.BaseOrigenID, items, tipoAjusteID, ent.Folio);
 
                                     int tipoSalidaID = ObtenerTipoMovimientoID(db, "SALIDA");
                                     var movs = db.Movimientos
                                         .Where(m => m.EntregaID == ent.EntregaID && m.TipoMovimientoID == tipoSalidaID)
                                         .ToList();
                                     foreach (var mv in movs)
-                                        mv.Observaciones = (mv.Observaciones ?? "") + " [ANULADO - orden cancelada]";
+                                        mv.Observaciones = (mv.Observaciones ?? "") + " [ANULADO - orden " + orden.Folio + " cancelada]";
                                 }
 
                                 CuentasPorCobrarHelper.CancelarCxCSiExiste(db, ent.EntregaID);
@@ -1731,7 +1731,7 @@ namespace GrupoAnkhalInventario
         }
 
         private void DevolverStockYRegistrarMovimientos(InventarioAnkhalDBDataContext db,
-            int entregaID, int baseID, List<ItemEntregaModel> items, int tipoAjusteID)
+            int entregaID, int baseID, List<ItemEntregaModel> items, int tipoAjusteID, string folioEntrega)
         {
             int claveID = Convert.ToInt32(Session["ClaveID"]);
             foreach (var it in items)
@@ -1752,7 +1752,7 @@ namespace GrupoAnkhalInventario
                         BaseOrigenID = null, BaseDestinoID = baseID,
                         Cantidad = it.Cantidad, Costo = it.PrecioUnitario,
                         EntregaID = entregaID, ProduccionID = null,
-                        Observaciones = string.Format("Devolución por cancelación entrega #{0}", entregaID),
+                        Observaciones = string.Format("Devolución por cancelación entrega {0}", folioEntrega),
                         RegistradoPorID = claveID, FechaMovimiento = AppHelper.Ahora
                     });
                 }
@@ -1772,7 +1772,7 @@ namespace GrupoAnkhalInventario
                         BaseOrigenID = null, BaseDestinoID = baseID,
                         Cantidad = cantBase, Costo = it.PrecioUnitario,
                         EntregaID = entregaID, ProduccionID = null,
-                        Observaciones = string.Format("Devolución por cancelación entrega #{0}", entregaID),
+                        Observaciones = string.Format("Devolución por cancelación entrega {0}", folioEntrega),
                         RegistradoPorID = claveID, FechaMovimiento = AppHelper.Ahora
                     });
                 }

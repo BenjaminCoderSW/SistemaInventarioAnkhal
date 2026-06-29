@@ -724,7 +724,7 @@ namespace GrupoAnkhalInventario
                             {
                                 var items = ObtenerItemsEntrega(db, entregaID);
                                 int tipoAjusteID = ObtenerTipoMovimientoID(db, "AJUSTE_POS");
-                                DevolverStockYRegistrarMovimientos(db, entregaID, entrega.BaseOrigenID, items, tipoAjusteID);
+                                DevolverStockYRegistrarMovimientos(db, entregaID, entrega.BaseOrigenID, items, tipoAjusteID, entrega.Folio);
 
                                 // Marcar los movimientos SALIDA originales como anulados
                                 int tipoSalidaID = ObtenerTipoMovimientoID(db, "SALIDA");
@@ -732,7 +732,7 @@ namespace GrupoAnkhalInventario
                                     .Where(m => m.EntregaID == entregaID && m.TipoMovimientoID == tipoSalidaID)
                                     .ToList();
                                 foreach (var mv in movsOriginal)
-                                    mv.Observaciones = mv.Observaciones + " [ANULADO - entrega cancelada]";
+                                    mv.Observaciones = mv.Observaciones + " [ANULADO - entrega " + entrega.Folio + " cancelada]";
                             }
 
                             CuentasPorCobrarHelper.CancelarCxCSiExiste(db, entregaID);
@@ -1474,7 +1474,7 @@ namespace GrupoAnkhalInventario
         }
 
         private void DevolverStockYRegistrarMovimientos(InventarioAnkhalDBDataContext db,
-            int entregaID, int baseID, List<ItemEntregaModel> items, int tipoAjusteID)
+            int entregaID, int baseID, List<ItemEntregaModel> items, int tipoAjusteID, string folioEntrega)
         {
             int claveID = Convert.ToInt32(Session["ClaveID"]);
 
@@ -1513,7 +1513,7 @@ namespace GrupoAnkhalInventario
                         Costo            = it.PrecioUnitario,
                         EntregaID        = entregaID,
                         ProduccionID     = null,
-                        Observaciones    = string.Format("Devolución por cancelación entrega #{0}", entregaID),
+                        Observaciones    = string.Format("Devolución por cancelación entrega {0}", folioEntrega),
                         RegistradoPorID  = claveID,
                         FechaMovimiento  = AppHelper.Ahora
                     });
@@ -1554,7 +1554,7 @@ namespace GrupoAnkhalInventario
                         Costo            = it.PrecioUnitario,
                         EntregaID        = entregaID,
                         ProduccionID     = null,
-                        Observaciones    = string.Format("Devolución por cancelación entrega #{0}", entregaID),
+                        Observaciones    = string.Format("Devolución por cancelación entrega {0}", folioEntrega),
                         RegistradoPorID  = claveID,
                         FechaMovimiento  = AppHelper.Ahora
                     });
