@@ -32,6 +32,7 @@ namespace GrupoAnkhalInventario
         public class ProduccionVM
         {
             public int      ProduccionID    { get; set; }
+            public string   Folio           { get; set; }
             public DateTime Fecha           { get; set; }
             public string   BaseNombre      { get; set; }
             public string   Turno           { get; set; }
@@ -253,6 +254,7 @@ namespace GrupoAnkhalInventario
                            select new
                            {
                                p.ProduccionID,
+                               p.Folio,
                                p.Fecha,
                                BaseNombre      = b.Nombre,
                                MetaDiaria      = b.MetaDiaria,
@@ -306,6 +308,7 @@ namespace GrupoAnkhalInventario
                         return new ProduccionVM
                         {
                             ProduccionID    = r.ProduccionID,
+                            Folio           = r.Folio,
                             Fecha           = r.Fecha,
                             BaseNombre      = r.BaseNombre,
                             Turno           = r.Turno,
@@ -848,6 +851,7 @@ namespace GrupoAnkhalInventario
                             {
                                 prod = new Produccion
                                 {
+                                    Folio           = GenerarFolioProduccion(db),
                                     BaseID          = baseID,
                                     Fecha           = fecha,
                                     Turno           = turno,
@@ -868,7 +872,7 @@ namespace GrupoAnkhalInventario
                             // Crear lote que agrupa todos los consumos de esta producción
                             var loteProd = new Modelo.LotesMovimiento
                             {
-                                Folio            = AppHelper.GenerarFolio(db, "PROD"),
+                                Folio            = AppHelper.GenerarFolio(db, "MOV"),
                                 TipoMovimientoID = tipoConsumoID,
                                 BaseOrigenID     = baseID,
                                 BaseDestinoID    = null,
@@ -1266,6 +1270,23 @@ namespace GrupoAnkhalInventario
                 out result) ? result : 0m;
         }
 
+        // ── Genera folio PROD-yyyyMMdd-### con UPDLOCK/HOLDLOCK ───────────────
+        // Se basa en la fecha de registro (hoy), no en el campo Fecha capturado
+        // por el usuario, para evitar colisiones cuando se registra una
+        // producción con fecha pasada (mismo criterio que MOV en LotesMovimiento).
+        private string GenerarFolioProduccion(InventarioAnkhalDBDataContext db)
+        {
+            DateTime hoy = AppHelper.Hoy;
+            string prefix = "PROD-" + hoy.ToString("yyyyMMdd") + "-%";
+            // MAX del consecutivo ya usado (no COUNT): un borrador eliminado no debe
+            // liberar su número, o el siguiente folio generado choca con uno que
+            // sigue existiendo (ej. se borra el 003 y ya existe un 004 confirmado).
+            int maxSeq = db.ExecuteQuery<int>(
+                "SELECT ISNULL(MAX(CAST(RIGHT(Folio, 3) AS INT)), 0) FROM dbo.Produccion WITH (UPDLOCK, HOLDLOCK) WHERE Folio LIKE {0}",
+                prefix).First();
+            return string.Format("PROD-{0}-{1:D3}", hoy.ToString("yyyyMMdd"), maxSeq + 1);
+        }
+
         private void LimpiarModal()
         {
             ddlBase.SelectedIndex         = 0;
@@ -1322,61 +1343,80 @@ namespace GrupoAnkhalInventario
             {
                 using (var db = NuevoDb(true))
                 {
-                    decimal precioVenta = db.Productos
-                        .Where(p => p.ProductoID == productoID)
-                        .Select(p => p.PrecioVenta)
-                        .FirstOrDefault();
-
-                    if (existingID > 0)
+                    db.Connection.Open();
+                    using (var tx = db.Connection.BeginTransaction())
                     {
-                        // Actualizar borrador existente
-                        var prod = db.Produccion.FirstOrDefault(p =>
-                            p.ProduccionID == existingID && p.Estado == "Borrador");
-                        if (prod == null)
-                        { SetMsg("error", "Error", "Borrador no encontrado.", "modalRegistrar"); return; }
-
-                        prod.BaseID          = baseID;
-                        prod.Fecha           = fecha;
-                        prod.Turno           = turno;
-                        prod.ProductoID      = productoID;
-                        prod.CantidadBuena   = cantBuena;
-                        prod.CantidadRechazo = cantRechazo;
-                        prod.Responsable     = string.IsNullOrEmpty(responsable) ? null : responsable;
-                        prod.Observaciones   = string.IsNullOrEmpty(obs) ? null : obs;
-                        prod.PrecioVenta     = precioVenta;
-
-                        var viejos = db.ConsumosProduccion
-                            .Where(c => c.ProduccionID == existingID).ToList();
-                        db.ConsumosProduccion.DeleteAllOnSubmit(viejos);
-                        db.SubmitChanges();
-
-                        InsertarConsumosBorrador(db, existingID, productoID, cantBuena + cantRechazo);
-                    }
-                    else
-                    {
-                        // Nuevo borrador
-                        var prod = new Produccion
+                        db.Transaction = tx;
+                        try
                         {
-                            BaseID          = baseID,
-                            Fecha           = fecha,
-                            Turno           = turno,
-                            ProductoID      = productoID,
-                            CantidadBuena   = cantBuena,
-                            CantidadRechazo = cantRechazo,
-                            Responsable     = string.IsNullOrEmpty(responsable) ? null : responsable,
-                            Observaciones   = string.IsNullOrEmpty(obs) ? null : obs,
-                            RegistradoPorID = claveID,
-                            FechaRegistro   = AppHelper.Ahora,
-                            PrecioVenta     = precioVenta,
-                            Estado          = "Borrador"
-                        };
-                        db.Produccion.InsertOnSubmit(prod);
-                        db.SubmitChanges();
+                            decimal precioVenta = db.Productos
+                                .Where(p => p.ProductoID == productoID)
+                                .Select(p => p.PrecioVenta)
+                                .FirstOrDefault();
 
-                        InsertarConsumosBorrador(db, prod.ProduccionID, productoID, cantBuena + cantRechazo);
+                            if (existingID > 0)
+                            {
+                                // Actualizar borrador existente
+                                var prod = db.Produccion.FirstOrDefault(p =>
+                                    p.ProduccionID == existingID && p.Estado == "Borrador");
+                                if (prod == null)
+                                {
+                                    SetMsg("error", "Error", "Borrador no encontrado.", "modalRegistrar");
+                                    tx.Rollback();
+                                    return;
+                                }
+
+                                prod.BaseID          = baseID;
+                                prod.Fecha           = fecha;
+                                prod.Turno           = turno;
+                                prod.ProductoID      = productoID;
+                                prod.CantidadBuena   = cantBuena;
+                                prod.CantidadRechazo = cantRechazo;
+                                prod.Responsable     = string.IsNullOrEmpty(responsable) ? null : responsable;
+                                prod.Observaciones   = string.IsNullOrEmpty(obs) ? null : obs;
+                                prod.PrecioVenta     = precioVenta;
+
+                                var viejos = db.ConsumosProduccion
+                                    .Where(c => c.ProduccionID == existingID).ToList();
+                                db.ConsumosProduccion.DeleteAllOnSubmit(viejos);
+                                db.SubmitChanges();
+
+                                InsertarConsumosBorrador(db, existingID, productoID, cantBuena + cantRechazo);
+                            }
+                            else
+                            {
+                                // Nuevo borrador
+                                var prod = new Produccion
+                                {
+                                    Folio           = GenerarFolioProduccion(db),
+                                    BaseID          = baseID,
+                                    Fecha           = fecha,
+                                    Turno           = turno,
+                                    ProductoID      = productoID,
+                                    CantidadBuena   = cantBuena,
+                                    CantidadRechazo = cantRechazo,
+                                    Responsable     = string.IsNullOrEmpty(responsable) ? null : responsable,
+                                    Observaciones   = string.IsNullOrEmpty(obs) ? null : obs,
+                                    RegistradoPorID = claveID,
+                                    FechaRegistro   = AppHelper.Ahora,
+                                    PrecioVenta     = precioVenta,
+                                    Estado          = "Borrador"
+                                };
+                                db.Produccion.InsertOnSubmit(prod);
+                                db.SubmitChanges();
+
+                                InsertarConsumosBorrador(db, prod.ProduccionID, productoID, cantBuena + cantRechazo);
+                            }
+
+                            db.SubmitChanges();
+                            tx.Commit();
+                        }
+                        catch
+                        {
+                            tx.Rollback();
+                            throw;
+                        }
                     }
-
-                    db.SubmitChanges();
                 }
 
                 LimpiarModal();

@@ -195,7 +195,7 @@
             PagerSettings-LastPageText="»"
             PagerSettings-PageButtonCount="5">
             <Columns>
-                <asp:BoundField DataField="ProduccionID" HeaderText="ID" ItemStyle-Width="50px" />
+                <asp:BoundField DataField="Folio" HeaderText="Folio" ItemStyle-Width="130px" />
                 <asp:BoundField DataField="Fecha" HeaderText="Fecha" DataFormatString="{0:dd/MM/yyyy}" />
                 <asp:BoundField DataField="BaseNombre" HeaderText="Base" />
                 <asp:TemplateField HeaderText="Turno">
@@ -805,13 +805,13 @@
 
     function buscarFiltrProducto(query) {
         fetch('<%= ResolveUrl("~/Produccion.aspx/BuscarProductosFiltro") %>', {
-            method:  'POST',
+            method: 'POST',
             headers: { 'Content-Type': 'application/json' },
-            body:    JSON.stringify({ query: query })
+            body: JSON.stringify({ query: query })
         })
-        .then(function (r) { return r.json(); })
-        .then(function (data) { mostrarResultadosFiltrProducto(data.d); })
-        .catch(function () { ocultarResultadosFiltrProducto(); });
+            .then(function (r) { return r.json(); })
+            .then(function (data) { mostrarResultadosFiltrProducto(data.d); })
+            .catch(function () { ocultarResultadosFiltrProducto(); });
     }
 
     function mostrarResultadosFiltrProducto(items) {
@@ -825,13 +825,13 @@
         items.forEach(function (item) {
             var el = document.createElement('div');
             el.style.cssText = 'padding:7px 10px;cursor:pointer;font-size:.84rem;border-bottom:1px solid #f0f0f0;';
-            el.textContent   = item.nombre;
-            el.onmouseenter  = function () { el.style.background = '#e8f0fe'; };
-            el.onmouseleave  = function () { el.style.background = ''; };
-            el.onmousedown   = function (e) {
+            el.textContent = item.nombre;
+            el.onmouseenter = function () { el.style.background = '#e8f0fe'; };
+            el.onmouseleave = function () { el.style.background = ''; };
+            el.onmousedown = function (e) {
                 e.preventDefault();
-                document.getElementById('txtFiltrProducto').value       = item.nombre;
-                document.getElementById('hdnFiltrProductoID').value     = item.id;
+                document.getElementById('txtFiltrProducto').value = item.nombre;
+                document.getElementById('hdnFiltrProductoID').value = item.id;
                 document.getElementById('hdnFiltrProductoNombre').value = item.nombre;
                 ocultarResultadosFiltrProducto();
             };

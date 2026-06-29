@@ -1663,7 +1663,7 @@ namespace GrupoAnkhalInventario
 
             var loteEnt = new Modelo.LotesMovimiento
             {
-                Folio            = AppHelper.GenerarFolio(db, "ENT"),
+                Folio            = AppHelper.GenerarFolio(db, "MOV"),
                 TipoMovimientoID = tipoSalidaID,
                 BaseOrigenID     = baseID,
                 BaseDestinoID    = null,

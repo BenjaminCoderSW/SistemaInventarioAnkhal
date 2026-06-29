@@ -318,7 +318,7 @@
 
                         <asp:BoundField DataField="RegistradoPor" HeaderText="Registrado Por" />
 
-                        <asp:TemplateField HeaderText="Folio Lote">
+                        <asp:TemplateField HeaderText="Folio">
                             <ItemTemplate>
                                 <%# !string.IsNullOrEmpty(Eval("FolioLote") as string)
                                     ? "<span class='badge' style='background:#555;color:#fff;font-size:.78rem;'>" +

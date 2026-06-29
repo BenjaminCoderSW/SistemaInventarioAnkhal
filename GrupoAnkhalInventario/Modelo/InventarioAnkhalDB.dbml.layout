@@ -26,12 +26,6 @@
         <elementListCompartment Id="4232a49e-0611-41cf-995d-3b3f12993ad0" absoluteBounds="14.765, 20.335, 1.9700000000000002, 1.7878011067708335" name="DataPropertiesCompartment" titleTextColor="Black" itemTextColor="Black" />
       </nestedChildShapes>
     </classShape>
-    <classShape Id="446f89cd-b7c6-48ce-906b-f7003f0e7e8c" absoluteBounds="17.75, 14.5, 2, 3.30930826822917">
-      <DataClassMoniker Name="/InventarioAnkhalDBDataContext/Produccion" />
-      <nestedChildShapes>
-        <elementListCompartment Id="c55d449f-0fd5-4178-bc87-4932a857f822" absoluteBounds="17.765, 14.96, 1.9700000000000002, 2.7493082682291665" name="DataPropertiesCompartment" titleTextColor="Black" itemTextColor="Black" />
-      </nestedChildShapes>
-    </classShape>
     <classShape Id="6d372587-0339-441e-bb1d-cc04ef3d2cc3" absoluteBounds="17.5, 19, 2, 2.3478011067708344">
       <DataClassMoniker Name="/InventarioAnkhalDBDataContext/ProductoMateriales" />
       <nestedChildShapes>
@@ -104,14 +98,7 @@
         <elementListCompartment Id="422cce16-645a-4750-bd9b-fe87cbe8dbb2" absoluteBounds="3.39, 15.46, 1.9700000000000002, 4.095418294270833" name="DataPropertiesCompartment" titleTextColor="Black" itemTextColor="Black" />
       </nestedChildShapes>
     </classShape>
-    <associationConnector edgePoints="[(19.6230463125 : 17.8093082682292); (19.6230463125 : 22.5821786067708); (20.0416666666667 : 22.5821786067708 : JumpStart); (20.2083333333333 : 22.5821786067708 : JumpEnd); (20.5 : 22.5821786067708)]" fixedFrom="NotFixed" fixedTo="NotFixed">
-      <AssociationMoniker Name="/InventarioAnkhalDBDataContext/Produccion/Produccion_ConsumosProduccion" />
-      <nodes>
-        <classShapeMoniker Id="446f89cd-b7c6-48ce-906b-f7003f0e7e8c" />
-        <classShapeMoniker Id="febf01ee-52d8-4ae5-997d-2b5cf49dc40e" />
-      </nodes>
-    </associationConnector>
-    <associationConnector edgePoints="[(12.9375005 : 17.8478011067708); (12.9375005 : 19.09375); (13.9166666666667 : 19.09375 : JumpStart); (14.6145833333333 : 19.09375 : JumpEnd); (15.6666666666667 : 19.09375 : JumpStart); (15.8333333333333 : 19.09375 : JumpEnd); (16.8541666666667 : 19.09375 : JumpStart); (17.0833333333333 : 19.09375 : JumpEnd); (17.5 : 19.09375)]" fixedFrom="NotFixed" fixedTo="NotFixed">
+    <associationConnector edgePoints="[(13.90625 : 17.8478011067708); (13.90625 : 19.09375); (13.9166666666667 : 19.09375 : JumpStart); (14.7708333333333 : 19.09375 : JumpEnd); (15.6666666666667 : 19.09375 : JumpStart); (15.8333333333333 : 19.09375 : JumpEnd); (16.9166666666667 : 19.09375 : JumpStart); (17.0833333333333 : 19.09375 : JumpEnd); (17.5 : 19.09375)]" fixedFrom="Algorithm" fixedTo="Algorithm">
       <AssociationMoniker Name="/InventarioAnkhalDBDataContext/ConversionesMaterial/ConversionesMaterial_ProductoMateriales" />
       <nodes>
         <classShapeMoniker Id="88799074-b099-4d54-b595-4467729a53ab" />
@@ -125,21 +112,14 @@
         <classShapeMoniker Id="22ef1496-229f-4753-94c3-ad128a9445bd" />
       </nodes>
     </associationConnector>
-    <associationConnector edgePoints="[(8.25 : 16.6230017089844); (9.66666666666667 : 16.6230017089844 : JumpStart); (9.83333333333333 : 16.6230017089844 : JumpEnd); (10.1979186666667 : 16.6230017089844 : JumpStart); (10.3645853333333 : 16.6230017089844 : JumpEnd); (11.2916666666667 : 16.6230017089844 : JumpStart); (11.4583333333333 : 16.6230017089844 : JumpEnd); (11.4791666666667 : 16.6230017089844 : JumpStart); (11.6458333333333 : 16.6230017089844 : JumpEnd); (11.7291666666667 : 16.6230017089844 : JumpStart); (11.8958333333333 : 16.6230017089844 : JumpEnd); (12 : 16.6230017089844)]" fixedFrom="NotFixed" fixedTo="NotFixed">
+    <associationConnector edgePoints="[(8.25 : 16.6230017089844); (9.66666666666667 : 16.6230017089844 : JumpStart); (9.83333333333333 : 16.6230017089844 : JumpEnd); (10.1979186666667 : 16.6230017089844 : JumpStart); (10.3645853333333 : 16.6230017089844 : JumpEnd); (11.0416666666667 : 16.6230017089844 : JumpStart); (11.4583333333333 : 16.6230017089844 : JumpEnd); (11.4791666666667 : 16.6230017089844 : JumpStart); (11.6458333333333 : 16.6230017089844 : JumpEnd); (11.7291666666667 : 16.6230017089844 : JumpStart); (11.9583333333333 : 16.6230017089844 : JumpEnd); (12 : 16.6230017089844)]" fixedFrom="NotFixed" fixedTo="NotFixed">
       <AssociationMoniker Name="/InventarioAnkhalDBDataContext/Usuario/Usuario_ConversionesMaterial" />
       <nodes>
         <classShapeMoniker Id="4979644e-ec70-4695-82be-701bdc4d5ac2" />
         <classShapeMoniker Id="88799074-b099-4d54-b595-4467729a53ab" />
       </nodes>
     </associationConnector>
-    <associationConnector edgePoints="[(7.914065 : 14.875); (7.914065 : 14.625); (8.5 : 14.625); (8.5 : 16.2796541341146); (10.1979186666667 : 16.2796541341146 : JumpStart); (10.3645853333333 : 16.2796541341146 : JumpEnd); (11.2916666666667 : 16.2796541341146 : JumpStart); (11.4583333333333 : 16.2796541341146 : JumpEnd); (11.4791666666667 : 16.2796541341146 : JumpStart); (11.8333333333333 : 16.2796541341146 : JumpEnd); (11.875 : 16.2796541341146); (11.875 : 15.375); (14.0104166666667 : 15.375 : JumpStart); (14.1770833333333 : 15.375 : JumpEnd); (14.25 : 15.375); (14.25 : 16.4631982421875); (14.4479166666667 : 16.4631982421875 : JumpStart); (14.6145833333333 : 16.4631982421875 : JumpEnd); (16.9166666666667 : 16.4631982421875 : JumpStart); (17.0833333333333 : 16.4631982421875 : JumpEnd); (17.125 : 16.4631982421875); (17.125 : 16.1546541341146); (17.5104166666667 : 16.1546541341146 : JumpStart); (17.6770833333333 : 16.1546541341146 : JumpEnd); (17.75 : 16.1546541341146)]" fixedFrom="NotFixed" fixedTo="NotFixed">
-      <AssociationMoniker Name="/InventarioAnkhalDBDataContext/Usuario/Usuario_Produccion" />
-      <nodes>
-        <classShapeMoniker Id="4979644e-ec70-4695-82be-701bdc4d5ac2" />
-        <classShapeMoniker Id="446f89cd-b7c6-48ce-906b-f7003f0e7e8c" />
-      </nodes>
-    </associationConnector>
-    <associationConnector edgePoints="[(7.25 : 18.3766097005208); (7.25 : 21.1250005); (7.20833083333333 : 21.1250005 : JumpStart); (6.91666666666667 : 21.1250005 : JumpEnd); (5.70833333333333 : 21.1250005 : JumpStart); (5.54166666666667 : 21.1250005 : JumpEnd); (4.125 : 21.1250005)]" fixedFrom="NotFixed" fixedTo="Algorithm">
+    <associationConnector edgePoints="[(7.25 : 18.3766097005208); (7.25 : 21.1250005); (7.20833083333333 : 21.1250005 : JumpStart); (6.91666666666667 : 21.1250005 : JumpEnd); (6.08333333333333 : 21.1250005 : JumpStart); (5.91666666666667 : 21.1250005 : JumpEnd); (4.125 : 21.1250005)]" fixedFrom="NotFixed" fixedTo="NotFixed">
       <AssociationMoniker Name="/InventarioAnkhalDBDataContext/Usuario/Usuario_Proveedores" />
       <nodes>
         <classShapeMoniker Id="4979644e-ec70-4695-82be-701bdc4d5ac2" />
@@ -153,21 +133,21 @@
         <classShapeMoniker Id="4979644e-ec70-4695-82be-701bdc4d5ac2" />
       </nodes>
     </associationConnector>
-    <associationConnector edgePoints="[(8.25 : 17.1085770670573); (9.66666666666667 : 17.1085770670573 : JumpStart); (9.83333333333333 : 17.1085770670573 : JumpEnd); (10.1979186666667 : 17.1085770670573 : JumpStart); (10.3645853333333 : 17.1085770670573 : JumpEnd); (11.1666666666667 : 17.1085770670573 : JumpStart); (11.4583333333333 : 17.1085770670573 : JumpEnd); (11.75 : 17.1085770670573); (11.75 : 18.4103011067708); (12.8541671666667 : 18.4103011067708 : JumpStart); (13.0208338333333 : 18.4103011067708 : JumpEnd); (13.9166666666667 : 18.4103011067708 : JumpStart); (14.2708333333333 : 18.4103011067708 : JumpEnd); (14.3125 : 18.4103011067708); (14.3125 : 19.4583968098958); (14.3541666666667 : 19.4583968098958 : JumpStart); (14.6145833333333 : 19.4583968098958 : JumpEnd); (15.75 : 19.4583968098958); (15.75 : 18.8958968098958)]" fixedFrom="Algorithm" fixedTo="NotFixed">
+    <associationConnector edgePoints="[(8.25 : 17.0629024251302); (9.66666666666667 : 17.0629024251302 : JumpStart); (9.83333333333333 : 17.0629024251302 : JumpEnd); (10.1979186666667 : 17.0629024251302 : JumpStart); (10.3645853333333 : 17.0629024251302 : JumpEnd); (11.0416666666667 : 17.0629024251302 : JumpStart); (11.4583333333333 : 17.0629024251302 : JumpEnd); (11.625 : 17.0629024251302); (11.625 : 18.4103011067708); (11.7916666666667 : 18.4103011067708 : JumpStart); (11.9583333333333 : 18.4103011067708 : JumpEnd); (13.8229166666667 : 18.4103011067708 : JumpStart); (14.3333333333333 : 18.4103011067708 : JumpEnd); (14.375 : 18.4103011067708); (14.375 : 19.5833968098958); (14.4479166666667 : 19.5833968098958 : JumpStart); (14.7708333333333 : 19.5833968098958 : JumpEnd); (15.75 : 19.5833968098958); (15.75 : 18.8958968098958)]" fixedFrom="Algorithm" fixedTo="NotFixed">
       <AssociationMoniker Name="/InventarioAnkhalDBDataContext/Usuario/Usuario_UsuarioBases" />
       <nodes>
         <classShapeMoniker Id="4979644e-ec70-4695-82be-701bdc4d5ac2" />
         <classShapeMoniker Id="9a3ba774-3dda-43a6-947e-416dcc2a6e76" />
       </nodes>
     </associationConnector>
-    <associationConnector edgePoints="[(8.25 : 17.4917910335286); (9.66666666666667 : 17.4917910335286 : JumpStart); (9.83333333333333 : 17.4917910335286 : JumpEnd); (10.1979186666667 : 17.4917910335286 : JumpStart); (10.3645853333333 : 17.4917910335286 : JumpEnd); (11.1666666666667 : 17.4917910335286 : JumpStart); (11.4583333333333 : 17.4917910335286 : JumpEnd); (11.6041666666667 : 17.4917910335286 : JumpStart); (11.8333333333333 : 17.4917910335286 : JumpEnd); (11.875 : 17.4917910335286); (11.875 : 18.0978011067708); (12.8541671666667 : 18.0978011067708 : JumpStart); (13.0208338333333 : 18.0978011067708 : JumpEnd); (13.3541694166667 : 18.0978011067708 : JumpStart); (13.5208360833333 : 18.0978011067708 : JumpEnd); (14.0104166666667 : 18.0978011067708 : JumpStart); (14.1770833333333 : 18.0978011067708 : JumpEnd); (14.25 : 18.0978011067708); (14.25 : 16.75); (14.4479166666667 : 16.75 : JumpStart); (14.6145833333333 : 16.75 : JumpEnd); (15.75 : 16.75); (15.75 : 17.125)]" fixedFrom="Algorithm" fixedTo="NotFixed">
+    <associationConnector edgePoints="[(8.25 : 16.138251546224); (9.66666666666667 : 16.138251546224 : JumpStart); (9.83333333333333 : 16.138251546224 : JumpEnd); (11.0416666666667 : 16.138251546224 : JumpStart); (11.2083333333333 : 16.138251546224 : JumpEnd); (11.2916666666667 : 16.138251546224 : JumpStart); (11.4583333333333 : 16.138251546224 : JumpEnd); (11.4791666666667 : 16.138251546224 : JumpStart); (11.8333333333333 : 16.138251546224 : JumpEnd); (11.875 : 16.138251546224); (11.875 : 18.5978011067708); (13.8229166666667 : 18.5978011067708 : JumpStart); (14.1770833333333 : 18.5978011067708 : JumpEnd); (14.25 : 18.5978011067708); (14.25 : 16.75); (14.4479166666667 : 16.75 : JumpStart); (14.6145833333333 : 16.75 : JumpEnd); (15.75 : 16.75); (15.75 : 17.125)]" fixedFrom="Algorithm" fixedTo="NotFixed">
       <AssociationMoniker Name="/InventarioAnkhalDBDataContext/Usuario/Usuario_UsuarioBases1" />
       <nodes>
         <classShapeMoniker Id="4979644e-ec70-4695-82be-701bdc4d5ac2" />
         <classShapeMoniker Id="9a3ba774-3dda-43a6-947e-416dcc2a6e76" />
       </nodes>
     </associationConnector>
-    <associationConnector edgePoints="[(8.25 : 15.2315991210938); (8.41666666666667 : 15.2315991210938 : JumpStart); (8.58333333333333 : 15.2315991210938 : JumpEnd); (8.66666666666667 : 15.2315991210938 : JumpStart); (8.83333333333333 : 15.2315991210938 : JumpEnd); (9 : 15.2315991210938)]" fixedFrom="NotFixed" fixedTo="NotFixed">
+    <associationConnector edgePoints="[(8.25 : 15.2315991210938); (8.66666666666667 : 15.2315991210938 : JumpStart); (8.83333333333333 : 15.2315991210938 : JumpEnd); (9 : 15.2315991210938)]" fixedFrom="NotFixed" fixedTo="NotFixed">
       <AssociationMoniker Name="/InventarioAnkhalDBDataContext/Usuario/Usuario_UsuarioRoles" />
       <nodes>
         <classShapeMoniker Id="4979644e-ec70-4695-82be-701bdc4d5ac2" />
@@ -181,7 +161,7 @@
         <classShapeMoniker Id="f8b6ca38-0990-4af8-a7d8-6789eb0d808f" />
       </nodes>
     </associationConnector>
-    <associationConnector edgePoints="[(8.25 : 14.9907995605469); (8.41666666666667 : 14.9907995605469 : JumpStart); (8.58333333333333 : 14.9907995605469 : JumpEnd); (8.66666666666667 : 14.9907995605469 : JumpStart); (8.83333333333333 : 14.9907995605469 : JumpEnd); (9 : 14.9907995605469)]" fixedFrom="NotFixed" fixedTo="NotFixed">
+    <associationConnector edgePoints="[(8.25 : 14.9907995605469); (8.66666666666667 : 14.9907995605469 : JumpStart); (8.83333333333333 : 14.9907995605469 : JumpEnd); (9 : 14.9907995605469)]" fixedFrom="NotFixed" fixedTo="NotFixed">
       <AssociationMoniker Name="/InventarioAnkhalDBDataContext/Usuario/Usuario_UsuarioRoles1" />
       <nodes>
         <classShapeMoniker Id="4979644e-ec70-4695-82be-701bdc4d5ac2" />
@@ -194,7 +174,7 @@
         <elementListCompartment Id="e128dd8d-5ce5-42c9-8d06-945ded1e7ee9" absoluteBounds="3.39, 12.835, 1.9700000000000002, 1.4031982421875" name="DataPropertiesCompartment" titleTextColor="Black" itemTextColor="Black" />
       </nestedChildShapes>
     </classShape>
-    <associationConnector edgePoints="[(2.125 : 20); (1.90225214628563 : 19.6287535771427 : JumpStart); (1.81650285371437 : 19.485838089524 : JumpEnd); (1.75 : 19.375); (1.77604416666667 : 19.375 : JumpStart); (1.94271083333333 : 19.375 : JumpEnd); (2.67838979166667 : 19.375 : JumpStart); (2.84505645833333 : 19.375 : JumpEnd); (3 : 19.375); (3 : 14.7131982421875); (3.04624880509762 : 14.6971935160234 : JumpStart); (3.20375119490238 : 14.6426886998732 : JumpEnd); (4.08363627929687 : 14.3381982421875)]" fixedFrom="NotFixed" fixedTo="NotFixed">
+    <associationConnector edgePoints="[(2.125 : 20); (1.90225214628563 : 19.6287535771427 : JumpStart); (1.81650285371437 : 19.485838089524 : JumpEnd); (1.75 : 19.375); (1.77604416666667 : 19.375 : JumpStart); (1.94271083333333 : 19.375 : JumpEnd); (3 : 19.375); (3 : 14.7131982421875); (4.08363627929687 : 14.3381982421875)]" fixedFrom="NotFixed" fixedTo="NotFixed">
       <AssociationMoniker Name="/InventarioAnkhalDBDataContext/Proveedores/Proveedores_ProveedorMateriales" />
       <nodes>
         <classShapeMoniker Id="e0dde740-013e-4cda-91e7-df036a192dcb" />
@@ -207,7 +187,7 @@
         <elementListCompartment Id="acba40d6-5700-488f-9ea4-dd40bdf828ea" absoluteBounds="5.015, 25.835, 1.9700000000000002, 1.5954996744791665" name="DataPropertiesCompartment" titleTextColor="Black" itemTextColor="Black" />
       </nestedChildShapes>
     </classShape>
-    <associationConnector edgePoints="[(5.375 : 13.3565991210937); (5.41666666666667 : 13.3565991210937 : JumpStart); (5.58333333333333 : 13.3565991210937 : JumpEnd); (5.625 : 13.3565991210937); (5.625 : 22.25); (4.70833333333333 : 22.25 : JumpStart); (4.54166666666667 : 22.25 : JumpEnd); (4.375 : 22.25); (4.375 : 25); (5.59585405288897 : 25); (5.59585405288897 : 25.375)]" fixedFrom="NotFixed" fixedTo="NotFixed">
+    <associationConnector edgePoints="[(5.375 : 13.3565991210937); (5.41666666666667 : 13.3565991210937 : JumpStart); (5.58333333333333 : 13.3565991210937 : JumpEnd); (5.66666666666667 : 13.3565991210937 : JumpStart); (5.95833333333333 : 13.3565991210937 : JumpEnd); (6 : 13.3565991210937); (6 : 22.25); (4.70833333333333 : 22.25 : JumpStart); (4.54166666666667 : 22.25 : JumpEnd); (4.375 : 22.25); (4.375 : 24.75); (5.59585405288897 : 24.75); (5.59585405288897 : 25.375)]" fixedFrom="Algorithm" fixedTo="NotFixed">
       <AssociationMoniker Name="/InventarioAnkhalDBDataContext/ProveedorMateriales/ProveedorMateriales_HistorialPrecios" />
       <nodes>
         <classShapeMoniker Id="69843ef8-61c3-41b1-96ad-3c4ceb78a6a9" />
@@ -226,14 +206,14 @@
         <elementListCompartment Id="085263ae-39f2-405b-9202-80cd43ffa85b" absoluteBounds="4.265, 9.21, 1.9700000000000002, 1.5954996744791665" name="DataPropertiesCompartment" titleTextColor="Black" itemTextColor="Black" />
       </nestedChildShapes>
     </classShape>
-    <associationConnector edgePoints="[(3.46875175 : 20); (3.46875175 : 19.75); (4.375 : 19.75); (4.375 : 19.9054182942708); (5.5 : 19.9054182942708); (5.5 : 11.1554996744792); (6.5 : 11.1554996744792); (6.5 : 9.73159912109375); (6.66666666666667 : 9.73159912109375 : JumpStart); (6.83333333333333 : 9.73159912109375 : JumpEnd); (7.25 : 9.73159912109375)]" fixedFrom="NotFixed" fixedTo="NotFixed">
+    <associationConnector edgePoints="[(3.46875175 : 20); (3.46875175 : 19.75); (4.375 : 19.75); (4.375 : 19.9054182942708); (5.5 : 19.9054182942708); (5.5 : 11.1554996744792); (6.5 : 11.1554996744792); (6.5 : 9.73159912109375); (6.66666666666667 : 9.73159912109375 : JumpStart); (6.83333333333333 : 9.73159912109375 : JumpEnd); (6.91666666666667 : 9.73159912109375 : JumpStart); (7.08333333333333 : 9.73159912109375 : JumpEnd); (7.25 : 9.73159912109375)]" fixedFrom="NotFixed" fixedTo="NotFixed">
       <AssociationMoniker Name="/InventarioAnkhalDBDataContext/Proveedores/Proveedores_ProveedorProductos" />
       <nodes>
         <classShapeMoniker Id="e0dde740-013e-4cda-91e7-df036a192dcb" />
         <classShapeMoniker Id="092e938f-b199-416e-8327-cd7137c021cc" />
       </nodes>
     </associationConnector>
-    <associationConnector edgePoints="[(7.25 : 9.17829956054688); (6.83333333333333 : 9.17829956054688 : JumpStart); (6.66666666666667 : 9.17829956054688 : JumpEnd); (6.25 : 9.17829956054688)]" fixedFrom="NotFixed" fixedTo="NotFixed">
+    <associationConnector edgePoints="[(7.25 : 9.17829956054688); (6.25 : 9.17829956054688)]" fixedFrom="NotFixed" fixedTo="NotFixed">
       <AssociationMoniker Name="/InventarioAnkhalDBDataContext/ProveedorProductos/ProveedorProductos_HistorialPreciosProductos" />
       <nodes>
         <classShapeMoniker Id="092e938f-b199-416e-8327-cd7137c021cc" />
@@ -246,21 +226,14 @@
         <elementListCompartment Id="e6c63329-a0f4-4060-814f-abc6bbd8b818" absoluteBounds="21.14, 24.21, 1.9700000000000002, 3.7108154296875" name="DataPropertiesCompartment" titleTextColor="Black" itemTextColor="Black" />
       </nestedChildShapes>
     </classShape>
-    <associationConnector edgePoints="[(19.75 : 14.78125); (21.5416666666667 : 14.78125 : JumpStart); (21.7083333333333 : 14.78125 : JumpEnd); (22.6822891666667 : 14.78125 : JumpStart); (22.8489558333333 : 14.78125 : JumpEnd); (22.90625 : 14.78125); (22.90625 : 23.75)]" fixedFrom="Algorithm" fixedTo="Algorithm">
-      <AssociationMoniker Name="/InventarioAnkhalDBDataContext/Produccion/Produccion_Movimientos" />
-      <nodes>
-        <classShapeMoniker Id="446f89cd-b7c6-48ce-906b-f7003f0e7e8c" />
-        <classShapeMoniker Id="4d96fee9-9e78-4c3e-890d-4187ec8c8f95" />
-      </nodes>
-    </associationConnector>
-    <associationConnector edgePoints="[(8.25 : 17.6875); (8.41666666666667 : 17.6875 : JumpStart); (8.58333333333333 : 17.6875 : JumpEnd); (9.66666666666667 : 17.6875 : JumpStart); (9.83333333333333 : 17.6875 : JumpEnd); (10.1979186666667 : 17.6875 : JumpStart); (10.3645853333333 : 17.6875 : JumpEnd); (11.1666666666667 : 17.6875 : JumpStart); (11.4583333333333 : 17.6875 : JumpEnd); (11.5 : 17.6875); (11.5 : 17.9728011067708); (11.6041666666667 : 17.9728011067708 : JumpStart); (11.9583333333333 : 17.9728011067708 : JumpEnd); (12.8541671666667 : 17.9728011067708 : JumpStart); (13.0208338333333 : 17.9728011067708 : JumpEnd); (13.3541694166667 : 17.9728011067708 : JumpStart); (13.5208360833333 : 17.9728011067708 : JumpEnd); (14.0104166666667 : 17.9728011067708 : JumpStart); (14.3333333333333 : 17.9728011067708 : JumpEnd); (14.4375 : 17.9728011067708); (14.4375 : 23.0978011067708); (14.4479166666667 : 23.0978011067708 : JumpStart); (14.7083333333333 : 23.0978011067708 : JumpEnd); (17.8531870729167 : 23.0978011067708 : JumpStart); (18.0198537395833 : 23.0978011067708 : JumpEnd); (18.1022114791667 : 23.0978011067708 : JumpStart); (18.2688781458333 : 23.0978011067708 : JumpEnd); (18.3512358854167 : 23.0978011067708 : JumpStart); (18.5179025520833 : 23.0978011067708 : JumpEnd); (18.5729191666667 : 23.0978011067708 : JumpStart); (18.7669269583333 : 23.0978011067708 : JumpEnd); (19.0983091041667 : 23.0978011067708 : JumpStart); (19.2649757708333 : 23.0978011067708 : JumpEnd); (19.3502635416667 : 23.0978011067708 : JumpStart); (19.5169302083333 : 23.0978011067708 : JumpEnd); (20.0416666666667 : 23.0978011067708 : JumpStart); (20.2083333333333 : 23.0978011067708 : JumpEnd); (21.2330694166667 : 23.0978011067708 : JumpStart); (21.3997360833333 : 23.0978011067708 : JumpEnd); (22.078123 : 23.0978011067708); (22.078123 : 23.75)]" fixedFrom="Algorithm" fixedTo="Algorithm">
+    <associationConnector edgePoints="[(8.25 : 16.3820306982422); (9.66666666666667 : 16.3820306982422 : JumpStart); (9.83333333333333 : 16.3820306982422 : JumpEnd); (11.0416666666667 : 16.3820306982422 : JumpStart); (11.2083333333333 : 16.3820306982422 : JumpEnd); (11.25 : 16.3820306982422); (11.25 : 17.9728011067708); (11.2916666666667 : 17.9728011067708 : JumpStart); (11.4583333333333 : 17.9728011067708 : JumpEnd); (11.5416666666667 : 17.9728011067708 : JumpStart); (11.7708333333333 : 17.9728011067708 : JumpEnd); (11.7916666666667 : 17.9728011067708 : JumpStart); (11.9583333333333 : 17.9728011067708 : JumpEnd); (13.3541694166667 : 17.9728011067708 : JumpStart); (13.5208360833333 : 17.9728011067708 : JumpEnd); (13.8229166666667 : 17.9728011067708 : JumpStart); (13.9895833333333 : 17.9728011067708 : JumpEnd); (14.0104166666667 : 17.9728011067708 : JumpStart); (14.3333333333333 : 17.9728011067708 : JumpEnd); (14.4375 : 17.9728011067708); (14.4375 : 23.0978011067708); (14.4479166666667 : 23.0978011067708 : JumpStart); (14.7708333333333 : 23.0978011067708 : JumpEnd); (17.9049485416667 : 23.0978011067708 : JumpStart); (18.0716152083333 : 23.0978011067708 : JumpEnd); (18.1432304166667 : 23.0978011067708 : JumpStart); (18.3098970833333 : 23.0978011067708 : JumpEnd); (18.5729191666667 : 23.0978011067708 : JumpStart); (18.7659526145833 : 23.0978011067708 : JumpEnd); (19.0553414791667 : 23.0978011067708 : JumpStart); (19.2220081458333 : 23.0978011067708 : JumpEnd); (19.3922560729167 : 23.0978011067708 : JumpStart); (19.5589227395833 : 23.0978011067708 : JumpEnd); (19.6354166666667 : 23.0978011067708 : JumpStart); (19.8020833333333 : 23.0978011067708 : JumpEnd); (21.2330694166667 : 23.0978011067708 : JumpStart); (21.3997360833333 : 23.0978011067708 : JumpEnd); (22.078123 : 23.0978011067708); (22.078123 : 23.75)]" fixedFrom="Algorithm" fixedTo="NotFixed">
       <AssociationMoniker Name="/InventarioAnkhalDBDataContext/Usuario/Usuario_Movimientos" />
       <nodes>
         <classShapeMoniker Id="4979644e-ec70-4695-82be-701bdc4d5ac2" />
         <classShapeMoniker Id="4d96fee9-9e78-4c3e-890d-4187ec8c8f95" />
       </nodes>
     </associationConnector>
-    <associationConnector edgePoints="[(6.875 : 23.5997679427083); (7.35416666666667 : 23.5997679427083 : JumpStart); (7.52083333333333 : 23.5997679427083 : JumpEnd); (7.54166666666667 : 23.5997679427083 : JumpStart); (7.70833333333333 : 23.5997679427083 : JumpEnd); (7.76041666666667 : 23.5997679427083 : JumpStart); (8.08333333333333 : 23.5997679427083 : JumpEnd); (8.91666666666667 : 23.5997679427083 : JumpStart); (9.08333333333333 : 23.5997679427083 : JumpEnd); (11.1041666666667 : 23.5997679427083 : JumpStart); (11.2708333333333 : 23.5997679427083 : JumpEnd); (11.3541666666667 : 23.5997679427083 : JumpStart); (11.5208333333333 : 23.5997679427083 : JumpEnd); (11.625 : 23.5997679427083); (11.625 : 21.625); (13.9166666666667 : 21.625 : JumpStart); (14.2083333333333 : 21.625 : JumpEnd); (14.25 : 21.625); (14.25 : 23.3478011067708); (14.4479166666667 : 23.3478011067708 : JumpStart); (14.6145833333333 : 23.3478011067708 : JumpEnd); (17.8531870729167 : 23.3478011067708 : JumpStart); (18.0198537395833 : 23.3478011067708 : JumpEnd); (18.1022114791667 : 23.3478011067708 : JumpStart); (18.2688781458333 : 23.3478011067708 : JumpEnd); (18.3512358854167 : 23.3478011067708 : JumpStart); (18.5179025520833 : 23.3478011067708 : JumpEnd); (18.5729191666667 : 23.3478011067708 : JumpStart); (18.7669269583333 : 23.3478011067708 : JumpEnd); (19.0983091041667 : 23.3478011067708 : JumpStart); (19.2649757708333 : 23.3478011067708 : JumpEnd); (19.3502635416667 : 23.3478011067708 : JumpStart); (19.5169302083333 : 23.3478011067708 : JumpEnd); (20.0416666666667 : 23.3478011067708 : JumpStart); (20.2083333333333 : 23.3478011067708 : JumpEnd); (21.2330694166667 : 23.3478011067708 : JumpStart); (21.3997360833333 : 23.3478011067708 : JumpEnd); (21.5703095 : 23.3478011067708); (21.5703095 : 23.75)]" fixedFrom="Algorithm" fixedTo="Algorithm">
+    <associationConnector edgePoints="[(6.875 : 23.5997679427083); (7.35416666666667 : 23.5997679427083 : JumpStart); (7.52083333333333 : 23.5997679427083 : JumpEnd); (7.54166666666667 : 23.5997679427083 : JumpStart); (7.70833333333333 : 23.5997679427083 : JumpEnd); (7.76041666666667 : 23.5997679427083 : JumpStart); (8.08333333333333 : 23.5997679427083 : JumpEnd); (8.91666666666667 : 23.5997679427083 : JumpStart); (9.08333333333333 : 23.5997679427083 : JumpEnd); (11.1041666666667 : 23.5997679427083 : JumpStart); (11.2708333333333 : 23.5997679427083 : JumpEnd); (11.3541666666667 : 23.5997679427083 : JumpStart); (11.5208333333333 : 23.5997679427083 : JumpEnd); (11.625 : 23.5997679427083); (11.625 : 21.625); (13.9166666666667 : 21.625 : JumpStart); (14.2083333333333 : 21.625 : JumpEnd); (14.25 : 21.625); (14.25 : 23.3478011067708); (14.4479166666667 : 23.3478011067708 : JumpStart); (14.7708333333333 : 23.3478011067708 : JumpEnd); (17.9049485416667 : 23.3478011067708 : JumpStart); (18.0716152083333 : 23.3478011067708 : JumpEnd); (18.1432304166667 : 23.3478011067708 : JumpStart); (18.3098970833333 : 23.3478011067708 : JumpEnd); (18.5729191666667 : 23.3478011067708 : JumpStart); (18.7659526145833 : 23.3478011067708 : JumpEnd); (19.0553414791667 : 23.3478011067708 : JumpStart); (19.2220081458333 : 23.3478011067708 : JumpEnd); (19.3922560729167 : 23.3478011067708 : JumpStart); (19.5589227395833 : 23.3478011067708 : JumpEnd); (19.6354166666667 : 23.3478011067708 : JumpStart); (19.8020833333333 : 23.3478011067708 : JumpEnd); (21.2330694166667 : 23.3478011067708 : JumpStart); (21.3997360833333 : 23.3478011067708 : JumpEnd); (21.5703095 : 23.3478011067708); (21.5703095 : 23.75)]" fixedFrom="NotFixed" fixedTo="NotFixed">
       <AssociationMoniker Name="/InventarioAnkhalDBDataContext/TiposMovimiento/TiposMovimiento_Movimientos" />
       <nodes>
         <classShapeMoniker Id="6356cdf1-ea22-4139-af93-1d3caa12bf0b" />
@@ -285,14 +258,7 @@
         <elementListCompartment Id="8ae512aa-9f3a-4880-9394-bf1f529e7433" absoluteBounds="12.015, 11.085, 1.9700000000000002, 2.941609700520833" name="DataPropertiesCompartment" titleTextColor="Black" itemTextColor="Black" />
       </nestedChildShapes>
     </classShape>
-    <associationConnector edgePoints="[(14 : 12.4960034179687); (14.0104166666667 : 12.4960034179687 : JumpStart); (14.1770833333333 : 12.4960034179687 : JumpEnd); (14.4479166666667 : 12.4960034179687 : JumpStart); (14.6145833333333 : 12.4960034179687 : JumpEnd); (16.5729166666667 : 12.4960034179687 : JumpStart); (16.7395833333333 : 12.4960034179687 : JumpEnd); (18.75 : 12.4960034179687); (18.75 : 14.5)]" fixedFrom="NotFixed" fixedTo="NotFixed">
-      <AssociationMoniker Name="/InventarioAnkhalDBDataContext/Productos/Productos_Produccion" />
-      <nodes>
-        <classShapeMoniker Id="6f86ba3c-b797-4972-a210-bf97f8fd4a52" />
-        <classShapeMoniker Id="446f89cd-b7c6-48ce-906b-f7003f0e7e8c" />
-      </nodes>
-    </associationConnector>
-    <associationConnector edgePoints="[(14 : 13.3105042089844); (14.0104166666667 : 13.3105042089844 : JumpStart); (14.1770833333333 : 13.3105042089844 : JumpEnd); (14.4479166666667 : 13.3105042089844 : JumpStart); (14.6145833333333 : 13.3105042089844 : JumpEnd); (16.5729166666667 : 13.3105042089844 : JumpStart); (16.7395833333333 : 13.3105042089844 : JumpEnd); (17.59375 : 13.3105042089844); (17.59375 : 19)]" fixedFrom="NotFixed" fixedTo="NotFixed">
+    <associationConnector edgePoints="[(14 : 13.5141294067382); (14.0104166666667 : 13.5141294067382 : JumpStart); (14.3333333333333 : 13.5141294067382 : JumpEnd); (14.4479166666667 : 13.5141294067382 : JumpStart); (14.6145833333333 : 13.5141294067382 : JumpEnd); (16.5729166666667 : 13.5141294067382 : JumpStart); (16.7395833333333 : 13.5141294067382 : JumpEnd); (16.9166666666667 : 13.5141294067382 : JumpStart); (17.0833333333333 : 13.5141294067382 : JumpEnd); (17.53125 : 13.5141294067382); (17.53125 : 19)]" fixedFrom="Algorithm" fixedTo="Algorithm">
       <AssociationMoniker Name="/InventarioAnkhalDBDataContext/Productos/Productos_ProductoMateriales" />
       <nodes>
         <classShapeMoniker Id="6f86ba3c-b797-4972-a210-bf97f8fd4a52" />
@@ -306,49 +272,49 @@
         <classShapeMoniker Id="59e04840-6704-42a4-9862-4dc43bc1bfb0" />
       </nodes>
     </associationConnector>
-    <associationConnector edgePoints="[(12.7343735 : 10.625); (12.7343735 : 9.89504876953125); (11.8958333333333 : 9.89504876953125 : JumpStart); (11.6041666666667 : 9.89504876953125 : JumpEnd); (11.4583333333333 : 9.89504876953125 : JumpStart); (11.2916666666667 : 9.89504876953125 : JumpEnd); (9.98958283333333 : 9.89504876953125 : JumpStart); (9.82291616666667 : 9.89504876953125 : JumpEnd); (9.25 : 9.89504876953125)]" fixedFrom="NotFixed" fixedTo="NotFixed">
+    <associationConnector edgePoints="[(12.7343735 : 10.625); (12.7343735 : 9.89504876953125); (11.8958333333333 : 9.89504876953125 : JumpStart); (11.7291666666667 : 9.89504876953125 : JumpEnd); (11.7083333333333 : 9.89504876953125 : JumpStart); (11.5416666666667 : 9.89504876953125 : JumpEnd); (11.4583333333333 : 9.89504876953125 : JumpStart); (11.2916666666667 : 9.89504876953125 : JumpEnd); (9.98958283333333 : 9.89504876953125 : JumpStart); (9.82291616666667 : 9.89504876953125 : JumpEnd); (9.25 : 9.89504876953125)]" fixedFrom="NotFixed" fixedTo="NotFixed">
       <AssociationMoniker Name="/InventarioAnkhalDBDataContext/Productos/Productos_ProveedorProductos" />
       <nodes>
         <classShapeMoniker Id="6f86ba3c-b797-4972-a210-bf97f8fd4a52" />
         <classShapeMoniker Id="092e938f-b199-416e-8327-cd7137c021cc" />
       </nodes>
     </associationConnector>
-    <associationConnector edgePoints="[(14 : 12.9032538134765); (14.0104166666667 : 12.9032538134765 : JumpStart); (14.1770833333333 : 12.9032538134765 : JumpEnd); (14.4479166666667 : 12.9032538134765 : JumpStart); (14.6145833333333 : 12.9032538134765 : JumpEnd); (16.5729166666667 : 12.9032538134765 : JumpStart); (16.7395833333333 : 12.9032538134765 : JumpEnd); (18.6666666666667 : 12.9032538134765 : JumpStart); (18.8333333333333 : 12.9032538134765 : JumpEnd); (21.5416666666667 : 12.9032538134765 : JumpStart); (21.7083333333333 : 12.9032538134765 : JumpEnd); (22.7656225 : 12.9032538134765); (22.7656225 : 23.75)]" fixedFrom="Algorithm" fixedTo="Algorithm">
+    <associationConnector edgePoints="[(14 : 12.9032538134765); (14.0104166666667 : 12.9032538134765 : JumpStart); (14.1770833333333 : 12.9032538134765 : JumpEnd); (14.4479166666667 : 12.9032538134765 : JumpStart); (14.6145833333333 : 12.9032538134765 : JumpEnd); (16.5729166666667 : 12.9032538134765 : JumpStart); (16.7395833333333 : 12.9032538134765 : JumpEnd); (18.5416666666667 : 12.9032538134765 : JumpStart); (18.7083333333333 : 12.9032538134765 : JumpEnd); (21.5416666666667 : 12.9032538134765 : JumpStart); (21.7083333333333 : 12.9032538134765 : JumpEnd); (22.7656225 : 12.9032538134765); (22.7656225 : 23.75)]" fixedFrom="NotFixed" fixedTo="NotFixed">
       <AssociationMoniker Name="/InventarioAnkhalDBDataContext/Productos/Productos_Movimientos" />
       <nodes>
         <classShapeMoniker Id="6f86ba3c-b797-4972-a210-bf97f8fd4a52" />
         <classShapeMoniker Id="4d96fee9-9e78-4c3e-890d-4187ec8c8f95" />
       </nodes>
     </associationConnector>
-    <associationConnector edgePoints="[(14 : 12.0887530224609); (14.0104166666667 : 12.0887530224609 : JumpStart); (14.1770833333333 : 12.0887530224609 : JumpEnd); (14.4479166666667 : 12.0887530224609 : JumpStart); (14.6145833333333 : 12.0887530224609 : JumpEnd); (16.5729166666667 : 12.0887530224609 : JumpStart); (16.7395833333333 : 12.0887530224609 : JumpEnd); (21.625 : 12.0887530224609); (21.625 : 15.125)]" fixedFrom="Algorithm" fixedTo="Algorithm">
+    <associationConnector edgePoints="[(14 : 12.0887530224609); (14.0104166666667 : 12.0887530224609 : JumpStart); (14.1770833333333 : 12.0887530224609 : JumpEnd); (14.4479166666667 : 12.0887530224609 : JumpStart); (14.6145833333333 : 12.0887530224609 : JumpEnd); (16.5729166666667 : 12.0887530224609 : JumpStart); (16.7395833333333 : 12.0887530224609 : JumpEnd); (21.625 : 12.0887530224609); (21.625 : 15.125)]" fixedFrom="NotFixed" fixedTo="NotFixed">
       <AssociationMoniker Name="/InventarioAnkhalDBDataContext/Productos/Productos_DetalleEntregas" />
       <nodes>
         <classShapeMoniker Id="6f86ba3c-b797-4972-a210-bf97f8fd4a52" />
         <classShapeMoniker Id="b3789695-df39-46bf-b438-b73dd0e49f94" />
       </nodes>
     </associationConnector>
-    <associationConnector edgePoints="[(13.531252 : 10.625); (13.531252 : 9.000002); (14.0104166666667 : 9.000002 : JumpStart); (14.1770833333333 : 9.000002 : JumpEnd); (14.5 : 9.000002)]" fixedFrom="NotFixed" fixedTo="NotFixed">
+    <associationConnector edgePoints="[(13.531252 : 10.625); (13.531252 : 9.000002); (14.5 : 9.000002)]" fixedFrom="NotFixed" fixedTo="NotFixed">
       <AssociationMoniker Name="/InventarioAnkhalDBDataContext/Productos/Productos_DetalleOrdenes" />
       <nodes>
         <classShapeMoniker Id="6f86ba3c-b797-4972-a210-bf97f8fd4a52" />
         <classShapeMoniker Id="115ab2cf-72c6-49c6-930b-cdd6b505f6d5" />
       </nodes>
     </associationConnector>
-    <associationConnector edgePoints="[(8.25 : 16.725363100586); (9.66666666666667 : 16.725363100586 : JumpStart); (9.83333333333333 : 16.725363100586 : JumpEnd); (10.1979186666667 : 16.725363100586 : JumpStart); (10.3645853333333 : 16.725363100586 : JumpEnd); (11.2916666666667 : 16.725363100586 : JumpStart); (11.4583333333333 : 16.725363100586 : JumpEnd); (11.5625 : 16.725363100586); (11.5625 : 15); (11.6041666666667 : 15 : JumpStart); (11.8958333333333 : 15 : JumpEnd); (12.3854146666667 : 15 : JumpStart); (12.5520813333333 : 15 : JumpEnd); (13 : 15); (13 : 14.1266097005208)]" fixedFrom="Algorithm" fixedTo="NotFixed">
+    <associationConnector edgePoints="[(8.25 : 16.7818511376953); (9.66666666666667 : 16.7818511376953 : JumpStart); (9.83333333333333 : 16.7818511376953 : JumpEnd); (10.1979186666667 : 16.7818511376953 : JumpStart); (10.3645853333333 : 16.7818511376953 : JumpEnd); (11.0416666666667 : 16.7818511376953 : JumpStart); (11.4583333333333 : 16.7818511376953 : JumpEnd); (11.5625 : 16.7818511376953); (11.5625 : 15); (11.7291666666667 : 15 : JumpStart); (11.8958333333333 : 15 : JumpEnd); (12.3854146666667 : 15 : JumpStart); (12.5520813333333 : 15 : JumpEnd); (13 : 15); (13 : 14.1266097005208)]" fixedFrom="Algorithm" fixedTo="NotFixed">
       <AssociationMoniker Name="/InventarioAnkhalDBDataContext/Usuario/Usuario_Productos" />
       <nodes>
         <classShapeMoniker Id="4979644e-ec70-4695-82be-701bdc4d5ac2" />
         <classShapeMoniker Id="6f86ba3c-b797-4972-a210-bf97f8fd4a52" />
       </nodes>
     </associationConnector>
-    <associationConnector edgePoints="[(8.25 : 16.0589261881511); (8.41666666666667 : 16.0589261881511 : JumpStart); (8.58333333333333 : 16.0589261881511 : JumpEnd); (10.1979186666667 : 16.0589261881511 : JumpStart); (10.3645853333333 : 16.0589261881511 : JumpEnd); (11.125 : 16.0589261881511); (11.125 : 15.125); (11.1666666666667 : 15.125 : JumpStart); (11.4583333333333 : 15.125 : JumpEnd); (11.4791666666667 : 15.125 : JumpStart); (11.8958333333333 : 15.125 : JumpEnd); (12.468748 : 15.125); (12.468748 : 14.1266097005208)]" fixedFrom="Algorithm" fixedTo="NotFixed">
+    <associationConnector edgePoints="[(8.25 : 17.3439537125651); (9.66666666666667 : 17.3439537125651 : JumpStart); (9.83333333333333 : 17.3439537125651 : JumpEnd); (10.1979186666667 : 17.3439537125651 : JumpStart); (10.3645853333333 : 17.3439537125651 : JumpEnd); (10.8541666666667 : 17.3439537125651 : JumpStart); (11.0208333333333 : 17.3439537125651 : JumpEnd); (11.125 : 17.3439537125651); (11.125 : 15.125); (11.1666666666667 : 15.125 : JumpStart); (11.4583333333333 : 15.125 : JumpEnd); (11.4791666666667 : 15.125 : JumpStart); (11.7083333333333 : 15.125 : JumpEnd); (11.7291666666667 : 15.125 : JumpStart); (11.8958333333333 : 15.125 : JumpEnd); (12.468748 : 15.125); (12.468748 : 14.1266097005208)]" fixedFrom="Algorithm" fixedTo="NotFixed">
       <AssociationMoniker Name="/InventarioAnkhalDBDataContext/Usuario/Usuario_Productos1" />
       <nodes>
         <classShapeMoniker Id="4979644e-ec70-4695-82be-701bdc4d5ac2" />
         <classShapeMoniker Id="6f86ba3c-b797-4972-a210-bf97f8fd4a52" />
       </nodes>
     </associationConnector>
-    <associationConnector edgePoints="[(11.125 : 11.9142976888021); (11.2916666666667 : 11.9142976888021 : JumpStart); (11.4583333333333 : 11.9142976888021 : JumpEnd); (11.6041666666667 : 11.9142976888021 : JumpStart); (11.8958333333333 : 11.9142976888021 : JumpEnd); (12 : 11.9142976888021)]" fixedFrom="NotFixed" fixedTo="NotFixed">
+    <associationConnector edgePoints="[(11.125 : 11.9142976888021); (11.2916666666667 : 11.9142976888021 : JumpStart); (11.4583333333333 : 11.9142976888021 : JumpEnd); (11.5416666666667 : 11.9142976888021 : JumpStart); (11.7083333333333 : 11.9142976888021 : JumpEnd); (11.7291666666667 : 11.9142976888021 : JumpStart); (11.8958333333333 : 11.9142976888021 : JumpEnd); (12 : 11.9142976888021)]" fixedFrom="NotFixed" fixedTo="NotFixed">
       <AssociationMoniker Name="/InventarioAnkhalDBDataContext/TiposProducto/TiposProducto_Productos" />
       <nodes>
         <classShapeMoniker Id="34933d3e-3a34-4d1e-948d-953da9d72b11" />
@@ -361,21 +327,21 @@
         <elementListCompartment Id="003d314f-b8c0-4af9-824d-9db730067e3b" absoluteBounds="17.765, 24.46, 1.9700000000000002, 4.2877197265625" name="DataPropertiesCompartment" titleTextColor="Black" itemTextColor="Black" />
       </nestedChildShapes>
     </classShape>
-    <associationConnector edgePoints="[(19.1816424375 : 24); (19.1816424375 : 22.0899873567708); (19.3502635416667 : 22.0899873567708 : JumpStart); (19.5169302083333 : 22.0899873567708 : JumpEnd); (19.5397129791667 : 22.0899873567708 : JumpStart); (19.7063796458333 : 22.0899873567708 : JumpEnd); (20.0416666666667 : 22.0899873567708 : JumpStart); (20.2083333333333 : 22.0899873567708 : JumpEnd); (20.5 : 22.0899873567708)]" fixedFrom="NotFixed" fixedTo="NotFixed">
+    <associationConnector edgePoints="[(19.47558940625 : 24); (19.47558940625 : 22.0899873567708); (19.5104166666667 : 22.0899873567708 : JumpStart); (19.8020833333333 : 22.0899873567708 : JumpEnd); (20.5 : 22.0899873567708)]" fixedFrom="Algorithm" fixedTo="NotFixed">
       <AssociationMoniker Name="/InventarioAnkhalDBDataContext/Materiales/Materiales_ConsumosProduccion" />
       <nodes>
         <classShapeMoniker Id="246a31f2-ede0-4ea5-ad69-e5cd1fb5d6e9" />
         <classShapeMoniker Id="febf01ee-52d8-4ae5-997d-2b5cf49dc40e" />
       </nodes>
     </associationConnector>
-    <associationConnector edgePoints="[(18.683593625 : 24); (18.683593625 : 21.4728011067708); (17.3333333333333 : 21.4728011067708 : JumpStart); (17.1666666666667 : 21.4728011067708 : JumpEnd); (16.9375 : 21.4728011067708); (16.9375 : 16.90625); (15.8333333333333 : 16.90625 : JumpStart); (15.6666666666667 : 16.90625 : JumpEnd); (14.6145833333333 : 16.90625 : JumpStart); (14.4479166666667 : 16.90625 : JumpEnd); (14.3333333333333 : 16.90625 : JumpStart); (14.0104166666667 : 16.90625 : JumpEnd); (14 : 16.90625)]" fixedFrom="NotFixed" fixedTo="NotFixed">
+    <associationConnector edgePoints="[(17.75 : 24); (17.375 : 23.625); (14.6875 : 23.625); (14.6875 : 18.5337616452324); (14.5901755650989 : 18.4364372103312 : JumpStart); (14.3785744349011 : 18.2248360801335 : JumpEnd); (14.3089255650989 : 18.1551872103312 : JumpStart); (14.1910744349011 : 18.0373360801335 : JumpEnd); (14.1526755650989 : 17.9989372103312 : JumpStart); (14.0348244349011 : 17.8810860801335 : JumpEnd); (14 : 17.8462616452324)]" fixedFrom="NotFixed" fixedTo="NotFixed">
       <AssociationMoniker Name="/InventarioAnkhalDBDataContext/Materiales/Materiales_ConversionesMaterial" />
       <nodes>
         <classShapeMoniker Id="246a31f2-ede0-4ea5-ad69-e5cd1fb5d6e9" />
         <classShapeMoniker Id="88799074-b099-4d54-b595-4467729a53ab" />
       </nodes>
     </associationConnector>
-    <associationConnector edgePoints="[(18.1855448125 : 24); (18.1855448125 : 21.8751442317708); (18.0198537395833 : 21.8751442317708 : JumpStart); (17.8531870729167 : 21.8751442317708 : JumpEnd); (16.75 : 21.8751442317708)]" fixedFrom="NotFixed" fixedTo="NotFixed">
+    <associationConnector edgePoints="[(19.1386748125 : 24); (19.1386748125 : 21.8751442317708); (18.7659526145833 : 21.8751442317708 : JumpStart); (18.5729191666667 : 21.8751442317708 : JumpEnd); (18.0716152083333 : 21.8751442317708 : JumpStart); (17.9049485416667 : 21.8751442317708 : JumpEnd); (17.4583333333333 : 21.8751442317708 : JumpStart); (17.2916666666667 : 21.8751442317708 : JumpEnd); (16.75 : 21.8751442317708)]" fixedFrom="Algorithm" fixedTo="NotFixed">
       <AssociationMoniker Name="/InventarioAnkhalDBDataContext/Materiales/Materiales_NivelesMaterialBase" />
       <nodes>
         <classShapeMoniker Id="246a31f2-ede0-4ea5-ad69-e5cd1fb5d6e9" />
@@ -389,28 +355,28 @@
         <classShapeMoniker Id="6d372587-0339-441e-bb1d-cc04ef3d2cc3" />
       </nodes>
     </associationConnector>
-    <associationConnector edgePoints="[(17.75 : 26.4238598632813); (17.4583333333333 : 26.4238598632813 : JumpStart); (17.2916666666667 : 26.4238598632813 : JumpEnd); (16.875 : 26.4238598632813); (16.875 : 24.625); (14.6145833333333 : 24.625 : JumpStart); (14.4479166666667 : 24.625 : JumpEnd); (14.125 : 24.625); (14.125 : 21.375); (14.0833333333333 : 21.375 : JumpStart); (13.9166666666667 : 21.375 : JumpEnd); (12.75 : 21.375); (12.75 : 21.0208968098958)]" fixedFrom="NotFixed" fixedTo="NotFixed">
+    <associationConnector edgePoints="[(17.75 : 26.4238598632813); (16.875 : 26.4238598632813); (16.875 : 24.625); (14.125 : 24.625); (14.125 : 21.375); (12.75 : 21.375); (12.75 : 21.0208968098958)]" fixedFrom="NotFixed" fixedTo="NotFixed">
       <AssociationMoniker Name="/InventarioAnkhalDBDataContext/Materiales/Materiales_StockMateriales" />
       <nodes>
         <classShapeMoniker Id="246a31f2-ede0-4ea5-ad69-e5cd1fb5d6e9" />
         <classShapeMoniker Id="8e28d3f1-68a8-444c-b5ed-b83ad1ebf812" />
       </nodes>
     </associationConnector>
-    <associationConnector edgePoints="[(17.93652040625 : 24); (17.93652040625 : 21.6603011067708); (17 : 21.6603011067708); (17 : 13.4815991210937); (16.7395833333333 : 13.4815991210937 : JumpStart); (16.5729166666667 : 13.4815991210937 : JumpEnd); (14.6145833333333 : 13.4815991210937 : JumpStart); (14.4479166666667 : 13.4815991210937 : JumpEnd); (14.25 : 13.4815991210937); (14.25 : 14.3766097005208); (14.1770833333333 : 14.3766097005208 : JumpStart); (14.0104166666667 : 14.3766097005208 : JumpEnd); (13.0833333333333 : 14.3766097005208 : JumpStart); (12.9166666666667 : 14.3766097005208 : JumpEnd); (12.5520813333333 : 14.3766097005208 : JumpStart); (12.3854146666667 : 14.3766097005208 : JumpEnd); (11.8958333333333 : 14.3766097005208 : JumpStart); (11.6041666666667 : 14.3766097005208 : JumpEnd); (11.4583333333333 : 14.3766097005208 : JumpStart); (11.2916666666667 : 14.3766097005208 : JumpEnd); (11.25 : 14.3766097005208); (11.25 : 13.375); (9.11458333333333 : 13.375 : JumpStart); (8.94791666666667 : 13.375 : JumpEnd); (8.83333333333333 : 13.375 : JumpStart); (8.54166666666667 : 13.375 : JumpEnd); (8.5 : 13.375); (8.5 : 13.7708968098958); (6.86848783333333 : 13.7708968098958 : JumpStart); (6.70182116666667 : 13.7708968098958 : JumpEnd); (6 : 13.7708968098958); (6 : 13.8786506816406); (5.95833333333333 : 13.8786506816406 : JumpStart); (5.41666666666667 : 13.8786506816406 : JumpEnd); (5.375 : 13.8786506816406)]" fixedFrom="NotFixed" fixedTo="NotFixed">
+    <associationConnector edgePoints="[(18.68261928125 : 24); (18.68261928125 : 21.7228011067708); (18.0716152083333 : 21.7228011067708 : JumpStart); (17.9049485416667 : 21.7228011067708 : JumpEnd); (17.4583333333333 : 21.7228011067708 : JumpStart); (17.2916666666667 : 21.7228011067708 : JumpEnd); (17 : 21.7228011067708); (17 : 13.3565991210937); (16.7395833333333 : 13.3565991210937 : JumpStart); (16.5729166666667 : 13.3565991210937 : JumpEnd); (14.6145833333333 : 13.3565991210937 : JumpStart); (14.4479166666667 : 13.3565991210937 : JumpEnd); (14.25 : 13.3565991210937); (14.25 : 14.3766097005208); (14.1770833333333 : 14.3766097005208 : JumpStart); (14.0104166666667 : 14.3766097005208 : JumpEnd); (13.0833333333333 : 14.3766097005208 : JumpStart); (12.9166666666667 : 14.3766097005208 : JumpEnd); (12.5520813333333 : 14.3766097005208 : JumpStart); (12.3854146666667 : 14.3766097005208 : JumpEnd); (11.8958333333333 : 14.3766097005208 : JumpStart); (11.7291666666667 : 14.3766097005208 : JumpEnd); (11.7083333333333 : 14.3766097005208 : JumpStart); (11.5416666666667 : 14.3766097005208 : JumpEnd); (11.4583333333333 : 14.3766097005208 : JumpStart); (11.2916666666667 : 14.3766097005208 : JumpEnd); (11.25 : 14.3766097005208); (11.25 : 13.375); (9.11458333333333 : 13.375 : JumpStart); (8.94791666666667 : 13.375 : JumpEnd); (8.83333333333333 : 13.375 : JumpStart); (8.54166666666667 : 13.375 : JumpEnd); (8.5 : 13.375); (8.5 : 13.7708968098958); (6.86848783333333 : 13.7708968098958 : JumpStart); (6.70182116666667 : 13.7708968098958 : JumpEnd); (6.08333333333333 : 13.7708968098958 : JumpStart); (5.66666666666667 : 13.7708968098958 : JumpEnd); (5.625 : 13.7708968098958); (5.625 : 13.3565991210937); (5.58333333333333 : 13.3565991210937 : JumpStart); (5.41666666666667 : 13.3565991210937 : JumpEnd); (5.375 : 13.3565991210937)]" fixedFrom="Algorithm" fixedTo="Algorithm">
       <AssociationMoniker Name="/InventarioAnkhalDBDataContext/Materiales/Materiales_ProveedorMateriales" />
       <nodes>
         <classShapeMoniker Id="246a31f2-ede0-4ea5-ad69-e5cd1fb5d6e9" />
         <classShapeMoniker Id="69843ef8-61c3-41b1-96ad-3c4ceb78a6a9" />
       </nodes>
     </associationConnector>
-    <associationConnector edgePoints="[(19.75 : 26.0104077148438); (21.125 : 26.0104077148438)]" fixedFrom="Algorithm" fixedTo="Algorithm">
+    <associationConnector edgePoints="[(19.75 : 26.0104077148438); (21.125 : 26.0104077148438)]" fixedFrom="NotFixed" fixedTo="NotFixed">
       <AssociationMoniker Name="/InventarioAnkhalDBDataContext/Materiales/Materiales_Movimientos" />
       <nodes>
         <classShapeMoniker Id="246a31f2-ede0-4ea5-ad69-e5cd1fb5d6e9" />
         <classShapeMoniker Id="4d96fee9-9e78-4c3e-890d-4187ec8c8f95" />
       </nodes>
     </associationConnector>
-    <associationConnector edgePoints="[(19.75 : 24); (20.125 : 23.625); (20.125 : 16.5873527018229); (20.625 : 16.5873527018229)]" fixedFrom="NotFixed" fixedTo="Algorithm">
+    <associationConnector edgePoints="[(19.71875 : 24); (19.71875 : 17.9944075520833); (20.625 : 17.9944075520833)]" fixedFrom="Algorithm" fixedTo="Algorithm">
       <AssociationMoniker Name="/InventarioAnkhalDBDataContext/Materiales/Materiales_DetalleEntregas" />
       <nodes>
         <classShapeMoniker Id="246a31f2-ede0-4ea5-ad69-e5cd1fb5d6e9" />
@@ -424,14 +390,14 @@
         <classShapeMoniker Id="115ab2cf-72c6-49c6-930b-cdd6b505f6d5" />
       </nodes>
     </associationConnector>
-    <associationConnector edgePoints="[(8.25 : 16.9169700838216); (9.66666666666667 : 16.9169700838216 : JumpStart); (9.83333333333333 : 16.9169700838216 : JumpEnd); (10.1979186666667 : 16.9169700838216 : JumpStart); (10.3645853333333 : 16.9169700838216 : JumpEnd); (11.25 : 16.9169700838216); (11.25 : 18.1603011067708); (11.2916666666667 : 18.1603011067708 : JumpStart); (11.4583333333333 : 18.1603011067708 : JumpEnd); (11.6041666666667 : 18.1603011067708 : JumpStart); (11.8333333333333 : 18.1603011067708 : JumpEnd); (12.8541671666667 : 18.1603011067708 : JumpStart); (13.0208338333333 : 18.1603011067708 : JumpEnd); (13.3541694166667 : 18.1603011067708 : JumpStart); (13.5208360833333 : 18.1603011067708 : JumpEnd); (14.0104166666667 : 18.1603011067708 : JumpStart); (14.1770833333333 : 18.1603011067708 : JumpEnd); (14.1875 : 18.1603011067708); (14.1875 : 19.3958968098958); (14.3541666666667 : 19.3958968098958 : JumpStart); (14.6145833333333 : 19.3958968098958 : JumpEnd); (16.8541666666667 : 19.3958968098958 : JumpStart); (17.0833333333333 : 19.3958968098958 : JumpEnd); (17.25 : 19.3958968098958); (17.25 : 21.5978011067708); (18.5729191666667 : 21.5978011067708 : JumpStart); (18.7669269583333 : 21.5978011067708 : JumpEnd); (19.433596875 : 21.5978011067708); (19.433596875 : 24)]" fixedFrom="Algorithm" fixedTo="NotFixed">
+    <associationConnector edgePoints="[(8.25 : 17.6875); (8.41666666666667 : 17.6875 : JumpStart); (8.58333333333333 : 17.6875 : JumpEnd); (9.66666666666667 : 17.6875 : JumpStart); (9.83333333333333 : 17.6875 : JumpEnd); (10.1979186666667 : 17.6875 : JumpStart); (10.3645853333333 : 17.6875 : JumpEnd); (11 : 17.6875); (11 : 18.1603011067708); (11.2916666666667 : 18.1603011067708 : JumpStart); (11.4583333333333 : 18.1603011067708 : JumpEnd); (11.5416666666667 : 18.1603011067708 : JumpStart); (11.7708333333333 : 18.1603011067708 : JumpEnd); (11.7916666666667 : 18.1603011067708 : JumpStart); (11.9583333333333 : 18.1603011067708 : JumpEnd); (13.3541694166667 : 18.1603011067708 : JumpStart); (13.5208360833333 : 18.1603011067708 : JumpEnd); (13.8229166666667 : 18.1603011067708 : JumpStart); (13.9895833333333 : 18.1603011067708 : JumpEnd); (14.0104166666667 : 18.1603011067708 : JumpStart); (14.1770833333333 : 18.1603011067708 : JumpEnd); (14.3125 : 18.1603011067708); (14.3125 : 19.3958968098958); (14.3541666666667 : 19.3958968098958 : JumpStart); (14.7708333333333 : 19.3958968098958 : JumpEnd); (15.6666666666667 : 19.3958968098958 : JumpStart); (15.8333333333333 : 19.3958968098958 : JumpEnd); (16.9166666666667 : 19.3958968098958 : JumpStart); (17.0833333333333 : 19.3958968098958 : JumpEnd); (17.25 : 19.3958968098958); (17.25 : 21.5978011067708); (17.2916666666667 : 21.5978011067708 : JumpStart); (17.4583333333333 : 21.5978011067708 : JumpEnd); (17.988281875 : 21.5978011067708); (17.988281875 : 24)]" fixedFrom="Algorithm" fixedTo="Algorithm">
       <AssociationMoniker Name="/InventarioAnkhalDBDataContext/Usuario/Usuario_Materiales" />
       <nodes>
         <classShapeMoniker Id="4979644e-ec70-4695-82be-701bdc4d5ac2" />
         <classShapeMoniker Id="246a31f2-ede0-4ea5-ad69-e5cd1fb5d6e9" />
       </nodes>
     </associationConnector>
-    <associationConnector edgePoints="[(8.25 : 17.6670817558093); (8.41666666666667 : 17.6670817558093 : JumpStart); (8.58333333333333 : 17.6670817558093 : JumpEnd); (9.66666666666667 : 17.6670817558093 : JumpStart); (9.83333333333333 : 17.6670817558093 : JumpEnd); (10.1979186666667 : 17.6670817558093 : JumpStart); (10.3645853333333 : 17.6670817558093 : JumpEnd); (10.9375 : 17.6670817558093); (10.9375 : 18.4728011067708); (11.2916666666667 : 18.4728011067708 : JumpStart); (11.4583333333333 : 18.4728011067708 : JumpEnd); (11.6041666666667 : 18.4728011067708 : JumpStart); (11.7708333333333 : 18.4728011067708 : JumpEnd); (12.8541671666667 : 18.4728011067708 : JumpStart); (13.0208338333333 : 18.4728011067708 : JumpEnd); (13.9166666666667 : 18.4728011067708 : JumpStart); (14.2708333333333 : 18.4728011067708 : JumpEnd); (14.375 : 18.4728011067708); (14.375 : 19.2083968098958); (14.4479166666667 : 19.2083968098958 : JumpStart); (14.6145833333333 : 19.2083968098958 : JumpEnd); (15.6666666666667 : 19.2083968098958 : JumpStart); (15.8333333333333 : 19.2083968098958 : JumpEnd); (16.8541666666667 : 19.2083968098958 : JumpStart); (17.0833333333333 : 19.2083968098958 : JumpEnd); (17.375 : 19.2083968098958); (17.375 : 21.5353011067708); (18.43456921875 : 21.5353011067708); (18.43456921875 : 24)]" fixedFrom="NotFixed" fixedTo="NotFixed">
+    <associationConnector edgePoints="[(8.25 : 17.1845387995793); (9.66666666666667 : 17.1845387995793 : JumpStart); (9.83333333333333 : 17.1845387995793 : JumpEnd); (10.1979186666667 : 17.1845387995793 : JumpStart); (10.3645853333333 : 17.1845387995793 : JumpEnd); (10.9375 : 17.1845387995793); (10.9375 : 18.4728011067708); (11.2916666666667 : 18.4728011067708 : JumpStart); (11.4583333333333 : 18.4728011067708 : JumpEnd); (11.6041666666667 : 18.4728011067708 : JumpStart); (11.7708333333333 : 18.4728011067708 : JumpEnd); (11.7916666666667 : 18.4728011067708 : JumpStart); (11.9583333333333 : 18.4728011067708 : JumpEnd); (13.8229166666667 : 18.4728011067708 : JumpStart); (14.1770833333333 : 18.4728011067708 : JumpEnd); (14.1875 : 18.4728011067708); (14.1875 : 19.2083968098958); (14.2291666666667 : 19.2083968098958 : JumpStart); (14.7708333333333 : 19.2083968098958 : JumpEnd); (15.6666666666667 : 19.2083968098958 : JumpStart); (15.8333333333333 : 19.2083968098958 : JumpEnd); (16.9166666666667 : 19.2083968098958 : JumpStart); (17.0833333333333 : 19.2083968098958 : JumpEnd); (17.375 : 19.2083968098958); (17.375 : 22.2853011067708); (17.9049485416667 : 22.2853011067708 : JumpStart); (18.0716152083333 : 22.2853011067708 : JumpEnd); (18.22656375 : 22.2853011067708); (18.22656375 : 24)]" fixedFrom="NotFixed" fixedTo="Algorithm">
       <AssociationMoniker Name="/InventarioAnkhalDBDataContext/Usuario/Usuario_Materiales1" />
       <nodes>
         <classShapeMoniker Id="4979644e-ec70-4695-82be-701bdc4d5ac2" />
@@ -445,7 +411,7 @@
         <classShapeMoniker Id="246a31f2-ede0-4ea5-ad69-e5cd1fb5d6e9" />
       </nodes>
     </associationConnector>
-    <associationConnector edgePoints="[(16.625 : 25.6642976888021); (17.75 : 25.6642976888021)]" fixedFrom="NotFixed" fixedTo="NotFixed">
+    <associationConnector edgePoints="[(16.625 : 25.6642976888021); (16.7916666666667 : 25.6642976888021 : JumpStart); (16.9583333333333 : 25.6642976888021 : JumpEnd); (17.75 : 25.6642976888021)]" fixedFrom="NotFixed" fixedTo="NotFixed">
       <AssociationMoniker Name="/InventarioAnkhalDBDataContext/TiposMaterial/TiposMaterial_Materiales" />
       <nodes>
         <classShapeMoniker Id="6cd5702c-abf9-4d43-a964-c84f39275711" />
@@ -458,14 +424,14 @@
         <elementListCompartment Id="7d63be2b-1c91-45f1-8a87-8576bea8d0ff" absoluteBounds="14.765, 27.96, 1.9700000000000002, 1.2108968098958333" name="DataPropertiesCompartment" titleTextColor="Black" itemTextColor="Black" />
       </nestedChildShapes>
     </classShape>
-    <associationConnector edgePoints="[(14.75 : 28.3854484049479); (14.1770833333333 : 28.3854484049479 : JumpStart); (14.0104166666667 : 28.3854484049479 : JumpEnd); (14 : 28.3854484049479); (14 : 18.2853011067708); (13.43750275 : 18.2853011067708); (13.43750275 : 17.8478011067708)]" fixedFrom="NotFixed" fixedTo="NotFixed">
+    <associationConnector edgePoints="[(14.75 : 28.3854484049479); (14.1770833333333 : 28.3854484049479 : JumpStart); (14.0104166666667 : 28.3854484049479 : JumpEnd); (14 : 28.3854484049479); (14 : 18.2853011067708); (13.9895833333333 : 18.2853011067708 : JumpStart); (13.8229166666667 : 18.2853011067708 : JumpEnd); (13.43750275 : 18.2853011067708); (13.43750275 : 17.8478011067708)]" fixedFrom="NotFixed" fixedTo="NotFixed">
       <AssociationMoniker Name="/InventarioAnkhalDBDataContext/UnidadesMedida/UnidadesMedida_ConversionesMaterial" />
       <nodes>
         <classShapeMoniker Id="66b76db9-ff07-4e0a-aa4a-2aa78a971561" />
         <classShapeMoniker Id="88799074-b099-4d54-b595-4467729a53ab" />
       </nodes>
     </associationConnector>
-    <associationConnector edgePoints="[(16.75 : 29.0905582682292); (21.5104141666667 : 29.0905582682292 : JumpStart); (21.6770808333333 : 29.0905582682292 : JumpEnd); (22.125 : 29.0905582682292); (22.125 : 28.0208154296875)]" fixedFrom="Algorithm" fixedTo="Algorithm">
+    <associationConnector edgePoints="[(16.75 : 29.0905582682292); (21.5104141666667 : 29.0905582682292 : JumpStart); (21.6770808333333 : 29.0905582682292 : JumpEnd); (22.125 : 29.0905582682292); (22.125 : 28.0208154296875)]" fixedFrom="NotFixed" fixedTo="NotFixed">
       <AssociationMoniker Name="/InventarioAnkhalDBDataContext/UnidadesMedida/UnidadesMedida_Movimientos" />
       <nodes>
         <classShapeMoniker Id="66b76db9-ff07-4e0a-aa4a-2aa78a971561" />
@@ -492,13 +458,6 @@
         <classShapeMoniker Id="db42ad68-ea29-49e4-b341-5aa00bcbb118" />
       </nodes>
     </associationConnector>
-    <associationConnector edgePoints="[(9.75 : 17.875); (9.75 : 16.4046541341146); (10.1979186666667 : 16.4046541341146 : JumpStart); (10.3645853333333 : 16.4046541341146 : JumpEnd); (11.2916666666667 : 16.4046541341146 : JumpStart); (11.4583333333333 : 16.4046541341146 : JumpEnd); (11.4791666666667 : 16.4046541341146 : JumpStart); (11.6458333333333 : 16.4046541341146 : JumpEnd); (11.75 : 16.4046541341146); (11.75 : 15.25); (14.0104166666667 : 15.25 : JumpStart); (14.1770833333333 : 15.25 : JumpEnd); (14.375 : 15.25); (14.375 : 16.3381982421875); (14.4479166666667 : 16.3381982421875 : JumpStart); (14.6145833333333 : 16.3381982421875 : JumpEnd); (16.9166666666667 : 16.3381982421875 : JumpStart); (17.2083333333333 : 16.3381982421875 : JumpEnd); (17.375 : 16.3381982421875); (17.375 : 16.1546541341146); (17.5104166666667 : 16.1546541341146 : JumpStart); (17.6770833333333 : 16.1546541341146 : JumpEnd); (17.75 : 16.1546541341146)]" fixedFrom="NotFixed" fixedTo="NotFixed">
-      <AssociationMoniker Name="/InventarioAnkhalDBDataContext/Bases/Bases_Produccion" />
-      <nodes>
-        <classShapeMoniker Id="0ed3ffb7-b98f-40e0-abeb-3fea626140db" />
-        <classShapeMoniker Id="446f89cd-b7c6-48ce-906b-f7003f0e7e8c" />
-      </nodes>
-    </associationConnector>
     <associationConnector edgePoints="[(10.75 : 20.1354484049479); (11.2916666666667 : 20.1354484049479 : JumpStart); (11.5833333333333 : 20.1354484049479 : JumpEnd); (11.75 : 20.1354484049479)]" fixedFrom="NotFixed" fixedTo="NotFixed">
       <AssociationMoniker Name="/InventarioAnkhalDBDataContext/Bases/Bases_StockMateriales" />
       <nodes>
@@ -506,28 +465,28 @@
         <classShapeMoniker Id="8e28d3f1-68a8-444c-b5ed-b83ad1ebf812" />
       </nodes>
     </associationConnector>
-    <associationConnector edgePoints="[(10.281252 : 17.875); (10.281252 : 15.8381982421875); (11.0416666666667 : 15.8381982421875 : JumpStart); (11.2083333333333 : 15.8381982421875 : JumpEnd); (11.25 : 15.8381982421875); (11.25 : 14.6883048502604); (11.2916666666667 : 14.6883048502604 : JumpStart); (11.4583333333333 : 14.6883048502604 : JumpEnd); (11.6041666666667 : 14.6883048502604 : JumpStart); (11.8958333333333 : 14.6883048502604 : JumpEnd); (12.3854146666667 : 14.6883048502604 : JumpStart); (12.5520813333333 : 14.6883048502604 : JumpEnd); (12.9166666666667 : 14.6883048502604 : JumpStart); (13.0833333333333 : 14.6883048502604 : JumpEnd); (14.0104166666667 : 14.6883048502604 : JumpStart); (14.1770833333333 : 14.6883048502604 : JumpEnd); (14.4479166666667 : 14.6883048502604 : JumpStart); (14.6145833333333 : 14.6883048502604 : JumpEnd); (14.75 : 14.6883048502604)]" fixedFrom="NotFixed" fixedTo="NotFixed">
+    <associationConnector edgePoints="[(9.75 : 17.875); (9.75 : 15.7131982421875); (11.0416666666667 : 15.7131982421875 : JumpStart); (11.2083333333333 : 15.7131982421875 : JumpEnd); (11.25 : 15.7131982421875); (11.25 : 14.6883048502604); (11.2916666666667 : 14.6883048502604 : JumpStart); (11.4583333333333 : 14.6883048502604 : JumpEnd); (11.5416666666667 : 14.6883048502604 : JumpStart); (11.7083333333333 : 14.6883048502604 : JumpEnd); (11.7291666666667 : 14.6883048502604 : JumpStart); (11.8958333333333 : 14.6883048502604 : JumpEnd); (12.3854146666667 : 14.6883048502604 : JumpStart); (12.5520813333333 : 14.6883048502604 : JumpEnd); (12.9166666666667 : 14.6883048502604 : JumpStart); (13.0833333333333 : 14.6883048502604 : JumpEnd); (14.0104166666667 : 14.6883048502604 : JumpStart); (14.1770833333333 : 14.6883048502604 : JumpEnd); (14.3541666666667 : 14.6883048502604 : JumpStart); (14.6145833333333 : 14.6883048502604 : JumpEnd); (14.75 : 14.6883048502604)]" fixedFrom="Algorithm" fixedTo="NotFixed">
       <AssociationMoniker Name="/InventarioAnkhalDBDataContext/Bases/Bases_StockProductos" />
       <nodes>
         <classShapeMoniker Id="0ed3ffb7-b98f-40e0-abeb-3fea626140db" />
         <classShapeMoniker Id="59e04840-6704-42a4-9862-4dc43bc1bfb0" />
       </nodes>
     </associationConnector>
-    <associationConnector edgePoints="[(10.75 : 18.7468489583333); (11.2916666666667 : 18.7468489583333 : JumpStart); (11.4583333333333 : 18.7468489583333 : JumpEnd); (11.6041666666667 : 18.7468489583333 : JumpStart); (11.7708333333333 : 18.7468489583333 : JumpEnd); (12.8541671666667 : 18.7468489583333 : JumpStart); (13.0208338333333 : 18.7468489583333 : JumpEnd); (13.9166666666667 : 18.7468489583333 : JumpStart); (14.6145833333333 : 18.7468489583333 : JumpEnd); (14.75 : 18.7468489583333)]" fixedFrom="NotFixed" fixedTo="NotFixed">
+    <associationConnector edgePoints="[(10.75 : 18.7468489583333); (11.2916666666667 : 18.7468489583333 : JumpStart); (11.4583333333333 : 18.7468489583333 : JumpEnd); (11.6041666666667 : 18.7468489583333 : JumpStart); (11.7708333333333 : 18.7468489583333 : JumpEnd); (13.8229166666667 : 18.7468489583333 : JumpStart); (14.6145833333333 : 18.7468489583333 : JumpEnd); (14.75 : 18.7468489583333)]" fixedFrom="NotFixed" fixedTo="NotFixed">
       <AssociationMoniker Name="/InventarioAnkhalDBDataContext/Bases/Bases_UsuarioBases" />
       <nodes>
         <classShapeMoniker Id="0ed3ffb7-b98f-40e0-abeb-3fea626140db" />
         <classShapeMoniker Id="9a3ba774-3dda-43a6-947e-416dcc2a6e76" />
       </nodes>
     </associationConnector>
-    <associationConnector edgePoints="[(10.75 : 19.4078772955729); (11.2916666666667 : 19.4078772955729 : JumpStart); (11.4583333333333 : 19.4078772955729 : JumpEnd); (11.5 : 19.4078772955729); (11.5 : 21.2708968098958); (11.6041666666667 : 21.2708968098958 : JumpStart); (11.7708333333333 : 21.2708968098958 : JumpEnd); (12.6666666666667 : 21.2708968098958 : JumpStart); (12.8333333333333 : 21.2708968098958 : JumpEnd); (13.9166666666667 : 21.2708968098958 : JumpStart); (14.1770833333333 : 21.2708968098958 : JumpEnd); (14.3541666666667 : 21.2708968098958 : JumpStart); (14.6145833333333 : 21.2708968098958 : JumpEnd); (14.625 : 21.2708968098958); (14.625 : 23.2228011067708); (17.8531870729167 : 23.2228011067708 : JumpStart); (18.0198537395833 : 23.2228011067708 : JumpEnd); (18.1022114791667 : 23.2228011067708 : JumpStart); (18.2688781458333 : 23.2228011067708 : JumpEnd); (18.3512358854167 : 23.2228011067708 : JumpStart); (18.5179025520833 : 23.2228011067708 : JumpEnd); (18.5729191666667 : 23.2228011067708 : JumpStart); (18.7669269583333 : 23.2228011067708 : JumpEnd); (19.0983091041667 : 23.2228011067708 : JumpStart); (19.2649757708333 : 23.2228011067708 : JumpEnd); (19.3502635416667 : 23.2228011067708 : JumpStart); (19.5169302083333 : 23.2228011067708 : JumpEnd); (20.0416666666667 : 23.2228011067708 : JumpStart); (20.2083333333333 : 23.2228011067708 : JumpEnd); (21.2330694166667 : 23.2228011067708 : JumpStart); (21.3997360833333 : 23.2228011067708 : JumpEnd); (21.9947896666667 : 23.2228011067708 : JumpStart); (22.1614563333333 : 23.2228011067708 : JumpEnd); (22.578124 : 23.2228011067708); (22.578124 : 23.75)]" fixedFrom="Algorithm" fixedTo="Algorithm">
+    <associationConnector edgePoints="[(10.75 : 19.4078772955729); (11.2916666666667 : 19.4078772955729 : JumpStart); (11.4583333333333 : 19.4078772955729 : JumpEnd); (11.5 : 19.4078772955729); (11.5 : 21.2708968098958); (11.6041666666667 : 21.2708968098958 : JumpStart); (11.7708333333333 : 21.2708968098958 : JumpEnd); (12.6666666666667 : 21.2708968098958 : JumpStart); (12.8333333333333 : 21.2708968098958 : JumpEnd); (13.9166666666667 : 21.2708968098958 : JumpStart); (14.1770833333333 : 21.2708968098958 : JumpEnd); (14.3541666666667 : 21.2708968098958 : JumpStart); (14.6145833333333 : 21.2708968098958 : JumpEnd); (14.625 : 21.2708968098958); (14.625 : 23.2228011067708); (17.9049485416667 : 23.2228011067708 : JumpStart); (18.0716152083333 : 23.2228011067708 : JumpEnd); (18.1432304166667 : 23.2228011067708 : JumpStart); (18.3098970833333 : 23.2228011067708 : JumpEnd); (18.5729191666667 : 23.2228011067708 : JumpStart); (18.7659526145833 : 23.2228011067708 : JumpEnd); (19.0553414791667 : 23.2228011067708 : JumpStart); (19.2220081458333 : 23.2228011067708 : JumpEnd); (19.3922560729167 : 23.2228011067708 : JumpStart); (19.5589227395833 : 23.2228011067708 : JumpEnd); (19.6354166666667 : 23.2228011067708 : JumpStart); (19.8020833333333 : 23.2228011067708 : JumpEnd); (21.2330694166667 : 23.2228011067708 : JumpStart); (21.3997360833333 : 23.2228011067708 : JumpEnd); (21.9947896666667 : 23.2228011067708 : JumpStart); (22.1614563333333 : 23.2228011067708 : JumpEnd); (22.578124 : 23.2228011067708); (22.578124 : 23.75)]" fixedFrom="NotFixed" fixedTo="NotFixed">
       <AssociationMoniker Name="/InventarioAnkhalDBDataContext/Bases/Bases_Movimientos" />
       <nodes>
         <classShapeMoniker Id="0ed3ffb7-b98f-40e0-abeb-3fea626140db" />
         <classShapeMoniker Id="4d96fee9-9e78-4c3e-890d-4187ec8c8f95" />
       </nodes>
     </associationConnector>
-    <associationConnector edgePoints="[(10.75 : 20.3706395527344); (11.2916666666667 : 20.3706395527344 : JumpStart); (11.4583333333333 : 20.3706395527344 : JumpEnd); (11.5625 : 20.3706395527344); (11.5625 : 21.4583968098958); (11.6041666666667 : 21.4583968098958 : JumpStart); (11.7708333333333 : 21.4583968098958 : JumpEnd); (13.9166666666667 : 21.4583968098958 : JumpStart); (14.2083333333333 : 21.4583968098958 : JumpEnd); (14.375 : 21.4583968098958); (14.375 : 22.9728011067708); (14.4479166666667 : 22.9728011067708 : JumpStart); (14.7083333333333 : 22.9728011067708 : JumpEnd); (17.8531870729167 : 22.9728011067708 : JumpStart); (18.0198537395833 : 22.9728011067708 : JumpEnd); (18.1022114791667 : 22.9728011067708 : JumpStart); (18.2688781458333 : 22.9728011067708 : JumpEnd); (18.3512358854167 : 22.9728011067708 : JumpStart); (18.5179025520833 : 22.9728011067708 : JumpEnd); (18.5729191666667 : 22.9728011067708 : JumpStart); (18.7669269583333 : 22.9728011067708 : JumpEnd); (19.0983091041667 : 22.9728011067708 : JumpStart); (19.2649757708333 : 22.9728011067708 : JumpEnd); (19.3502635416667 : 22.9728011067708 : JumpStart); (19.5169302083333 : 22.9728011067708 : JumpEnd); (20.0416666666667 : 22.9728011067708 : JumpStart); (20.2083333333333 : 22.9728011067708 : JumpEnd); (21.31640275 : 22.9728011067708); (21.31640275 : 23.75)]" fixedFrom="Algorithm" fixedTo="Algorithm">
+    <associationConnector edgePoints="[(10.75 : 20.3706395527344); (11.2916666666667 : 20.3706395527344 : JumpStart); (11.4583333333333 : 20.3706395527344 : JumpEnd); (11.5625 : 20.3706395527344); (11.5625 : 21.4583968098958); (11.6041666666667 : 21.4583968098958 : JumpStart); (11.7708333333333 : 21.4583968098958 : JumpEnd); (13.9166666666667 : 21.4583968098958 : JumpStart); (14.2083333333333 : 21.4583968098958 : JumpEnd); (14.375 : 21.4583968098958); (14.375 : 22.9728011067708); (14.4479166666667 : 22.9728011067708 : JumpStart); (14.7708333333333 : 22.9728011067708 : JumpEnd); (17.9049485416667 : 22.9728011067708 : JumpStart); (18.0716152083333 : 22.9728011067708 : JumpEnd); (18.1432304166667 : 22.9728011067708 : JumpStart); (18.3098970833333 : 22.9728011067708 : JumpEnd); (18.5729191666667 : 22.9728011067708 : JumpStart); (18.7659526145833 : 22.9728011067708 : JumpEnd); (19.0553414791667 : 22.9728011067708 : JumpStart); (19.2220081458333 : 22.9728011067708 : JumpEnd); (19.3922560729167 : 22.9728011067708 : JumpStart); (19.5589227395833 : 22.9728011067708 : JumpEnd); (19.6354166666667 : 22.9728011067708 : JumpStart); (19.8020833333333 : 22.9728011067708 : JumpEnd); (21.31640275 : 22.9728011067708); (21.31640275 : 23.75)]" fixedFrom="NotFixed" fixedTo="NotFixed">
       <AssociationMoniker Name="/InventarioAnkhalDBDataContext/Bases/Bases_Movimientos1" />
       <nodes>
         <classShapeMoniker Id="0ed3ffb7-b98f-40e0-abeb-3fea626140db" />
@@ -554,42 +513,42 @@
         <elementListCompartment Id="26f438d9-19a2-4885-b13e-c5bf2750d6c9" absoluteBounds="11.015, 26.96, 1.9700000000000002, 2.364705403645833" name="DataPropertiesCompartment" titleTextColor="Black" itemTextColor="Black" />
       </nestedChildShapes>
     </classShape>
-    <associationConnector edgePoints="[(13 : 29.3790511067708); (14.0104166666667 : 29.3790511067708 : JumpStart); (14.1770833333333 : 29.3790511067708 : JumpEnd); (21.5937475 : 29.3790511067708); (21.5937475 : 28.0208154296875)]" fixedFrom="Algorithm" fixedTo="Algorithm">
+    <associationConnector edgePoints="[(13 : 29.3790511067708); (21.5937475 : 29.3790511067708); (21.5937475 : 28.0208154296875)]" fixedFrom="NotFixed" fixedTo="NotFixed">
       <AssociationMoniker Name="/InventarioAnkhalDBDataContext/LotesMovimiento/LotesMovimiento_Movimientos" />
       <nodes>
         <classShapeMoniker Id="72e4356f-9376-4062-843f-fb50e044c5e9" />
         <classShapeMoniker Id="4d96fee9-9e78-4c3e-890d-4187ec8c8f95" />
       </nodes>
     </associationConnector>
-    <associationConnector edgePoints="[(10.75 : 20.904249078776); (11.1875 : 20.904249078776); (11.1875 : 26.5)]" fixedFrom="Algorithm" fixedTo="NotFixed">
+    <associationConnector edgePoints="[(10.75 : 20.904249078776); (11.1875 : 20.904249078776); (11.1875 : 26.5)]" fixedFrom="NotFixed" fixedTo="NotFixed">
       <AssociationMoniker Name="/InventarioAnkhalDBDataContext/Bases/Bases_LotesMovimiento" />
       <nodes>
         <classShapeMoniker Id="0ed3ffb7-b98f-40e0-abeb-3fea626140db" />
         <classShapeMoniker Id="72e4356f-9376-4062-843f-fb50e044c5e9" />
       </nodes>
     </associationConnector>
-    <associationConnector edgePoints="[(10.75 : 21.6524349703776); (11.1041666666667 : 21.6524349703776 : JumpStart); (11.2708333333333 : 21.6524349703776 : JumpEnd); (11.4375 : 21.6524349703776); (11.4375 : 26.5)]" fixedFrom="Algorithm" fixedTo="NotFixed">
+    <associationConnector edgePoints="[(10.75 : 21.6524349703776); (11.1041666666667 : 21.6524349703776 : JumpStart); (11.2708333333333 : 21.6524349703776 : JumpEnd); (11.4375 : 21.6524349703776); (11.4375 : 26.5)]" fixedFrom="NotFixed" fixedTo="NotFixed">
       <AssociationMoniker Name="/InventarioAnkhalDBDataContext/Bases/Bases_LotesMovimiento1" />
       <nodes>
         <classShapeMoniker Id="0ed3ffb7-b98f-40e0-abeb-3fea626140db" />
         <classShapeMoniker Id="72e4356f-9376-4062-843f-fb50e044c5e9" />
       </nodes>
     </associationConnector>
-    <associationConnector edgePoints="[(3.656252 : 26.5784326171875); (3.656252 : 30.6265283203125); (10.625 : 30.6265283203125); (10.625 : 27.9623527018229); (11 : 27.9623527018229)]" fixedFrom="NotFixed" fixedTo="NotFixed">
+    <associationConnector edgePoints="[(3.656252 : 26.5784326171875); (3.656252 : 30.6265283203125); (7.35416666666667 : 30.6265283203125 : JumpStart); (7.52083333333333 : 30.6265283203125 : JumpEnd); (7.76041666666667 : 30.6265283203125 : JumpStart); (7.92708333333333 : 30.6265283203125 : JumpEnd); (10.625 : 30.6265283203125); (10.625 : 27.9623527018229); (11 : 27.9623527018229)]" fixedFrom="NotFixed" fixedTo="NotFixed">
       <AssociationMoniker Name="/InventarioAnkhalDBDataContext/Proveedores/Proveedores_LotesMovimiento" />
       <nodes>
         <classShapeMoniker Id="e0dde740-013e-4cda-91e7-df036a192dcb" />
         <classShapeMoniker Id="72e4356f-9376-4062-843f-fb50e044c5e9" />
       </nodes>
     </associationConnector>
-    <associationConnector edgePoints="[(6.875 : 23.0989497897135); (6.91666666666667 : 23.0989497897135 : JumpStart); (7.08333333333333 : 23.0989497897135 : JumpEnd); (7.35416666666667 : 23.0989497897135 : JumpStart); (7.52083333333333 : 23.0989497897135 : JumpEnd); (7.54166666666667 : 23.0989497897135 : JumpStart); (7.70833333333333 : 23.0989497897135 : JumpEnd); (7.76041666666667 : 23.0989497897135 : JumpStart); (8.08333333333333 : 23.0989497897135 : JumpEnd); (8.91666666666667 : 23.0989497897135 : JumpStart); (9.08333333333333 : 23.0989497897135 : JumpEnd); (11.1041666666667 : 23.0989497897135 : JumpStart); (11.2708333333333 : 23.0989497897135 : JumpEnd); (11.3541666666667 : 23.0989497897135 : JumpStart); (11.5208333333333 : 23.0989497897135 : JumpEnd); (11.5416666666667 : 23.0989497897135 : JumpStart); (11.7083333333333 : 23.0989497897135 : JumpEnd); (11.75 : 23.0989497897135); (11.75 : 26.0689111328125); (12.3124995 : 26.0689111328125); (12.3124995 : 26.5)]" fixedFrom="NotFixed" fixedTo="NotFixed">
+    <associationConnector edgePoints="[(6.875 : 23.0989497897135); (6.91666666666667 : 23.0989497897135 : JumpStart); (7.08333333333333 : 23.0989497897135 : JumpEnd); (7.35416666666667 : 23.0989497897135 : JumpStart); (7.52083333333333 : 23.0989497897135 : JumpEnd); (7.54166666666667 : 23.0989497897135 : JumpStart); (7.70833333333333 : 23.0989497897135 : JumpEnd); (7.76041666666667 : 23.0989497897135 : JumpStart); (7.92708333333333 : 23.0989497897135 : JumpEnd); (8.91666666666667 : 23.0989497897135 : JumpStart); (9.08333333333333 : 23.0989497897135 : JumpEnd); (11.1041666666667 : 23.0989497897135 : JumpStart); (11.2708333333333 : 23.0989497897135 : JumpEnd); (11.3541666666667 : 23.0989497897135 : JumpStart); (11.5208333333333 : 23.0989497897135 : JumpEnd); (11.5416666666667 : 23.0989497897135 : JumpStart); (11.7083333333333 : 23.0989497897135 : JumpEnd); (11.75 : 23.0989497897135); (11.75 : 26.0689111328125); (12.3124995 : 26.0689111328125); (12.3124995 : 26.5)]" fixedFrom="NotFixed" fixedTo="NotFixed">
       <AssociationMoniker Name="/InventarioAnkhalDBDataContext/TiposMovimiento/TiposMovimiento_LotesMovimiento" />
       <nodes>
         <classShapeMoniker Id="6356cdf1-ea22-4139-af93-1d3caa12bf0b" />
         <classShapeMoniker Id="72e4356f-9376-4062-843f-fb50e044c5e9" />
       </nodes>
     </associationConnector>
-    <associationConnector edgePoints="[(8.25 : 17.300184050293); (9.66666666666667 : 17.300184050293 : JumpStart); (9.83333333333333 : 17.300184050293 : JumpEnd); (10.1979186666667 : 17.300184050293 : JumpStart); (10.3645853333333 : 17.300184050293 : JumpEnd); (11.1666666666667 : 17.300184050293 : JumpStart); (11.4583333333333 : 17.300184050293 : JumpEnd); (11.6875 : 17.300184050293); (11.6875 : 26.25); (11.87499975 : 26.25); (11.87499975 : 26.5)]" fixedFrom="Algorithm" fixedTo="NotFixed">
+    <associationConnector edgePoints="[(8.25 : 17.4844793562826); (9.66666666666667 : 17.4844793562826 : JumpStart); (9.83333333333333 : 17.4844793562826 : JumpEnd); (10.1979186666667 : 17.4844793562826 : JumpStart); (10.3645853333333 : 17.4844793562826 : JumpEnd); (10.8541666666667 : 17.4844793562826 : JumpStart); (11.0208333333333 : 17.4844793562826 : JumpEnd); (11.1666666666667 : 17.4844793562826 : JumpStart); (11.4583333333333 : 17.4844793562826 : JumpEnd); (11.6875 : 17.4844793562826); (11.6875 : 26.25); (11.87499975 : 26.25); (11.87499975 : 26.5)]" fixedFrom="Algorithm" fixedTo="NotFixed">
       <AssociationMoniker Name="/InventarioAnkhalDBDataContext/Usuario/Usuario_LotesMovimiento" />
       <nodes>
         <classShapeMoniker Id="4979644e-ec70-4695-82be-701bdc4d5ac2" />
@@ -602,7 +561,7 @@
         <elementListCompartment Id="bc274752-54bd-45e8-8112-be0d44c6b4ba" absoluteBounds="8.515, 6.21, 1.9700000000000002, 1.9801025390625" name="DataPropertiesCompartment" titleTextColor="Black" itemTextColor="Black" />
       </nestedChildShapes>
     </classShape>
-    <associationConnector edgePoints="[(8.25 : 15.5773275670573); (8.41666666666667 : 15.5773275670573 : JumpStart); (8.58333333333333 : 15.5773275670573 : JumpEnd); (8.75 : 15.5773275670573); (8.75 : 11); (9.9062495 : 11); (9.9062495 : 8.2901025390625)]" fixedFrom="Algorithm" fixedTo="NotFixed">
+    <associationConnector edgePoints="[(8.25 : 15.475373773112); (8.75 : 15.475373773112); (8.75 : 11); (9.9062495 : 11); (9.9062495 : 8.2901025390625)]" fixedFrom="Algorithm" fixedTo="NotFixed">
       <AssociationMoniker Name="/InventarioAnkhalDBDataContext/Usuario/Usuario_AbonosCuentasPorPagar" />
       <nodes>
         <classShapeMoniker Id="4979644e-ec70-4695-82be-701bdc4d5ac2" />
@@ -635,28 +594,28 @@
         <elementListCompartment Id="43a40401-4944-4e83-b345-9ae00d4eb12a" absoluteBounds="1.1400000000000001, 9.46, 1.9700000000000002, 2.364705403645833" name="DataPropertiesCompartment" titleTextColor="Black" itemTextColor="Black" />
       </nestedChildShapes>
     </classShape>
-    <associationConnector edgePoints="[(2.125 : 9); (2.125 : 8.52005126953125); (3.91666666666667 : 8.52005126953125 : JumpStart); (4.08333333333333 : 8.52005126953125 : JumpEnd); (6.66666666666667 : 8.52005126953125 : JumpStart); (6.83333333333333 : 8.52005126953125 : JumpEnd); (6.91666666666667 : 8.52005126953125 : JumpStart); (7.08333333333333 : 8.52005126953125 : JumpEnd); (9.82291616666667 : 8.52005126953125 : JumpStart); (9.98958283333333 : 8.52005126953125 : JumpEnd); (11.2916666666667 : 8.52005126953125 : JumpStart); (11.4583333333333 : 8.52005126953125 : JumpEnd); (11.6041666666667 : 8.52005126953125 : JumpStart); (11.8958333333333 : 8.52005126953125 : JumpEnd); (14.0104166666667 : 8.52005126953125 : JumpStart); (14.1770833333333 : 8.52005126953125 : JumpEnd); (14.5 : 8.52005126953125)]" fixedFrom="NotFixed" fixedTo="NotFixed">
+    <associationConnector edgePoints="[(2.125 : 9); (2.125 : 8.52005126953125); (3.91666666666667 : 8.52005126953125 : JumpStart); (4.08333333333333 : 8.52005126953125 : JumpEnd); (6.66666666666667 : 8.52005126953125 : JumpStart); (6.83333333333333 : 8.52005126953125 : JumpEnd); (6.91666666666667 : 8.52005126953125 : JumpStart); (7.08333333333333 : 8.52005126953125 : JumpEnd); (9.82291616666667 : 8.52005126953125 : JumpStart); (9.98958283333333 : 8.52005126953125 : JumpEnd); (11.2916666666667 : 8.52005126953125 : JumpStart); (11.4583333333333 : 8.52005126953125 : JumpEnd); (11.5416666666667 : 8.52005126953125 : JumpStart); (11.7083333333333 : 8.52005126953125 : JumpEnd); (11.7291666666667 : 8.52005126953125 : JumpStart); (11.8958333333333 : 8.52005126953125 : JumpEnd); (14.0104166666667 : 8.52005126953125 : JumpStart); (14.1770833333333 : 8.52005126953125 : JumpEnd); (14.5 : 8.52005126953125)]" fixedFrom="NotFixed" fixedTo="NotFixed">
       <AssociationMoniker Name="/InventarioAnkhalDBDataContext/Ordenes/Ordenes_DetalleOrdenes" />
       <nodes>
         <classShapeMoniker Id="279c0691-98a7-4df9-b6fa-374d6a252767" />
         <classShapeMoniker Id="115ab2cf-72c6-49c6-930b-cdd6b505f6d5" />
       </nodes>
     </associationConnector>
-    <associationConnector edgePoints="[(8.75 : 19.8277091471354); (8.58333333333333 : 19.8277091471354 : JumpStart); (8.41666666666667 : 19.8277091471354 : JumpEnd); (7.92708333333333 : 19.8277091471354 : JumpStart); (7.76041666666667 : 19.8277091471354 : JumpEnd); (7.70833333333333 : 19.8277091471354 : JumpStart); (7.54166666666667 : 19.8277091471354 : JumpEnd); (7.52083333333333 : 19.8277091471354 : JumpStart); (7.35416666666667 : 19.8277091471354 : JumpEnd); (7.33333333333333 : 19.8277091471354 : JumpStart); (7.04166416666667 : 19.8277091471354 : JumpEnd); (5.70833333333333 : 19.8277091471354 : JumpStart); (5.54166666666667 : 19.8277091471354 : JumpEnd); (3.20833333333333 : 19.8277091471354 : JumpStart); (3.04166666666667 : 19.8277091471354 : JumpEnd); (2.10495882161457 : 19.8277091471354 : JumpStart); (1.77604416666667 : 19.8277091471354 : JumpEnd); (1.59375 : 19.8277091471354); (1.59375 : 11.9247054036458)]" fixedFrom="NotFixed" fixedTo="NotFixed">
+    <associationConnector edgePoints="[(8.75 : 19.8277091471354); (8.58333333333333 : 19.8277091471354 : JumpStart); (8.41666666666667 : 19.8277091471354 : JumpEnd); (7.92708333333333 : 19.8277091471354 : JumpStart); (7.76041666666667 : 19.8277091471354 : JumpEnd); (7.70833333333333 : 19.8277091471354 : JumpStart); (7.54166666666667 : 19.8277091471354 : JumpEnd); (7.52083333333333 : 19.8277091471354 : JumpStart); (7.35416666666667 : 19.8277091471354 : JumpEnd); (7.33333333333333 : 19.8277091471354 : JumpStart); (7.04166416666667 : 19.8277091471354 : JumpEnd); (6.08333333333333 : 19.8277091471354 : JumpStart); (5.91666666666667 : 19.8277091471354 : JumpEnd); (3.20833333333333 : 19.8277091471354 : JumpStart); (3.04166666666667 : 19.8277091471354 : JumpEnd); (2.10495882161457 : 19.8277091471354 : JumpStart); (1.77604416666667 : 19.8277091471354 : JumpEnd); (1.59375 : 19.8277091471354); (1.59375 : 11.9247054036458)]" fixedFrom="NotFixed" fixedTo="NotFixed">
       <AssociationMoniker Name="/InventarioAnkhalDBDataContext/Bases/Bases_Ordenes" />
       <nodes>
         <classShapeMoniker Id="0ed3ffb7-b98f-40e0-abeb-3fea626140db" />
         <classShapeMoniker Id="279c0691-98a7-4df9-b6fa-374d6a252767" />
       </nodes>
     </associationConnector>
-    <associationConnector edgePoints="[(8 : 29.7118986588542); (7.92708333333333 : 29.7118986588542 : JumpStart); (7.76041666666667 : 29.7118986588542 : JumpEnd); (7.52083333333333 : 29.7118986588542 : JumpStart); (7.35416666666667 : 29.7118986588542 : JumpEnd); (3.73958533333333 : 29.7118986588542 : JumpStart); (3.57291866666667 : 29.7118986588542 : JumpEnd); (3.20833333333333 : 29.7118986588542 : JumpStart); (3.04166666666667 : 29.7118986588542 : JumpEnd); (1.8593775 : 29.7118986588542); (1.8593775 : 11.9247054036458)]" fixedFrom="NotFixed" fixedTo="NotFixed">
+    <associationConnector edgePoints="[(8 : 29.7118986588542); (7.92708333333333 : 29.7118986588542 : JumpStart); (7.76041666666667 : 29.7118986588542 : JumpEnd); (7.52083333333333 : 29.7118986588542 : JumpStart); (7.35416666666667 : 29.7118986588542 : JumpEnd); (1.8593775 : 29.7118986588542); (1.8593775 : 11.9247054036458)]" fixedFrom="NotFixed" fixedTo="NotFixed">
       <AssociationMoniker Name="/InventarioAnkhalDBDataContext/Clientes/Clientes_Ordenes" />
       <nodes>
         <classShapeMoniker Id="22ef1496-229f-4753-94c3-ad128a9445bd" />
         <classShapeMoniker Id="279c0691-98a7-4df9-b6fa-374d6a252767" />
       </nodes>
     </associationConnector>
-    <associationConnector edgePoints="[(6.25 : 14.921875); (5.95833333333333 : 14.921875 : JumpStart); (5.41666666666667 : 14.921875 : JumpEnd); (3.20833333333333 : 14.921875 : JumpStart); (2.91666666666667 : 14.921875 : JumpEnd); (2.84505645833333 : 14.921875 : JumpStart); (2.67838979166667 : 14.921875 : JumpEnd); (2.46094125 : 14.921875); (2.46094125 : 11.9247054036458)]" fixedFrom="NotFixed" fixedTo="NotFixed">
+    <associationConnector edgePoints="[(6.25 : 14.921875); (6.08333333333333 : 14.921875 : JumpStart); (5.66666666666667 : 14.921875 : JumpEnd); (5.58333333333333 : 14.921875 : JumpStart); (5.41666666666667 : 14.921875 : JumpEnd); (3.20833333333333 : 14.921875 : JumpStart); (2.91666666666667 : 14.921875 : JumpEnd); (2.84505645833333 : 14.921875 : JumpStart); (2.67838979166667 : 14.921875 : JumpEnd); (2.46094125 : 14.921875); (2.46094125 : 11.9247054036458)]" fixedFrom="NotFixed" fixedTo="NotFixed">
       <AssociationMoniker Name="/InventarioAnkhalDBDataContext/Usuario/Usuario_Ordenes" />
       <nodes>
         <classShapeMoniker Id="4979644e-ec70-4695-82be-701bdc4d5ac2" />
@@ -669,14 +628,14 @@
         <elementListCompartment Id="b6cd7a50-09fc-40fb-a7cf-1a0e95447858" absoluteBounds="11.89, 22.335, 1.9700000000000002, 3.1339111328125" name="DataPropertiesCompartment" titleTextColor="Black" itemTextColor="Black" />
       </nestedChildShapes>
     </classShape>
-    <associationConnector edgePoints="[(13.875 : 23.84375); (13.9166666666667 : 23.84375 : JumpStart); (14.2083333333333 : 23.84375 : JumpEnd); (14.4479166666667 : 23.84375 : JumpStart); (14.6145833333333 : 23.84375 : JumpEnd); (17.8531870729167 : 23.84375 : JumpStart); (18.0198537395833 : 23.84375 : JumpEnd); (18.1022114791667 : 23.84375 : JumpStart); (18.2688781458333 : 23.84375 : JumpEnd); (18.3512358854167 : 23.84375 : JumpStart); (18.5179025520833 : 23.84375 : JumpEnd); (18.5729191666667 : 23.84375 : JumpStart); (18.7669269583333 : 23.84375 : JumpEnd); (19.0983091041667 : 23.84375 : JumpStart); (19.2649757708333 : 23.84375 : JumpEnd); (19.3502635416667 : 23.84375 : JumpStart); (19.5169302083333 : 23.84375 : JumpEnd); (19.8229166666667 : 23.84375 : JumpStart); (19.9895833333333 : 23.84375 : JumpEnd); (20.7916666666667 : 23.84375 : JumpStart); (20.9583333333333 : 23.84375 : JumpEnd); (21.125 : 23.84375)]" fixedFrom="Algorithm" fixedTo="Algorithm">
+    <associationConnector edgePoints="[(13.875 : 23.84375); (13.9166666666667 : 23.84375 : JumpStart); (14.2083333333333 : 23.84375 : JumpEnd); (14.4479166666667 : 23.84375 : JumpStart); (14.6145833333333 : 23.84375 : JumpEnd); (17.5104166666667 : 23.84375 : JumpStart); (17.6770833333333 : 23.84375 : JumpEnd); (17.9049485416667 : 23.84375 : JumpStart); (18.0716152083333 : 23.84375 : JumpEnd); (18.1432304166667 : 23.84375 : JumpStart); (18.3098970833333 : 23.84375 : JumpEnd); (18.5729191666667 : 23.84375 : JumpStart); (18.7659526145833 : 23.84375 : JumpEnd); (19.0553414791667 : 23.84375 : JumpStart); (19.2220081458333 : 23.84375 : JumpEnd); (19.3922560729167 : 23.84375 : JumpStart); (19.5589227395833 : 23.84375 : JumpEnd); (19.6354166666667 : 23.84375 : JumpStart); (19.8020833333333 : 23.84375 : JumpEnd); (20.7916666666667 : 23.84375 : JumpStart); (20.9583333333333 : 23.84375 : JumpEnd); (21.125 : 23.84375)]" fixedFrom="NotFixed" fixedTo="NotFixed">
       <AssociationMoniker Name="/InventarioAnkhalDBDataContext/Entregas/Entregas_Movimientos" />
       <nodes>
         <classShapeMoniker Id="5cd81296-ed51-41fe-a804-357540ed8372" />
         <classShapeMoniker Id="4d96fee9-9e78-4c3e-890d-4187ec8c8f95" />
       </nodes>
     </associationConnector>
-    <associationConnector edgePoints="[(13.875 : 24.2057278771034); (13.9166666666667 : 24.2057278771034 : JumpStart); (14.2083333333333 : 24.2057278771034 : JumpEnd); (14.4479166666667 : 24.2057278771034 : JumpStart); (14.6145833333333 : 24.2057278771034 : JumpEnd); (20.875 : 24.2057278771034); (20.875 : 23.4728011067708); (21.2330694166667 : 23.4728011067708 : JumpStart); (21.3997360833333 : 23.4728011067708 : JumpEnd); (21.4869761666667 : 23.4728011067708 : JumpStart); (21.6536428333333 : 23.4728011067708 : JumpEnd); (21.9947896666667 : 23.4728011067708 : JumpStart); (22.1614563333333 : 23.4728011067708 : JumpEnd); (22.4947906666667 : 23.4728011067708 : JumpStart); (22.6614573333333 : 23.4728011067708 : JumpEnd); (22.6822891666667 : 23.4728011067708 : JumpStart); (22.9895833333333 : 23.4728011067708 : JumpEnd); (23.125 : 23.4728011067708); (23.125 : 18.4247054036458); (22.9895833333333 : 18.4247054036458 : JumpStart); (22.6822891666667 : 18.4247054036458 : JumpEnd); (21.625 : 18.4247054036458); (21.625 : 18.0497054036458)]" fixedFrom="NotFixed" fixedTo="Algorithm">
+    <associationConnector edgePoints="[(13.875 : 24.2057278771034); (13.9166666666667 : 24.2057278771034 : JumpStart); (14.2083333333333 : 24.2057278771034 : JumpEnd); (14.4479166666667 : 24.2057278771034 : JumpStart); (14.6145833333333 : 24.2057278771034 : JumpEnd); (20.875 : 24.2057278771034); (20.875 : 23.4728011067708); (21.2330694166667 : 23.4728011067708 : JumpStart); (21.3997360833333 : 23.4728011067708 : JumpEnd); (21.4869761666667 : 23.4728011067708 : JumpStart); (21.6536428333333 : 23.4728011067708 : JumpEnd); (21.9947896666667 : 23.4728011067708 : JumpStart); (22.1614563333333 : 23.4728011067708 : JumpEnd); (22.4947906666667 : 23.4728011067708 : JumpStart); (22.6614573333333 : 23.4728011067708 : JumpEnd); (22.6822891666667 : 23.4728011067708 : JumpStart); (22.8489558333333 : 23.4728011067708 : JumpEnd); (22.8932304166667 : 23.4728011067708 : JumpStart); (23.0598970833333 : 23.4728011067708 : JumpEnd); (23.125 : 23.4728011067708); (23.125 : 18.4247054036458); (23.0598970833333 : 18.4247054036458 : JumpStart); (22.8932304166667 : 18.4247054036458 : JumpEnd); (22.8489558333333 : 18.4247054036458 : JumpStart); (22.6822891666667 : 18.4247054036458 : JumpEnd); (21.625 : 18.4247054036458); (21.625 : 18.0497054036458)]" fixedFrom="NotFixed" fixedTo="NotFixed">
       <AssociationMoniker Name="/InventarioAnkhalDBDataContext/Entregas/Entregas_DetalleEntregas" />
       <nodes>
         <classShapeMoniker Id="5cd81296-ed51-41fe-a804-357540ed8372" />
@@ -697,7 +656,7 @@
         <classShapeMoniker Id="5cd81296-ed51-41fe-a804-357540ed8372" />
       </nodes>
     </associationConnector>
-    <associationConnector edgePoints="[(2.761723125 : 11.9247054036458); (2.761723125 : 19.625); (3.125 : 19.625); (3.125 : 19.9366682942708); (5.54166666666667 : 19.9366682942708 : JumpStart); (5.70833333333333 : 19.9366682942708 : JumpEnd); (7.04166416666667 : 19.9366682942708 : JumpStart); (7.33333333333333 : 19.9366682942708 : JumpEnd); (7.35416666666667 : 19.9366682942708 : JumpStart); (7.52083333333333 : 19.9366682942708 : JumpEnd); (7.54166666666667 : 19.9366682942708 : JumpStart); (7.70833333333333 : 19.9366682942708 : JumpEnd); (7.76041666666667 : 19.9366682942708 : JumpStart); (7.92708333333333 : 19.9366682942708 : JumpEnd); (8 : 19.9366682942708); (8 : 23.8397531679687); (8.91666666666667 : 23.8397531679687 : JumpStart); (9.08333333333333 : 23.8397531679687 : JumpEnd); (11.1041666666667 : 23.8397531679687 : JumpStart); (11.2708333333333 : 23.8397531679687 : JumpEnd); (11.3541666666667 : 23.8397531679687 : JumpStart); (11.5208333333333 : 23.8397531679687 : JumpEnd); (11.6041666666667 : 23.8397531679687 : JumpStart); (11.8333333333333 : 23.8397531679687 : JumpEnd); (11.875 : 23.8397531679687)]" fixedFrom="NotFixed" fixedTo="NotFixed">
+    <associationConnector edgePoints="[(2.761723125 : 11.9247054036458); (2.761723125 : 19.625); (3.125 : 19.625); (3.125 : 19.9366682942708); (5.91666666666667 : 19.9366682942708 : JumpStart); (6.08333333333333 : 19.9366682942708 : JumpEnd); (7.04166416666667 : 19.9366682942708 : JumpStart); (7.33333333333333 : 19.9366682942708 : JumpEnd); (7.35416666666667 : 19.9366682942708 : JumpStart); (7.52083333333333 : 19.9366682942708 : JumpEnd); (7.54166666666667 : 19.9366682942708 : JumpStart); (7.70833333333333 : 19.9366682942708 : JumpEnd); (7.76041666666667 : 19.9366682942708 : JumpStart); (7.92708333333333 : 19.9366682942708 : JumpEnd); (8 : 19.9366682942708); (8 : 23.8397531679687); (8.91666666666667 : 23.8397531679687 : JumpStart); (9.08333333333333 : 23.8397531679687 : JumpEnd); (11.1041666666667 : 23.8397531679687 : JumpStart); (11.2708333333333 : 23.8397531679687 : JumpEnd); (11.3541666666667 : 23.8397531679687 : JumpStart); (11.5208333333333 : 23.8397531679687 : JumpEnd); (11.6041666666667 : 23.8397531679687 : JumpStart); (11.8333333333333 : 23.8397531679687 : JumpEnd); (11.875 : 23.8397531679687)]" fixedFrom="NotFixed" fixedTo="NotFixed">
       <AssociationMoniker Name="/InventarioAnkhalDBDataContext/Ordenes/Ordenes_Entregas" />
       <nodes>
         <classShapeMoniker Id="279c0691-98a7-4df9-b6fa-374d6a252767" />
@@ -717,28 +676,28 @@
         <elementListCompartment Id="cb5a3b5e-7b53-4b1d-b533-7e10484a8dfc" absoluteBounds="1.0150000000000001, 4.21, 1.9700000000000002, 3.1339111328125" name="DataPropertiesCompartment" titleTextColor="Black" itemTextColor="Black" />
       </nestedChildShapes>
     </classShape>
-    <associationConnector edgePoints="[(8 : 28.2576293359375); (7.92708333333333 : 28.2576293359375 : JumpStart); (7.76041666666667 : 28.2576293359375 : JumpEnd); (7.70833333333333 : 28.2576293359375 : JumpStart); (7.54166666666667 : 28.2576293359375 : JumpEnd); (3.73958533333333 : 28.2576293359375 : JumpStart); (3.57291866666667 : 28.2576293359375 : JumpEnd); (3.20833333333333 : 28.2576293359375 : JumpStart); (3.04166666666667 : 28.2576293359375 : JumpEnd); (1.03125 : 28.2576293359375); (1.03125 : 7.4439111328125)]" fixedFrom="NotFixed" fixedTo="NotFixed">
+    <associationConnector edgePoints="[(8 : 28.2576293359375); (1.03125 : 28.2576293359375); (1.03125 : 7.4439111328125)]" fixedFrom="NotFixed" fixedTo="NotFixed">
       <AssociationMoniker Name="/InventarioAnkhalDBDataContext/Clientes/Clientes_CuentasPorCobrar" />
       <nodes>
         <classShapeMoniker Id="22ef1496-229f-4753-94c3-ad128a9445bd" />
         <classShapeMoniker Id="bf423cc7-0dd9-45a6-84f1-a05e414ab52e" />
       </nodes>
     </associationConnector>
-    <associationConnector edgePoints="[(6.25 : 14.8984375); (5.95833333333333 : 14.8984375 : JumpStart); (5.41666666666667 : 14.8984375 : JumpEnd); (3.20833333333333 : 14.8984375 : JumpStart); (2.91666666666667 : 14.8984375 : JumpEnd); (2.84505645833333 : 14.8984375 : JumpStart); (2.67838979166667 : 14.8984375 : JumpEnd); (1.94271083333333 : 14.8984375 : JumpStart); (1.77604416666667 : 14.8984375 : JumpEnd); (1.67708333333333 : 14.8984375 : JumpStart); (1.51041666666667 : 14.8984375 : JumpEnd); (1.046875 : 14.8984375); (1.046875 : 7.4439111328125)]" fixedFrom="NotFixed" fixedTo="NotFixed">
+    <associationConnector edgePoints="[(6.25 : 14.8984375); (6.08333333333333 : 14.8984375 : JumpStart); (5.66666666666667 : 14.8984375 : JumpEnd); (5.58333333333333 : 14.8984375 : JumpStart); (5.41666666666667 : 14.8984375 : JumpEnd); (3.20833333333333 : 14.8984375 : JumpStart); (2.91666666666667 : 14.8984375 : JumpEnd); (2.84505645833333 : 14.8984375 : JumpStart); (2.67838979166667 : 14.8984375 : JumpEnd); (1.94271083333333 : 14.8984375 : JumpStart); (1.77604416666667 : 14.8984375 : JumpEnd); (1.67708333333333 : 14.8984375 : JumpStart); (1.51041666666667 : 14.8984375 : JumpEnd); (1.046875 : 14.8984375); (1.046875 : 7.4439111328125)]" fixedFrom="NotFixed" fixedTo="NotFixed">
       <AssociationMoniker Name="/InventarioAnkhalDBDataContext/Usuario/Usuario_CuentasPorCobrar" />
       <nodes>
         <classShapeMoniker Id="4979644e-ec70-4695-82be-701bdc4d5ac2" />
         <classShapeMoniker Id="bf423cc7-0dd9-45a6-84f1-a05e414ab52e" />
       </nodes>
     </associationConnector>
-    <associationConnector edgePoints="[(11.875 : 23.3597827174479); (11.8333333333333 : 23.3597827174479 : JumpStart); (11.5416666666667 : 23.3597827174479 : JumpEnd); (11.5208333333333 : 23.3597827174479 : JumpStart); (11.3541666666667 : 23.3597827174479 : JumpEnd); (11.2708333333333 : 23.3597827174479 : JumpStart); (11.1041666666667 : 23.3597827174479 : JumpEnd); (9.08333333333333 : 23.3597827174479 : JumpStart); (8.91666666666667 : 23.3597827174479 : JumpEnd); (8.08333333333333 : 23.3597827174479 : JumpStart); (7.76041666666667 : 23.3597827174479 : JumpEnd); (7.70833333333333 : 23.3597827174479 : JumpStart); (7.54166666666667 : 23.3597827174479 : JumpEnd); (7.52083333333333 : 23.3597827174479 : JumpStart); (7.35416666666667 : 23.3597827174479 : JumpEnd); (7 : 23.3597827174479); (7 : 19.8741682942708); (5.70833333333333 : 19.8741682942708 : JumpStart); (5.54166666666667 : 19.8741682942708 : JumpEnd); (3.55208508333333 : 19.8741682942708 : JumpStart); (3.38541841666667 : 19.8741682942708 : JumpEnd); (3.125 : 19.8741682942708); (3.125 : 12.4247054036458); (2.84505645833333 : 12.4247054036458 : JumpStart); (2.67838979166667 : 12.4247054036458 : JumpEnd); (2.54427458333333 : 12.4247054036458 : JumpStart); (2.37760791666667 : 12.4247054036458 : JumpEnd); (1.94271083333333 : 12.4247054036458 : JumpStart); (1.77604416666667 : 12.4247054036458 : JumpEnd); (1.67708333333333 : 12.4247054036458 : JumpStart); (1.51041666666667 : 12.4247054036458 : JumpEnd); (1.13020833333333 : 12.4247054036458 : JumpStart); (0.947916666666667 : 12.4247054036458 : JumpEnd); (0.875 : 12.4247054036458); (0.875 : 8.0689111328125); (0.947916666666667 : 8.0689111328125 : JumpStart); (1.13020833333333 : 8.0689111328125 : JumpEnd); (2.55859675 : 8.0689111328125); (2.55859675 : 7.4439111328125)]" fixedFrom="NotFixed" fixedTo="NotFixed">
+    <associationConnector edgePoints="[(11.875 : 23.3597827174479); (11.8333333333333 : 23.3597827174479 : JumpStart); (11.5416666666667 : 23.3597827174479 : JumpEnd); (11.5208333333333 : 23.3597827174479 : JumpStart); (11.3541666666667 : 23.3597827174479 : JumpEnd); (11.2708333333333 : 23.3597827174479 : JumpStart); (11.1041666666667 : 23.3597827174479 : JumpEnd); (9.08333333333333 : 23.3597827174479 : JumpStart); (8.91666666666667 : 23.3597827174479 : JumpEnd); (8.08333333333333 : 23.3597827174479 : JumpStart); (7.76041666666667 : 23.3597827174479 : JumpEnd); (7.70833333333333 : 23.3597827174479 : JumpStart); (7.54166666666667 : 23.3597827174479 : JumpEnd); (7.52083333333333 : 23.3597827174479 : JumpStart); (7.35416666666667 : 23.3597827174479 : JumpEnd); (7 : 23.3597827174479); (7 : 19.8741682942708); (6.08333333333333 : 19.8741682942708 : JumpStart); (5.91666666666667 : 19.8741682942708 : JumpEnd); (3.55208508333333 : 19.8741682942708 : JumpStart); (3.38541841666667 : 19.8741682942708 : JumpEnd); (3.125 : 19.8741682942708); (3.125 : 12.4247054036458); (2.84505645833333 : 12.4247054036458 : JumpStart); (2.67838979166667 : 12.4247054036458 : JumpEnd); (2.54427458333333 : 12.4247054036458 : JumpStart); (2.37760791666667 : 12.4247054036458 : JumpEnd); (1.94271083333333 : 12.4247054036458 : JumpStart); (1.77604416666667 : 12.4247054036458 : JumpEnd); (1.67708333333333 : 12.4247054036458 : JumpStart); (1.51041666666667 : 12.4247054036458 : JumpEnd); (1.13020833333333 : 12.4247054036458 : JumpStart); (0.947916666666667 : 12.4247054036458 : JumpEnd); (0.875 : 12.4247054036458); (0.875 : 8.0689111328125); (0.947916666666667 : 8.0689111328125 : JumpStart); (1.13020833333333 : 8.0689111328125 : JumpEnd); (2.55859675 : 8.0689111328125); (2.55859675 : 7.4439111328125)]" fixedFrom="NotFixed" fixedTo="NotFixed">
       <AssociationMoniker Name="/InventarioAnkhalDBDataContext/Entregas/Entregas_CuentasPorCobrar" />
       <nodes>
         <classShapeMoniker Id="5cd81296-ed51-41fe-a804-357540ed8372" />
         <classShapeMoniker Id="bf423cc7-0dd9-45a6-84f1-a05e414ab52e" />
       </nodes>
     </associationConnector>
-    <associationConnector edgePoints="[(6.25 : 15.8011846751302); (5.875 : 15.8011846751302); (5.875 : 12.1747054036458); (5.83333333333333 : 12.1747054036458 : JumpStart); (5.66666666666667 : 12.1747054036458 : JumpEnd); (5.58333333333333 : 12.1747054036458 : JumpStart); (5.41666666666667 : 12.1747054036458 : JumpEnd); (2.84505645833333 : 12.1747054036458 : JumpStart); (2.67838979166667 : 12.1747054036458 : JumpEnd); (2.54427458333333 : 12.1747054036458 : JumpStart); (2.37760791666667 : 12.1747054036458 : JumpEnd); (1.94271083333333 : 12.1747054036458 : JumpStart); (1.77604416666667 : 12.1747054036458 : JumpEnd); (1.67708333333333 : 12.1747054036458 : JumpStart); (1.51041666666667 : 12.1747054036458 : JumpEnd); (1.13020833333333 : 12.1747054036458 : JumpStart); (0.791666666666667 : 12.1747054036458 : JumpEnd); (0.625 : 12.1747054036458); (0.625 : 7.8189111328125); (0.947916666666667 : 7.8189111328125 : JumpStart); (1.13020833333333 : 7.8189111328125 : JumpEnd); (2.0546895 : 7.8189111328125); (2.0546895 : 7.4439111328125)]" fixedFrom="NotFixed" fixedTo="NotFixed">
+    <associationConnector edgePoints="[(6.25 : 15.8011846751302); (6.08333333333333 : 15.8011846751302 : JumpStart); (5.91666666666667 : 15.8011846751302 : JumpEnd); (5.875 : 15.8011846751302); (5.875 : 12.1747054036458); (5.83333333333333 : 12.1747054036458 : JumpStart); (5.66666666666667 : 12.1747054036458 : JumpEnd); (5.58333333333333 : 12.1747054036458 : JumpStart); (5.41666666666667 : 12.1747054036458 : JumpEnd); (2.84505645833333 : 12.1747054036458 : JumpStart); (2.67838979166667 : 12.1747054036458 : JumpEnd); (2.54427458333333 : 12.1747054036458 : JumpStart); (2.37760791666667 : 12.1747054036458 : JumpEnd); (1.94271083333333 : 12.1747054036458 : JumpStart); (1.77604416666667 : 12.1747054036458 : JumpEnd); (1.67708333333333 : 12.1747054036458 : JumpStart); (1.51041666666667 : 12.1747054036458 : JumpEnd); (1.13020833333333 : 12.1747054036458 : JumpStart); (0.791666666666667 : 12.1747054036458 : JumpEnd); (0.625 : 12.1747054036458); (0.625 : 7.8189111328125); (0.947916666666667 : 7.8189111328125 : JumpStart); (1.13020833333333 : 7.8189111328125 : JumpEnd); (2.0546895 : 7.8189111328125); (2.0546895 : 7.4439111328125)]" fixedFrom="NotFixed" fixedTo="NotFixed">
       <AssociationMoniker Name="/InventarioAnkhalDBDataContext/Usuario/Usuario_CuentasPorCobrar1" />
       <nodes>
         <classShapeMoniker Id="4979644e-ec70-4695-82be-701bdc4d5ac2" />
@@ -751,14 +710,14 @@
         <elementListCompartment Id="2fd35f42-dbcd-4d7e-84b8-9eaa4d9c4061" absoluteBounds="3.64, 3.46, 1.9700000000000002, 1.9801025390625" name="DataPropertiesCompartment" titleTextColor="Black" itemTextColor="Black" />
       </nestedChildShapes>
     </classShape>
-    <associationConnector edgePoints="[(3 : 4.64505126953125); (3.625 : 4.64505126953125)]" fixedFrom="NotFixed" fixedTo="NotFixed">
+    <associationConnector edgePoints="[(3 : 4.64505126953125); (3.625 : 4.64505126953125)]" fixedFrom="Algorithm" fixedTo="Algorithm">
       <AssociationMoniker Name="/InventarioAnkhalDBDataContext/CuentasPorCobrar/CuentasPorCobrar_AbonosCuentasPorCobrar" />
       <nodes>
         <classShapeMoniker Id="bf423cc7-0dd9-45a6-84f1-a05e414ab52e" />
         <classShapeMoniker Id="3ece9ee4-5b29-4945-80f6-286071af4934" />
       </nodes>
     </associationConnector>
-    <associationConnector edgePoints="[(6.25 : 17.1201491878255); (5.75 : 17.1201491878255); (5.75 : 11.4054996744792); (4 : 11.4054996744792); (4 : 5.9151025390625); (4.625 : 5.9151025390625); (4.625 : 5.5401025390625)]" fixedFrom="NotFixed" fixedTo="NotFixed">
+    <associationConnector edgePoints="[(6.25 : 17.1201491878255); (6.08333333333333 : 17.1201491878255 : JumpStart); (5.91666666666667 : 17.1201491878255 : JumpEnd); (5.75 : 17.1201491878255); (5.75 : 11.4054996744792); (5.58333333333333 : 11.4054996744792 : JumpStart); (5.41666666666667 : 11.4054996744792 : JumpEnd); (4 : 11.4054996744792); (4 : 5.9151025390625); (4.625 : 5.9151025390625); (4.625 : 5.5401025390625)]" fixedFrom="NotFixed" fixedTo="NotFixed">
       <AssociationMoniker Name="/InventarioAnkhalDBDataContext/Usuario/Usuario_AbonosCuentasPorCobrar" />
       <nodes>
         <classShapeMoniker Id="4979644e-ec70-4695-82be-701bdc4d5ac2" />
@@ -791,7 +750,7 @@
         <elementListCompartment Id="9fd9163a-a067-4258-a9d4-ebaa9058895b" absoluteBounds="12.765, 30.46, 1.9700000000000002, 3.1339111328125" name="DataPropertiesCompartment" titleTextColor="Black" itemTextColor="Black" />
       </nestedChildShapes>
     </classShape>
-    <associationConnector edgePoints="[(14.09375 : 30); (14.09375 : 7.21715413411458); (11.8958333333333 : 7.21715413411458 : JumpStart); (11.6041666666667 : 7.21715413411458 : JumpEnd); (11.4583333333333 : 7.21715413411458 : JumpStart); (11.2916666666667 : 7.21715413411458 : JumpEnd); (10.5 : 7.21715413411458)]" fixedFrom="Algorithm" fixedTo="Algorithm">
+    <associationConnector edgePoints="[(14.09375 : 30); (14.09375 : 7.21715413411458); (11.8958333333333 : 7.21715413411458 : JumpStart); (11.7291666666667 : 7.21715413411458 : JumpEnd); (11.7083333333333 : 7.21715413411458 : JumpStart); (11.5416666666667 : 7.21715413411458 : JumpEnd); (11.4583333333333 : 7.21715413411458 : JumpStart); (11.2916666666667 : 7.21715413411458 : JumpEnd); (10.5 : 7.21715413411458)]" fixedFrom="NotFixed" fixedTo="NotFixed">
       <AssociationMoniker Name="/InventarioAnkhalDBDataContext/CuentasPorPagar/CuentasPorPagar_AbonosCuentasPorPagar" />
       <nodes>
         <classShapeMoniker Id="25b6d996-086c-4568-8601-5dcfa6430ccb" />
@@ -812,7 +771,7 @@
         <classShapeMoniker Id="25b6d996-086c-4568-8601-5dcfa6430ccb" />
       </nodes>
     </associationConnector>
-    <associationConnector edgePoints="[(3.125 : 26.5784326171875); (3.125 : 31.3621215234375); (12.75 : 31.3621215234375)]" fixedFrom="NotFixed" fixedTo="NotFixed">
+    <associationConnector edgePoints="[(3.125 : 26.5784326171875); (3.125 : 31.3621215234375); (7.35416666666667 : 31.3621215234375 : JumpStart); (7.52083333333333 : 31.3621215234375 : JumpEnd); (7.76041666666667 : 31.3621215234375 : JumpStart); (7.92708333333333 : 31.3621215234375 : JumpEnd); (12.75 : 31.3621215234375)]" fixedFrom="NotFixed" fixedTo="NotFixed">
       <AssociationMoniker Name="/InventarioAnkhalDBDataContext/Proveedores/Proveedores_CuentasPorPagar" />
       <nodes>
         <classShapeMoniker Id="e0dde740-013e-4cda-91e7-df036a192dcb" />
@@ -832,25 +791,66 @@
         <elementListCompartment Id="4474bbf6-7dce-4b26-a552-1b4e2986e539" absoluteBounds="11.39, 3.835, 1.9700000000000002, 2.7493082682291665" name="DataPropertiesCompartment" titleTextColor="Black" itemTextColor="Black" />
       </nestedChildShapes>
     </classShape>
-    <associationConnector edgePoints="[(9 : 24.375); (9 : 22.8381168619792); (11.1041666666667 : 22.8381168619792 : JumpStart); (11.2708333333333 : 22.8381168619792 : JumpEnd); (11.375 : 22.8381168619792); (11.375 : 6.93430826822917); (11.125 : 6.93430826822917); (11.125 : 5.02965413411458); (11.375 : 5.02965413411458)]" fixedFrom="Algorithm" fixedTo="Algorithm">
+    <associationConnector edgePoints="[(9 : 24.375); (9 : 22.8381168619792); (11.1041666666667 : 22.8381168619792 : JumpStart); (11.2708333333333 : 22.8381168619792 : JumpEnd); (11.375 : 22.8381168619792); (11.375 : 6.93430826822917); (11.125 : 6.93430826822917); (11.125 : 5.02965413411458); (11.375 : 5.02965413411458)]" fixedFrom="NotFixed" fixedTo="NotFixed">
       <AssociationMoniker Name="/InventarioAnkhalDBDataContext/Clientes/Clientes_BitacoraLimitesCredito" />
       <nodes>
         <classShapeMoniker Id="22ef1496-229f-4753-94c3-ad128a9445bd" />
         <classShapeMoniker Id="3c8d8877-c1ed-40b1-beb5-2b57ae75f5c0" />
       </nodes>
     </associationConnector>
-    <associationConnector edgePoints="[(4.125 : 23.625); (4.29166666666667 : 23.625 : JumpStart); (4.45833333333333 : 23.625 : JumpEnd); (4.625 : 23.625); (4.625 : 22); (5.54166666666667 : 22 : JumpStart); (5.70833333333333 : 22 : JumpEnd); (6.91666666666667 : 22 : JumpStart); (7.20833083333333 : 22 : JumpEnd); (7.35416666666667 : 22 : JumpStart); (7.52083333333333 : 22 : JumpEnd); (7.54166666666667 : 22 : JumpStart); (7.70833333333333 : 22 : JumpEnd); (7.76041666666667 : 22 : JumpStart); (8.08333333333333 : 22 : JumpEnd); (8.5 : 22); (8.5 : 17.5625); (9.66666666666667 : 17.5625 : JumpStart); (9.83333333333333 : 17.5625 : JumpEnd); (10.1979186666667 : 17.5625 : JumpStart); (10.3645853333333 : 17.5625 : JumpEnd); (11.1666666666667 : 17.5625 : JumpStart); (11.4583333333333 : 17.5625 : JumpEnd); (11.6041666666667 : 17.5625 : JumpStart); (11.7708333333333 : 17.5625 : JumpEnd); (11.8125 : 17.5625); (11.8125 : 7.05930826822917); (12.375 : 7.05930826822917); (12.375 : 6.68430826822917)]" fixedFrom="Algorithm" fixedTo="Algorithm">
+    <associationConnector edgePoints="[(4.125 : 23.625); (4.29166666666667 : 23.625 : JumpStart); (4.45833333333333 : 23.625 : JumpEnd); (4.625 : 23.625); (4.625 : 22); (5.91666666666667 : 22 : JumpStart); (6.08333333333333 : 22 : JumpEnd); (6.91666666666667 : 22 : JumpStart); (7.20833083333333 : 22 : JumpEnd); (7.35416666666667 : 22 : JumpStart); (7.52083333333333 : 22 : JumpEnd); (7.54166666666667 : 22 : JumpStart); (7.70833333333333 : 22 : JumpEnd); (7.76041666666667 : 22 : JumpStart); (8.08333333333333 : 22 : JumpEnd); (8.5 : 22); (8.5 : 17.5625); (9.66666666666667 : 17.5625 : JumpStart); (9.83333333333333 : 17.5625 : JumpEnd); (10.1979186666667 : 17.5625 : JumpStart); (10.3645853333333 : 17.5625 : JumpEnd); (10.8541666666667 : 17.5625 : JumpStart); (11.0208333333333 : 17.5625 : JumpEnd); (11.1666666666667 : 17.5625 : JumpStart); (11.4583333333333 : 17.5625 : JumpEnd); (11.5416666666667 : 17.5625 : JumpStart); (11.7083333333333 : 17.5625 : JumpEnd); (11.8125 : 17.5625); (11.8125 : 7.05930826822917); (12.375 : 7.05930826822917); (12.375 : 6.68430826822917)]" fixedFrom="NotFixed" fixedTo="NotFixed">
       <AssociationMoniker Name="/InventarioAnkhalDBDataContext/Proveedores/Proveedores_BitacoraLimitesCredito" />
       <nodes>
         <classShapeMoniker Id="e0dde740-013e-4cda-91e7-df036a192dcb" />
         <classShapeMoniker Id="3c8d8877-c1ed-40b1-beb5-2b57ae75f5c0" />
       </nodes>
     </associationConnector>
-    <associationConnector edgePoints="[(8.25 : 16.5337561173503); (9.66666666666667 : 16.5337561173503 : JumpStart); (9.83333333333333 : 16.5337561173503 : JumpEnd); (10.1979186666667 : 16.5337561173503 : JumpStart); (10.3645853333333 : 16.5337561173503 : JumpEnd); (11.2916666666667 : 16.5337561173503 : JumpStart); (11.4583333333333 : 16.5337561173503 : JumpEnd); (11.4791666666667 : 16.5337561173503 : JumpStart); (11.6458333333333 : 16.5337561173503 : JumpEnd); (11.6875 : 16.5337561173503); (11.6875 : 6.93430826822917); (12.2916666666667 : 6.93430826822917 : JumpStart); (12.4583333333333 : 6.93430826822917 : JumpEnd); (12.906252 : 6.93430826822917); (12.906252 : 6.68430826822917)]" fixedFrom="Algorithm" fixedTo="Algorithm">
+    <associationConnector edgePoints="[(8.25 : 15.8944723942057); (9.66666666666667 : 15.8944723942057 : JumpStart); (9.83333333333333 : 15.8944723942057 : JumpEnd); (11.0416666666667 : 15.8944723942057 : JumpStart); (11.2083333333333 : 15.8944723942057 : JumpEnd); (11.2916666666667 : 15.8944723942057 : JumpStart); (11.4583333333333 : 15.8944723942057 : JumpEnd); (11.625 : 15.8944723942057); (11.625 : 6.93430826822917); (12.2916666666667 : 6.93430826822917 : JumpStart); (12.4583333333333 : 6.93430826822917 : JumpEnd); (12.906252 : 6.93430826822917); (12.906252 : 6.68430826822917)]" fixedFrom="Algorithm" fixedTo="NotFixed">
       <AssociationMoniker Name="/InventarioAnkhalDBDataContext/Usuario/Usuario_BitacoraLimitesCredito" />
       <nodes>
         <classShapeMoniker Id="4979644e-ec70-4695-82be-701bdc4d5ac2" />
         <classShapeMoniker Id="3c8d8877-c1ed-40b1-beb5-2b57ae75f5c0" />
+      </nodes>
+    </associationConnector>
+    <classShape Id="9096dcba-2a45-4f3a-ae9e-8c541d3b0946" absoluteBounds="17.625, 14.375, 2, 3.5016097005208326">
+      <DataClassMoniker Name="/InventarioAnkhalDBDataContext/Produccion" />
+      <nestedChildShapes>
+        <elementListCompartment Id="1f2b89af-9bdf-4f7f-93bd-b16ed9ea5a83" absoluteBounds="17.64, 14.835, 1.9700000000000002, 2.941609700520833" name="DataPropertiesCompartment" titleTextColor="Black" itemTextColor="Black" />
+      </nestedChildShapes>
+    </classShape>
+    <associationConnector edgePoints="[(19.59375 : 17.8766097005208); (19.59375 : 22.5001467317708); (19.6354166666667 : 22.5001467317708 : JumpStart); (19.8020833333333 : 22.5001467317708 : JumpEnd); (20.5 : 22.5001467317708)]" fixedFrom="Algorithm" fixedTo="Algorithm">
+      <AssociationMoniker Name="/InventarioAnkhalDBDataContext/Produccion/Produccion_ConsumosProduccion" />
+      <nodes>
+        <classShapeMoniker Id="9096dcba-2a45-4f3a-ae9e-8c541d3b0946" />
+        <classShapeMoniker Id="febf01ee-52d8-4ae5-997d-2b5cf49dc40e" />
+      </nodes>
+    </associationConnector>
+    <associationConnector edgePoints="[(19.625 : 14.71875); (21.5416666666667 : 14.71875 : JumpStart); (21.7083333333333 : 14.71875 : JumpEnd); (22.6822891666667 : 14.71875 : JumpStart); (22.8489558333333 : 14.71875 : JumpEnd); (22.97656375 : 14.71875); (22.97656375 : 23.75)]" fixedFrom="Algorithm" fixedTo="Algorithm">
+      <AssociationMoniker Name="/InventarioAnkhalDBDataContext/Produccion/Produccion_Movimientos" />
+      <nodes>
+        <classShapeMoniker Id="9096dcba-2a45-4f3a-ae9e-8c541d3b0946" />
+        <classShapeMoniker Id="4d96fee9-9e78-4c3e-890d-4187ec8c8f95" />
+      </nodes>
+    </associationConnector>
+    <associationConnector edgePoints="[(10.281252 : 17.875); (10.281252 : 16.5008048502604); (11.0416666666667 : 16.5008048502604 : JumpStart); (11.4583333333333 : 16.5008048502604 : JumpEnd); (11.4791666666667 : 16.5008048502604 : JumpStart); (11.6458333333333 : 16.5008048502604 : JumpEnd); (11.75 : 16.5008048502604); (11.75 : 15.25); (14.0104166666667 : 15.25 : JumpStart); (14.1770833333333 : 15.25 : JumpEnd); (14.375 : 15.25); (14.375 : 16.3381982421875); (14.4479166666667 : 16.3381982421875 : JumpStart); (14.6145833333333 : 16.3381982421875 : JumpEnd); (16.9166666666667 : 16.3381982421875 : JumpStart); (17.0833333333333 : 16.3381982421875 : JumpEnd); (17.25 : 16.3381982421875); (17.25 : 16.1258048502604); (17.4479166666667 : 16.1258048502604 : JumpStart); (17.6145833333333 : 16.1258048502604 : JumpEnd); (17.625 : 16.1258048502604)]" fixedFrom="Algorithm" fixedTo="Algorithm">
+      <AssociationMoniker Name="/InventarioAnkhalDBDataContext/Bases/Bases_Produccion" />
+      <nodes>
+        <classShapeMoniker Id="0ed3ffb7-b98f-40e0-abeb-3fea626140db" />
+        <classShapeMoniker Id="9096dcba-2a45-4f3a-ae9e-8c541d3b0946" />
+      </nodes>
+    </associationConnector>
+    <associationConnector edgePoints="[(14 : 12.4960034179687); (14.0104166666667 : 12.4960034179687 : JumpStart); (14.1770833333333 : 12.4960034179687 : JumpEnd); (14.4479166666667 : 12.4960034179687 : JumpStart); (14.6145833333333 : 12.4960034179687 : JumpEnd); (16.5729166666667 : 12.4960034179687 : JumpStart); (16.7395833333333 : 12.4960034179687 : JumpEnd); (18.625 : 12.4960034179687); (18.625 : 14.375)]" fixedFrom="Algorithm" fixedTo="Algorithm">
+      <AssociationMoniker Name="/InventarioAnkhalDBDataContext/Productos/Productos_Produccion" />
+      <nodes>
+        <classShapeMoniker Id="6f86ba3c-b797-4972-a210-bf97f8fd4a52" />
+        <classShapeMoniker Id="9096dcba-2a45-4f3a-ae9e-8c541d3b0946" />
+      </nodes>
+    </associationConnector>
+    <associationConnector edgePoints="[(8.25 : 16.6100754939779); (9.66666666666667 : 16.6100754939779 : JumpStart); (9.83333333333333 : 16.6100754939779 : JumpEnd); (10.1979186666667 : 16.6100754939779 : JumpStart); (10.3645853333333 : 16.6100754939779 : JumpEnd); (11.0416666666667 : 16.6100754939779 : JumpStart); (11.4583333333333 : 16.6100754939779 : JumpEnd); (11.4791666666667 : 16.6100754939779 : JumpStart); (11.6458333333333 : 16.6100754939779 : JumpEnd); (11.6875 : 16.6100754939779); (11.6875 : 15.375); (11.7291666666667 : 15.375 : JumpStart); (11.8958333333333 : 15.375 : JumpEnd); (14.0104166666667 : 15.375 : JumpStart); (14.1770833333333 : 15.375 : JumpEnd); (14.4375 : 15.375); (14.4375 : 13.875); (14.4479166666667 : 13.875 : JumpStart); (14.6145833333333 : 13.875 : JumpEnd); (16.5729166666667 : 13.875 : JumpStart); (16.7395833333333 : 13.875 : JumpEnd); (16.9166666666667 : 13.875 : JumpStart); (17.0833333333333 : 13.875 : JumpEnd); (17.4479166666667 : 13.875 : JumpStart); (17.6145833333333 : 13.875 : JumpEnd); (18.093748 : 13.875); (18.093748 : 14.375)]" fixedFrom="Algorithm" fixedTo="Algorithm">
+      <AssociationMoniker Name="/InventarioAnkhalDBDataContext/Usuario/Usuario_Produccion" />
+      <nodes>
+        <classShapeMoniker Id="4979644e-ec70-4695-82be-701bdc4d5ac2" />
+        <classShapeMoniker Id="9096dcba-2a45-4f3a-ae9e-8c541d3b0946" />
       </nodes>
     </associationConnector>
   </nestedChildShapes>
