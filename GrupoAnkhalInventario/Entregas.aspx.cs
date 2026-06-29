@@ -724,7 +724,22 @@ namespace GrupoAnkhalInventario
                             {
                                 var items = ObtenerItemsEntrega(db, entregaID);
                                 int tipoAjusteID = ObtenerTipoMovimientoID(db, "AJUSTE_POS");
-                                DevolverStockYRegistrarMovimientos(db, entregaID, entrega.BaseOrigenID, items, tipoAjusteID, entrega.Folio);
+
+                                var loteDevol = new Modelo.LotesMovimiento
+                                {
+                                    Folio            = AppHelper.GenerarFolio(db, "MOV"),
+                                    TipoMovimientoID = tipoAjusteID,
+                                    BaseOrigenID     = null,
+                                    BaseDestinoID    = entrega.BaseOrigenID,
+                                    Observaciones    = string.Format("Devolución por cancelación entrega {0}", entrega.Folio),
+                                    RegistradoPorID  = Convert.ToInt32(Session["ClaveID"]),
+                                    FechaLote        = AppHelper.Ahora.Date,
+                                    FechaRegistro    = AppHelper.Ahora
+                                };
+                                db.LotesMovimiento.InsertOnSubmit(loteDevol);
+                                db.SubmitChanges();
+
+                                DevolverStockYRegistrarMovimientos(db, entregaID, entrega.BaseOrigenID, items, tipoAjusteID, entrega.Folio, loteDevol.LoteID);
 
                                 // Marcar los movimientos SALIDA originales como anulados
                                 int tipoSalidaID = ObtenerTipoMovimientoID(db, "SALIDA");
@@ -1474,7 +1489,8 @@ namespace GrupoAnkhalInventario
         }
 
         private void DevolverStockYRegistrarMovimientos(InventarioAnkhalDBDataContext db,
-            int entregaID, int baseID, List<ItemEntregaModel> items, int tipoAjusteID, string folioEntrega)
+            int entregaID, int baseID, List<ItemEntregaModel> items, int tipoAjusteID, string folioEntrega,
+            int loteID)
         {
             int claveID = Convert.ToInt32(Session["ClaveID"]);
 
@@ -1513,6 +1529,7 @@ namespace GrupoAnkhalInventario
                         Costo = it.PrecioUnitario,
                         EntregaID = entregaID,
                         ProduccionID = null,
+                        LoteID = loteID,
                         Observaciones = string.Format("Devolución por cancelación entrega {0}", folioEntrega),
                         RegistradoPorID = claveID,
                         FechaMovimiento = AppHelper.Ahora
@@ -1554,6 +1571,7 @@ namespace GrupoAnkhalInventario
                         Costo = it.PrecioUnitario,
                         EntregaID = entregaID,
                         ProduccionID = null,
+                        LoteID = loteID,
                         Observaciones = string.Format("Devolución por cancelación entrega {0}", folioEntrega),
                         RegistradoPorID = claveID,
                         FechaMovimiento = AppHelper.Ahora

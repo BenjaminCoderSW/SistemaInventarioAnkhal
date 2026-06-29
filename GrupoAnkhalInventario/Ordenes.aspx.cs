@@ -1212,8 +1212,23 @@ namespace GrupoAnkhalInventario
                             {
                                 var items = ObtenerItemsEntrega(db, entregaID);
                                 int tipoAjusteID = ObtenerTipoMovimientoID(db, "AJUSTE_POS");
+
+                                var loteDevol = new Modelo.LotesMovimiento
+                                {
+                                    Folio            = AppHelper.GenerarFolio(db, "MOV"),
+                                    TipoMovimientoID = tipoAjusteID,
+                                    BaseOrigenID     = null,
+                                    BaseDestinoID    = entrega.BaseOrigenID,
+                                    Observaciones    = string.Format("Devolución por cancelación entrega {0}", entrega.Folio),
+                                    RegistradoPorID  = Convert.ToInt32(Session["ClaveID"]),
+                                    FechaLote        = AppHelper.Ahora.Date,
+                                    FechaRegistro    = AppHelper.Ahora
+                                };
+                                db.LotesMovimiento.InsertOnSubmit(loteDevol);
+                                db.SubmitChanges();
+
                                 DevolverStockYRegistrarMovimientos(db, entregaID,
-                                    entrega.BaseOrigenID, items, tipoAjusteID, entrega.Folio);
+                                    entrega.BaseOrigenID, items, tipoAjusteID, entrega.Folio, loteDevol.LoteID);
 
                                 int tipoSalidaID = ObtenerTipoMovimientoID(db, "SALIDA");
                                 var movsOriginal = db.Movimientos
@@ -1293,8 +1308,23 @@ namespace GrupoAnkhalInventario
                                 {
                                     var items = ObtenerItemsEntrega(db, ent.EntregaID);
                                     int tipoAjusteID = ObtenerTipoMovimientoID(db, "AJUSTE_POS");
+
+                                    var loteDevol = new Modelo.LotesMovimiento
+                                    {
+                                        Folio            = AppHelper.GenerarFolio(db, "MOV"),
+                                        TipoMovimientoID = tipoAjusteID,
+                                        BaseOrigenID     = null,
+                                        BaseDestinoID    = ent.BaseOrigenID,
+                                        Observaciones    = string.Format("Devolución por cancelación entrega {0}", ent.Folio),
+                                        RegistradoPorID  = Convert.ToInt32(Session["ClaveID"]),
+                                        FechaLote        = AppHelper.Ahora.Date,
+                                        FechaRegistro    = AppHelper.Ahora
+                                    };
+                                    db.LotesMovimiento.InsertOnSubmit(loteDevol);
+                                    db.SubmitChanges();
+
                                     DevolverStockYRegistrarMovimientos(db, ent.EntregaID,
-                                        ent.BaseOrigenID, items, tipoAjusteID, ent.Folio);
+                                        ent.BaseOrigenID, items, tipoAjusteID, ent.Folio, loteDevol.LoteID);
 
                                     int tipoSalidaID = ObtenerTipoMovimientoID(db, "SALIDA");
                                     var movs = db.Movimientos
@@ -1731,7 +1761,8 @@ namespace GrupoAnkhalInventario
         }
 
         private void DevolverStockYRegistrarMovimientos(InventarioAnkhalDBDataContext db,
-            int entregaID, int baseID, List<ItemEntregaModel> items, int tipoAjusteID, string folioEntrega)
+            int entregaID, int baseID, List<ItemEntregaModel> items, int tipoAjusteID, string folioEntrega,
+            int loteID)
         {
             int claveID = Convert.ToInt32(Session["ClaveID"]);
             foreach (var it in items)
@@ -1751,7 +1782,7 @@ namespace GrupoAnkhalInventario
                         ProductoID = it.ItemID, MaterialID = null,
                         BaseOrigenID = null, BaseDestinoID = baseID,
                         Cantidad = it.Cantidad, Costo = it.PrecioUnitario,
-                        EntregaID = entregaID, ProduccionID = null,
+                        EntregaID = entregaID, ProduccionID = null, LoteID = loteID,
                         Observaciones = string.Format("Devolución por cancelación entrega {0}", folioEntrega),
                         RegistradoPorID = claveID, FechaMovimiento = AppHelper.Ahora
                     });
@@ -1771,7 +1802,7 @@ namespace GrupoAnkhalInventario
                         MaterialID = it.ItemID, ProductoID = null,
                         BaseOrigenID = null, BaseDestinoID = baseID,
                         Cantidad = cantBase, Costo = it.PrecioUnitario,
-                        EntregaID = entregaID, ProduccionID = null,
+                        EntregaID = entregaID, ProduccionID = null, LoteID = loteID,
                         Observaciones = string.Format("Devolución por cancelación entrega {0}", folioEntrega),
                         RegistradoPorID = claveID, FechaMovimiento = AppHelper.Ahora
                     });
