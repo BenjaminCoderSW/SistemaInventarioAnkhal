@@ -96,6 +96,15 @@ namespace GrupoAnkhalInventario
         protected global::System.Web.UI.WebControls.Button btnLimpiar;
 
         /// <summary>
+        /// Control txtFiltrFolio.
+        /// </summary>
+        /// <remarks>
+        /// Campo generado automáticamente.
+        /// Para modificarlo, mueva la declaración del campo del archivo del diseñador al archivo de código subyacente.
+        /// </remarks>
+        protected global::System.Web.UI.WebControls.TextBox txtFiltrFolio;
+
+        /// <summary>
         /// Control chkMostrarBorradores.
         /// </summary>
         /// <remarks>

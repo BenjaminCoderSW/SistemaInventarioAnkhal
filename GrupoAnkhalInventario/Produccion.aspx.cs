@@ -161,6 +161,11 @@ namespace GrupoAnkhalInventario
                 DateTime h = DateTime.Parse(txtFechaHasta.Text);
                 q = q.Where(p => p.Fecha <= h);
             }
+            if (!string.IsNullOrEmpty(txtFiltrFolio.Text.Trim()))
+            {
+                string folio = txtFiltrFolio.Text.Trim().ToUpper();
+                q = q.Where(p => p.Folio.Contains(folio));
+            }
             string filtrProdID = Request.Form["hdnFiltrProductoID"];
             if (!string.IsNullOrEmpty(filtrProdID) && int.TryParse(filtrProdID, out int pid))
                 q = q.Where(p => p.ProductoID == pid);
@@ -188,6 +193,11 @@ namespace GrupoAnkhalInventario
                     q = q.Where(p => p.Fecha >= DateTime.Parse(txtFechaDesde.Text));
                 if (!string.IsNullOrEmpty(txtFechaHasta.Text))
                     q = q.Where(p => p.Fecha <= DateTime.Parse(txtFechaHasta.Text));
+                if (!string.IsNullOrEmpty(txtFiltrFolio.Text.Trim()))
+                {
+                    string folioDash = txtFiltrFolio.Text.Trim().ToUpper();
+                    q = q.Where(p => p.Folio.Contains(folioDash));
+                }
                 string filtrProdIDDash = Request.Form["hdnFiltrProductoID"];
                 if (!string.IsNullOrEmpty(filtrProdIDDash) && int.TryParse(filtrProdIDDash, out int pidDash))
                     q = q.Where(p => p.ProductoID == pidDash);
@@ -365,6 +375,7 @@ namespace GrupoAnkhalInventario
         protected void btnLimpiar_Click(object sender, EventArgs e)
         {
             ddlFiltrBase.SelectedIndex = 0;
+            txtFiltrFolio.Text = "";
             string hoy = AppHelper.Hoy.ToString("yyyy-MM-dd");
             txtFechaDesde.Text = hoy;
             txtFechaHasta.Text = hoy;

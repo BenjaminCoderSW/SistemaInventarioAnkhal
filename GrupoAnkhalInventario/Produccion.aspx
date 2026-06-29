@@ -158,6 +158,10 @@
                     CssClass="btn btn-sm btn-outline-secondary btn-block" OnClick="btnLimpiar_Click"
                     OnClientClick="document.getElementById('hdnFiltrProductoID').value=''; document.getElementById('hdnFiltrProductoNombre').value=''; document.getElementById('txtFiltrProducto').value='';" />
             </div>
+            <div class="col-md-2">
+                <label>Folio</label>
+                <asp:TextBox ID="txtFiltrFolio" runat="server" CssClass="form-control form-control-sm" placeholder="PROD-..."></asp:TextBox>
+            </div>
             <div class="col-md-2 d-flex align-items-center pt-3">
                 <div class="form-check">
                     <asp:CheckBox ID="chkMostrarBorradores" runat="server" CssClass="form-check-input" />

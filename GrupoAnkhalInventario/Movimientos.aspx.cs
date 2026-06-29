@@ -163,6 +163,11 @@ namespace GrupoAnkhalInventario
                 string ti = ddlFiltrItem.SelectedValue;
                 q = q.Where(mv => mv.TipoItem == ti);
             }
+            if (!string.IsNullOrEmpty(txtFiltrFolio.Text.Trim()))
+            {
+                string folio = txtFiltrFolio.Text.Trim().ToUpper();
+                q = q.Where(mv => mv.LotesMovimiento.Folio.Contains(folio));
+            }
             if (!string.IsNullOrEmpty(txtFechaDesde.Text))
             {
                 DateTime d = DateTime.Parse(txtFechaDesde.Text);
@@ -397,6 +402,7 @@ namespace GrupoAnkhalInventario
             foreach (ListItem li in cblFiltrTipo.Items) li.Selected = false;
             ddlFiltrBase.SelectedIndex = 0;
             ddlFiltrItem.SelectedIndex = 0;
+            txtFiltrFolio.Text = "";
             string hoy = AppHelper.Hoy.ToString("yyyy-MM-dd");
             txtFechaDesde.Text = hoy;
             txtFechaHasta.Text = hoy;

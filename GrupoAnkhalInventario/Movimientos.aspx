@@ -233,6 +233,10 @@
                         </asp:DropDownList>
                     </div>
                     <div class="col-md-2">
+                        <label>Folio</label>
+                        <asp:TextBox ID="txtFiltrFolio" runat="server" CssClass="form-control form-control-sm" placeholder="MOV-..."></asp:TextBox>
+                    </div>
+                    <div class="col-md-2">
                         <label>Fecha desde</label>
                         <asp:TextBox ID="txtFechaDesde" runat="server" CssClass="form-control form-control-sm" TextMode="Date"></asp:TextBox>
                     </div>
