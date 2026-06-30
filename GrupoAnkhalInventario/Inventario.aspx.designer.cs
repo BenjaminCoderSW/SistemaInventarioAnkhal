@@ -72,6 +72,21 @@ namespace GrupoAnkhalInventario
         protected global::System.Web.UI.WebControls.Button btnExportarPdf;
 
         /// <summary>
+        /// txtBuscarMateriales control.
+        /// </summary>
+        protected global::System.Web.UI.WebControls.TextBox txtBuscarMateriales;
+
+        /// <summary>
+        /// txtBuscarProductos control.
+        /// </summary>
+        protected global::System.Web.UI.WebControls.TextBox txtBuscarProductos;
+
+        /// <summary>
+        /// chkSoloExistencia control.
+        /// </summary>
+        protected global::System.Web.UI.WebControls.CheckBox chkSoloExistencia;
+
+        /// <summary>
         /// pnlMateriales control.
         /// </summary>
         protected global::System.Web.UI.WebControls.Panel pnlMateriales;

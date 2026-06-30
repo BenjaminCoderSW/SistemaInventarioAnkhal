@@ -156,6 +156,8 @@
     <Content Include="img\mapa.png" />
     <Content Include="Inventario.aspx" />
     <Content Include="ImprimirInventario.ashx" />
+    <Content Include="InventarioPorBase.aspx" />
+    <Content Include="ImprimirInventarioPorBase.ashx" />
     <Content Include="Login.aspx" />
     <Content Include="Materiales.aspx" />
     <Content Include="Mermas.aspx" />
@@ -2102,8 +2104,12 @@
       <DependentUpon>RegistrarProveedores.aspx</DependentUpon>
     </Compile>
     <Compile Include="Services\UsuarioService.cs" />
+    <Compile Include="Services\InventarioService.cs" />
     <Compile Include="ImprimirInventario.ashx.cs">
       <DependentUpon>ImprimirInventario.ashx</DependentUpon>
+    </Compile>
+    <Compile Include="ImprimirInventarioPorBase.ashx.cs">
+      <DependentUpon>ImprimirInventarioPorBase.ashx</DependentUpon>
     </Compile>
     <Compile Include="Inventario.aspx.cs">
       <DependentUpon>Inventario.aspx</DependentUpon>
@@ -2111,6 +2117,13 @@
     </Compile>
     <Compile Include="Inventario.aspx.designer.cs">
       <DependentUpon>Inventario.aspx</DependentUpon>
+    </Compile>
+    <Compile Include="InventarioPorBase.aspx.cs">
+      <DependentUpon>InventarioPorBase.aspx</DependentUpon>
+      <SubType>ASPXCodeBehind</SubType>
+    </Compile>
+    <Compile Include="InventarioPorBase.aspx.designer.cs">
+      <DependentUpon>InventarioPorBase.aspx</DependentUpon>
     </Compile>
     <Compile Include="Login.aspx.cs">
       <DependentUpon>Login.aspx</DependentUpon>

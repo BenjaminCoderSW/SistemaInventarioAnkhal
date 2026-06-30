@@ -42,6 +42,8 @@ namespace GrupoAnkhalInventario
                 // ── Inventario (todos excepto roles no definidos) ──
                 { "inventario.aspx", new List<string>
                     { "Administrador", "Ventas", "Compras", "Almacen", "Produccion", "Reporte", "Jefe de planta" } },
+                { "inventarioporbase.aspx", new List<string>
+                    { "Administrador", "Ventas", "Compras", "Almacen", "Produccion", "Reporte", "Jefe de planta" } },
 
                 // ── Administración ──
                 { "usuarios.aspx", new List<string> { "Administrador" } },

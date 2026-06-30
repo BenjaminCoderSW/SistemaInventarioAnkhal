@@ -156,7 +156,7 @@
                     <label class="mb-1" style="font-size:0.85rem;font-weight:600;">Base / Planta</label>
                     <asp:DropDownList ID="ddlBase" runat="server" CssClass="form-control form-control-sm"></asp:DropDownList>
                 </div>
-                <div class="col-md-3">
+                <div class="col-md-2">
                     <label class="mb-1" style="font-size:0.85rem;font-weight:600;">Tipo de Item</label>
                     <asp:DropDownList ID="ddlTipoItem" runat="server" CssClass="form-control form-control-sm">
                         <asp:ListItem Text="-- Todos --" Value="" />
@@ -164,7 +164,27 @@
                         <asp:ListItem Text="Productos" Value="PROD" />
                     </asp:DropDownList>
                 </div>
-                <div class="col-md-3 mt-1">
+                <div class="col-md-3">
+                    <label class="mb-1" style="font-size:0.85rem;font-weight:600;">Buscar material</label>
+                    <asp:TextBox ID="txtBuscarMateriales" runat="server"
+                        CssClass="form-control form-control-sm"
+                        placeholder="Código o descripción..."></asp:TextBox>
+                </div>
+                <div class="col-md-3">
+                    <label class="mb-1" style="font-size:0.85rem;font-weight:600;">Buscar producto</label>
+                    <asp:TextBox ID="txtBuscarProductos" runat="server"
+                        CssClass="form-control form-control-sm"
+                        placeholder="Código o descripción..."></asp:TextBox>
+                </div>
+            </div>
+            <div class="row align-items-center mt-2">
+                <div class="col-md-auto">
+                    <label class="mb-0 d-flex align-items-center" style="font-size:0.85rem;font-weight:600;cursor:pointer;gap:6px;">
+                        <asp:CheckBox ID="chkSoloExistencia" runat="server" />
+                        Solo con existencia
+                    </label>
+                </div>
+                <div class="col mt-1 mt-md-0 text-md-right">
                     <asp:Button ID="btnFiltrar" runat="server" Text="Filtrar"
                         CssClass="btn btn-primary btn-sm mr-1" OnClick="btnFiltrar_Click" />
                     <asp:Button ID="btnLimpiar" runat="server" Text="Limpiar"

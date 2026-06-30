@@ -367,6 +367,12 @@
                                             <p>Consulta de Inventario</p>
                                         </a>
                                     </li>
+                                    <li class="nav-item">
+                                        <a href="InventarioPorBase.aspx" class="nav-link">
+                                            <i class="far fa-circle nav-icon"></i>
+                                            <p>Detalle por Base</p>
+                                        </a>
+                                    </li>
                                 </ul>
                             </li>
 
