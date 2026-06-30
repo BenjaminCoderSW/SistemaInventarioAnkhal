@@ -3,6 +3,7 @@ using GrupoAnkhalInventario.Modelo;
 using System;
 using System.Collections.Generic;
 using System.Configuration;
+using System.Data.SqlClient;
 using System.Globalization;
 using System.Linq;
 using System.Text;
@@ -305,12 +306,83 @@ namespace GrupoAnkhalInventario
             if (_baseID.HasValue) spQ = spQ.Where(x => x.BaseID == _baseID.Value);
             decimal valProd = spQ.Sum(x => (decimal?)(x.ValBuenos + x.ValRechazo)) ?? 0m;
 
+            // Stock merma de materiales (no mapeado en DBML, mismo cálculo que Inventario.aspx)
+            decimal valMerma = ObtenerValorMermaMateriales();
+
             // Conteos
             int nMat = db.Materiales.Count(m => m.Activo);
             int nProd = db.Productos.Count(p => p.Activo);
 
-            lblValorInventario.Text = (valMat + valProd).ToString("N2");
+            lblValorInventario.Text = (valMat + valProd + valMerma).ToString("N2");
             lblInvSub.Text = string.Format("{0} materiales  |  {1} productos activos", nMat, nProd);
+        }
+
+        // ── Helpers ADO.NET para StockMerma (no mapeado en DBML) ─────────────
+        private void AgregarFiltroMerma(List<string> where, List<SqlParameter> parms)
+        {
+            if (_basesUsuario != null && _basesUsuario.Count > 0)
+            {
+                var pNames = _basesUsuario
+                    .Select((id, i) => { parms.Add(new SqlParameter("@bu" + i, id)); return "@bu" + i; })
+                    .ToList();
+                where.Add("sm.BaseID IN (" + string.Join(",", pNames) + ")");
+            }
+            if (_baseID.HasValue)
+            {
+                where.Add("sm.BaseID = @baseFiltraID");
+                parms.Add(new SqlParameter("@baseFiltraID", _baseID.Value));
+            }
+        }
+
+        // Valor de StockMerma (material rechazado) — réplica del cálculo de Inventario.aspx.cs
+        private decimal ObtenerValorMermaMateriales()
+        {
+            var where = new List<string> { "b.Activo = 1" };
+            var parms = new List<SqlParameter>();
+            AgregarFiltroMerma(where, parms);
+
+            string sql = "SELECT ISNULL(SUM(sm.CantidadActual * m.PrecioUnitario),0) " +
+                         "FROM dbo.StockMerma sm " +
+                         "INNER JOIN dbo.Materiales m ON m.MaterialID = sm.MaterialID " +
+                         "INNER JOIN dbo.Bases b ON b.BaseID = sm.BaseID " +
+                         "WHERE " + string.Join(" AND ", where);
+            using (var conn = new SqlConnection(_connStr))
+            {
+                conn.Open();
+                using (var cmd = new SqlCommand(sql, conn))
+                {
+                    cmd.Parameters.AddRange(parms.ToArray());
+                    return (decimal)cmd.ExecuteScalar();
+                }
+            }
+        }
+
+        // Valor de StockMerma agrupado por base — para la tabla "Valor por base"
+        private Dictionary<int, decimal> ObtenerValorMermaPorBase()
+        {
+            var dict = new Dictionary<int, decimal>();
+            var where = new List<string> { "b.Activo = 1" };
+            var parms = new List<SqlParameter>();
+            AgregarFiltroMerma(where, parms);
+
+            string sql =
+                "SELECT sm.BaseID, SUM(sm.CantidadActual * m.PrecioUnitario) " +
+                "FROM dbo.StockMerma sm " +
+                "INNER JOIN dbo.Materiales m ON m.MaterialID = sm.MaterialID " +
+                "INNER JOIN dbo.Bases b ON b.BaseID = sm.BaseID " +
+                "WHERE " + string.Join(" AND ", where) + " GROUP BY sm.BaseID";
+
+            using (var conn = new SqlConnection(_connStr))
+            {
+                conn.Open();
+                using (var cmd = new SqlCommand(sql, conn))
+                {
+                    cmd.Parameters.AddRange(parms.ToArray());
+                    using (var rd = cmd.ExecuteReader())
+                        while (rd.Read()) dict[rd.GetInt32(0)] = rd.GetDecimal(1);
+                }
+            }
+            return dict;
         }
 
         // ── KPI 2: Producción del periodo ─────────────────────────────────────
@@ -664,10 +736,13 @@ namespace GrupoAnkhalInventario
                                      + sp.CantidadRechazo * (p.PrecioVenta * 0.5m)
                            }).ToList();
 
+            var mermaPorBase = ObtenerValorMermaPorBase();
+
             var vm = bases.Select(b => new ValorBaseVM
             {
                 Base = b.Nombre,
-                ValMat = smTodos.Where(s => s.BaseID == b.BaseID).Sum(s => s.Valor),
+                ValMat = smTodos.Where(s => s.BaseID == b.BaseID).Sum(s => s.Valor)
+                         + (mermaPorBase.ContainsKey(b.BaseID) ? mermaPorBase[b.BaseID] : 0m),
                 ValProd = spTodos.Where(s => s.BaseID == b.BaseID).Sum(s => s.Valor)
             }).ToList();
 

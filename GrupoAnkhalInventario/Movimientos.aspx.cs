@@ -592,7 +592,13 @@ namespace GrupoAnkhalInventario
                             switch (claveTipo)
                             {
                                 case "ENTRADA":
-                                    UpsertStock(db, it.tipoItem, it.itemId, baseDestinoID, +cantBase); break;
+                                    UpsertStock(db, it.tipoItem, it.itemId, baseDestinoID, +cantBase);
+                                    if (it.tipoItem == "Material" && it.costo > 0)
+                                    {
+                                        var mat = db.Materiales.FirstOrDefault(m => m.MaterialID == it.itemId);
+                                        if (mat != null) mat.PrecioUnitario = it.costo;
+                                    }
+                                    break;
                                 case "TRANSFERENCIA":
                                     if (it.tipoItem == "MermaMaterial")
                                     {

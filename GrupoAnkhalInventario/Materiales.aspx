@@ -205,7 +205,7 @@
                         <asp:BoundField DataField="TipoNombre"   HeaderText="Tipo" />
                         <asp:BoundField DataField="Subtipo"      HeaderText="Subtipo" />
                         <asp:BoundField DataField="UnidadNombre" HeaderText="Unidad" />
-                        <asp:BoundField DataField="PrecioUnitario" HeaderText="Precio" DataFormatString="{0:C2}" />
+                        <asp:BoundField DataField="PrecioUnitario" HeaderText="Valor en sistema" DataFormatString="{0:C2}" />
 
                         <asp:TemplateField HeaderText="Stock Global">
                             <ItemTemplate>
@@ -405,7 +405,7 @@
           </div>
           <div class="col-md-4">
             <div class="form-group">
-              <label>Precio unitario <span style="color:red">*</span></label>
+              <label>Valor unitario <span style="color:red">*</span></label>
               <div class="input-group">
                 <div class="input-group-prepend"><span class="input-group-text">$</span></div>
                 <asp:TextBox ID="txtPrecio" runat="server" CssClass="form-control" Placeholder="0.00" TextMode="Number" min="0" step="0.01"></asp:TextBox>
@@ -538,7 +538,7 @@
           </div>
           <div class="col-md-4">
             <div class="form-group">
-              <label>Precio unitario <span style="color:red">*</span></label>
+              <label>Valor unitario <span style="color:red">*</span></label>
               <div class="input-group">
                 <div class="input-group-prepend"><span class="input-group-text">$</span></div>
                 <asp:TextBox ID="txtPrecioEdit" runat="server" CssClass="form-control" TextMode="Number" min="0" step="0.01"></asp:TextBox>
